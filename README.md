@@ -1,7 +1,7 @@
-### 팁: `.md`가 뭔가요?
-**Markdown(마크다운)**이라는 뜻입니다. 메모장처럼 단순한 텍스트 파일이지만, 특수 기호로 모양을 냅니다.
+# Specular Differentiation
 
-* `#` : 큰 제목 (H1)
-* `##` : 중간 제목 (H2)
-* `**글자**` : **굵게**
-* ` ```python ... ``` ` : 코드를 예쁘게 박스에 넣어줌
+This repository contains the Python package `specular_diff` and codes for reproducing the results in the following papers:
+
+[1] K. Jung and J. Oh. The specular derivative. *arXiv preprint arXiv:2210.06062*, 2022.
+
+[2] K. Jung and J. Oh. Title of your second paper. *arXiv preprint arXiv:xxxx.xxxxx*, 2025.
