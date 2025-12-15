@@ -5,11 +5,11 @@
 
 This repository contains the Python package `specular_diff` and codes for applications:
 
-* **Nonsmooth convex optimization**
+* [[**Nonsmooth convex optimization**]](#nonsmooth-convex-optimization)
   * Directory: `nonsmooth-convex-opt/`
   * Related reference: [[2]](#references), [[5]](#references)
 
-* **Initial value problems for ordinary differential equations**
+* [[**Initial value problems for ordinary differential equations**]](#initial-value-problems-for-ordinary-differential-equations)
   * Directory: `numerical-ODE/`
   * Related reference: [[1]](#references), [[3]](#references), [[4]](#references)
 
