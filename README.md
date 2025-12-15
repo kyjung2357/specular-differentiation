@@ -13,6 +13,15 @@ This repository contains the Python package `specular_diff` and codes for applic
   * Directory: `numerical-ODE/`
   * Related reference: [[1]](#references), [[3]](#references), [[4]](#references)
 
+## Installation
+
+### Standard Installation
+You can install the released version directly from PyPI:
+
+```bash
+pip install specular-differentiation
+```
+
 ## Introduction
 
 Specular differentiation is a way to generalize classical differentiation.
