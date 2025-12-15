@@ -15,25 +15,23 @@ This repository contains the Python package `specular_diff` and codes for applic
 
 ## Installation
 
-You can install the released version directly from PyPI:
+<!-- You can install the released version directly from PyPI:
 
 ```bash
 pip install specular-differentiation
-```
+``` -->
 
 ## Introduction
 
-Specular differentiation is a way to generalize classical differentiation.
+Specular differentiation generalizes classical differentiation.
 
 ![specular-derivative-animation](figures/specular_derivative_animation.gif)
 
-## Nonsmooth convex optimization
+## Applications
 
+### Nonsmooth convex optimization
 
-
-## Initial value problems for ordinary differential equations
-
-
+### Initial value problems for ordinary differential equations
 
 ## References
 
