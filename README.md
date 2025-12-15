@@ -1,6 +1,7 @@
 # Specular Differentiation
 
-![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 This repository contains the Python package `specular_diff` and codes for applications:
 
@@ -14,7 +15,7 @@ This repository contains the Python package `specular_diff` and codes for applic
 
 ## Introduction
 
-
+Specular differentiation is a way to generalize classical differentiation.
 
 ## Nonsmooth convex optimization
 
