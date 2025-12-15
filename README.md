@@ -15,11 +15,11 @@ This repository contains the Python package `specular_diff` and codes for applic
 
 ## Installation
 
-<!-- You can install the released version directly from PyPI:
+You can install the released version directly from PyPI:
 
 ```bash
 pip install specular-differentiation
-``` -->
+```
 
 ## Introduction
 
