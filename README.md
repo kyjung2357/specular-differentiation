@@ -43,13 +43,9 @@ Two applications are provided in this repository.
 
 ### Initial value problems for ordinary differential equations
 
-In [[1]](#references), *the specular Euler scheme of Type 5* is introduced, which generates a sequence $\{ u_n \}_{n=0}^{\infty}$ according to the formula
+In [[1]](#references), *the specular Euler scheme of Type 5* is introduced for solving an ODE with nonsmooth source, yielding more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
 
-$$
-u_{n+1} = u_n + h \, \mathcal{A}(F(t_{n+1}, u_{n+1}), F(t_n, u_n)),
-$$
-
-where the initial time $t_0 \geq 0$ and the starting point $u_0 \in \mathbb{R}$ are given, and $t_n := t_0 + nh$ for $n \in \mathbb{N}$ with a step size $h > 0$.
+![ODE-numerical-example](figures/ODE_Numerical_example.png)
 
 ## References
 
