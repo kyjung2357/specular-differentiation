@@ -43,7 +43,7 @@ Two applications are provided in this repository.
 
 ### Initial value problems for ordinary differential equations
 
-In [[1]](#references), *the specular Euler scheme of Type 5* is introduced for solving an ODE with nonsmooth source, yielding more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
+In [[1]](#references), *the specular Euler scheme of Type 5* is introduced for solving ODEs numerically, yielding more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
 
 ![ODE-numerical-example](figures/ODE_Numerical_example.png)
 
