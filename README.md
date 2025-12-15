@@ -13,6 +13,7 @@ This repository contains the Python package `specular_diff` and codes for applic
   * Directory: `numerical-ODE/`
   * Related reference: [[1]](#references), [[3]](#references), [[4]](#references)
 
+
 ## Installation
 
 You can install the released version directly from PyPI:
@@ -24,14 +25,31 @@ pip install specular-differentiation
 ## Introduction
 
 Specular differentiation generalizes classical differentiation.
+A specular derivative can be understood as the average of the inclination angles of the right and left derivatives. 
+In contrast, a symmetric derivative is the average of the right and left derivatives.
+Their difference is illustrated as in the following figure.
 
 ![specular-derivative-animation](figures/specular_derivative_animation.gif)
 
+
 ## Applications
+
+Specular differentiation is defined in normed vector spaces, allowing for applications in higher-dimensional Euclidean spaces. 
+Two applications are provided in this repository.
 
 ### Nonsmooth convex optimization
 
+
+
 ### Initial value problems for ordinary differential equations
+
+In [[1]](#references), *the specular Euler scheme of Type 5* is introduced, which generates a sequence $\{ u_n \}_{n=0}^{\infty}$ according to the formula
+
+$$
+u_{n+1} = u_n + h \, \mathcal{A}(F(t_{n+1}, u_{n+1}), F(t_n, u_n)),
+$$
+
+where the initial time $t_0 \geq 0$ and the starting point $u_0 \in \mathbb{R}$ are given, and $t_n := t_0 + nh$ for $n \in \mathbb{N}$ with a step size $h > 0$.
 
 ## References
 
