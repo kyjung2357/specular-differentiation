@@ -25,7 +25,7 @@ pip install specular-differentiation
 
 Specular differentiation is a way to generalize classical differentiation.
 
-![시뮬레이션 영상](figures/simulation.gif)
+![시뮬레이션 영상](figures/specular_derivative_animation.gif)
 
 ## Nonsmooth convex optimization
 
