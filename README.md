@@ -1,5 +1,7 @@
 # Specular Differentiation
 
+![Version](https://img.shields.io/badge/version-0.1.0-blue)
+
 This repository contains the Python package `specular_diff` and codes for applications:
 
 * **Nonsmooth convex optimization**
@@ -8,7 +10,7 @@ This repository contains the Python package `specular_diff` and codes for applic
 
 * **Initial value problems for ordinary differential equations**
   * Directory: `numerical-ODE/`
-  * Related reference: [[1]](#references), [[4]](#references)
+  * Related reference: [[1]](#references), [[3]](#references), [[4]](#references)
 
 ## Introduction
 
