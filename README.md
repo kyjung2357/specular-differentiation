@@ -39,7 +39,7 @@ Two applications are provided in this repository.
 
 ### Nonsmooth convex optimization
 
-
+In [[2]](#references), *the specular gradient method* is introduced for optimizing nonsmooth convex objective functions.
 
 ### Initial value problems for ordinary differential equations
 
