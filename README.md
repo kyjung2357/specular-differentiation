@@ -54,7 +54,7 @@ The following simple example calculates the specular derivative of the [ReLU fun
 
 ### Tutorial
 
-Detailed examples and application notes can be found in the [Tutorial Document](/docs/tutorial.md).
+Detailed usage examples can be found in the [tutorial document](/docs/tutorial.md).
 
 ## Applications
 
