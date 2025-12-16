@@ -197,7 +197,7 @@ def specular_partial_derivative(
     x : list or np.ndarray
         The point at which the derivative is evaluated.
     i : int
-        The coordinate index (starting from 0) indicating the direction of differentiation.
+        the direction 1 <= i <= n of x_i-th partial derivative.
     h : float, optional
         Step size for the finite difference approximation (default: 1e-6).
 
@@ -266,6 +266,6 @@ def specular_gradient(
     result = np.zeros_like(x)
 
     for i in range(len(x)):
-        result[i] = specular_partial_derivative(f, x, i, h=h) 
+        result[i] = specular_partial_derivative(f, x, i+1, h=h) 
 
     return result

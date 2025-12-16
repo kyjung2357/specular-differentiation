@@ -14,4 +14,4 @@ __all__ = [
     "specular_gradient"
 ]
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
