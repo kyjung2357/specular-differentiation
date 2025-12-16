@@ -31,6 +31,18 @@ Their difference is illustrated as in the following figure.
 
 ![specular-derivative-animation](figures/specular_derivative_animation.gif)
 
+## LaTeX notation
+
+Add the following notation to your LaTeX preamble:
+
+```latex
+% Required packages
+\usepackage{graphicx}
+\usepackage{bm}
+
+% Definition of Specular Differentiation symbol
+\newcommand\spd[1][.5]{\mathbin{\vcenter{\hbox{\scalebox{#1}{\,$\bm{\wedge}$}}}}}
+```
 
 ## Applications
 
