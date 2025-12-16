@@ -3,9 +3,14 @@ from setuptools import setup, find_packages
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
+long_description = long_description.replace(
+    "](figures/", 
+    "](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/figures/"
+)
+
 setup(
     name="specular-differentiation",  
-    version="0.0.1",                  
+    version="0.0.2",                  
     author="Kiyuob Jung",          
     author_email="kyjung@msu.edu", 
     description="Specular differentiation in normed vector spaces and its applications",

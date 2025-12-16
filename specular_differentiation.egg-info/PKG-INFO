@@ -1,7 +1,30 @@
+Metadata-Version: 2.4
+Name: specular-differentiation
+Version: 0.0.1
+Summary: Specular differentiation in normed vector spaces and its applications
+Home-page: https://github.com/kyjung2357/specular-differentiation
+Author: Kiyuob Jung
+Author-email: kyjung@msu.edu
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-python
+Dynamic: summary
+
 # Specular Differentiation
 
-[![PyPI version](https://badge.fury.io/py/specular-differentiation.svg)](https://badge.fury.io/py/specular-differentiation)
-[![License](https://img.shields.io/pypi/l/specular-differentiation.svg)](https://pypi.org/project/specular-differentiation/)
+![Version](https://img.shields.io/badge/version-0.0.1-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 This repository contains the Python package `specular_diff` and codes for applications:
 

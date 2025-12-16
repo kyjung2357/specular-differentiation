@@ -7,7 +7,7 @@ This module provides implementations of the calculations of specularly direction
 
 ==========================
 __author__ = "Kiyuob Jung"
-__version__ = "1.1.0"
+__version__ = "0.0.2"
 __license__ = "MIT"
 """
 
