@@ -8,6 +8,11 @@ long_description = long_description.replace(
     "](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/figures/"
 )
 
+long_description = long_description.replace(
+    "](/docs/tutorial.md)", 
+    "](https://github.com/kyjung2357/specular-differentiation/blob/main/docs/tutorial.md)"
+)
+
 setup(
     name="specular-differentiation",  
     version="0.1.3",                  
