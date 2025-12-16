@@ -110,16 +110,17 @@ def specular_directional_derivative(
 
     Examples
     --------
+    >>> import specular_diff as sd
     >>> import math
 
-    One-dimensional input:
+    # One-dimensional input:
     >>> f = lambda x: max(x, 0)
-    >>> specular_directional_derivative(f, x=0.0, v=1)
+    >>> sd.specular_directional_derivative(f, x=0.0, v=1)
     0.41421356237309515
 
-    Three-dimensional input:
+    # Three-dimensional input:
     >>> f = lambda x: math.sqrt(x[0]**2 + x[1]**2 + x[2]**2)
-    >>> specular_directional_derivative(f, x=[0.0, 0.1, -0.1], v=[1.0, -1.0, 2.0])
+    >>> sd.specular_directional_derivative(f, x=[0.0, 0.1, -0.1], v=[1.0, -1.0, 2.0])
     -2.1213203434708223
     """
     x = np.asarray(x, dtype=float)
@@ -166,12 +167,14 @@ def specular_derivative(
     
     Examples
     --------
+    >>> import specular_diff as sd
+
     >>> f = lambda x: max(x, 0.0)
-    >>> specular_derivative(f, x=0.0)
+    >>> sd.specular_derivative(f, x=0.0)
     0.41421356237309515
 
     >>> f = lambda x: abs(x)
-    >>> specular_derivative(f, x=0.0)
+    >>> sd.specular_derivative(f, x=0.0)
     0.0
     """
     return specular_directional_derivative(f, x, 1.0, h=h)  # type: ignore
@@ -215,10 +218,11 @@ def specular_partial_derivative(
 
     Examples
     --------
+    >>> import specular_diff as sd
     >>> import math 
     
     >>> f = lambda x: math.sqrt(x[0]**2 + x[1]**2 + x[2]**2)
-    >>> specular_partial_derivative(f, x=[0.1, 2.3, -1.2], i=2)
+    >>> sd.specular_partial_derivative(f, x=[0.1, 2.3, -1.2], i=2)
     0.8859268982863702
     """
     x = np.asarray(x, dtype=float)
@@ -257,11 +261,12 @@ def specular_gradient(
 
     Examples
     --------
+    >>> import specular_diff as sd
     >>> import numpy as np
-
+    
     >>> f = lambda x: np.linalg.norm(x)
-    >>> specular_gradient(f, x=[1.4, -3.47, 4.57, 9.9])
-    array([ 0.85877534,  0.12144298, -0.3010051 ,  0.39642458])
+    >>> sd.specular_gradient(f, x=[1.4, -3.47, 4.57, 9.9])
+    array([ 0.12144298, -0.3010051 ,  0.39642458,  0.85877534])
     """
     result = np.zeros_like(x)
 

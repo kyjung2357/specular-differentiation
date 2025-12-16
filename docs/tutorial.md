@@ -45,7 +45,7 @@ Also, the specular gradient can be calculated using `specular_gradient`.
 >>> def f(x):
 >>>     return math.sqrt(x[0]**2 + x[1]**2 + x[2]**2)
 >>> sd.specular_gradient(f, x=[0.1, 2.3, -1.2])
-[-0.46222273  0.03851856  0.8859269 ]
+[ 0.03851856  0.8859269  -0.46222273]
 ```
 
 
