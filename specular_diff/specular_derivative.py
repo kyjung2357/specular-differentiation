@@ -223,7 +223,7 @@ def specular_partial_derivative(
     """
     x = np.asarray(x, dtype=float)
     e_i = np.zeros_like(x)
-    e_i[i] = 1.0
+    e_i[i-1] = 1.0
 
     return specular_directional_derivative(f, x, e_i, h=h)
 
