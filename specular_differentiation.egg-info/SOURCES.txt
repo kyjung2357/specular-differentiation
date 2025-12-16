@@ -1,0 +1,9 @@
+LICENSE
+README.md
+setup.py
+specular_diff/__init__.py
+specular_diff/specular_derivative.py
+specular_differentiation.egg-info/PKG-INFO
+specular_differentiation.egg-info/SOURCES.txt
+specular_differentiation.egg-info/dependency_links.txt
+specular_differentiation.egg-info/top_level.txt
