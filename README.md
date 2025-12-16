@@ -50,11 +50,11 @@ In [[1]](#references), *the specular Euler scheme of Type 5* is introduced for s
 
 ## LaTeX notation
 
-To use the specular differentiation symbol in your LaTeX document, please follow these steps.
+To use the specular differentiation symbol in your LaTeX document, please refer to the following instructions.
 
 ### Setup 
 
-Add the following code to your LaTeX preamble (before `begin{document}`):
+Add the following code to your LaTeX preamble (before `\begin{document}`):
 
 ```latex
 % Required packages
@@ -67,7 +67,7 @@ Add the following code to your LaTeX preamble (before `begin{document}`):
 
 ### Usage examples 
 
-You can use the symbol in your document (after `begin{document}`):
+Use the symbol in your document (after `\begin{document}`):
 
 ```latex
 % A specular derivative in the one-dimensional Euclidean space
