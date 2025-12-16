@@ -33,7 +33,7 @@ Their difference is illustrated as in the following figure.
 
 ## LaTeX notation
 
-To use the specular differentiation symbol in your LaTeX document, please follow these steps
+To use the specular differentiation symbol in your LaTeX document, please follow these steps.
 
 ### Setup 
 
