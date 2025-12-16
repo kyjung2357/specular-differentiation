@@ -52,6 +52,10 @@ The following simple example calculates the specular derivative of the [ReLU fun
 0.41421356237309515
 ```
 
+### Tutorial
+
+Detailed examples and application notes can be found in the [Tutorial Document](/docs/tutorial.md).
+
 ## Applications
 
 Specular differentiation is defined in normed vector spaces, allowing for applications in higher-dimensional Euclidean spaces. 
