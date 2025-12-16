@@ -31,6 +31,18 @@ Their difference is illustrated as in the following figure.
 
 ![specular-derivative-animation](figures/specular_derivative_animation.gif)
 
+### Quick start
+
+The following simple example calculates the specular derivative of the [ReLU function](https://en.wikipedia.org/wiki/Rectified_linear_unit) $f(x) = max(0, x)$ at the origin.
+
+```python
+>>> import specular_diff as sd
+>>> import numpy as np
+>>> 
+>>> ReLU = lambda x: np.maximum(x, 0)
+>>> sd.specular_derivative(ReLU, x=0.0)
+0.41421356237309515
+```
 
 ## Applications
 
