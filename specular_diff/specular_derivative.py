@@ -53,8 +53,9 @@ def A(
 
     Examples
     --------
-    >>> A(1.0, 2.0)
-    1.2295687883848642
+    >>> import specular_diff as sd
+    >>> sd.A(1.0, 2.0)
+    1.3874258867227933
     """
     alpha = _to_float(alpha)
     beta = _to_float(beta)
@@ -263,7 +264,7 @@ def specular_gradient(
     --------
     >>> import specular_diff as sd
     >>> import numpy as np
-    
+
     >>> f = lambda x: np.linalg.norm(x)
     >>> sd.specular_gradient(f, x=[1.4, -3.47, 4.57, 9.9])
     array([ 0.12144298, -0.3010051 ,  0.39642458,  0.85877534])
