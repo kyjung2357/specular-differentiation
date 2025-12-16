@@ -19,10 +19,15 @@ def check_integer_index_i(func):
             i = args_dict['i']
             
             if not isinstance(i, INTEGER_ONLY_TYPE):
-                 raise TypeError(
-                     f"Index 'i' must be a pure integer. Got type {type(i).__name__}"
-                 )
+                raise TypeError(
+                    f"Index 'i' must be a pure integer. Got type {type(i).__name__}"
+                )
 
+            if i <= 0:
+                raise ValueError(
+                    f"Index 'i' must be a positive integer greater than zero (i >= 1). Got {i}"
+                )
+        
         return func(*args, **kwargs)
     return wrapper
 
@@ -78,14 +83,14 @@ def check_types_array_only_x(func):
             x = args_dict['x']
             
             if isinstance(x, (int, float, np.number)):
-                 raise TypeError(
-                     f"Input 'x' for this function must be array-like (list or np.ndarray), not a scalar. Got {type(x).__name__}"
-                 )
+                raise TypeError(
+                    f"Input 'x' for this function must be array-like (list or np.ndarray), not a scalar. Got {type(x).__name__}"
+                )
             
             if not isinstance(x, ARRAY_ONLY_TYPES):
-                 raise TypeError(
-                     f"Input 'x' must be a list or numpy array. Got type {type(x).__name__}"
-                 )
+                raise TypeError(
+                    f"Input 'x' must be a list or numpy array. Got type {type(x).__name__}"
+                )
             
             try:
                 if len(x) < 2:

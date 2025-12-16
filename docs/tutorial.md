@@ -37,6 +37,11 @@ In $\mathbb{R}^n$, the specular partial derivative with respect to a variable $x
 -0.4622227292028128
 ```
 
+Also, the specular gradient can be calculated using `specular_gradient`.
+```python
+>>> 
+```
+
 A specular partial derivative of a function on $\mathbb{R}^n$ can be calculated in two ways.
 
 
