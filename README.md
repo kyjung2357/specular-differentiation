@@ -14,14 +14,6 @@ This repository contains the Python package `specular_diff` and codes for applic
   * Related reference: [[1]](#references), [[3]](#references), [[4]](#references)
 
 
-## Installation
-
-You can install the released version directly from PyPI:
-
-```bash
-pip install specular-differentiation
-```
-
 ## Introduction
 
 *Specular differentiation* generalizes classical differentiation.
@@ -30,6 +22,23 @@ In contrast, a symmetric derivative is the average of the right and left derivat
 Their difference is illustrated as in the following figure.
 
 ![specular-derivative-animation](figures/specular_derivative_animation.gif)
+
+## Installation
+
+### Dependencies
+
+specular-differentiation requires:
+
+* Python 3.10 or later
+* NumPy 2.2.5 or later
+
+### User installation
+
+You can install the released version directly from PyPI:
+
+```bash
+pip install specular-differentiation
+```
 
 ### Quick start
 
