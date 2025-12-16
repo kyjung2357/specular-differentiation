@@ -31,6 +31,23 @@ Their difference is illustrated as in the following figure.
 
 ![specular-derivative-animation](figures/specular_derivative_animation.gif)
 
+
+## Applications
+
+Specular differentiation is defined in normed vector spaces, allowing for applications in higher-dimensional Euclidean spaces. 
+Two applications are provided in this repository.
+
+### Nonsmooth convex optimization
+
+In [[2]](#references), *the specular gradient method* is introduced for optimizing nonsmooth convex objective functions.
+
+### Initial value problems for ordinary differential equations
+
+In [[1]](#references), *the specular Euler scheme of Type 5* is introduced for solving ODEs numerically, yielding more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
+
+![ODE-numerical-example](figures/ODE_Numerical_example.png)
+
+
 ## LaTeX notation
 
 To use the specular differentiation symbol in your LaTeX document, please follow these steps.
@@ -60,20 +77,6 @@ $f^{\spd}(x)$
 $\partial^{\spd}_v f(x)$
 ```
 
-## Applications
-
-Specular differentiation is defined in normed vector spaces, allowing for applications in higher-dimensional Euclidean spaces. 
-Two applications are provided in this repository.
-
-### Nonsmooth convex optimization
-
-In [[2]](#references), *the specular gradient method* is introduced for optimizing nonsmooth convex objective functions.
-
-### Initial value problems for ordinary differential equations
-
-In [[1]](#references), *the specular Euler scheme of Type 5* is introduced for solving ODEs numerically, yielding more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
-
-![ODE-numerical-example](figures/ODE_Numerical_example.png)
 
 ## References
 
