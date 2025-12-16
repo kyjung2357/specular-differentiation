@@ -22,7 +22,7 @@ In $\mathbb{R}$, the specular derivative can be calculated using the function `s
 
 ### 1.2 the $n$-dimensional Euclidean space ($n>1$)
 
-In $\mathbb{R}^n$, the specular partial derivative with respect to a variable $x_i$ ($1 \leq i \leq n$) can be calculated using the function `specular_partial_derivative`, which yields the same result as `specular_directional_derivative` with direction $v=e_i$, where $\left\{ e_i \right\}_{i=1}^n$ is the standard basis of $\mathbb{R}^n$.
+In $\mathbb{R}^n$, the specular partial derivative with respect to a variable $x_i$ ($1 \leq i \leq n$) can be calculated using the function `specular_partial_derivative`, which yields the same result as `specular_directional_derivative` with direction $v=e_i$, where $\{ e_i \}_{i=1}^n$ is the standard basis of $\mathbb{R}^n$.
 
 ```python
 >>> import specular_diff as sd
