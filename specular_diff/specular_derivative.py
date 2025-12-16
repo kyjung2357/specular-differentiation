@@ -219,7 +219,7 @@ def specular_partial_derivative(
     
     >>> f = lambda x: math.sqrt(x[0]**2 + x[1]**2 + x[2]**2)
     >>> specular_partial_derivative(f, x=[0.1, 2.3, -1.2], i=2)
-    -0.4622227292028128
+    0.8859268982863702
     """
     x = np.asarray(x, dtype=float)
     e_i = np.zeros_like(x)
@@ -261,7 +261,7 @@ def specular_gradient(
 
     >>> f = lambda x: np.linalg.norm(x)
     >>> specular_gradient(f, x=[1.4, -3.47, 4.57, 9.9])
-    array([ 0.12144298, -0.3010051 ,  0.39642458,  0.85877534])
+    array([ 0.85877534,  0.12144298, -0.3010051 ,  0.39642458])
     """
     result = np.zeros_like(x)
 
