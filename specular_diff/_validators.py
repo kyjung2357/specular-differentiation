@@ -4,7 +4,7 @@ import numpy as np
 
 INTEGER_ONLY_TYPE = (int,)
 ARRAY_ONLY_TYPES = (list, np.ndarray)
-ARRAY_LIKE_TYPES = (float, np.floating, list, np.ndarray)
+ARRAY_LIKE_TYPES = (int, float, np.floating, list, np.ndarray)
 
 def check_integer_index_i(func):
     @wraps(func)
