@@ -74,7 +74,7 @@ Add the following code to your LaTeX preamble (before `\begin{document}`):
 \usepackage{bm}
 
 % Definition of Specular Differentiation symbol
-\newcommand\spd[1][.5]{\mathbin{\vcenter{\hbox{\scalebox{#1}{\,$\bm{\wedge}$}}}}}
+\newcommand\sd[1][.5]{\mathbin{\vcenter{\hbox{\scalebox{#1}{\,$\bm{\wedge}$}}}}}
 ```
 
 ### Usage examples 
@@ -83,10 +83,10 @@ Use the symbol in your document (after `\begin{document}`):
 
 ```latex
 % A specular derivative in the one-dimensional Euclidean space
-$f^{\spd}(x)$
+$f^{\sd}(x)$
 
 % A specular directional derivative in normed vector spaces
-$\partial^{\spd}_v f(x)$
+$\partial^{\sd}_v f(x)$
 ```
 
 
