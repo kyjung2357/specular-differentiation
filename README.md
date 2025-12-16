@@ -33,7 +33,11 @@ Their difference is illustrated as in the following figure.
 
 ## LaTeX notation
 
-To use the symbol for specular differentiation in LaTeX, add the following notation to your LaTeX preamble:
+To use the specular differentiation symbol in your LaTeX document, please follow these steps
+
+### Setup 
+
+Add the following code to your LaTeX preamble (before `begin{document}`):
 
 ```latex
 % Required packages
@@ -42,14 +46,16 @@ To use the symbol for specular differentiation in LaTeX, add the following notat
 
 % Definition of Specular Differentiation symbol
 \newcommand\spd[1][.5]{\mathbin{\vcenter{\hbox{\scalebox{#1}{\,$\bm{\wedge}$}}}}}
+```
 
-\begin{document}
+### Usage examples 
+
+```latex
 % A specular derivative in the one-dimensional Euclidean space
 $f^{\spd}(x)$
 
 % A specular directional derivative in normed vector spaces
 $\partial^{\spd}_v f(x)$
-\end{document}
 ```
 
 ## Applications
