@@ -1,4 +1,5 @@
 dist/
 build/
 unpublished/
+specular_differentiation.egg-info/
 *.eff-info/
