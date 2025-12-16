@@ -8,9 +8,19 @@ long_description = long_description.replace(
     "](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/figures/"
 )
 
+long_description = long_description.replace(
+    "](./LICENSE)", 
+    "](https://github.com/kyjung2357/specular-differentiation/blob/main/LICENSE)"
+)
+
+long_description = long_description.replace(
+    "](./setup.py)", 
+    "](https://github.com/kyjung2357/specular-differentiation/blob/main/setup.py)"
+)
+
 setup(
     name="specular-differentiation",  
-    version="0.0.2",                  
+    version="0.0.3",                  
     author="Kiyuob Jung",          
     author_email="kyjung@msu.edu", 
     description="Specular differentiation in normed vector spaces and its applications",
