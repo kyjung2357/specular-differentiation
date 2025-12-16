@@ -50,7 +50,7 @@ Add the following code to your LaTeX preamble (before `begin{document}`):
 
 ### Usage examples 
 
-You can use the symbol in your document as follows:
+You can use the symbol in your document (after `begin{document}`):
 
 ```latex
 % A specular derivative in the one-dimensional Euclidean space
