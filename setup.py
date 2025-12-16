@@ -10,7 +10,7 @@ long_description = long_description.replace(
 
 setup(
     name="specular-differentiation",  
-    version="0.1.2",                  
+    version="0.1.3",                  
     author="Kiyuob Jung",          
     author_email="kyjung@msu.edu", 
     description="Specular differentiation in normed vector spaces and its applications",
