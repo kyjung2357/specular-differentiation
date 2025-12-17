@@ -19,10 +19,10 @@ def _to_float(x):
     return float(x)
 
 def A(
-        alpha: float,
-        beta: float,
-        epsilon: float = 0
-        ) -> float:
+    alpha: float,
+    beta: float,
+    epsilon: float = 0
+) -> float:
     """
     Compute the specular derivative from one-sided directional derivatives.
 
@@ -74,11 +74,11 @@ def A(
 @check_positive_h 
 @check_types_array_like_x_v
 def specular_directional_derivative(
-        f: Callable[[np.ndarray], float],
-        x: float | list | np.ndarray,
-        v: float | list | np.ndarray,
-        h: float = 1e-6
-        ) -> float:
+    f: Callable[[np.ndarray], float],
+    x: float | list | np.ndarray,
+    v: float | list | np.ndarray,
+    h: float = 1e-6
+) -> float:
     """
     Approximates the specular directional derivative of a function `f: R^n -> R` at a point `x` 
     in the direction `v`, using finite differences and the averaging operator `A`.
@@ -136,10 +136,10 @@ def specular_directional_derivative(
 @check_positive_h
 @check_types_array_like_x_v
 def specular_derivative(
-        f: Callable[[np.ndarray], float],
-        x: float | list | np.floating,
-        h: float = 1e-6
-        ) -> float:
+    f: Callable[[np.ndarray], float],
+    x: float | list | np.floating,
+    h: float = 1e-6
+) -> float:
     """
     Approximates the specular derivative of a real-valued function `f: R -> R` at point `x`.
 
@@ -184,11 +184,11 @@ def specular_derivative(
 @check_integer_index_i
 @check_types_array_only_x
 def specular_partial_derivative(
-        f: Callable[[np.ndarray], float],
-        x: list | np.ndarray,
-        i: int,
-        h: float = 1e-6
-        ) -> float:
+    f: Callable[[np.ndarray], float],
+    x: list | np.ndarray,
+    i: int,
+    h: float = 1e-6
+) -> float:
     """
     Approximates the i-th specular partial derivative of a real-valued function `f: R^n -> R` at point `x` for n > 1.
 
@@ -235,10 +235,10 @@ def specular_partial_derivative(
 
 @check_types_array_only_x
 def specular_gradient(
-        f: Callable[[np.ndarray], float],
-        x: list | np.ndarray,
-        h: float = 1e-6
-        ) -> np.ndarray:
+    f: Callable[[np.ndarray], float],
+    x: list | np.ndarray,
+    h: float = 1e-6
+) -> np.ndarray:
     """
     Approximates the specular gradient of a real-valued function `f: R^n -> R` at point `x` for n > 1.
 
