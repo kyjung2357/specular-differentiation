@@ -1,19 +1,19 @@
-from .specular_derivative import (
+from .core import (
     A,
-    specular_directional_derivative,
-    specular_derivative,
-    specular_partial_derivative,
-    specular_gradient
+    directional_derivative,
+    derivative,
+    partial_derivative,
+    gradient
 )
 
 from . import tools
 
-__version__ = "0.1.4"
+__version__ = "0.2.0"
 
 __all__ = [
     "A",
-    "specular_directional_derivative",
-    "specular_derivative",
-    "specular_partial_derivative",
-    "specular_gradient"
+    "directional_derivative",
+    "derivative",
+    "partial_derivative",
+    "gradient"
 ]

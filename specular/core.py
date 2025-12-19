@@ -73,7 +73,7 @@ def A(
 
 @check_positive_h 
 @check_types_array_like_x_v
-def specular_directional_derivative(
+def directional_derivative(
     f: Callable[[np.ndarray], float],
     x: float | list | np.ndarray,
     v: float | list | np.ndarray,
@@ -135,7 +135,7 @@ def specular_directional_derivative(
 
 @check_positive_h
 @check_types_array_like_x_v
-def specular_derivative(
+def derivative(
     f: Callable[[np.ndarray], float],
     x: float | list | np.floating,
     h: float = 1e-6
@@ -183,7 +183,7 @@ def specular_derivative(
 
 @check_integer_index_i
 @check_types_array_only_x
-def specular_partial_derivative(
+def partial_derivative(
     f: Callable[[np.ndarray], float],
     x: list | np.ndarray,
     i: int,
@@ -230,11 +230,11 @@ def specular_partial_derivative(
     e_i = np.zeros_like(x)
     e_i[i-1] = 1.0
 
-    return specular_directional_derivative(f, x, e_i, h=h)
+    return directional_derivative(f, x, e_i, h=h)
 
 
 @check_types_array_only_x
-def specular_gradient(
+def gradient(
     f: Callable[[np.ndarray], float],
     x: list | np.ndarray,
     h: float = 1e-6
@@ -272,6 +272,6 @@ def specular_gradient(
     result = np.zeros_like(x)
 
     for i in range(len(x)):
-        result[i] = specular_partial_derivative(f, x, i+1, h=h) 
+        result[i] = partial_derivative(f, x, i+1, h=h) 
 
     return result
