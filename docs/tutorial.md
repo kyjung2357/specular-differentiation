@@ -1,7 +1,7 @@
 # Specular Differentiation tutorial
 
 Denote by ℕ the set of all positive integers. 
-For each $n \in \mathbb{N}$, denote by the $n$-dimensional Euclidean space.
+For each $n \in ℕ$, denote by the $n$-dimensional Euclidean space.
 
 ## 1. Calculation of specular differentiation
 
@@ -9,7 +9,7 @@ In `core.py`, there are four modules to calculate specular differentiation, depe
 
 ### 1.1 the one-dimensional Euclidean space
 
-In $\mathbb{R}$, the *specular derivative* can be calculated using the function `derivative`.
+In $ℝ$, the *specular derivative* can be calculated using the function `derivative`.
 
 ```python
 >>> import specular
@@ -23,7 +23,7 @@ In $\mathbb{R}$, the *specular derivative* can be calculated using the function 
 
 ### 1.2 the $n$-dimensional Euclidean space ($n>1$)
 
-In $\mathbb{R}^n$, the *specular directional derivative* of a function $f: \mathbb{R}^n \to \mathbb{R}$ at a point $x \in \mathbb{R}^n$ in the direction $v \in \mathbb{R}^n$ can be calculated using the function `directional_derivative`.
+In $ℝ^n$, the *specular directional derivative* of a function $f: ℝ^n \to ℝ$ at a point $x \in ℝ^n$ in the direction $v \in ℝ^n$ can be calculated using the function `directional_derivative`.
 
 ```python
 >>> import specular
@@ -34,8 +34,8 @@ In $\mathbb{R}^n$, the *specular directional derivative* of a function $f: \math
 -2.1213203434708223
 ```
 
-Let $e_1, e_2, \ldots, e_n$ be the standard basis of $\mathbb{R}^n$.
-For each $i \in \mathbb{N}$ with $1 \leq i \leq n$, the *specular partial derivative* with respect to a variable $x_i$ can be calculated using the function `partial_derivative`, which yields the same result as `directional_derivative` with direction $v=e_i$.
+Let $e_1, e_2, \ldots, e_n$ be the standard basis of $ℝ^n$.
+For each $i \in ℕ$ with $1 \leq i \leq n$, the *specular partial derivative* with respect to a variable $x_i$ can be calculated using the function `partial_derivative`, which yields the same result as `directional_derivative` with direction $v=e_i$.
 
 ```python
 >>> import specular
