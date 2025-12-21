@@ -1,6 +1,6 @@
 # Specular Differentiation tutorial
 
-Denote by $\mathbb{N}$ the set of all positive integers. 
+Denote by ℕ the set of all positive integers. 
 For each $n \in \mathbb{N}$, denote by the $n$-dimensional Euclidean space.
 
 ## 1. Calculation of specular differentiation
@@ -23,7 +23,7 @@ In $\mathbb{R}$, the *specular derivative* can be calculated using the function 
 
 ### 1.2 the $n$-dimensional Euclidean space ($n>1$)
 
-In $\mathbb{R}^n$, the *specular directional derivative* of a function $f: \mathbb{R}^n \to \in \mathbb{R}$ at a point $x \in \mathbb{R}^n$ in the direction $v \in \mathbb{R}^n$ can be calculated using the function `directional_derivative`.
+In $\mathbb{R}^n$, the *specular directional derivative* of a function $f: \mathbb{R}^n \to \mathbb{R}$ at a point $x \in \mathbb{R}^n$ in the direction $v \in \mathbb{R}^n$ can be calculated using the function `directional_derivative`.
 
 ```python
 >>> import specular
