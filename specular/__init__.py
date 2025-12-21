@@ -1,19 +1,19 @@
 from .core import (
     A,
-    directional_derivative,
     derivative,
+    directional_derivative,
     partial_derivative,
     gradient
 )
 
 from . import tools
 
-__version__ = "0.2.1"
+__version__ = "0.3.0"
 
 __all__ = [
     "A",
-    "directional_derivative",
     "derivative",
+    "directional_derivative",    
     "partial_derivative",
     "gradient"
 ]

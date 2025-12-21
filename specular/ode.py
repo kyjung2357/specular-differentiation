@@ -1,0 +1,127 @@
+"""
+==============================================================
+Numerical methods for solving ordinary differential equations
+==============================================================
+
+Let the source function F:[t_0, T]xR -> R be given, and the initial data u_0:R -> R be given. 
+Consider the initial value problem:
+(IVP)              u'(t) = F(t, u(t))
+with the initial condition u(t_0) = u_0(t_0).
+To solve (IVP) numerically, this module provides implementations of the specular Euler schemes, the Crank-Nicolson scheme, and the specular trigonometric scheme.
+"""
+
+import numpy as np
+import core 
+from tqdm import tqdm 
+from typing import Optional, Callable, Tuple, List
+
+def classical_scheme(
+        F: Callable[[float, np.ndarray], np.ndarray], 
+        u_0: Callable[[float], np.ndarray], 
+        t_0: float, 
+        T: float, 
+        h: float = 1e-6,
+        form: str = "explicit_Euler",
+        tol: float = 1e-6, 
+        max_iter: int = 100
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Solves an initial value problem (IVP) using classical numerical schemes.
+    Supported forms: Explicit Euler, Implicit Euler, and Crank-Nicolson.
+
+    Parameters
+    ----------
+    F : callable
+        The given source function F in (IVP).
+    u_0 : callable
+        The given initial condition u_0 in (IVP).
+    t_0 : float
+        The starting time of the simulation.
+    T : float
+        The end time of the simulation.
+    h : float, optional
+        The step size. 
+        Default is 1e-6.
+    form : str, optional
+        The form of the numerical scheme. 
+        Options: "explicit_Euler", "implicit_Euler", "Crank-Nicolson".
+        Default is "explicit_Euler".
+    tol : float, optional
+        Tolerance for fixed-point iteration (implicit-Euler/Crank-Nicolson).
+    max_iter : int, optional
+        Max iterations for fixed-point solver.
+
+    Returns
+    -------
+    Tuple[np.ndarray, np.ndarray]
+        (t_history, u_history)
+    """
+    form_key = form.lower().replace("_", "-").replace(" ", "-")
+    valid_forms = ["explicit-euler", "implicit-euler", "crank-nicolson"]
+
+    if form_key not in valid_forms:
+        raise ValueError(f"Unknown form '{form}'. Supported forms: {valid_forms}")
+    
+    t_curr = t_0
+    u_curr = u_0(t_0)
+
+    t_history = [t_curr]
+    u_history = [u_curr]
+
+    steps = int((T - t_0) / h)
+    
+    if form_key == "explicit-euler":
+        for _ in tqdm(range(steps), desc="Running the explicit Euler scheme"):
+            t_curr, u_curr = t_curr + h, u_curr + h*F(t_curr, u_curr)
+
+            t_history.append(t_curr)
+            u_history.append(u_curr)
+
+    elif form_key == "implicit-euler":
+        for m in tqdm(range(steps), desc="Running the implicit Euler scheme"):
+            t_next = t_curr + h
+
+            # Initial guess: explicit Euler 
+            u_temp = u_curr + h*F(t_curr, u_curr)
+            u_guess = u_temp
+
+            # Fixed-point iteration
+            for _ in range(max_iter):
+                u_guess = u_curr + h*F(t_next, u_temp)
+                if np.linalg.norm(u_guess - u_temp) < tol:
+                    break
+                u_temp = u_guess
+            else:
+                print(f"Warning: step {m+1} did not converge.")
+
+            t_curr, u_curr = t_next, u_guess  
+            t_history.append(t_curr)
+            u_history.append(u_curr)
+    
+    elif form_key == "crank-nicolson":
+        for m in tqdm(range(steps), desc="Running Crank-Nicolson scheme"):
+            t_next = t_curr + h
+
+            F_curr = F(t_curr, u_curr)
+
+            # Initial guess: explicit Euler
+            u_temp = u_curr + h * F_curr
+            u_guess = u_temp
+
+            # Fixed-point iteration
+            for _ in range(max_iter):
+                f_guess = F(t_next, u_temp)
+                u_guess = u_curr + 0.5 * h * (F_curr + f_guess)
+
+                if np.linalg.norm(u_guess - u_temp) < tol:
+                    break
+
+                u_temp = u_guess
+            else:
+                print(f"Warning: step {m+1} did not converge.")
+
+            t_curr, u_curr = t_next, u_guess  
+            t_history.append(t_curr)
+            u_history.append(u_curr)
+
+    return np.array(t_history), np.array(u_history)

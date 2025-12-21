@@ -1,12 +1,15 @@
 # Specular Differentiation tutorial
 
+Denote by $\mathbb{N}$ the set of all positive integers. 
+For each $n \in \mathbb{N}$, denote by the $n$-dimensional Euclidean space.
+
 ## 1. Calculation of specular differentiation
 
-In `specular_derivative.py`, there are five modules. 
+In `core.py`, there are four modules to calculate specular differentiation, depending on the dimension. 
 
 ### 1.1 the one-dimensional Euclidean space
 
-In $\mathbb{R}$, the specular derivative can be calculated using the function `specular_derivative`, which yields the same result as `specular_directional_derivative` with direction $v=1$.
+In $\mathbb{R}$, the specular derivative can be calculated using the function `derivative`.
 
 ```python
 >>> import specular
@@ -20,7 +23,19 @@ In $\mathbb{R}$, the specular derivative can be calculated using the function `s
 
 ### 1.2 the $n$-dimensional Euclidean space ($n>1$)
 
-In $\mathbb{R}^n$, the specular partial derivative with respect to a variable $x_i$ ($1 \leq i \leq n$) can be calculated using the function `specular_partial_derivative`, which yields the same result as `specular_directional_derivative` with direction $v=e_i$, where $e_1, e_2, \ldots, e_n$ are the standard basis of $\mathbb{R}^n$.
+In $\mathbb{R}^n$, the specular directional derivative of a function $f: \mathbb{R}^n \to \in \mathbb{R}$ at a point $x \in \mathbb{R}^n$ in the direction $v \in \mathbb{R}^n$ can be calculated using the function `directional_derivative`.
+
+```python
+>>> import specular
+>>> import math 
+>>>
+>>> f = lambda x: math.sqrt(x[0]**2 + x[1]**2 + x[2]**2)
+>>> specular.directional_derivative(f, x=[0.0, 0.1, -0.1], v=[1.0, -1.0, 2.0])
+-2.1213203434708223
+```
+
+Let $e_1, e_2, \ldots, e_n$ be the standard basis of $\mathbb{R}^n$.
+For each $i \in \mathbb{N}$ with $1 \leq i \leq n$, the specular partial derivative with respect to a variable $x_i$ can be calculated using the function `partial_derivative`, which yields the same result as `directional_derivative` with direction $v=e_i$.
 
 ```python
 >>> import specular
@@ -35,7 +50,8 @@ In $\mathbb{R}^n$, the specular partial derivative with respect to a variable $x
 0.8859268982863702
 ```
 
-Also, the specular gradient can be calculated using `specular_gradient`.
+Also, the specular gradient can be calculated using `gradient`.
+
 ```python
 >>> import specular
 >>> import numpy as np
