@@ -3,7 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/specular-differentiation.svg)](https://badge.fury.io/py/specular-differentiation)
 [![License](https://img.shields.io/pypi/l/specular-differentiation.svg)](https://pypi.org/project/specular-differentiation/)
 
-This repository contains the Python package `specular_diff` and codes for applications:
+This repository contains the Python package `specular` and codes for applications:
 
 * [**Nonsmooth convex optimization**](#nonsmooth-convex-optimization)
   * Directory: `examples/nonsmooth-convex-optimization/`
