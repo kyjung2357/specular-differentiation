@@ -6,14 +6,17 @@ from .core import (
     gradient
 )
 
+from . import ode
 from . import tools
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 __all__ = [
     "A",
     "derivative",
-    "directional_derivative",    
+    "directional_derivative", 
     "partial_derivative",
-    "gradient"
+    "gradient", 
+    "ode", 
+    "tools"
 ]
