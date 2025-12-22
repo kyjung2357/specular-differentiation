@@ -64,7 +64,11 @@ def classical_scheme(
         raise ValueError(f"Unknown form '{scheme}'. Supported forms: {SUPPORTED_SCHEMES}")
     
     t_curr = t_0
-    u_curr = u_0(t_0)
+    
+    if callable(u_0):
+        u_curr = u_0(t_0)
+    else:
+        u_curr = u_0
 
     t_history = [t_curr]
     u_history = [u_curr]
