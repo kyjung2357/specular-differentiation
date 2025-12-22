@@ -21,7 +21,7 @@ class ODEResult:
             exact_values = np.array([exact_sol(t) for t in self.time_grid])
             plt.plot(self.time_grid, exact_values, color='black', label='Exact solution')
 
-        plt.plot(self.time_grid, self.numerical_sol, linestyle='-', marker='*', color='red', markevery=100, label=self.scheme)
+        plt.plot(self.time_grid, self.numerical_sol, linestyle='--', marker='o', color='red', markevery=100, label=self.scheme)
 
         plt.xlabel(r"Time", fontsize=10)
         plt.ylabel(r"Solution", fontsize=10)
