@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 from typing import Optional, Callable
 
 class ODEResult:
-    def __init__(self, t: np.ndarray, u: np.ndarray, scheme_name: str):
+    def __init__(self, t: np.ndarray, u: np.ndarray, scheme: str):
         self.t = t
         self.u = u
-        self.scheme_name = scheme_name
+        self.scheme = scheme
 
     def visualization(self, 
                       exact_sol: Optional[Callable[[float], float]] = None, 
@@ -23,7 +23,7 @@ class ODEResult:
             plt.plot(self.t, exact_values, color='black', label='Exact solution')
 
         # 수치해 그리기
-        plt.plot(self.t, self.u, label=self.scheme_name)
+        plt.plot(self.t, self.u, label=self.scheme)
 
         # 꾸미기
         plt.xlabel(r"Time $t$", fontsize=10)
