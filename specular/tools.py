@@ -36,6 +36,9 @@ class ODEResult:
 
             full_path = os.path.join("figures", save_path)
 
+            if not full_path.endswith(".png"):
+                full_path += ".png"
+
             plt.savefig(full_path, dpi=1000, bbox_inches='tight')
 
             print(f"Figure saved to {full_path}")
@@ -61,16 +64,14 @@ class ODEResult:
 
             full_path = os.path.join("tables", save_path)
             
-            if full_path.endswith(".csv"):
-                result.to_csv(full_path)  
-            elif full_path.endswith(".txt"):
+            if full_path.endswith(".txt"):
                 with open(full_path, "w") as f:
                     f.write(result.to_string())
             else:
                 if not full_path.endswith(".csv"):
                     full_path += ".csv"
                 
-                result.to_csv(full_path)
+                result.to_csv(full_path) 
             
             print(f"Table saved to {full_path}")
 
