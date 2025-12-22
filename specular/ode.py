@@ -20,7 +20,7 @@ SUPPORTED_SCHEMES = ["Explicit Euler", "Implicit Euler", "Crank-Nicolson"]
 
 def classical_scheme(
         F: Callable[[float, np.ndarray], np.ndarray], 
-        u_0: Callable[[float], np.ndarray], 
+        u_0: Callable[[float], np.ndarray] | float,
         t_0: float, 
         T: float, 
         h: float = 1e-6,
@@ -64,11 +64,7 @@ def classical_scheme(
         raise ValueError(f"Unknown form '{scheme}'. Supported forms: {SUPPORTED_SCHEMES}")
     
     t_curr = t_0
-    
-    if callable(u_0):
-        u_curr = u_0(t_0)
-    else:
-        u_curr = u_0
+    u_curr = u_0(t_0) if callable(u_0) else u_0 
 
     t_history = [t_curr]
     u_history = [u_curr]
@@ -77,7 +73,7 @@ def classical_scheme(
     
     if scheme == "Explicit Euler":
         for _ in tqdm(range(steps), desc="Running the explicit Euler scheme"):
-            t_curr, u_curr = t_curr + h, u_curr + h*F(t_curr, u_curr)
+            t_curr, u_curr = t_curr + h, u_curr + h*F(t_curr, u_curr) # type: ignore
 
             t_history.append(t_curr)
             u_history.append(u_curr)
@@ -87,7 +83,7 @@ def classical_scheme(
             t_next = t_curr + h
 
             # Initial guess: explicit Euler 
-            u_temp = u_curr + h*F(t_curr, u_curr)
+            u_temp = u_curr + h*F(t_curr, u_curr) # type: ignore
             u_guess = u_temp
 
             # Fixed-point iteration
