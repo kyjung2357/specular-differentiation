@@ -9,7 +9,6 @@ This module provides implementations of the calculations of specular directional
 from typing import Callable
 import math
 import numpy as np
-# from ._validators import check_integer_index_i, check_positive_h, check_types_array_like_x_v, check_types_array_only_x
 
 def A(
     alpha: float | np.floating | int,
