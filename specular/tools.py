@@ -36,3 +36,4 @@ def save_table_to_txt(
             error_str = f"{error:.{error_precision}e}"
             ratio_str = f"{ratio:.{ratio_precision}f}" if pd.notna(ratio) else "--"
             f.write(f"{n:<8}& {error_str} & {ratio_str} \\\\\n")
+
