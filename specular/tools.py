@@ -21,7 +21,7 @@ class ODEResult:
             exact_values = np.array([exact_sol(t) for t in self.time_grid])
             plt.plot(self.time_grid, exact_values, color='black', label='Exact solution')
 
-        plt.plot(self.time_grid, self.numerical_sol, label=self.scheme)
+        plt.plot(self.time_grid, self.numerical_sol, linestyle='-', marker='*', color='red', markevery=100, label=self.scheme)
 
         plt.xlabel(r"Time", fontsize=10)
         plt.ylabel(r"Solution", fontsize=10)
@@ -48,8 +48,8 @@ class ODEResult:
         result.index.name = "Time"
 
         if exact_sol:
-            result["Exact Solution"] = [exact_sol(t) for t in self.time_grid]
-            result["Error"] = abs(result["Numerical Solution"] - result["Exact Solution"])
+            result["Exact solution"] = [exact_sol(t) for t in self.time_grid]
+            result["Error"] = abs(result["Numerical solution"] - result["Exact solution"])
 
         if save_path:
             if not os.path.exists('tables'):
@@ -63,12 +63,14 @@ class ODEResult:
                 with open(full_path, "w") as f:
                     f.write(result.to_string())
             else:
-                result.to_csv(full_path) 
+                if not full_path.endswith(".csv"):
+                    full_path += ".csv"
+                
+                result.to_csv(full_path)
             
             print(f"Table saved to {full_path}")
 
         return result
-
 
 def save_table_to_txt(
     df: pd.DataFrame,
