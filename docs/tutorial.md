@@ -81,6 +81,8 @@ Also, the *specular gradient* can be calculated using `gradient`.
 >>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=5.5, h=0.01, scheme="Explicit Euler").visualization()
 ``` 
 
+![Explicit-Euler-scheme](docs/figures/Explicit-Euler.png)
+
 ```python
 >>> def F(t, u):
 >>>     return -(t*u)/(1-t**2)

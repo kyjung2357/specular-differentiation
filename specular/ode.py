@@ -19,14 +19,14 @@ from typing import Optional, Callable, Tuple, List
 SUPPORTED_SCHEMES = ["Explicit Euler", "Implicit Euler", "Crank-Nicolson"]
 
 def classical_scheme(
-        F: Callable[[float, np.ndarray], np.ndarray], 
-        u_0: Callable[[float], np.ndarray] | float,
-        t_0: float, 
-        T: float, 
-        h: float = 1e-6,
-        scheme: str = "Explicit Euler",
-        tol: float = 1e-6, 
-        max_iter: int = 100
+    F: Callable[[float, np.ndarray], np.ndarray], 
+    u_0: Callable[[float], np.ndarray] | float,
+    t_0: float, 
+    T: float, 
+    h: float = 1e-6,
+    scheme: str = "Explicit Euler",
+    tol: float = 1e-6, 
+    max_iter: int = 100
 ) -> ODEResult:
     """
     Solves an initial value problem (IVP) using classical numerical schemes.
@@ -128,5 +128,5 @@ def classical_scheme(
     return ODEResult(
         time_grid=np.array(t_history), 
         numerical_sol=np.array(u_history), 
-        scheme=f"{scheme} scheme"
+        scheme=scheme
     )

@@ -5,16 +5,22 @@ import matplotlib.pyplot as plt
 from typing import Optional, Callable
 
 class ODEResult:
-    def __init__(self, time_grid: np.ndarray, numerical_sol: np.ndarray, scheme: str):
+    def __init__(
+        self, 
+        time_grid: np.ndarray, 
+        numerical_sol: np.ndarray, 
+        scheme: str
+    ):
         self.time_grid = time_grid
         self.numerical_sol = numerical_sol
         self.scheme = scheme
 
-    def visualization(self, 
-                      figure_size: tuple = (5.5, 2.5), 
-                      exact_sol: Optional[Callable[[float], float]] = None,                       
-                      save_path: Optional[str] = None):
-        
+    def visualization(
+        self, 
+        figure_size: tuple = (5.5, 2.5), 
+        exact_sol: Optional[Callable[[float], float]] = None,                       
+        save_path: Optional[str] = None
+    ):
         plt.figure(figsize=figure_size)
         
         if exact_sol is not None:
@@ -33,12 +39,13 @@ class ODEResult:
         if save_path:
             if not os.path.exists('figures'):
                 os.makedirs('figures')
-
+            
+            save_path = save_path.replace(" ", "-")
             full_path = os.path.join("figures", save_path)
 
-            if not full_path.endswith(".png"):
-                full_path += ".png"
-
+            if not save_path.endswith(".png"):
+                save_path += ".png"
+                
             plt.savefig(full_path, dpi=1000, bbox_inches='tight')
 
             print(f"Figure saved to {full_path}")
@@ -48,8 +55,9 @@ class ODEResult:
         return self
 
     def table(self,
-             exact_sol: Optional[Callable[[float], float]] = None,   
-             save_path: Optional[str] = None):
+        exact_sol: Optional[Callable[[float], float]] = None,   
+        save_path: Optional[str] = None
+    ):
         
         result = pd.DataFrame(self.numerical_sol, index=self.time_grid, columns=["Numerical solution"])
         result.index.name = "Time"
@@ -62,6 +70,7 @@ class ODEResult:
             if not os.path.exists('tables'):
                 os.makedirs('tables')
 
+            save_path = save_path.replace(" ", "-")
             full_path = os.path.join("tables", save_path)
             
             if full_path.endswith(".txt"):
