@@ -69,7 +69,6 @@ Also, the *specular gradient* can be calculated using `gradient`.
 -0.4622227292028128
 ```
 
-
 ## 2. Numerical ordinary differential equations
 
 Let the source function $F:[t_0, T] \times ℝ \to ℝ$ be given, and the initial data $u_0:ℝ \to ℝ$ be given. 
@@ -131,6 +130,10 @@ To obtain the table of the numerical results, call `.table()`.
 
 ![Implicit-Euler-scheme](figures/Implicit-Euler.png)
 
-### 2.2 Specular Euler scheme
+### 2.2 Specular trigonometric scheme
+
+TBA 
+
+### 2.3 Specular Euler scheme
 
 TBA 
