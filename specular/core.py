@@ -11,10 +11,10 @@ import math
 import numpy as np
 
 def A(
-    alpha: float | np.floating | int,
-    beta: float | np.floating | int,
-    epsilon: float | np.floating = 1e-6
-) -> float:
+    alpha: float | np.floating | int | list | np.ndarray,
+    beta: float | np.floating | int | list | np.ndarray,
+    epsilon: float | np.floating | np.ndarray = 1e-6
+) -> float | np.ndarray:
     """
     Compute the specular derivative from one-sided directional derivatives.
 
@@ -51,15 +51,29 @@ def A(
     >>> specular.A(1.0, 2.0)
     1.3874258867227933
     """
-    alpha = float(alpha)
-    beta = float(beta)
-    
+    alpha_arr = np.asanyarray(alpha, dtype=float)
+    beta_arr = np.asanyarray(beta, dtype=float)
 
-    if abs(alpha + beta) <= epsilon:
-        return 0.0
+    if alpha_arr.shape != beta_arr.shape:
+         raise ValueError(f"Shape mismatch: alpha {alpha_arr.shape} vs beta {beta_arr.shape}")
+    
+    is_vector = alpha_arr.ndim > 0 or beta_arr.ndim > 0
+
+    if is_vector:
+        mask = np.abs(alpha_arr + beta_arr) <= epsilon
+        numerator = alpha_arr * beta_arr - 1.0 + np.sqrt((1.0 + alpha_arr**2) * (1.0 + beta_arr**2))
+        
+        return np.where(mask, 0.0, numerator / (alpha_arr + beta_arr))
+    
     else:
-        numerator = alpha * beta - 1.0 + math.sqrt((1.0 + alpha**2) * (1.0 + beta**2))
-        return numerator / (alpha + beta)
+        alpha = float(alpha_arr)
+        beta = float(beta_arr)
+    
+        if abs(alpha + beta) <= epsilon:
+            return 0.0
+        else:
+            numerator = alpha * beta - 1.0 + math.sqrt((1.0 + alpha**2) * (1.0 + beta**2))
+            return numerator / (alpha + beta)
 
 def derivative(
     f: Callable[[float | np.floating], float | np.floating],
@@ -108,7 +122,7 @@ def derivative(
         x = float(x)
         h = float(h)
     except TypeError:
-        raise TypeError(f"Input 'x' must be a scalar (float/int). Got {type(x).__name__}. Use `directional_derivative` for vectors.")
+        raise TypeError(f"Input 'x' must be a scalar (float or int). Got {type(x).__name__}. Use `directional_derivative` for vectors.")
     
     if h <= 0:
         raise ValueError(f"Step size 'h' must be positive. Got {h}")
@@ -116,7 +130,7 @@ def derivative(
     alpha = (f(x + h) - f(x))/h
     beta = (f(x) - f(x - h))/h
 
-    return A(alpha, beta)
+    return float(A(alpha, beta))
 
 def directional_derivative(
     f: Callable[[list | np.ndarray], float | np.floating],
@@ -166,10 +180,8 @@ def directional_derivative(
     x = np.asarray(x, dtype=float)
     v = np.asarray(v, dtype=float)
 
-    if x.ndim == 0 or v.ndim == 0:
-        raise ValueError(
-            "Inputs 'x' and 'v' must be vectors (arrays). For scalar inputs, use `specular.derivative`."
-        )
+    if v.ndim == 0:
+        raise ValueError("Input 'v' must be a vector. Use `specular.derivative` for scalar inputs.")
     
     if x.shape != v.shape:
         raise ValueError(f"Shape mismatch: x {x.shape} vs v {v.shape}")
@@ -180,7 +192,7 @@ def directional_derivative(
     alpha = (f(x + h * v) - f(x))/h
     beta = (f(x) - f(x - h * v))/h
 
-    return A(alpha, beta)
+    return float(A(alpha, beta))
 
 def partial_derivative(
     f: Callable[[list | np.ndarray], float | np.floating],
@@ -247,9 +259,7 @@ def gradient(
     """
     Approximates the specular gradient of a real-valued function `f: R^n -> R` at point `x` for n > 1.
 
-    The specular gradient is defined as the vector of all partial specular derivatives 
-    along the standard basis directions. Each component is computed using the 
-    `specular_partial_derivative` function.
+    The specular gradient is defined as the vector of all partial specular derivatives along the standard basis directions. 
 
     Parameters
     ----------
@@ -277,13 +287,27 @@ def gradient(
     x = np.asarray(x, dtype=float)
     
     if x.ndim == 0:
-        raise ValueError(
-            "Input 'x' must be a vector. Use `specular.derivative` for scalar inputs."
-        )
+        raise ValueError("Input 'x' must be a vector. Use `specular.derivative` for scalar inputs.")
     
-    result = np.zeros_like(x)
+    n = x.size
+    I = np.eye(n)
 
-    for i in range(len(x)):
-        result[i] = partial_derivative(f, x, i+1, h=h) 
+    x_right = x + h*I
+    x_left = x - h*I
 
-    return result
+    f_center = f(x) 
+
+    try:
+        f_right = f(x_right)
+        f_left = f(x_left)
+
+        if np.ndim(f_right) == 0 or np.ndim(f_left): raise ValueError
+    
+    except Exception:
+        f_right = np.apply_along_axis(f, 1, x_right)
+        f_left = np.apply_along_axis(f, 1, x_left)
+    
+    alpha = (f_right - f_center) / h 
+    beta = (f_center - f_left) / h 
+
+    return np.asarray(A(alpha, beta), dtype=float)

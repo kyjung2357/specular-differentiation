@@ -9,7 +9,7 @@ from .core import (
 from . import ode
 from . import tools
 
-__version__ = "0.3.6"
+__version__ = "0.3.7"
 
 __all__ = [
     "A",
