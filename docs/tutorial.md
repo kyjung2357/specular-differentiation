@@ -1,7 +1,7 @@
 # Specular Differentiation tutorial
 
-Denote by ℕ the set of all positive integers. 
-For each $n \in ℕ$, denote by the $n$-dimensional Euclidean space.
+Denote by $ℕ$ the set of all positive integers. 
+For each $n \in ℕ$, denote by $ℝ$ the $n$-dimensional Euclidean space.
 
 ## 1. Calculation of specular differentiation
 
@@ -72,7 +72,17 @@ Also, the *specular gradient* can be calculated using `gradient`.
 
 ## 2. Numerical ordinary differential equations
 
+Let the source function $F:[t_0, T] \times ℝ \to ℝ$ be given, and the initial data $u_0:ℝ \to ℝ$ be given. 
+Consider the initial value problem:
+$$
+u'(t) = F(t, u(t))
+$$ 
+with the initial condition $u(t_0) = u_0(t_0)$.
+To solve the problem numerically, the module `ode.py` provides implementations of the specular Euler schemes, the Crank-Nicolson scheme, and the specular trigonometric scheme.
+
 ### 2.1 Classical schemes
+
+The three classical schemes are available: the explicit Euler, the implicit Euler, and the Crank-Nicolson schemes.
 
 ```python
 >>> def F(t, u):

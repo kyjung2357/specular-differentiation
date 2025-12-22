@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import Optional, Callable
+from typing import Optional, Callable, Tuple
 
 class ODEResult:
     def __init__(
@@ -14,6 +14,20 @@ class ODEResult:
         self.time_grid = time_grid
         self.numerical_sol = numerical_sol
         self.scheme = scheme
+    
+    def values(
+        self
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Returns the time grid and the numerical solution as a tuple.
+        
+        Returns
+        -------
+        Tuple[np.ndarray, np.ndarray]
+            (time_grid, numerical_sol)
+        """
+        return self.time_grid, self.numerical_sol
+    
 
     def visualization(
         self, 
