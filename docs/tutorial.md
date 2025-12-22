@@ -94,7 +94,7 @@ By default, the function returns an instance of the `ODEResult` class that encap
 ``` 
 
 To access the numerical results, call `.values()`.
-It returns a tuple containing the time grid and the solution.
+It returns a tuple containing the time grid and the numerical solution.
 
 ```python
 >>> def F(t, u):
