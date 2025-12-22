@@ -16,16 +16,18 @@ import core
 from tqdm import tqdm 
 from typing import Optional, Callable, Tuple, List
 
+SUPPORTED_SCHEMES = ["Explicit Euler", "Implicit Euler", "Crank-Nicolson"]
+
 def classical_scheme(
         F: Callable[[float, np.ndarray], np.ndarray], 
         u_0: Callable[[float], np.ndarray], 
         t_0: float, 
         T: float, 
         h: float = 1e-6,
-        form: str = "explicit_Euler",
+        scheme: str = "Explicit Euler",
         tol: float = 1e-6, 
         max_iter: int = 100
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> ODEResult:
     """
     Solves an initial value problem (IVP) using classical numerical schemes.
     Supported forms: Explicit Euler, Implicit Euler, and Crank-Nicolson.
@@ -57,11 +59,9 @@ def classical_scheme(
     Tuple[np.ndarray, np.ndarray]
         (t_history, u_history)
     """
-    form_key = form.lower().replace("_", "-").replace(" ", "-")
-    valid_forms = ["explicit-euler", "implicit-euler", "crank-nicolson"]
 
-    if form_key not in valid_forms:
-        raise ValueError(f"Unknown form '{form}'. Supported forms: {valid_forms}")
+    if scheme not in SUPPORTED_SCHEMES:
+        raise ValueError(f"Unknown form '{scheme}'. Supported forms: {SUPPORTED_SCHEMES}")
     
     t_curr = t_0
     u_curr = u_0(t_0)
@@ -71,14 +71,14 @@ def classical_scheme(
 
     steps = int((T - t_0) / h)
     
-    if form_key == "explicit-euler":
+    if scheme == "Explicit Euler":
         for _ in tqdm(range(steps), desc="Running the explicit Euler scheme"):
             t_curr, u_curr = t_curr + h, u_curr + h*F(t_curr, u_curr)
 
             t_history.append(t_curr)
             u_history.append(u_curr)
 
-    elif form_key == "implicit-euler":
+    elif scheme == "Implicit Euler":
         for m in tqdm(range(steps), desc="Running the implicit Euler scheme"):
             t_next = t_curr + h
 
@@ -99,7 +99,7 @@ def classical_scheme(
             t_history.append(t_curr)
             u_history.append(u_curr)
     
-    elif form_key == "crank-nicolson":
+    elif scheme == "Crank-Nicolson":
         for m in tqdm(range(steps), desc="Running Crank-Nicolson scheme"):
             t_next = t_curr + h
 
@@ -125,4 +125,8 @@ def classical_scheme(
             t_history.append(t_curr)
             u_history.append(u_curr)
 
-    return np.array(t_history), np.array(u_history)
+    return ODEResult(
+        np.array(t_history), 
+        np.array(u_history), 
+        scheme_name=f"{scheme} scheme"
+    )
