@@ -119,7 +119,7 @@ To visualize the numerical results, call `.visualization()`.
 >>> def F(t, u):
 >>>    return -3*u 
 >>>
->>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=2.0, h=0.1, scheme="Explicit Euler").visualization(save_path="Explicit Euler")
+>>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=2.0, h=0.01, scheme="Explicit Euler").visualization(save_path="Explicit Euler")
 Figure saved to figures\Explicit-Euler
 ``` 
 
