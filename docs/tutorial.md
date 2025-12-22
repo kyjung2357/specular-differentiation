@@ -73,9 +73,11 @@ Also, the *specular gradient* can be calculated using `gradient`.
 
 Let the source function $F:[t_0, T] \times ℝ \to ℝ$ be given, and the initial data $u_0:ℝ \to ℝ$ be given. 
 Consider the initial value problem:
+
 $$
 u'(t) = F(t, u(t))
 $$ 
+
 with the initial condition $u(t_0) = u_0(t_0)$.
 To solve the problem numerically, the module `ode.py` provides implementations of the specular Euler schemes, the Crank-Nicolson scheme, and the specular trigonometric scheme.
 
