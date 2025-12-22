@@ -90,7 +90,7 @@ By default, the function returns an instance of the `ODEResult` class that encap
 >>> def F(t, u):
 >>>    return -3*u 
 >>>
->>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=5.5, h=0.01, scheme="Explicit Euler")
+>>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=2.0, h=0.1, scheme="Explicit Euler")
 <specular.tools.ODEResult at 0x277501e74d0>
 ``` 
 
@@ -101,7 +101,15 @@ It returns a tuple containing the time grid and the numerical solution.
 >>> def F(t, u):
 >>>    return -3*u 
 >>>
->>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=5.5, h=0.01, scheme="Explicit Euler").values()
+>>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=2.0, h=0.1, scheme="Explicit Euler").values()
+>>> (array([0. , 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1. , 1.1, 1.2,
+            1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2. ]),
+    array([1.00000000e+00, 7.00000000e-01, 4.90000000e-01, 3.43000000e-01,
+           2.40100000e-01, 1.68070000e-01, 1.17649000e-01, 8.23543000e-02,
+           5.76480100e-02, 4.03536070e-02, 2.82475249e-02, 1.97732674e-02,
+           1.38412872e-02, 9.68890104e-03, 6.78223073e-03, 4.74756151e-03,
+           3.32329306e-03, 2.32630514e-03, 1.62841360e-03, 1.13988952e-03,
+           7.97922663e-04]))
 ``` 
 
 To visualize the numerical results, call `.visualization()`.
@@ -110,7 +118,8 @@ To visualize the numerical results, call `.visualization()`.
 >>> def F(t, u):
 >>>    return -3*u 
 >>>
->>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=5.5, h=0.01, scheme="Explicit Euler").visualization(save_path="Explicit Euler")
+>>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=2.0, h=0.1, scheme="Explicit Euler").visualization(save_path="Explicit Euler")
+Figure saved to figures\Explicit-Euler
 ``` 
 
 ![Explicit-Euler-scheme](figures/Explicit-Euler.png)
@@ -128,6 +137,8 @@ To obtain the table of the numerical results, call `.table()`.
 >>>     return exact_sol(t_0)
 >>> 
 >>> specular.ode.classical_scheme(F=F, u_0=u_0, t_0=0.0, T=0.9, h=0.01, scheme="Implicit Euler").visualization(exact_sol=exact_sol, save_path="Implicit Euler").table(exact_sol=exact_sol, save_path="Implicit Euler")
+Figure saved to figures\Implicit-Euler
+Table saved to tables\Implicit-Euler.csv
 ```
 
 ![Implicit-Euler-scheme](figures/Implicit-Euler.png)
