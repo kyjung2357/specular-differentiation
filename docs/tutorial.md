@@ -83,16 +83,38 @@ To solve the problem numerically, the module `ode.py` provides implementations o
 ### 2.1 Classical schemes
 
 The three classical schemes are available: the explicit Euler, the implicit Euler, and the Crank-Nicolson schemes.
+By default, the function returns an instance of the `ODEResult` class that encapsulates the numerical results.
+
+```python
+>>> def F(t, u):
+>>>    return -3*u 
+>>>
+>>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=5.5, h=0.01, scheme="Explicit Euler")
+<specular.tools.ODEResult at 0x277501e74d0>
+``` 
+
+To access the numerical results, call `.values()`.
+It returns a tuple containing the time grid and the solution.
+
+```python
+>>> def F(t, u):
+>>>    return -3*u 
+>>>
+>>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=5.5, h=0.01, scheme="Explicit Euler").values()
+``` 
+
+To visualize the numerical results, call `.visualization()`.
 
 ```python
 >>> def F(t, u):
 >>>    return -3*u 
 >>>
 >>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=5.5, h=0.01, scheme="Explicit Euler").visualization(save_path="Explicit Euler")
-<specular.tools.ODEResult at 0x277501e74d0>
 ``` 
 
 ![Explicit-Euler-scheme](figures/Explicit-Euler.png)
+
+To obtain the table of the numerical results, call `.table()`. 
 
 ```python
 >>> def F(t, u):
