@@ -5,37 +5,69 @@ import matplotlib.pyplot as plt
 from typing import Optional, Callable
 
 class ODEResult:
-    def __init__(self, t: np.ndarray, u: np.ndarray, scheme: str):
-        self.t = t
-        self.u = u
+    def __init__(self, time_grid: np.ndarray, numerical_sol: np.ndarray, scheme: str):
+        self.time_grid = time_grid
+        self.numerical_sol = numerical_sol
         self.scheme = scheme
 
     def visualization(self, 
-                      exact_sol: Optional[Callable[[float], float]] = None, 
-                      figsize: tuple = (5.5, 2.5), 
+                      figure_size: tuple = (5.5, 2.5), 
+                      exact_sol: Optional[Callable[[float], float]] = None,                       
                       save_path: Optional[str] = None):
         
-        plt.figure(figsize=figsize)
+        plt.figure(figsize=figure_size)
         
-        # Exact solution 그리기
         if exact_sol is not None:
-            exact_values = np.array([exact_sol(ti) for ti in self.t])
-            plt.plot(self.t, exact_values, color='black', label='Exact solution')
+            exact_values = np.array([exact_sol(t) for t in self.time_grid])
+            plt.plot(self.time_grid, exact_values, color='black', label='Exact solution')
 
-        # 수치해 그리기
-        plt.plot(self.t, self.u, label=self.scheme)
+        plt.plot(self.time_grid, self.numerical_sol, label=self.scheme)
 
-        # 꾸미기
-        plt.xlabel(r"Time $t$", fontsize=10)
-        plt.ylabel(r"Solution $u(t)$", fontsize=10)
+        plt.xlabel(r"Time", fontsize=10)
+        plt.ylabel(r"Solution", fontsize=10)
         plt.grid(True)
         plt.legend(loc='center left', bbox_to_anchor=(1.02, 0.5), borderaxespad=0., fontsize=10)
 
         if save_path:
-            plt.savefig(save_path, dpi=300, bbox_inches='tight')
-            print(f"Figure saved to {save_path}")
+            if not os.path.exists('figures'):
+                os.makedirs('figures')
+
+            full_path = os.path.join("figures", save_path)
+
+            plt.savefig(full_path, dpi=1000, bbox_inches='tight')
+
+            print(f"Figure saved to {full_path}")
         
         plt.show()
+
+    def table(self,
+             exact_sol: Optional[Callable[[float], float]] = None,   
+             save_path: Optional[str] = None):
+        
+        result = pd.DataFrame(self.numerical_sol, index=self.time_grid, columns=["Numerical solution"])
+        result.index.name = "Time"
+
+        if exact_sol:
+            result["Exact Solution"] = [exact_sol(t) for t in self.time_grid]
+            result["Error"] = abs(result["Numerical Solution"] - result["Exact Solution"])
+
+        if save_path:
+            if not os.path.exists('tables'):
+                os.makedirs('tables')
+
+            full_path = os.path.join("tables", save_path)
+            
+            if full_path.endswith(".csv"):
+                result.to_csv(full_path)  
+            elif full_path.endswith(".txt"):
+                with open(full_path, "w") as f:
+                    f.write(result.to_string())
+            else:
+                result.to_csv(full_path) 
+            
+            print(f"Table saved to {full_path}")
+
+        return result
 
 
 def save_table_to_txt(

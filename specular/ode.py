@@ -56,8 +56,8 @@ def classical_scheme(
 
     Returns
     -------
-    Tuple[np.ndarray, np.ndarray]
-        (t_history, u_history)
+    ODEResult
+        An object containing (t, u) data and the scheme name.
     """
 
     if scheme not in SUPPORTED_SCHEMES:
@@ -126,7 +126,7 @@ def classical_scheme(
             u_history.append(u_curr)
 
     return ODEResult(
-        np.array(t_history), 
-        np.array(u_history), 
-        scheme_name=f"{scheme} scheme"
+        time_grid=np.array(t_history), 
+        numerical_sol=np.array(u_history), 
+        scheme=f"{scheme} scheme"
     )
