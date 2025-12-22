@@ -82,7 +82,7 @@ Also, the *specular gradient* can be calculated using `gradient`.
 <specular.tools.ODEResult at 0x277501e74d0>
 ``` 
 
-![Explicit-Euler-scheme](docs/figures/Explicit-Euler.png)
+![Explicit-Euler-scheme](figures/Explicit-Euler.png)
 
 ```python
 >>> def F(t, u):
@@ -97,7 +97,7 @@ Also, the *specular gradient* can be calculated using `gradient`.
 >>> specular.ode.classical_scheme(F=F, u_0=u_0, t_0=0.0, T=0.9, h=0.01, scheme="Implicit Euler").visualization(exact_sol=exact_sol, save_path="Implicit Euler").table(exact_sol=exact_sol, save_path="Implicit Euler")
 ```
 
-![Implicit-Euler-scheme](docs/figures/Implicit-Euler.png)
+![Implicit-Euler-scheme](figures/Implicit-Euler.png)
 
 ### 2.2 Specular Euler scheme
 
