@@ -42,6 +42,8 @@ class ODEResult:
         
         plt.show()
 
+        return self
+
     def table(self,
              exact_sol: Optional[Callable[[float], float]] = None,   
              save_path: Optional[str] = None):
