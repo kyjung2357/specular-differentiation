@@ -10,6 +10,7 @@ with the initial condition u(t_0) = u_0(t_0).
 To solve (IVP) numerically, this module provides implementations of the specular Euler schemes, the Crank-Nicolson scheme, and the specular trigonometric scheme.
 """
 
+from .tools import ODEResult
 import numpy as np
 import core 
 from tqdm import tqdm 
