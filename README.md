@@ -22,7 +22,7 @@ Also, `specular` includes the following applications:
   * Directory: `examples/numerical-ODE/`
   * Related reference: [[1]](#references), [[3]](#references), [[4]](#references)
 
-This package mainly follows the definitions, notations, and results presented in [[1]](#references) and [[2]](#references).
+`specular` mainly follows the definitions, notations, and results presented in [[1]](#references) and [[2]](#references).
 
 ## Installation
 
