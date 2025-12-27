@@ -75,7 +75,7 @@ In [[1]](#references), *the specular Euler scheme of Type 5* is introduced for s
 
 ## LaTeX notation
 
-To use the specular differentiation symbol in your LaTeX document, please refer to the following instructions.
+To use the symbol for specular differentiation in your LaTeX document, please refer to the following instructions.
 
 ### Setup 
 
