@@ -323,15 +323,22 @@ def gradient(
     x_right = x + h*I
     x_left = x - h*I
 
-    f_right = f(x_right)
-    f_left = f(x_left)
+    try:
+        f_right = f(x_right)
+        if np.ndim(f_right) != 1 or np.size(f_right) != n:
+            raise ValueError ("Function f must return a scalar for each input vector.")
+        
+    except Exception:
+        f_right = np.array([f(row) for row in x_right])
 
-    if np.ndim(f_right) != 1 or np.size(f_right) != n:
-        raise ValueError("Function f must return a scalar for each input vector.")
-    
-    if np.ndim(f_left) != 1 or np.size(f_left) != n:
-        raise ValueError("Function f must return a scalar for each input vector.")
-    
+    try:
+        f_left = f(x_left)
+        if np.ndim(f_left) != 1 or np.size(f_left) != n:
+            raise ValueError("Function f must return a scalar for each input vector.")
+        
+    except Exception:
+        f_left = np.array([f(row) for row in x_left])
+
     alpha = (f_right - f_center) / h 
     beta = (f_center - f_left) / h 
 
