@@ -13,7 +13,7 @@ import numpy as np
 def A(
     alpha: float | np.floating | int | list | np.ndarray,
     beta: float | np.floating | int | list | np.ndarray,
-    epsilon: float | np.floating | np.ndarray = 1e-6
+    epsilon: float | np.floating = 1e-6
 ) -> float | np.ndarray:
     """
     Compute the specular derivative from one-sided directional derivatives.
@@ -48,37 +48,52 @@ def A(
     Examples
     --------
     >>> import specular
-    >>> specular.A(1.0, 2.0)
+    >>> specular.calculation.A(1.0, 2.0)
     1.3874258867227933
     """
-    alpha_arr = np.asanyarray(alpha, dtype=float)
-    beta_arr = np.asanyarray(beta, dtype=float)
-
-    if alpha_arr.shape != beta_arr.shape:
-         raise ValueError(f"Shape mismatch: alpha {alpha_arr.shape} vs beta {beta_arr.shape}")
+    if np.isscalar(alpha) and np.isscalar(beta):
+        return _A_scalar(alpha, beta, epsilon=epsilon)
     
-    is_vector = alpha_arr.ndim > 0 or beta_arr.ndim > 0
+    return _A_vector(alpha, beta, epsilon=epsilon)
 
-    if is_vector:
-        mask = np.abs(alpha_arr + beta_arr) <= epsilon
-        numerator = alpha_arr * beta_arr - 1.0 + np.sqrt((1.0 + alpha_arr**2) * (1.0 + beta_arr**2))
+def _A_scalar(alpha, beta, epsilon):
+    denominator = alpha + beta
+
+    if abs(denominator) <= epsilon:
+        return 0.0
+    
+    numerator = alpha * beta - 1.0 + math.sqrt((1.0 + alpha**2) * (1.0 + beta**2))
+
+    return float(numerator / denominator)
+
+def _A_vector(alpha, beta, epsilon):
+    alpha = np.asanyarray(alpha, dtype=float)
+    beta = np.asanyarray(beta, dtype=float)
+
+    if alpha.shape != beta.shape:
+        raise ValueError(f"Shape mismatch: alpha {alpha.shape} vs beta {beta.shape}")
+
+    denominator = alpha + beta
+
+    mask = np.abs(denominator) > epsilon
+    result = np.zeros_like(denominator)
+
+    alpha_valid = alpha[mask]
+    beta_valid = beta[mask]
+    denominator_valid = denominator[mask]
+
+    if alpha_valid.size > 0:
+        numerator = alpha_valid * beta_valid - 1.0 + np.sqrt((1.0 + alpha_valid**2) * (1.0 + beta_valid**2))
         
-        return np.where(mask, 0.0, numerator / (alpha_arr + beta_arr))
-    
-    else:
-        alpha = float(alpha_arr)
-        beta = float(beta_arr)
-    
-        if abs(alpha + beta) <= epsilon:
-            return 0.0
-        else:
-            numerator = alpha * beta - 1.0 + math.sqrt((1.0 + alpha**2) * (1.0 + beta**2))
-            return numerator / (alpha + beta)
+        result[mask] = numerator / denominator_valid
+
+    return result
 
 def derivative(
     f: Callable[[float | np.floating], float | np.floating],
     x: float | np.floating | int,
-    h: float | np.floating = 1e-6
+    h: float | np.floating = 1e-6,
+    epsilon: float | np.floating = 1e-6
 ) -> float:
     """
     Approximates the specular derivative of a real-valued function `f: R -> R` at point `x`.
@@ -92,7 +107,9 @@ def derivative(
     x : float, np.floating, int
         The point at which the derivative is evaluated.
     h : float, np.floating
-        Step size for the finite difference approximation (default: 1e-6).
+        Step size for the finite difference approximation. (default: 1e-6)
+    epsilon : float, np.floating
+        A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability. (default: 1e-6)
 
     Returns
     -------
@@ -130,13 +147,14 @@ def derivative(
     alpha = (f(x + h) - f(x))/h
     beta = (f(x) - f(x - h))/h
 
-    return float(A(alpha, beta))
+    return _A_scalar(alpha=alpha, beta=beta, epsilon=epsilon)
 
 def directional_derivative(
     f: Callable[[list | np.ndarray], float | np.floating],
     x: list | np.ndarray,
     v: list | np.ndarray,
-    h: float | np.floating = 1e-6
+    h: float | np.floating = 1e-6,
+    epsilon: float | np.floating = 1e-6
 ) -> float:
     """
     Approximates the specular directional derivative of a function `f: R^n -> R` at a point `x` 
@@ -155,6 +173,8 @@ def directional_derivative(
         The direction in which the derivative is taken.
     h : float, np.floating
         The step size used in the finite difference approximation (default: 1e-6). Must be positive.
+    epsilon : float, np.floating
+        A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability. (default: 1e-6)
 
     Returns
     -------
@@ -192,7 +212,7 @@ def directional_derivative(
     alpha = (f(x + h * v) - f(x))/h
     beta = (f(x) - f(x - h * v))/h
 
-    return float(A(alpha, beta))
+    return float(_A_vector(alpha=alpha, beta=beta, epsilon=epsilon))
 
 def partial_derivative(
     f: Callable[[list | np.ndarray], float | np.floating],
@@ -254,7 +274,8 @@ def partial_derivative(
 def gradient(
     f: Callable[[list | np.ndarray], float | np.floating],
     x: list | np.ndarray,
-    h: float| np.floating = 1e-6
+    h: float| np.floating = 1e-6,
+    epsilon: float | np.floating = 1e-6
 ) -> np.ndarray:
     """
     Approximates the specular gradient of a real-valued function `f: R^n -> R` at point `x` for n > 1.
@@ -269,6 +290,8 @@ def gradient(
         The point at which the specular gradient is evaluated.
     h : float, np.floating
         Step size for the finite difference approximation (default: 1e-6).
+    epsilon : float, np.floating
+        A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability. (default: 1e-6)
 
     Returns
     -------
@@ -286,28 +309,30 @@ def gradient(
     """
     x = np.asarray(x, dtype=float)
     
-    if x.ndim == 0:
+    if x.ndim != 1:
         raise ValueError("Input 'x' must be a vector. Use `specular.derivative` for scalar inputs.")
     
-    n = x.size
+    n = x.size 
     I = np.eye(n)
-
-    x_right = x + h*I
-    x_left = x - h*I
 
     f_center = f(x) 
 
-    try:
-        f_right = f(x_right)
-        f_left = f(x_left)
-
-        if np.ndim(f_right) == 0 or np.ndim(f_left): raise ValueError
+    if np.ndim(f_center) != 0:
+        raise ValueError(f"Function f must return a scalar value (R^n -> R). Got shape {np.shape(f_center)}.")
     
-    except Exception:
-        f_right = np.apply_along_axis(f, 1, x_right)
-        f_left = np.apply_along_axis(f, 1, x_left)
+    x_right = x + h*I
+    x_left = x - h*I
+
+    f_right = f(x_right)
+    f_left = f(x_left)
+
+    if np.ndim(f_right) != 1 or np.size(f_right) != n:
+        raise ValueError("Function f must return a scalar for each input vector.")
+    
+    if np.ndim(f_left) != 1 or np.size(f_left) != n:
+        raise ValueError("Function f must return a scalar for each input vector.")
     
     alpha = (f_right - f_center) / h 
     beta = (f_center - f_left) / h 
 
-    return np.asarray(A(alpha, beta), dtype=float)
+    return _A_vector(alpha=alpha, beta=beta, epsilon=epsilon)

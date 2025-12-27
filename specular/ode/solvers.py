@@ -12,7 +12,7 @@ To solve (IVP) numerically, this module provides implementations of the specular
 
 from .tools import ODEResult
 import numpy as np
-from . import core
+from .. import calculation
 from tqdm import tqdm 
 from typing import Optional, Callable, Tuple, List
 

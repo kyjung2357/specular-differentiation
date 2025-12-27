@@ -1,5 +1,4 @@
-from .core import (
-    A,
+from .calculation import (
     derivative,
     directional_derivative,
     partial_derivative,
@@ -7,16 +6,19 @@ from .core import (
 )
 
 from . import ode
-from . import tools
+from . import optimization
 
 __version__ = "0.3.7"
+__license__ = "MIT"
+__author__ = "Kiyuob Jung"
+__email__ = "kyjung@msu.edu"
 
 __all__ = [
-    "A",
     "derivative",
     "directional_derivative", 
     "partial_derivative",
     "gradient", 
-    "ode", 
-    "tools"
+    "ode",
+    "optimization",
+    "__version__"
 ]
