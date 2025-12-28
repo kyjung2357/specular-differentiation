@@ -7,10 +7,10 @@ SUPPORTED_STEP_SIZES = ['constant', 'not_summable', 'square_summable_not_summabl
 class StepSize:
     def __init__(
         self, 
-        step_size: str, 
+        name: str, 
         parameters: float | np.floating | int | Tuple | list | np.ndarray | Callable
     ):
-        self.step_size = step_size 
+        self.step_size = name
         self.parameters = parameters
 
         if self.step_size == 'constant':
