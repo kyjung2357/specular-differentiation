@@ -50,9 +50,10 @@ def gradient_method(
             if h is None or h <= 0:
                 raise ValueError("Numerical differentiation requires a positive step size 'h'.")
             
-            print(f"[Implicit specular gradient method] {name}")
+            print("[Specular gradient method]\n")
+            print(f"{name}")
 
-            for _ in tqdm(range(1, max_iteration + 1), leave=False):
+            for _ in tqdm(range(1, max_iteration + 1)):
                 if record_history is True:
                     x_history.append(x)
                     f_history.append(f(x))
@@ -70,9 +71,10 @@ def gradient_method(
             if h is None or h <= 0:
                 raise ValueError("Numerical differentiation requires a positive step size 'h'.")
             
-            print(f"[Implicit specular gradient method] {name}")
+            print("[Implicit specular gradient method]\n")
+            print(f"{name}")
 
-            for _ in tqdm(range(1, max_iteration + 1), leave=False):
+            for _ in tqdm(range(1, max_iteration + 1)):
                 if record_history is True:
                     x_history.append(x)
                     f_history.append(f(x))
@@ -92,7 +94,7 @@ def gradient_method(
         history["values"] = f_history
 
     if record_time is True:
-        history["running time"] = time.time() - start_time  # type: ignore
+        history["time"] = time.time() - start_time  # type: ignore
 
     history["method"] = method
 

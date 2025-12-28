@@ -2,9 +2,17 @@ import math
 import numpy as np
 from typing import Callable, Tuple, List
 
-SUPPORTED_STEP_SIZES = ['constant', 'not_summable', 'square_summable_not_summable', 'geometric_series', 'user_defined']
-
 class StepSize:
+    """
+    step size h_k > 0 for k = 1, 2, ...
+    """
+    __options__ = [
+        'constant',
+        'not_summable',
+        'square_summable_not_summable',
+        'geometric_series',
+        'user_defined'
+    ]
     def __init__(
         self, 
         name: str, 
@@ -43,8 +51,11 @@ class StepSize:
             self.a = self.parameters[0]
             self.b = self.parameters[1]
 
-            if self.a <= 0 or self.b <= 0:
-                raise ValueError(f"For 'square_summable_not_summable' step size, a and b are must be positive for a/(b + k). Got a: {self.a} and b: {self.b}")
+            if self.a <= 0:
+                raise ValueError(f"For 'square_summable_not_summable' step size, a must be positive for a/(b + k). Got a: {self.a}")
+            
+            if self.b < 0:
+                raise ValueError(f"For 'square_summable_not_summable' step size, b are must be nonnegative for a/(b + k). Got b: {self.b}")
 
             self._rule = self._square_summable_not_summable
 
@@ -73,23 +84,35 @@ class StepSize:
             self._rule = self.parameters 
         
         else:
-            raise ValueError(f"Unknown step size '{self.step_size}'. Supported forms: {SUPPORTED_STEP_SIZES}")
+            raise ValueError(f"Unknown step size '{self.step_size}'. Supported forms: {self.__options__}")
     
     def __call__(self, k: int) -> float:
         """
-        k = 0, 1, 2, ...
+        k = 1, 2, ...
         """
         return self._rule(k)
     
     def _constant(self, k: int) -> float:
+        """
+        h_k = a 
+        """
         return self.a
     
     def _not_summable(self, k: int) -> float:
+        """
+        h_k = a / sqrt{k}
+        """
         return self.a / math.sqrt(k)
     
     def _square_summable_not_summable(self, k: int) -> float:
+        """
+        h_k = a / (b + k)
+        """
         return self.a / (self.b + k)
     
     def _geometric_series(self, k: int) -> float:
+        """
+        h_k = a * r**k
+        """
         return self.a * (self.r ** k)
     
