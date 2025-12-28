@@ -10,7 +10,7 @@ SUPPORTED_METHODS = ['specular gradient method', '', 'implicit', 'stochastic', '
 
 def gradient_method(
     method: str,
-    objective_function: Callable[[int | float | list | np.ndarray], int | float | np.floating],
+    objective_func: Callable[[int | float | list | np.ndarray], int | float | np.floating],
     initial_point: int | float | list | np.ndarray, 
     step_size: StepSize,  
     max_iteration: int = 1000, 
@@ -23,7 +23,7 @@ def gradient_method(
 ) -> OptimizationResult:
 
     x = np.array(initial_point, dtype=float).copy()
-    f = objective_function
+    f = objective_func
     n = x.ndim
     k = 0
     
@@ -98,4 +98,4 @@ def gradient_method(
 
     history["method"] = method
 
-    return OptimizationResult(solution=x, objective_function_value=f(x), iteration=k, history=history) # type: ignore
+    return OptimizationResult(solution=x, objective_func_val=f(x), iteration=k, history=history) # type: ignore
