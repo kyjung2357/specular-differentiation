@@ -28,7 +28,6 @@ class ODEResult:
         """
         return self.time_grid, self.numerical_sol
     
-
     def visualization(
         self, 
         figure_size: tuple = (5.5, 2.5), 
@@ -135,7 +134,3 @@ def save_table_to_txt(
             error_str = f"{error:.{error_precision}e}"
             ratio_str = f"{ratio:.{ratio_precision}f}" if pd.notna(ratio) else "--"
             f.write(f"{n:<8}& {error_str} & {ratio_str} \\\\\n")
-
-class OptimizationResult:
-    def __init__(self):
-        pass

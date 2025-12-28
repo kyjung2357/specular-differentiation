@@ -1,2 +1,2 @@
-from . import solvers
-from . import tools
+from . import solver
+from . import result

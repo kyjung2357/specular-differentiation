@@ -13,7 +13,7 @@ import numpy as np
 def A(
     alpha: float | np.floating | int | list | np.ndarray,
     beta: float | np.floating | int | list | np.ndarray,
-    epsilon: float | np.floating = 1e-6
+    zero_tol: float | np.floating = 1e-8
 ) -> float | np.ndarray:
     """
     Compute the specular derivative from one-sided directional derivatives.
@@ -30,7 +30,7 @@ def A(
         One-sided directional derivative.
     beta : float, np.floating
         One-sided directional derivative.
-    epsilon : float, np.floating
+    zero_tol : float, np.floating
         A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability. (default: 1e-6)
 
     Returns
@@ -52,21 +52,29 @@ def A(
     1.3874258867227933
     """
     if np.isscalar(alpha) and np.isscalar(beta):
-        return _A_scalar(alpha, beta, epsilon=epsilon)
+        return _A_scalar(alpha, beta, zero_tol=zero_tol)
     
-    return _A_vector(alpha, beta, epsilon=epsilon)
+    return _A_vector(alpha, beta, zero_tol=zero_tol)
 
-def _A_scalar(alpha, beta, epsilon):
+def _A_scalar(
+    alpha, 
+    beta, 
+    zero_tol: float | np.floating = 1e-8
+):
     denominator = alpha + beta
 
-    if abs(denominator) <= epsilon:
+    if abs(denominator) <= zero_tol:
         return 0.0
     
     numerator = alpha * beta - 1.0 + math.sqrt((1.0 + alpha**2) * (1.0 + beta**2))
 
     return float(numerator / denominator)
 
-def _A_vector(alpha, beta, epsilon):
+def _A_vector(
+    alpha, 
+    beta, 
+    zero_tol: float | np.floating = 1e-8
+):
     alpha = np.asanyarray(alpha, dtype=float)
     beta = np.asanyarray(beta, dtype=float)
 
@@ -75,7 +83,7 @@ def _A_vector(alpha, beta, epsilon):
 
     denominator = alpha + beta
 
-    mask = np.abs(denominator) > epsilon
+    mask = np.abs(denominator) > zero_tol
     result = np.zeros_like(denominator)
 
     alpha_valid = alpha[mask]
@@ -93,7 +101,7 @@ def derivative(
     f: Callable[[float | np.floating], float | np.floating],
     x: float | np.floating | int,
     h: float | np.floating = 1e-6,
-    epsilon: float | np.floating = 1e-6
+    zero_tol: float | np.floating = 1e-6
 ) -> float:
     """
     Approximates the specular derivative of a real-valued function `f: R -> R` at point `x`.
@@ -108,7 +116,7 @@ def derivative(
         The point at which the derivative is evaluated.
     h : float, np.floating
         Step size for the finite difference approximation. (default: 1e-6)
-    epsilon : float, np.floating
+    zero_tol : float, np.floating
         A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability. (default: 1e-6)
 
     Returns
@@ -147,14 +155,14 @@ def derivative(
     alpha = (f(x + h) - f(x))/h
     beta = (f(x) - f(x - h))/h
 
-    return _A_scalar(alpha=alpha, beta=beta, epsilon=epsilon)
+    return _A_scalar(alpha=alpha, beta=beta, zero_tol=zero_tol)
 
 def directional_derivative(
     f: Callable[[list | np.ndarray], float | np.floating],
     x: list | np.ndarray,
     v: list | np.ndarray,
     h: float | np.floating = 1e-6,
-    epsilon: float | np.floating = 1e-6
+    zero_tol: float | np.floating = 1e-6
 ) -> float:
     """
     Approximates the specular directional derivative of a function `f: R^n -> R` at a point `x` 
@@ -173,7 +181,7 @@ def directional_derivative(
         The direction in which the derivative is taken.
     h : float, np.floating
         The step size used in the finite difference approximation (default: 1e-6). Must be positive.
-    epsilon : float, np.floating
+    zero_tol : float, np.floating
         A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability. (default: 1e-6)
 
     Returns
@@ -212,7 +220,7 @@ def directional_derivative(
     alpha = (f(x + h * v) - f(x))/h
     beta = (f(x) - f(x - h * v))/h
 
-    return float(_A_vector(alpha=alpha, beta=beta, epsilon=epsilon))
+    return float(_A_vector(alpha=alpha, beta=beta, zero_tol=zero_tol))
 
 def partial_derivative(
     f: Callable[[list | np.ndarray], float | np.floating],
@@ -275,7 +283,7 @@ def gradient(
     f: Callable[[list | np.ndarray], float | np.floating],
     x: list | np.ndarray,
     h: float| np.floating = 1e-6,
-    epsilon: float | np.floating = 1e-6
+    zero_tol: float | np.floating = 1e-6
 ) -> np.ndarray:
     """
     Approximates the specular gradient of a real-valued function `f: R^n -> R` at point `x` for n > 1.
@@ -290,7 +298,7 @@ def gradient(
         The point at which the specular gradient is evaluated.
     h : float, np.floating
         Step size for the finite difference approximation (default: 1e-6).
-    epsilon : float, np.floating
+    zero_tol : float, np.floating
         A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability. (default: 1e-6)
 
     Returns
@@ -342,4 +350,4 @@ def gradient(
     alpha = (f_right - f_center) / h 
     beta = (f_center - f_left) / h 
 
-    return _A_vector(alpha=alpha, beta=beta, epsilon=epsilon)
+    return _A_vector(alpha=alpha, beta=beta, zero_tol=zero_tol)
