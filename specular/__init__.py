@@ -8,7 +8,7 @@ from .calculation import (
 from . import ode
 from . import optimization
 
-__version__ = "0.5.0"
+__version__ = "0.5.1"
 __license__ = "MIT"
 __author__ = "Kiyuob Jung"
 __email__ = "kyjung@msu.edu"

@@ -2,8 +2,8 @@ import numpy as np
 from tqdm import tqdm
 import time
 from typing import Callable, List, Tuple, Optional
-from result import OptimizationResult
-from step_size import StepSize
+from .result import OptimizationResult
+from .step_size import StepSize
 from ..calculation import derivative
 
 SUPPORTED_METHODS = ['specular gradient method', '', 'implicit', 'stochastic', 'hybrid']
