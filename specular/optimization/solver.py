@@ -17,7 +17,7 @@ def gradient_method(
     tol: float = 1e-6, 
     h: Optional[float] = 1e-6, 
     first_iteration: Optional[int] = 2,   
-    name: Optional[str] = "0",
+    name: Optional[str] = "no name",
     record_history: bool = True,
     record_time: bool = True
 ) -> OptimizationResult:
@@ -50,45 +50,44 @@ def gradient_method(
             if h is None or h <= 0:
                 raise ValueError("Numerical differentiation requires a positive step size 'h'.")
             
-            print("[Specular gradient method]\n")
-            print(f"{name}")
+            print(f"[Specular gradient method]    {name}")
 
             for _ in tqdm(range(1, max_iteration + 1)):
                 if record_history is True:
                     x_history.append(x)
                     f_history.append(f(x))
 
-                k += 1
-                
                 specular_derivative = derivative(f=f, x=x, h=h) # type: ignore
 
                 if abs(specular_derivative) < tol:
                     break
 
+                k += 1
                 x -= step_size(k)*(specular_derivative / abs(specular_derivative))
 
         elif method == 'implicit':
             if h is None or h <= 0:
                 raise ValueError("Numerical differentiation requires a positive step size 'h'.")
             
-            print("[Implicit specular gradient method]\n")
-            print(f"{name}")
+            print(f"[Implicit specular gradient method]    {name}")
 
             for _ in tqdm(range(1, max_iteration + 1)):
                 if record_history is True:
                     x_history.append(x)
                     f_history.append(f(x))
 
-                k += 1
                 sum_of_one_sided_derivatives = (f(x + h) - f(x - h)) / h
 
                 if abs(sum_of_one_sided_derivatives) < tol:
                     break
-
+                
+                k += 1
                 x -= step_size(k)*(sum_of_one_sided_derivatives / abs(sum_of_one_sided_derivatives))
         else:
             raise ValueError(f"Unknown method '{method}'. Supported methods: {SUPPORTED_METHODS}")
-                
+
+    print("\n")
+    
     if record_history is True:
         history["variables"] = x_history
         history["values"] = f_history
@@ -97,5 +96,6 @@ def gradient_method(
         history["time"] = time.time() - start_time  # type: ignore
 
     history["method"] = method
+    history["name"] = name
 
     return OptimizationResult(solution=x, objective_func_val=f(x), iteration=k, history=history) # type: ignore

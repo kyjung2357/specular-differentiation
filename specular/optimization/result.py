@@ -10,7 +10,7 @@ class OptimizationResult:
     
     def __repr__(self):
         return (
-            f"sol: {self.x}\n"
-            f"obj: {self.f}\n"
-            f"itr: {self.k}"
+            f" solution: {self.x}\n"
+            f" func val: {self.f}\n"
+            f"iteration: {self.k}"
         )

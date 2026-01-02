@@ -60,7 +60,7 @@ def _A_scalar(
     alpha, 
     beta, 
     zero_tol: float | np.floating = 1e-8
-):
+) -> float:
     denominator = alpha + beta
 
     if abs(denominator) <= zero_tol:
@@ -68,13 +68,13 @@ def _A_scalar(
     
     numerator = alpha * beta - 1.0 + math.sqrt((1.0 + alpha**2) * (1.0 + beta**2))
 
-    return float(numerator / denominator)
+    return numerator / denominator
 
 def _A_vector(
     alpha, 
     beta, 
     zero_tol: float | np.floating = 1e-8
-):
+) -> np.ndarray:
     alpha = np.asanyarray(alpha, dtype=float)
     beta = np.asanyarray(beta, dtype=float)
 
@@ -226,7 +226,8 @@ def partial_derivative(
     f: Callable[[list | np.ndarray], float | np.floating],
     x: list | np.ndarray,
     i: int | np.integer,
-    h: float| np.floating = 1e-6
+    h: float| np.floating = 1e-6,
+    zero_tol: float | np.floating = 1e-6
 ) -> float:
     """
     Approximates the i-th specular partial derivative of a real-valued function `f: R^n -> R` at point `x` for n > 1.
@@ -277,7 +278,7 @@ def partial_derivative(
     e_i = np.zeros_like(x)
     e_i[i - 1] = 1.0
 
-    return directional_derivative(f, x, e_i, h)
+    return directional_derivative(f, x, e_i, h, zero_tol)
 
 def gradient(
     f: Callable[[list | np.ndarray], float | np.floating],
