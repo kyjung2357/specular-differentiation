@@ -15,11 +15,11 @@ Their difference is illustrated as in the following figure.
 Also, `specular` includes the following applications:
 
 * [**Nonsmooth convex optimization**](#nonsmooth-convex-optimization)
-  * Directory: `examples/nonsmooth-convex-optimization/`
+  * Directory: `examples/optimization/`
   * Related reference: [[2]](#references), [[5]](#references)
 
 * [**Initial value problems for ordinary differential equations**](#initial-value-problems-for-ordinary-differential-equations)
-  * Directory: `examples/numerical-ODE/`
+  * Directory: `examples/ode/`
   * Related reference: [[1]](#references), [[3]](#references), [[4]](#references)
 
 The package `specular` mainly follows the definitions, notations, and results presented in [[1]](#references) and [[2]](#references).
