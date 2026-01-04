@@ -17,23 +17,23 @@ from typing import Optional, Callable, Tuple, List
 from .result import ODEResult
 from .. import calculation
 
-SUPPORTED_SCHEMES = ["Explicit Euler", "Implicit Euler", "Crank-Nicolson"]
+SUPPORTED_SCHEMES = ["explicit Euler", "implicit Euler", "Crank-Nicolson"]
 
 def classical_scheme(
     F: Callable[[float, float], float], 
     t_0: float, 
     u_0: Callable[[float], float] | float,
-    u_1: Callable[[float], float] | float,
     T: float, 
     h: float = 1e-6,
-    scheme: str = "Explicit Euler",
+    scheme: str = "explicit Euler",
+    u_1: Callable[[float], float] | float | bool = False,
     tol: float = 1e-6, 
     zero_tol: float = 1e-8,
     max_iter: int = 100
 ) -> ODEResult:
     """
     Solves an initial value problem (IVP) using classical numerical schemes.
-    Supported forms: Explicit Euler, Implicit Euler, and Crank-Nicolson.
+    Supported forms: explicit Euler, implicit Euler, and Crank-Nicolson.
 
     Parameters
     ----------
@@ -74,14 +74,14 @@ def classical_scheme(
 
     steps = int((T - t_0) / h)
     
-    if scheme == "Explicit Euler":
+    if scheme == "explicit Euler":
         for _ in tqdm(range(steps), desc="Running the explicit Euler scheme"):
             t_curr, u_curr = t_curr + h, u_curr + h*F(t_curr, u_curr) # type: ignore
 
             t_history.append(t_curr)
             u_history.append(u_curr)
 
-    elif scheme == "Implicit Euler":
+    elif scheme == "implicit Euler":
         for k in tqdm(range(steps), desc="Running the implicit Euler scheme"):
             t_next = t_curr + h
 
@@ -134,29 +134,36 @@ def classical_scheme(
         scheme=scheme
     )
 
-# def trigonometric_scheme(
-#     F: Callable[[float], float], 
-#     t_0: float, 
-#     u_0: Callable[[float], float] | float,
-#     u_1: Callable[[float], float] | float,
-#     T: float, 
-#     h: float = 1e-6,
-#     tol: float = 1e-6, 
-#     zero_tol: float = 1e-8,
-#     max_iter: int = 100
-# ) -> ODEResult:
+def trigonometric_scheme(
+    F: Callable[[float], float], 
+    t_0: float, 
+    u_0: Callable[[float], float] | float,
+    u_1: Callable[[float], float] | float,
+    T: float, 
+    h: float = 1e-6
+) -> ODEResult:
+
+    t_prev = t_0
+    u_prev = u_0(t_0) if callable(u_0) else u_0 
+
+    t_curr = t_0 + h
+    u_curr = u_1(t_curr) if callable(u_1) else u_1
+
+    t_history = [t_prev, t_curr]
+    u_history = [u_prev, u_curr]
+
+    steps = int((T - t_0) / h)
+
+    for m in tqdm(range(steps - 1), desc="Running specular trigonometric scheme"):
+        t_next, u_next = t_curr + h, u_curr + h*(2*math.atan(F(t_curr, u_curr)) - math.atan((u_curr - u_prev) / h)) # type: ignore
+        u_curr = u_prev
+
+        t_history.append(t_next)
+        u_history.append(u_next)
     
-#     t_curr = t_0
-#     u_curr = u_0(t_0) if callable(u_0) else u_0 
-
-#     t_history = [t_curr]
-#     u_history = [u_curr]
-
-#     steps = int((T - t_0) / h)
-
-#     for m in tqdm(range(steps), desc="Running specular trigonometric scheme"):
-#         t_curr, u_curr = t_curr + h, u_curr + h*(2*math.atan(F(t_curr, u_curr)) - math.atan((u_curr - ) / h)) # type: ignore
-
-#         t_history.append(t_curr)
-#         u_history.append(u_curr)
+    return ODEResult(
+        time_grid=np.array(t_history), 
+        numerical_sol=np.array(u_history), 
+        scheme="specular trigonometric"
+    )
 
