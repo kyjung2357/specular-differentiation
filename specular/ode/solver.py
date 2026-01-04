@@ -156,10 +156,12 @@ def trigonometric_scheme(
 
     for m in tqdm(range(steps - 1), desc="Running specular trigonometric scheme"):
         t_next, u_next = t_curr + h, u_curr + h*(2*math.atan(F(t_curr, u_curr)) - math.atan((u_curr - u_prev) / h)) # type: ignore
-        u_curr = u_prev
 
         t_history.append(t_next)
         u_history.append(u_next)
+
+        t_curr = t_prev
+        u_curr = u_prev       
     
     return ODEResult(
         time_grid=np.array(t_history), 
