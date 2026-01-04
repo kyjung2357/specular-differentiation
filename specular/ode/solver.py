@@ -155,14 +155,15 @@ def trigonometric_scheme(
     steps = int((T - t_0) / h)
 
     for m in tqdm(range(steps - 1), desc="Running specular trigonometric scheme"):
-        t_next, u_next = t_curr + h, u_curr + h*(2*math.atan(F(t_curr, u_curr)) - math.atan((u_curr - u_prev) / h)) # type: ignore
+        t_next = t_curr + h
+        u_next = u_curr + h*math.tan(2*math.atan(F(t_curr, u_curr)) - math.atan((u_curr - u_prev) / h)) # type: ignore
 
         t_history.append(t_next)
         u_history.append(u_next)
 
-        t_curr = t_prev
-        u_curr = u_prev       
-    
+        t_prev, u_prev = t_curr, u_curr
+        t_curr, u_curr = t_next, u_next
+
     return ODEResult(
         time_grid=np.array(t_history), 
         numerical_sol=np.array(u_history), 
