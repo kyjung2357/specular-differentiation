@@ -10,6 +10,7 @@ with the initial condition u(t_0) = u_0(t_0).
 To solve (IVP) numerically, this module provides implementations of the specular Euler schemes, the Crank-Nicolson scheme, and the specular trigonometric scheme.
 """
 
+import math
 import numpy as np
 from tqdm import tqdm 
 from typing import Optional, Callable, Tuple, List
@@ -19,9 +20,10 @@ from .. import calculation
 SUPPORTED_SCHEMES = ["Explicit Euler", "Implicit Euler", "Crank-Nicolson"]
 
 def classical_scheme(
-    F: Callable[[float, np.ndarray], np.ndarray], 
-    u_0: Callable[[float], np.ndarray] | float,
+    F: Callable[[float, float], float], 
     t_0: float, 
+    u_0: Callable[[float], float] | float,
+    u_1: Callable[[float], float] | float,
     T: float, 
     h: float = 1e-6,
     scheme: str = "Explicit Euler",
@@ -37,10 +39,10 @@ def classical_scheme(
     ----------
     F : callable
         The given source function F in (IVP).
-    u_0 : callable
-        The given initial condition u_0 in (IVP).
     t_0 : float
         The starting time of the simulation.
+    u_0 : callable
+        The given initial condition u_0 in (IVP).
     T : float
         The end time of the simulation.
     h : float, optional
@@ -80,7 +82,7 @@ def classical_scheme(
             u_history.append(u_curr)
 
     elif scheme == "Implicit Euler":
-        for m in tqdm(range(steps), desc="Running the implicit Euler scheme"):
+        for k in tqdm(range(steps), desc="Running the implicit Euler scheme"):
             t_next = t_curr + h
 
             # Initial guess: explicit Euler 
@@ -94,14 +96,14 @@ def classical_scheme(
                     break
                 u_temp = u_guess
             else:
-                print(f"Warning: step {m+1} did not converge.")
+                print(f"Warning: step {k+1} did not converge.")
 
             t_curr, u_curr = t_next, u_guess  
             t_history.append(t_curr)
             u_history.append(u_curr)
     
     elif scheme == "Crank-Nicolson":
-        for m in tqdm(range(steps), desc="Running Crank-Nicolson scheme"):
+        for k in tqdm(range(steps), desc="Running Crank-Nicolson scheme"):
             t_next = t_curr + h
 
             F_curr = F(t_curr, u_curr)
@@ -120,7 +122,7 @@ def classical_scheme(
 
                 u_temp = u_guess
             else:
-                print(f"Warning: step {m+1} did not converge.")
+                print(f"Warning: step {k+1} did not converge.")
 
             t_curr, u_curr = t_next, u_guess  
             t_history.append(t_curr)
@@ -131,3 +133,30 @@ def classical_scheme(
         numerical_sol=np.array(u_history), 
         scheme=scheme
     )
+
+def trigonometric_scheme(
+    F: Callable[[float], float], 
+    t_0: float, 
+    u_0: Callable[[float], float] | float,
+    u_1: Callable[[float], float] | float,
+    T: float, 
+    h: float = 1e-6,
+    tol: float = 1e-6, 
+    zero_tol: float = 1e-8,
+    max_iter: int = 100
+) -> ODEResult:
+    
+    t_curr = t_0
+    u_curr = u_0(t_0) if callable(u_0) else u_0 
+
+    t_history = [t_curr]
+    u_history = [u_curr]
+
+    steps = int((T - t_0) / h)
+
+    for m in tqdm(range(steps), desc="Running specular trigonometric scheme"):
+        t_curr, u_curr = t_curr + h, u_curr + h*(2*math.atan(F(t_curr, u_curr)) - math.atan((u_curr - ) / h)) # type: ignore
+
+        t_history.append(t_curr)
+        u_history.append(u_curr)
+

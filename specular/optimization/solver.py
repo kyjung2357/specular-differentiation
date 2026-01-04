@@ -99,3 +99,30 @@ def gradient_method(
     history["name"] = name
 
     return OptimizationResult(solution=x, objective_func_val=f(x), iteration=k, history=history) # type: ignore
+
+
+# def _specular_gradient_method_scalar(
+#     method: str,
+#     objective_func: Callable[[int | float | list | np.ndarray], int | float | np.floating],
+#     initial_point: int | float | list | np.ndarray, 
+#     step_size: StepSize,  
+#     max_iteration: int = 1000, 
+#     tol: float = 1e-6, 
+#     h: Optional[float] = 1e-6, 
+#     first_iteration: Optional[int] = 2,   
+#     name: Optional[str] = "no name",
+#     record_history: bool = True,
+#     record_time: bool = True):
+
+# def _specular_gradient_method_vector(
+#     method: str,
+#     objective_func: Callable[[int | float | list | np.ndarray], int | float | np.floating],
+#     initial_point: int | float | list | np.ndarray, 
+#     step_size: StepSize,  
+#     max_iteration: int = 1000, 
+#     tol: float = 1e-6, 
+#     h: Optional[float] = 1e-6, 
+#     first_iteration: Optional[int] = 2,   
+#     name: Optional[str] = "no name",
+#     record_history: bool = True,
+#     record_time: bool = True):

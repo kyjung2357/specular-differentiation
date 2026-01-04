@@ -9,12 +9,14 @@ from .calculation import (
     gradient
 )
 
+from .ode import classical_scheme
+
 from .optimization import (
     StepSize, 
     gradient_method
 )
 
-__version__ = "0.5.4"
+__version__ = "0.5.5"
 __license__ = "MIT"
 __author__ = "Kiyuob Jung"
 __email__ = "kyjung@msu.edu"
@@ -26,6 +28,7 @@ __all__ = [
     "partial_derivative",
     "gradient", 
     "ode",
+    "classical_scheme",
     "optimization",
     "StepSize",
     "gradient_method",
