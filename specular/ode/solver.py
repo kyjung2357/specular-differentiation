@@ -134,29 +134,29 @@ def classical_scheme(
         scheme=scheme
     )
 
-def trigonometric_scheme(
-    F: Callable[[float], float], 
-    t_0: float, 
-    u_0: Callable[[float], float] | float,
-    u_1: Callable[[float], float] | float,
-    T: float, 
-    h: float = 1e-6,
-    tol: float = 1e-6, 
-    zero_tol: float = 1e-8,
-    max_iter: int = 100
-) -> ODEResult:
+# def trigonometric_scheme(
+#     F: Callable[[float], float], 
+#     t_0: float, 
+#     u_0: Callable[[float], float] | float,
+#     u_1: Callable[[float], float] | float,
+#     T: float, 
+#     h: float = 1e-6,
+#     tol: float = 1e-6, 
+#     zero_tol: float = 1e-8,
+#     max_iter: int = 100
+# ) -> ODEResult:
     
-    t_curr = t_0
-    u_curr = u_0(t_0) if callable(u_0) else u_0 
+#     t_curr = t_0
+#     u_curr = u_0(t_0) if callable(u_0) else u_0 
 
-    t_history = [t_curr]
-    u_history = [u_curr]
+#     t_history = [t_curr]
+#     u_history = [u_curr]
 
-    steps = int((T - t_0) / h)
+#     steps = int((T - t_0) / h)
 
-    for m in tqdm(range(steps), desc="Running specular trigonometric scheme"):
-        t_curr, u_curr = t_curr + h, u_curr + h*(2*math.atan(F(t_curr, u_curr)) - math.atan((u_curr - ) / h)) # type: ignore
+#     for m in tqdm(range(steps), desc="Running specular trigonometric scheme"):
+#         t_curr, u_curr = t_curr + h, u_curr + h*(2*math.atan(F(t_curr, u_curr)) - math.atan((u_curr - ) / h)) # type: ignore
 
-        t_history.append(t_curr)
-        u_history.append(u_curr)
+#         t_history.append(t_curr)
+#         u_history.append(u_curr)
 
