@@ -10,7 +10,7 @@ A specular derivative can be understood as the average of the inclination angles
 In contrast, a symmetric derivative is the average of the right and left derivatives.
 Their difference is illustrated as in the following figure.
 
-![specular-derivative-animation](figures/specular_derivative_animation.gif)
+![specular-derivative-animation](figures/specular-derivative-animation.gif)
 
 Also, `specular` includes the following applications:
 
@@ -66,11 +66,13 @@ Two applications are provided in this repository.
 
 In [[2]](#references), *the specular gradient method* is introduced for optimizing nonsmooth convex objective functions.
 
+![ODE-example](figures/optimization-example.png)
+
 ### Initial value problems for ordinary differential equations
 
 In [[1]](#references), *the specular Euler scheme of Type 5* is introduced for solving ODEs numerically, yielding more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
 
-![ODE-numerical-example](figures/ODE_Numerical_example.png)
+![ODE-example](figures/ODE-example.png)
 
 
 ## LaTeX notation
