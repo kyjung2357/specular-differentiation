@@ -255,3 +255,7 @@ Figure saved: figures\specular-trigonometric
 ```
 
 ![specular-trigonometric-scheme](figures/specular-trigonometric.png)
+
+## 3. Nonsmooth convex optimization
+
+TBA
