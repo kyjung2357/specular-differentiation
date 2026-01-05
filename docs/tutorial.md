@@ -164,6 +164,7 @@ Table saved: tables\implicit-Euler.csv
 >>>     return exact_sol(t_0)
 >>>
 >>> specular.ode.solver.classical_scheme(F, t_0=0.0, u_0=u_0, T=0.9, h=0.01, scheme="Crank-Nicolson").visualization().table()
+Running Crank-Nicolson scheme: 100%|██████████| 90/90 [00:00<00:00, 89515.62it/s]
 ```
 
 ### 2.2 Specular Euler scheme
