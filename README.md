@@ -4,7 +4,8 @@
 ![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)
 [![License](https://img.shields.io/pypi/l/specular-differentiation.svg)](https://pypi.org/project/specular-differentiation/)
 
-This repository contains the Python package `specular` which implements *Specular differentiation*, a generalization of classical differentiation.
+
+The Python package `specular` implements *Specular differentiation*, a generalization of classical differentiation.
 
 A specular derivative can be understood as the average of the inclination angles of the right and left derivatives. 
 In contrast, a symmetric derivative is the average of the right and left derivatives.
@@ -35,7 +36,7 @@ specular-differentiation requires:
 
 ### User installation
 
-You can install the released version directly from PyPI:
+The package is available on PyPI:
 
 ```bash
 pip install specular-differentiation
