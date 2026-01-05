@@ -4,8 +4,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 long_description = long_description.replace(
-    "](figures/", 
-    "](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/figures/"
+    "](docs/figures/", 
+    "](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/"
 )
 
 long_description = long_description.replace(
