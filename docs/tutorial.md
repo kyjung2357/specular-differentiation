@@ -180,7 +180,7 @@ TBA
 >>> 
 >>> u_1 = exact_sol(t_0 + h)
 >>> 
->>> specular.trigonometric_scheme(F, t_0=0.0, u_0=u_0, u_1=u_1, T=2.5, h=0.1).visualization(exact_sol=exact_sol)
+>>> specular.trigonometric_scheme(F, t_0=0.0, u_0=u_0, u_1=u_1, T=2.5, h=0.1).visualization(exact_sol=exact_sol, save_path="specular-trigonometric")
 Running specular trigonometric scheme: 100%|██████████| 24/24 [00:00<?, ?it/s]
 Figure saved: figures\specular-trigonometric
 ```
