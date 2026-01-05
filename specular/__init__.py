@@ -11,6 +11,7 @@ from .calculation import (
 
 from .ode import (
     classical_scheme,
+    Euler_scheme,
     trigonometric_scheme
 )
 
@@ -19,7 +20,7 @@ from .optimization import (
     gradient_method
 )
 
-__version__ = "0.7.0"
+__version__ = "0.7.1"
 __license__ = "MIT"
 __author__ = "Kiyuob Jung"
 __email__ = "kyjung@msu.edu"
@@ -32,6 +33,7 @@ __all__ = [
     "gradient", 
     "ode",
     "classical_scheme",
+    "Euler_scheme",
     "trigonometric_scheme",
     "optimization",
     "StepSize",
