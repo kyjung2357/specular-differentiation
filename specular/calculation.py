@@ -39,10 +39,8 @@ def A(
 
     Raises
     ------
-    TypeError
-        If `alpha` or `beta` are invalid types after conversion (e.g., list, dict).
     ValueError
-        If a complex input has a non-zero imaginary part.
+        If ``alpha`` and ``beta`` have different shape.
 
     Examples
     --------
@@ -123,12 +121,12 @@ def derivative(
     Returns
     -------
     float
-        The approximated specular derivative of ``f`` at ``x`` in direction ``v=1.0``.
+        The approximated specular derivative of ``f`` at ``x``.
 
     Raises
     ------
     TypeError
-        If the type of ``x`` is not a scalar (float) or array-like (list, np.ndarray).
+        If the type of ``x`` is not a scalar.
     ValueError
         If ``h`` is not positive.
     
@@ -146,10 +144,10 @@ def derivative(
         x = float(x)
         h = float(h)
     except TypeError:
-        raise TypeError(f"Input 'x' must be a scalar (float or int). Got {type(x).__name__}. Use `directional_derivative` for vectors.")
+        raise TypeError(f"Input 'x' must be a scalar. Got {type(x).__name__}. Use `specular.directional_derivative` for vectors.")
     
     if h <= 0:
-        raise ValueError(f"Step size 'h' must be positive. Got {h}")
+        raise ValueError(f"Input 'h' must be positive. Got {h}")
     
     alpha = (f(x + h) - f(x))/h
     beta = (f(x) - f(x - h))/h
@@ -186,13 +184,14 @@ def directional_derivative(
     Returns
     -------
     float
-        The approximated specular directional derivative of ``f`` at ``x`` in the direction ``v``.
+        The approximated specular directional derivative of ``f`` at ``x`` in the direction ``v`` as a scalar.
 
     Raises
     ------
     TypeError
         If ``x`` or ``v`` are not of valid array-like types.
     ValueError
+        If ``x`` and ``v`` have different shape.
         If ``h`` is not positive.
 
     Examples
@@ -207,13 +206,13 @@ def directional_derivative(
     v = np.asarray(v, dtype=float)
 
     if v.ndim == 0:
-        raise ValueError("Input 'v' must be a vector. Use `specular.derivative` for scalar inputs.")
+        raise TypeError("Input 'v' must be a vector. Use `specular.derivative` for scalar inputs.")
     
     if x.shape != v.shape:
         raise ValueError(f"Shape mismatch: x {x.shape} vs v {v.shape}")
     
     if h <= 0:
-        raise ValueError(f"Step size 'h' must be positive. Got {h}")
+        raise ValueError(f"Input 'h' must be positive. Got {h}")
     
     alpha = (f(x + h * v) - f(x))/h
     beta = (f(x) - f(x - h * v))/h
@@ -248,7 +247,7 @@ def partial_derivative(
     Returns
     -------
     float
-        The approximated i-th partial specular derivative of ``f`` at ``x``.
+        The approximated ``i``-th partial specular derivative of ``f`` at ``x`` as a scalar.
 
     Raises
     ------
@@ -306,7 +305,14 @@ def gradient(
     Returns
     -------
     np.ndarray
-        A vector (NumPy array) representing the specular gradient of ``f`` at ``x``.
+        The approximated specular gradient of ``f`` at ``x`` as a vector.
+
+    Raises
+    ------
+    TypeError
+        If ``x`` is not of a valid array-like type.
+    ValueError
+        If ``f`` does not return a scalar value.
 
     Examples
     --------
@@ -319,7 +325,7 @@ def gradient(
     x = np.asarray(x, dtype=float)
     
     if x.ndim != 1:
-        raise ValueError("Input 'x' must be a vector. Use `specular.derivative` for scalar inputs.")
+        raise TypeError("Input 'x' must be a vector. Use `specular.derivative` for scalar inputs.")
     
     n = x.size 
     I = np.eye(n)
@@ -327,7 +333,7 @@ def gradient(
     f_center = f(x) 
 
     if np.ndim(f_center) != 0:
-        raise ValueError(f"Function f must return a scalar value (R^n -> R). Got shape {np.shape(f_center)}.")
+        raise ValueError(f"Function f must return a scalar value. Got shape {np.shape(f_center)}.")
     
     x_right = x + h*I
     x_left = x - h*I
@@ -335,7 +341,7 @@ def gradient(
     try:
         f_right = f(x_right)
         if np.ndim(f_right) != 1 or np.size(f_right) != n:
-            raise ValueError ("Function f must return a scalar for each input vector.")
+            raise ValueError (f"Function f must return a scalar for each input vector. Got shape {np.ndim(f_right)}.")
         
     except Exception:
         f_right = np.array([f(row) for row in x_right])
@@ -343,7 +349,7 @@ def gradient(
     try:
         f_left = f(x_left)
         if np.ndim(f_left) != 1 or np.size(f_left) != n:
-            raise ValueError("Function f must return a scalar for each input vector.")
+            raise ValueError(f"Function f must return a scalar for each input vector. Got shape {np.ndim(f_left)}.")
         
     except Exception:
         f_left = np.array([f(row) for row in x_left])
