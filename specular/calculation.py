@@ -205,8 +205,11 @@ def directional_derivative(
     x = np.asarray(x, dtype=float)
     v = np.asarray(v, dtype=float)
 
+    if x.ndim == 0:
+        raise TypeError(f"Input 'x' must be a vector. Got {type(x).__name__}. Use `specular.derivative` for scalar inputs.")
+    
     if v.ndim == 0:
-        raise TypeError("Input 'v' must be a vector. Use `specular.derivative` for scalar inputs.")
+        raise TypeError(f"Input 'v' must be a vector. Got {type(v).__name__}.")
     
     if x.shape != v.shape:
         raise ValueError(f"Shape mismatch: x {x.shape} vs v {v.shape}")
@@ -325,7 +328,7 @@ def gradient(
     x = np.asarray(x, dtype=float)
     
     if x.ndim != 1:
-        raise TypeError("Input 'x' must be a vector. Use `specular.derivative` for scalar inputs.")
+        raise TypeError(f"Input 'x' must be a vector. Got {type(x).__name__}. Use `specular.derivative` for scalar inputs.")
     
     n = x.size 
     I = np.eye(n)
