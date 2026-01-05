@@ -87,6 +87,8 @@ The three classical schemes are available: the explicit Euler, the implicit Eule
 By default, the function returns an instance of the `ODEResult` class that encapsulates the numerical results.
 
 ```python
+>>> import specular
+>>>
 >>> def F(t, u):
 >>>    return -3*u 
 >>>
@@ -99,6 +101,8 @@ To access the numerical results, call `.values()`.
 It returns a tuple containing the time grid and the numerical solution.
 
 ```python
+>>> import specular
+>>>
 >>> def F(t, u):
 >>>    return -3*u 
 >>>
@@ -117,6 +121,8 @@ Running the explicit Euler scheme: 100%|██████████| 20/20 [0
 To visualize the numerical results, call `.visualization()`.
 
 ```python
+>>> import specular
+>>>
 >>> def F(t, u):
 >>>    return -3*u 
 >>>
@@ -130,6 +136,8 @@ Figure saved: figures\explicit-Euler
 To obtain the table of the numerical results, call `.table()`. 
 
 ```python
+>>> import specular
+>>>
 >>> def F(t, u):
 >>>     return -(t*u)/(1-t**2)
 >>> 
@@ -147,6 +155,8 @@ Table saved: tables\implicit-Euler.csv
 `.visualization()` and `.table()` are are chainable.
 
 ```python
+>>> import specular
+>>>
 >>> specular.ode.solver.classical_scheme(F, t_0=t_0, u_0=u_0, T=T, h=h, scheme="Crank-Nicolson").visualization(exact_sol=exact_sol).table(exact_sol=exact_sol)
 ```
 
@@ -157,6 +167,8 @@ TBA
 ### 2.3 Specular trigonometric scheme
 
 ```python
+>>> import specular
+>>>
 >>> def F(t, u):
 >>>     return -2*u 
 >>> 
