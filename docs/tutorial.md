@@ -120,12 +120,12 @@ To visualize the numerical results, call `.visualization()`.
 >>> def F(t, u):
 >>>    return -3*u 
 >>>
->>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=2.0, h=0.01, scheme="explicit Euler").visualization(save_path="explicit Euler")
+>>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=2.0, h=0.01, scheme="explicit Euler").visualization(save_path="explicit-Euler")
 Running the explicit Euler scheme: 100%|██████████| 200/200 [00:00<?, ?it/s]
 Figure saved to figures\Explicit-Euler
 ``` 
 
-![explicit-Euler-scheme](/docs/figures/explicit-Euler.png)
+![explicit-Euler-scheme](figures/explicit-Euler.png)
 
 To obtain the table of the numerical results, call `.table()`. 
 
