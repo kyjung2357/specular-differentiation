@@ -69,7 +69,7 @@ def save_table_to_txt(
             ratio_str = f"{ratio:.{ratio_precision}f}" if pd.notna(ratio) else "--"
             f.write(f"{n:<8}& {error_str} & {ratio_str} \\\\\n")
 
-def error_analysis(example, norm, F, t_0, T, max_iter, exact_sol):
+def error_analysis(example, norm, F, t_0, T, exact_sol):
     norm_label_map = {
     'max': r'\infty',
     'l1': '1',
@@ -95,8 +95,8 @@ def error_analysis(example, norm, F, t_0, T, max_iter, exact_sol):
         res_EE = specular.ode.classical_scheme(F=F, u_0=u_0_val, t_0=t_0, T=T, h=h, scheme="explicit Euler")
         res_IE = specular.ode.classical_scheme(F=F, u_0=u_0_val, t_0=t_0, T=T, h=h, scheme="implicit Euler")
         res_CN = specular.ode.classical_scheme(F=F, u_0=u_0_val, t_0=t_0, T=T, h=h, scheme="Crank-Nicolson")
-        res_S5 = specular.Euler_scheme(of_Type=5, F=F, t_0=t_0, u_0=u_0_val, T=T, h=h, max_iter=max_iter)
-        res_S6 = specular.Euler_scheme(of_Type=6, F=F, t_0=t_0, u_0=u_0_val, T=T, h=h, max_iter=max_iter)
+        res_S5 = specular.Euler_scheme(of_Type=5, F=F, t_0=t_0, u_0=u_0_val, T=T, h=h, max_iter=1000)
+        res_S6 = specular.Euler_scheme(of_Type=6, F=F, t_0=t_0, u_0=u_0_val, T=T, h=h, max_iter=1000)
 
         error_list["EE"].append((n, res_EE.total_error(exact_sol=exact_sol, norm=norm)))
         error_list["IE"].append((n, res_IE.total_error(exact_sol=exact_sol, norm=norm)))

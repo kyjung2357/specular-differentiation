@@ -81,11 +81,11 @@ $$
 with the initial condition $u(t_0) = u_0(t_0)$.
 To solve the problem numerically, the module `ode.py` provides the following methods:
 
-* the specular Euler scheme (Type 1 ~ 6)
-* the specular trigonometric scheme
-* the explicit Euler scheme
-* the implicit Euler scheme
-* the Crank-Nicolson scheme
+* the specular Euler scheme (Type 1 ~ 6).
+* the specular trigonometric scheme.
+* the explicit Euler scheme.
+* the implicit Euler scheme.
+* the Crank-Nicolson scheme.
 
 ### 2.1 Specular Euler scheme
 

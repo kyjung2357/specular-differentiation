@@ -15,12 +15,12 @@ Their difference is illustrated as in the following figure.
 Also, `specular` includes the following applications:
 
 * [**Nonsmooth convex optimization**](#nonsmooth-convex-optimization)
-  * Directory: `examples/optimization/`
-  * Related reference: [[2]](#references), [[5]](#references)
+  * Directory: `examples/optimization/`.
+  * Related reference: [[2]](#references), [[5]](#references).
 
 * [**Initial value problems for ordinary differential equations**](#initial-value-problems-for-ordinary-differential-equations)
-  * Directory: `examples/ode/`
-  * Related reference: [[1]](#references), [[3]](#references), [[4]](#references)
+  * Directory: `examples/ode/`.
+  * Related reference: [[1]](#references), [[3]](#references), [[4]](#references).
 
 The package `specular` mainly follows the definitions, notations, and results presented in [[1]](#references) and [[2]](#references).
 
@@ -66,9 +66,9 @@ Two applications are provided in this repository.
 
 In [[2]](#references), three methods are proposed for for optimizing nonsmooth convex objective functions:
 
-* *the specular gradient (SPEG)* method
-* *the stochastic specular gradient (SSPEG)* method
-* *the hybrid specular gradient (HSPEG)* method
+* *the specular gradient (SPEG)* method.
+* *the stochastic specular gradient (SSPEG)* method.
+* *the hybrid specular gradient (HSPEG)* method.
 
 The following example compares the three proposed methods with the classical methods: [gradient descent](https://en.wikipedia.org/wiki/Gradient_descent) (GD), [Adaptive Moment Estimation](https://arxiv.org/abs/1412.6980) (Adam), and [Broyden-Fletcher-Goldfarb-Shanno](https://en.wikipedia.org/wiki/Broyden%E2%80%93Fletcher%E2%80%93Goldfarb%E2%80%93Shanno_algorithm) (BFGS).
 
