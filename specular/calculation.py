@@ -20,9 +20,7 @@ def A(
 
     Given real numbers ``alpha`` and ``beta``, the function :math:`\\mathcal{A}:\\mathbb{R}^2 \\to \\mathbb{R}` is defined by 
     
-        :math:`\\mathcal{A}(\\alpha, \\beta) = \\frac{\\alpha \\beta - 1 + \\sqrt((1 + \\alpha^2)(1 + \\beta^2))}{\\alpha + \\beta}`
-
-    if ``alpha + beta != 0``; otherwise, it returns ``0``.
+        :math:`\\mathcal{A}(\\alpha, \\beta) = \\frac{\\alpha \\beta - 1 + \\sqrt((1 + \\alpha^2)(1 + \\beta^2))}{\\alpha + \\beta}` if ``alpha + beta != 0``; otherwise, it returns ``0``.
 
     Parameters
     ----------
@@ -31,7 +29,7 @@ def A(
     beta : float, np.floating
         One-sided directional derivative.
     zero_tol : float, np.floating
-        A small threshold used to determine if the denominator ``(alpha + beta)`` is close to zero for numerical stability.
+        A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
         Default: ``1e-8``.
 
     Returns
@@ -119,7 +117,7 @@ def derivative(
         Step size for the finite difference approximation.
         Default: ``1e-6``.
     zero_tol : float, np.floating
-        A small threshold used to determine if the denominator ``(alpha + beta)`` is close to zero for numerical stability.
+        A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
         Default: ``1e-8``.
 
     Returns
@@ -132,7 +130,7 @@ def derivative(
     TypeError
         If the type of ``x`` is not a scalar (float) or array-like (list, np.ndarray).
     ValueError
-        If the step size ``h`` is not positive (i.e., ``h`` <= 0).
+        If ``h`` is not positive.
     
     Examples
     --------
@@ -173,7 +171,7 @@ def directional_derivative(
     Parameters
     ----------
     f : callable
-        A real-valued function defined on an open subset of :math:`:\\mathbb{R}^n`.
+        A real-valued function defined on an open subset of :math:`\\mathbb{R}^n`.
     x : list, np.ndarray
         The point at which the derivative is evaluated.
     v : list, np.ndarray
@@ -182,7 +180,7 @@ def directional_derivative(
         The step size used in the finite difference approximation. Must be positive.
         Default: ``1e-6``.
     zero_tol : float, np.floating
-        A small threshold used to determine if the denominator ``(alpha + beta)`` is close to zero for numerical stability.
+        A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
         Default: ``1e-8``.
 
     Returns
@@ -195,7 +193,7 @@ def directional_derivative(
     TypeError
         If ``x`` or ``v`` are not of valid array-like types.
     ValueError
-        If ``h`` is less than or equal to 0 (``h`` > 0).
+        If ``h`` is not positive.
 
     Examples
     --------
@@ -230,19 +228,19 @@ def partial_derivative(
     zero_tol: float | np.floating = 1e-8
 ) -> float:
     """
-    Approximates the i-th specular partial derivative of a real-valued function :math:`f:\\mathbb{R}^n \\to \\mathbb{R}` at point ``x`` for n > 1.
+    Approximates the i-th specular partial derivative of a real-valued function :math:`f:\\mathbb{R}^n \\to \\mathbb{R}` at point ``x`` for ``n > 1``.
 
-    This is computed using :func:`specular_directional_derivative` with the direction of the ``i``-th standard basis vector of :math:`:\\mathbb{R}^n`.
+    This is computed using :func:`specular_directional_derivative` with the direction of the ``i``-th standard basis vector of :math:`\\mathbb{R}^n`.
 
     Parameters
     ----------
     f : callable
-        A real-valued function defined on :math:`:\\mathbb{R}^n`.
+        A real-valued function defined on :math:`\\mathbb{R}^n`.
         ``n`` is the dimension of ``x``.
     x : list, np.ndarray
         The point at which the derivative is evaluated.
     i : int, np.integer
-        The index of the specular partial derivative with respect to x_i (1 <= ``i`` <= n).
+        The index of the specular partial derivative with respect to :math:`x_i` (``1 <= i <= n``).
     h : float, np.floating
         Step size for the finite difference approximation.
         Default: ``1e-8``. 
@@ -257,7 +255,7 @@ def partial_derivative(
     TypeError
         If ``i`` is not an integer.
     ValueError
-        If ``i`` is out of the valid range (1 <= ``i`` <= n).
+        If ``i`` is out of the valid range (``1 <= i <= n``).
 
     Examples
     --------
@@ -288,7 +286,7 @@ def gradient(
     zero_tol: float | np.floating = 1e-8
 ) -> np.ndarray:
     """
-    Approximates the specular gradient of a real-valued function :math:`f:\\mathbb{R}^n \\to \\mathbb{R}` at point ``x`` for n > 1.
+    Approximates the specular gradient of a real-valued function :math:`f:\\mathbb{R}^n \\to \\mathbb{R}` at point ``x`` for ``n > 1``.
 
     The specular gradient is defined as the vector of all partial specular derivatives along the standard basis directions. 
 
@@ -302,7 +300,7 @@ def gradient(
         Step size for the finite difference approximation.
         Default: ``1e-6``. 
     zero_tol : float, np.floating
-        A small threshold used to determine if the denominator ``(alpha + beta)`` is close to zero for numerical stability.
+        A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
         Default: ``1e-8``.
 
     Returns
