@@ -242,7 +242,7 @@ def Euler_scheme(
                     alpha = (u_temp - u_curr) / h # type: ignore
                     u_guess = u_curr + h * A(alpha, beta, zero_tol=zero_tol)  # type: ignore
 
-                    if np.linalg.norm(u_guess - u_temp) < tol:
+                    if abs(u_guess - u_temp) < tol:
                         break
 
                     u_temp = u_guess
@@ -278,7 +278,7 @@ def Euler_scheme(
                     alpha = (u_temp - u_curr) / h
                     u_guess = u_curr + h * A(alpha, beta, zero_tol=zero_tol) 
 
-                    if np.linalg.norm(u_guess - u_temp) < tol:
+                    if abs(u_guess - u_temp) < tol:
                         break
 
                     u_temp = u_guess
@@ -305,7 +305,7 @@ def Euler_scheme(
                     alpha = F(t_curr, u_temp)
                     u_guess = u_curr + h * A(alpha, beta, zero_tol=zero_tol)    
 
-                    if np.linalg.norm(u_guess - u_temp) < tol:
+                    if abs(u_guess - u_temp) < tol:
                         break
 
                     u_temp = u_guess
@@ -333,7 +333,7 @@ def Euler_scheme(
 
                     u_guess = u_curr + h * A(alpha, beta, zero_tol=zero_tol) 
 
-                    if np.linalg.norm(u_guess - u_temp) < tol:
+                    if abs(u_guess - u_temp) < tol:
                         break
                     
                     u_temp = u_guess
