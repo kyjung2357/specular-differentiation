@@ -64,11 +64,11 @@ Two applications are provided in this repository.
 
 ### Nonsmooth convex optimization
 
-In [[2]](#references), three methods are proposed for for optimizing nonsmooth convex objective functions:
+In [[2]](#references), three methods are proposed for optimizing nonsmooth convex objective functions:
 
-* *the specular gradient (SPEG)* method.
-* *the stochastic specular gradient (SSPEG)* method.
-* *the hybrid specular gradient (HSPEG)* method.
+* the *specular gradient (SPEG)* method.
+* the *stochastic specular gradient (SSPEG)* method.
+* the *hybrid specular gradient (HSPEG)* method.
 
 The following example compares the three proposed methods with the classical methods: [gradient descent](https://en.wikipedia.org/wiki/Gradient_descent) (GD), [Adaptive Moment Estimation](https://arxiv.org/abs/1412.6980) (Adam), and [Broyden-Fletcher-Goldfarb-Shanno](https://en.wikipedia.org/wiki/Broyden%E2%80%93Fletcher%E2%80%93Goldfarb%E2%80%93Shanno_algorithm) (BFGS).
 
@@ -76,10 +76,14 @@ The following example compares the three proposed methods with the classical met
 
 ### Initial value problems for ordinary differential equations
 
-In [[1]](#references), *the specular Euler scheme of Type 5* is introduced for solving ODEs numerically, yielding more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
+In [[1]](#references), seven schemes are proposed for solving ODEs numerically:
+
+* the *specular Euler* scheme of Type 1~6.
+* the *specular trigonometric* scheme.
+
+The following example shows that the specular Euler scheme of Type 5 yields more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
 
 ![ODE-example](docs/figures/ODE-example.png)
-
 
 ## LaTeX notation
 
