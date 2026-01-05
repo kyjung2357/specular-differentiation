@@ -184,6 +184,25 @@ Table saved: tables\specular-Euler-scheme-of-type-4.csv
 Running the specular Euler scheme of Type 4: 100%|██████████| 25/25 [00:00<?, ?it/s]
 ```
 
+To compute the total error of the numerical results, call `.total_error()`.
+The exact solution is required.
+The norm can be `max`, `l1`, or `l2`.
+
+```python
+>>> def F(t, u):
+>>>     return -2*u 
+>>> 
+>>> def exact_sol(t):
+>>>     return np.exp(-2*t)
+>>> 
+>>> def u_0(t_0):
+>>>     return exact_sol(t_0)
+>>> 
+>>> specular.Euler_scheme(of_Type=5, F=F, t_0=0.0, u_0=u_0, T=10.0, h=0.1).total_error(exact_sol=exact_sol, norm='max')
+Running the specular Euler scheme of Type 5: 100%|██████████| 100/100 [00:00<00:00, 300882.64it/s]
+0.0011409613137273178
+```
+
 ### 2.2 Specular trigonometric scheme
 
 ```python
