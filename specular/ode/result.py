@@ -61,7 +61,7 @@ class ODEResult:
                 
             plt.savefig(full_path, dpi=1000, bbox_inches='tight')
 
-            print(f"Figure saved to `{full_path}`")
+            print(f"Figure saved: {full_path}")
         
         plt.show()
 
@@ -95,7 +95,7 @@ class ODEResult:
                 
                 result.to_csv(full_path) 
             
-            print(f"Table saved to {full_path}")
+            print(f"Table saved: {full_path}")
 
         return result
 

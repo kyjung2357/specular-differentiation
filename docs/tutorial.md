@@ -122,8 +122,40 @@ To visualize the numerical results, call `.visualization()`.
 >>>
 >>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=2.0, h=0.01, scheme="explicit Euler").visualization(save_path="explicit-Euler")
 Running the explicit Euler scheme: 100%|██████████| 200/200 [00:00<?, ?it/s]
-Figure saved to figures\explicit-Euler
+Figure saved: figures\explicit-Euler
 ``` 
 
 ![explicit-Euler-scheme](figures/explicit-Euler.png)
 
+To obtain the table of the numerical results, call `.table()`. 
+
+```python
+>>> def F(t, u):
+>>>     return -(t*u)/(1-t**2)
+>>> 
+>>> def exact_sol(t):
+>>>     return np.sqrt(1 - t**2)
+>>>     
+>>> def u_0(t_0):
+>>>     return exact_sol(t_0)
+>>> 
+>>> specular.ode.solver.classical_scheme(F, t_0=0.0, u_0=u_0, T=0.9, h=0.01, scheme="implicit Euler").table(exact_sol=exact_sol)
+Running the implicit Euler scheme: 100%|██████████| 90/90 [00:00<?, ?it/s]
+Table saved: tables\implicit-Euler.csv
+```
+
+![Implicit-Euler-scheme](figures/table-implicit-Euler.png)
+
+`.visualization()` and `.table()` are are chainable.
+
+```python
+>>> specular.ode.solver.classical_scheme(F, t_0=t_0, u_0=u_0, T=T, h=h, scheme="Crank-Nicolson").visualization(exact_sol=exact_sol).table(exact_sol=exact_sol)
+```
+
+### 2.2 Specular trigonometric scheme
+
+TBA 
+
+### 2.3 Specular Euler scheme
+
+TBA 
