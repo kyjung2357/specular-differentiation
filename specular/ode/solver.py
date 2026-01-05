@@ -62,10 +62,6 @@ def classical_scheme(
     ODEResult
         An object containing ``(t, u)`` data and the scheme name.
     """
-
-    if scheme not in SUPPORTED_SCHEMES:
-        raise ValueError(f"Unknown form '{scheme}'. Supported forms: {SUPPORTED_SCHEMES}")
-    
     t_curr = t_0
     u_curr = u_0(t_0) if callable(u_0) else u_0 
 
@@ -127,8 +123,12 @@ def classical_scheme(
             t_curr, u_curr = t_next, u_guess  
             t_history.append(t_curr)
             u_history.append(u_curr)
-
+            
+    else:
+        raise ValueError(f"Unknown form '{scheme}'. Supported forms: {SUPPORTED_SCHEMES}")
+    
     return ODEResult(
+        h=h,
         time_grid=np.array(t_history), 
         numerical_sol=np.array(u_history), 
         scheme=scheme
@@ -187,9 +187,6 @@ def Euler_scheme(
     """
     Type = str(of_Type)
 
-    if Type not in ['1', '2', '3', '4', '5', '6']:
-        raise ValueError(f"Unknown type. Got {of_Type}. Supported types: '1', '2', '3', '4', '5', and '6'")
-    
     scheme = 'specular Euler scheme of Type ' + Type
     steps = int((T - t_0) / h)
 
@@ -356,8 +353,11 @@ def Euler_scheme(
 
                 t_history.append(t_curr)
                 u_history.append(u_curr)
+    else:
+        raise ValueError(f"Unknown type. Got {of_Type}. Supported types: '1', '2', '3', '4', '5', and '6'")
 
     return ODEResult(
+        h=h,
         time_grid=np.array(t_history), 
         numerical_sol=np.array(u_history), 
         scheme=scheme
@@ -421,6 +421,7 @@ def trigonometric_scheme(
         t_curr, u_curr = t_next, u_next
 
     return ODEResult(
+        h=h,
         time_grid=np.array(t_history), 
         numerical_sol=np.array(u_history), 
         scheme="specular trigonometric"

@@ -7,10 +7,12 @@ from typing import Optional, Callable, Tuple
 class ODEResult:
     def __init__(
         self, 
+        h: float,
         time_grid: np.ndarray, 
         numerical_sol: np.ndarray, 
         scheme: str
     ):
+        self.h = h
         self.time_grid = time_grid
         self.numerical_sol = numerical_sol
         self.scheme = scheme
@@ -101,6 +103,57 @@ class ODEResult:
 
         return result
 
+    def total_error(self,
+        exact_sol: Callable[[float], float] | list | np.ndarray,
+        norm: str = 'max'
+    ) -> float:
+        """
+        Calculates the error between the numerical solution and the exact solution.
+
+        Parameters
+        ----------
+        exact_sol : callable, list, np.ndarray
+            A function that returns the exact solution at a given time ``t``, or a list/array containing the exact values corresponding to ``time_grid``.
+        norm : str, optional
+            The type of norm to use ``'max'``, ``'l2'``, or ``'l1'``.
+            Default: ``'max'``
+
+        Returns
+        -------
+        float
+            The computed error value.
+
+        Raises
+        ------
+        TypeError
+            If ``exact_sol`` is neither a callable nor a list/array.
+        ValueError
+            If ``exact_sol`` (list) shape does not match ``numerical_sol``.
+        """
+        if callable(exact_sol):
+            exact_values = np.array([exact_sol(t) for t in self.time_grid])
+        elif isinstance(exact_sol, (list, np.ndarray)):
+            exact_values = np.asarray(exact_sol, dtype=float) 
+        else:
+            raise TypeError("exact_sol must be a callable or a list/array.")
+        
+        if exact_values.shape != self.numerical_sol.shape:
+             raise ValueError(f"Shape mismatch: exact_sol {exact_values.shape} vs numerical_sol {self.numerical_sol.shape}")
+        
+        error_vector = np.abs(exact_values - self.numerical_sol) 
+
+        if norm == 'max':
+            return float(np.max(error_vector))
+        
+        elif norm == 'l2':
+            return float(np.sqrt(np.sum(error_vector**2) * self.h))
+        
+        elif norm == 'l1':
+            return float(np.sum(error_vector) * self.h)
+        
+        else:
+            raise ValueError(f"Unknown norm type. Got '{norm}'. Supported types: 'max', 'l2', 'l1'.")
+        
 def save_table_to_txt(
     df: pd.DataFrame,
     filename: str,
