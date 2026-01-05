@@ -30,7 +30,7 @@ The package `specular` mainly follows the definitions, notations, and results pr
 
 specular-differentiation requires:
 
-* Python 3.10 or later
+* Python 3.11 or later
 * NumPy 2.2.5 or later
 
 ### User installation
