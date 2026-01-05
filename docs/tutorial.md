@@ -144,8 +144,6 @@ Running the implicit Euler scheme: 100%|██████████| 90/90 [0
 Table saved: tables\implicit-Euler.csv
 ```
 
-![Implicit-Euler-scheme](figures/table-implicit-Euler.png)
-
 `.visualization()` and `.table()` are are chainable.
 
 ```python
