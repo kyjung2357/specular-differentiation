@@ -157,7 +157,13 @@ Table saved: tables\implicit-Euler.csv
 ```python
 >>> import specular
 >>>
->>> specular.ode.solver.classical_scheme(F, t_0=t_0, u_0=u_0, T=T, h=h, scheme="Crank-Nicolson").visualization(exact_sol=exact_sol).table(exact_sol=exact_sol)
+>>> def F(t, u):
+>>>     return -(t*u)/(1-t**2)
+>>>
+>>> def u_0(t_0):
+>>>     return exact_sol(t_0)
+>>>
+>>> specular.ode.solver.classical_scheme(F, t_0=0.0, u_0=u_0, T=0.9, h=0.01, scheme="Crank-Nicolson").visualization().table()
 ```
 
 ### 2.2 Specular Euler scheme
