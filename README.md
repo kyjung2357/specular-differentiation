@@ -64,7 +64,13 @@ Two applications are provided in this repository.
 
 ### Nonsmooth convex optimization
 
-In [[2]](#references), *the specular gradient method* is introduced for optimizing nonsmooth convex objective functions.
+In [[2]](#references), three methods are proposed for for optimizing nonsmooth convex objective functions:
+
+* *the specular gradient (SPEG)* method
+* *the stochastic specular gradient (SSPEG)* method
+* *the hybrid specular gradient (HSPEG)* method
+
+The following example compares the three proposed methods with the classical methods: [gradient descent](https://en.wikipedia.org/wiki/Gradient_descent) (GD), [Adaptive Moment Estimation](https://arxiv.org/abs/1412.6980) (Adam), and [Broyden-Fletcher-Goldfarb-Shanno](https://en.wikipedia.org/wiki/Broyden%E2%80%93Fletcher%E2%80%93Goldfarb%E2%80%93Shanno_algorithm) (BFGS).
 
 ![ODE-example](figures/optimization-example.png)
 
