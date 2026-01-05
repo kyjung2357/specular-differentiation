@@ -122,7 +122,7 @@ To visualize the numerical results, call `.visualization()`.
 >>>
 >>> specular.ode.classical_scheme(F=F, u_0=1.0, t_0=0.0, T=2.0, h=0.01, scheme="explicit Euler").visualization(save_path="explicit-Euler")
 Running the explicit Euler scheme: 100%|██████████| 200/200 [00:00<?, ?it/s]
-Figure saved to figures
+Figure saved to figures\explicit-Euler
 ``` 
 
 ![explicit-Euler-scheme](figures/explicit-Euler.png)
