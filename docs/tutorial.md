@@ -258,4 +258,17 @@ Figure saved: figures\specular-trigonometric
 
 ## 3. Nonsmooth convex optimization
 
+
+### 3.1. 
+
 TBA
+
+### 3.2.
+
+TBA
+
+### 3.3.
+
+TBA 
+
+### 3.4.
