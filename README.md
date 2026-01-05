@@ -5,8 +5,8 @@
 [![License](https://img.shields.io/pypi/l/specular-differentiation.svg)](https://pypi.org/project/specular-differentiation/)
 
 
-The Python package `specular` implements *Specular differentiation*, a generalization of classical differentiation.
-The package `specular` mainly follows the definitions, notations, and results presented in [[1]](#references) and [[2]](#references).
+The Python package `specular` implements *Specular differentiation* which generalizes classical differentiation.
+This implementation strictly follows the definitions, notations, and results in [[1]](#references) and [[2]](#references).
 
 A specular derivative can be understood as the average of the inclination angles of the right and left derivatives. 
 In contrast, a symmetric derivative is the average of the right and left derivatives.
