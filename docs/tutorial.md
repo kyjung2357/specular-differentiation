@@ -184,8 +184,6 @@ Table saved: tables\specular-Euler-scheme-of-type-4.csv
 Running the specular Euler scheme of Type 4: 100%|██████████| 25/25 [00:00<?, ?it/s]
 ```
 
-![specular-Euler-schemes](figures/specular-Euler-schemes.png)
-
 ### 2.2 Specular trigonometric scheme
 
 ```python
