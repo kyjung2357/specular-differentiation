@@ -85,7 +85,7 @@ The following example shows that the specular Euler schemes of Type 5 and 6 yiel
 
 ![ODE-example](docs/figures/ODE-example.png)
 
-## LaTeX notation
+## LaTeX symbol
 
 To use the symbol for specular differentiation in your LaTeX document, please refer to the following instructions.
 
