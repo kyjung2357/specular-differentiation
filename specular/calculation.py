@@ -52,13 +52,13 @@ def A(
     1.3874258867227933
     """
     if np.isscalar(alpha) and np.isscalar(beta):
-        return _A_scalar(alpha, beta, zero_tol=zero_tol)
+        return _A_scalar(alpha, beta, zero_tol=zero_tol) # type: ignore
     
     return _A_vector(alpha, beta, zero_tol=zero_tol)
 
 def _A_scalar(
-    alpha, 
-    beta, 
+    alpha: float | np.floating, 
+    beta: float | np.floating, 
     zero_tol: float | np.floating = 1e-8
 ) -> float:
     denominator = alpha + beta
@@ -68,7 +68,7 @@ def _A_scalar(
     
     numerator = alpha * beta - 1.0 + math.sqrt((1.0 + alpha**2) * (1.0 + beta**2))
 
-    return numerator / denominator
+    return numerator / denominator # type: ignore
 
 def _A_vector(
     alpha, 
