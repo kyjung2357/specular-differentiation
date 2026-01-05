@@ -114,7 +114,6 @@ $f^{\sd}(x)$
 $\partial^{\sd}_v f(x)$
 ```
 
-
 ## References
 
 [1] K. Jung. *Nonlinear numerical schemes using specular differentiation for initial value problems of first-order ordinary differential equations*. arXiv preprint arXiv:??, 2025.
