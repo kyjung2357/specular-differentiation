@@ -6,6 +6,7 @@
 
 
 The Python package `specular` implements *Specular differentiation*, a generalization of classical differentiation.
+The package `specular` mainly follows the definitions, notations, and results presented in [[1]](#references) and [[2]](#references).
 
 A specular derivative can be understood as the average of the inclination angles of the right and left derivatives. 
 In contrast, a symmetric derivative is the average of the right and left derivatives.
@@ -22,8 +23,6 @@ Also, `specular` includes the following applications:
 * [**Initial value problems for ordinary differential equations**](#initial-value-problems-for-ordinary-differential-equations)
   * Directory: `examples/ode/`.
   * Related reference: [[1]](#references), [[3]](#references), [[4]](#references).
-
-The package `specular` mainly follows the definitions, notations, and results presented in [[1]](#references) and [[2]](#references).
 
 ## Installation
 
