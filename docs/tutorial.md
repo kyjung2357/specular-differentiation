@@ -7,7 +7,7 @@ For each $n \in ℕ$, denote by $ℝ$ the $n$-dimensional Euclidean space.
 
 In `core.py`, there are four modules to calculate specular differentiation, depending on the dimension. 
 
-### 1.1 the one-dimensional Euclidean space
+### 1.1 the one-dimensional Euclidean space ($n=1$)
 
 In $ℝ$, the *specular derivative* can be calculated using the function `derivative`.
 
