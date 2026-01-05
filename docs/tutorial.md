@@ -150,10 +150,27 @@ Table saved: tables\implicit-Euler.csv
 >>> specular.ode.solver.classical_scheme(F, t_0=t_0, u_0=u_0, T=T, h=h, scheme="Crank-Nicolson").visualization(exact_sol=exact_sol).table(exact_sol=exact_sol)
 ```
 
-### 2.2 Specular trigonometric scheme
+### 2.2 Specular Euler scheme
 
 TBA 
 
-### 2.3 Specular Euler scheme
+### 2.3 Specular trigonometric scheme
 
-TBA 
+```python
+>>> def F(t, u):
+>>>     return -2*u 
+>>> 
+>>> def exact_sol(t):
+>>>     return np.exp(-2*t)
+>>> 
+>>> def u_0(t_0):
+>>>     return exact_sol(t_0)
+>>> 
+>>> u_1 = exact_sol(t_0 + h)
+>>> 
+>>> specular.trigonometric_scheme(F, t_0=0.0, u_0=u_0, u_1=u_1, T=2.5, h=0.1).visualization(exact_sol=exact_sol)
+Running specular trigonometric scheme: 100%|██████████| 24/24 [00:00<?, ?it/s]
+Figure saved: figures\specular-trigonometric
+```
+
+![specular-trigonometric-scheme](figures/specular-trigonometric.png)
