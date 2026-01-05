@@ -84,7 +84,7 @@ To solve the problem numerically, the module `ode.py` provides implementations o
 ### 2.1 Classical schemes
 
 The three classical schemes are available: the explicit Euler, the implicit Euler, and the Crank-Nicolson schemes.
-By default, the function returns an instance of the `ODEResult` class that encapsulates the numerical results.
+The function returns an instance of the `ODEResult` class that encapsulates the numerical results.
 
 ```python
 >>> import specular
@@ -137,6 +137,7 @@ To obtain the table of the numerical results, call `.table()`.
 
 ```python
 >>> import specular
+>>> import numpy as np
 >>>
 >>> def F(t, u):
 >>>     return -(t*u)/(1-t**2)
@@ -169,7 +170,68 @@ Running Crank-Nicolson scheme: 100%|██████████| 90/90 [00:00
 
 ### 2.2 Specular Euler scheme
 
-TBA 
+```python
+>>> import specular
+>>> import numpy as np
+>>>
+>>> def F(t, u):
+>>>    return -2*u 
+>>> 
+>>> def exact_sol(t):
+>>>     return np.exp(-2*t)
+>>> 
+>>> def u_0(t_0):
+>>>     return exact_sol(t_0)
+>>> 
+>>> specular.Euler_scheme(of_Type='1', F=F, t_0=0.0, u_0=u_0, T=2.5, h=0.1).visualization(exact_sol=exact_sol, save_path="specular-Euler-scheme-of-Type-1")
+Running the specular Euler scheme of Type 1: 100%|██████████| 24/24 [00:00<?, ?it/s]
+Figure saved: figures\specular-Euler-scheme-of-Type-1
+```
+
+![specular-Euler-scheme-of-Type-1](figures/specular-Euler-scheme-of-Type-1.png)
+
+
+```python 
+>>> import specular
+>>> import numpy as np
+>>> import matplotlib.pyplot as plt
+>>>
+>>> def F(t, u):
+>>>     return -2*u 
+>>> 
+>>> def exact_sol(t):
+>>>     return np.exp(-2*t)
+>>> 
+>>> def u_0(t_0):
+>>>     return exact_sol(t_0)
+>>> 
+>>> plt.figure(figsize=(5.5, 2.5))
+>>> 
+>>> colors = ['red', 'orange', 'green', 'blue', 'purple', 'pink']
+>>> 
+>>> for i in range(1, 7):
+>>>     result = specular.Euler_scheme(of_Type=i, F=F, t_0=0.0, u_0=u_0, T=2.5, h=0.1).values()
+>>>     number_of_circles = max(1, len(result[0]) // 30)
+>>>     plt.plot(result[0], result[1], linestyle='--', marker='o', color=colors[i-1], markersize=5, markevery=number_of_circles, markerfacecolor='none', markeredgewidth=1.0, label=f'Specular Euler scheme of Type {i}')
+>>> 
+>>> exact_values = np.array([exact_sol(t) for t in result[0]])
+>>> plt.plot(result[0], exact_values, color='black', label='Exact solution')
+>>> 
+>>> plt.xlabel(r"Time", fontsize=10)
+>>> plt.ylabel(r"Solution", fontsize=10)
+>>> plt.grid(True)
+>>> plt.legend(loc='center left', bbox_to_anchor=(1.02, 0.5), borderaxespad=0., fontsize=10)
+>>> plt.savefig('figures/specular-Euler-schemes', dpi=1000, bbox_inches='tight')
+>>> plt.show()
+Running the specular Euler scheme of Type 1: 100%|██████████| 24/24 [00:00<?, ?it/s]
+Running the specular Euler scheme of Type 2: 100%|██████████| 24/24 [00:00<00:00, 23967.45it/s]
+Running the specular Euler scheme of Type 3: 100%|██████████| 24/24 [00:00<?, ?it/s]
+Running the specular Euler scheme of Type 4: 100%|██████████| 25/25 [00:00<?, ?it/s]
+Running the specular Euler scheme of Type 5: 100%|██████████| 25/25 [00:00<?, ?it/s]
+Running the specular Euler scheme of Type 6: 100%|██████████| 25/25 [00:00<?, ?it/s]
+```
+
+![specular-Euler-schemes](figures/specular-Euler-schemes.png)
 
 ### 2.3 Specular trigonometric scheme
 
