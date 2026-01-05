@@ -125,7 +125,7 @@ Running the explicit Euler scheme: 100%|██████████| 200/200 
 Figure saved to figures\Explicit-Euler
 ``` 
 
-![explicit-Euler-scheme](figures/explicit-Euler.png)
+![explicit-Euler-scheme](/docs/figures/explicit-Euler.png)
 
 To obtain the table of the numerical results, call `.table()`. 
 
