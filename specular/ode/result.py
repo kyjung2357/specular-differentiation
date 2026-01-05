@@ -115,9 +115,11 @@ def save_table_to_txt(
     filename : str
         The name of the text file to save the results to.
     error_precision : int, optional
-        The number of decimal places for the 'error' column. Default is 12.
+        The number of decimal places for the 'error' column. 
+        Default: ``2``.
     ratio_precision : int, optional
-        The number of decimal places for the 'ratio' column. Default is 4.
+        The number of decimal places for the 'ratio' column. 
+        Default: ``2``.
 
     Returns
     -------

@@ -36,29 +36,31 @@ def classical_scheme(
     Parameters
     ----------
     F : callable
-        The given source function F in (IVP).
+        The given source function ``F`` in (IVP).
+        The calling signature should be ``F(t, u)`` where ``t`` and ``u`` are scalars.
     t_0 : float
         The starting time of the simulation.
     u_0 : callable
-        The given initial condition u_0 in (IVP).
+        The given initial condition ``u_0`` in (IVP).
     T : float
         The end time of the simulation.
     h : float, optional
-        The step size. 
-        Default is 1e-6.
+        The step size.
+        Default: ``1e-6``.
     form : str, optional
         The form of the numerical scheme. 
-        Options: 'explicit_Euler', 'implicit_Euler', 'Crank-Nicolson'.
-        Default is 'explicit_Euler'.
+        Options: ``'explicit_Euler'``, ``'implicit_Euler'``, ``'Crank-Nicolson'``.
+        Default: ``'explicit_Euler'``.
     tol : float, optional
-        Tolerance for fixed-point iteration (implicit-Euler/Crank-Nicolson).
+        Tolerance for fixed-point iteration.
+        Used for implicit Euler and Crank-Nicolson schemes.
     max_iter : int, optional
         Max iterations for fixed-point solver.
 
     Returns
     -------
     ODEResult
-        An object containing (t, u) data and the scheme name.
+        An object containing ``(t, u)`` data and the scheme name.
     """
 
     if scheme not in SUPPORTED_SCHEMES:
@@ -138,54 +140,64 @@ def Euler_scheme(
     u_0: Callable[[float], float] | float,
     T: float, 
     h: float = 1e-6,
-    of_Type: str = '1',
+    of_Type: int | str = 1,
     u_1: Callable[[float], float] | float | bool = False,
     tol: float = 1e-6, 
     zero_tol: float = 1e-8,
     max_iter: int = 100
 ) -> ODEResult:
     """
-    Solves an initial value problem (IVP) using classical numerical schemes.
-    Supported forms: explicit Euler, implicit Euler, and Crank-Nicolson.
+    Solves an initial value problem (IVP) using the specular Euler scheme of Type 1, 2, 3, 4, 5, and 6.
 
     Parameters
     ----------
     F : callable
-        The given source function F in (IVP).
+        The given source function ``F`` in (IVP).
+        The calling signature should be ``F(t, u)`` where ``t`` and ``u`` are scalars.
     t_0 : float
         The starting time of the simulation.
     u_0 : callable
-        The given initial condition u_0 in (IVP).
+        The given initial condition ``u_0`` in (IVP).
     T : float
         The end time of the simulation.
     h : float, optional
-        The step size. 
-        Default is 1e-6.
-    form : str, optional
-        The form of the numerical scheme. 
-        Options: "explicit_Euler", "implicit_Euler", "Crank-Nicolson".
-        Default is "explicit_Euler".
+        The step size.
+        Default: ``1e-6``.
+    of_Type : int, str
+        The type of the specular Euler scheme.
+        Options: ``1``, ``'1'``, ``2``, ``'2'``, ``3``, ``'3'``, ``4``, ``'4'``, ``5``, ``'5'``, ``6``, ``'6'``.
+        Default is 1.
+    u_1 : callable, float, bool
+        The numerical solution at the time ``t_1 = t_0 + h`` for Types 1, 2, and 3.
+        If a float or callable is provided, it is used as the exact value.
+        If False, the explicit Euler scheme is applied.
+        Default: ``False``.
     tol : float, optional
-        Tolerance for fixed-point iteration (implicit-Euler/Crank-Nicolson).
+        Tolerance for fixed-point iteration
+        Used for Types 3, 4, 5, and 6.
+    zero_tol : float, np.floating
+        A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability. 
+        Default: ``1e-6``.
     max_iter : int, optional
         Max iterations for fixed-point solver.
 
     Returns
     -------
     ODEResult
-        An object containing (t, u) data and the scheme name.
+        An object containing ``(t, u)`` data and the scheme name.
     """
+    Type = str(of_Type)
 
-    if of_Type not in ['1', '2', '3', '4', '5', '6']:
+    if Type not in ['1', '2', '3', '4', '5', '6']:
         raise ValueError(f"Unknown type '{of_Type}'. Supported forms: '1', '2', '3', '4', '5', and '6'")
     
-    scheme = 'specular Euler scheme of Type ' + of_Type
+    scheme = 'specular Euler scheme of Type ' + Type
     steps = int((T - t_0) / h)
 
     t_history = []
     u_history = []
 
-    if of_Type in ['1', '2', '3']:
+    if Type in ['1', '2', '3']:
         t_prev = t_0
         u_prev = u_0(t_0) if callable(u_0) else u_0 
 
@@ -203,7 +215,7 @@ def Euler_scheme(
         t_history.append(t_curr)
         u_history.append(u_curr)
 
-        if of_Type == '1':
+        if Type == '1':
             for _ in tqdm(range(steps - 1), desc="Running the specular Euler scheme of Type 1"):
                 t_next = t_curr + h
                 u_next = u_curr + h * A(F(t_curr, u_curr), F(t_prev, u_prev), zero_tol=zero_tol)    # type: ignore
@@ -215,7 +227,7 @@ def Euler_scheme(
                 t_history.append(t_curr)
                 u_history.append(u_curr)
 
-        elif of_Type == '2':
+        elif Type == '2':
             for _ in tqdm(range(steps - 1), desc="Running the specular Euler scheme of Type 2"):
                 t_next = t_curr + h
                 u_next = u_curr + h * A(F(t_curr, u_curr), (u_curr - u_prev)/h, zero_tol=zero_tol) # type: ignore
@@ -227,7 +239,7 @@ def Euler_scheme(
                 t_history.append(t_curr)
                 u_history.append(u_curr)
 
-        elif of_Type == '3':
+        elif Type == '3':
             for k in tqdm(range(steps - 1), desc="Running the specular Euler scheme of Type 3"):
                 t_next = t_curr + h
 
@@ -256,14 +268,14 @@ def Euler_scheme(
                 t_history.append(t_curr)
                 u_history.append(u_curr)
 
-    elif of_Type in ['4', '5', '6']:
+    elif Type in ['4', '5', '6']:
         t_curr = t_0
         u_curr = u_0(t_0) if callable(u_0) else u_0  
 
         t_history.append(t_curr)
         u_history.append(u_curr)
 
-        if of_Type == '4':
+        if Type == '4':
             for k in tqdm(range(steps), desc="Running the specular Euler scheme of Type 4"):
                 t_next = t_curr + h
 
@@ -291,7 +303,7 @@ def Euler_scheme(
                 t_history.append(t_curr)
                 u_history.append(u_curr)
 
-        elif of_Type == '5':
+        elif Type == '5':
             for k in tqdm(range(steps), desc="Running the specular Euler scheme of Type 5"):
                 beta = F(t_curr, u_curr)  # fixed second argument
                 t_curr = t_curr + h
@@ -318,7 +330,7 @@ def Euler_scheme(
                 t_history.append(t_curr)
                 u_history.append(u_curr)
 
-        elif of_Type == '6':
+        elif Type == '6':
             for k in tqdm(range(steps), desc="Running the specular Euler scheme of Type 6"):
                 t_next = t_curr + h
 
@@ -360,7 +372,34 @@ def trigonometric_scheme(
     T: float, 
     h: float = 1e-6
 ) -> ODEResult:
+    """
+    Solves an initial value problem (IVP) using the specular trigonometric scheme.
 
+    Parameters
+    ----------
+    F : callable
+        The given source function ``F`` in (IVP).
+        The calling signature should be ``F(t, u)`` where ``t`` and ``u`` are scalars.
+    t_0 : float
+        The starting time of the simulation.
+    u_0 : callable
+        The given initial condition ``u_0`` in (IVP).
+    u_1 : callable, float, bool
+        The numerical solution at the time ``t_1 = t_0 + h`` for Types 1, 2, and 3.
+        If a float or callable is provided, it is used as the exact value.
+        If False, the explicit Euler scheme is applied.
+        Default: ``False``.
+    T : float
+        The end time of the simulation.
+    h : float, optional
+        The step size.
+        Default: ``1e-6``.
+
+    Returns
+    -------
+    ODEResult
+        An object containing ``(t, u)`` data and the scheme name.
+    """
     t_prev = t_0
     u_prev = u_0(t_0) if callable(u_0) else u_0 
 

@@ -18,6 +18,16 @@ class StepSize:
         name: str, 
         parameters: float | np.floating | int | Tuple | list | np.ndarray | Callable
     ):
+        """
+        Step sizes.
+
+        Parameters
+        ----------
+        name : str
+            Options: 'constant', 'not_summable', 'square_summable_not_summable', 'geometric_series', 'user_defined'
+        parameters : float, np.floating, int, Tuple, list, np.ndarray, Callable
+            parameters for step sizes.
+        """
         self.step_size = name
         self.parameters = parameters
 

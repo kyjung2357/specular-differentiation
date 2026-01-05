@@ -3,7 +3,7 @@
 Calculations of specular directional derivatives
 ==================================================
 
-This module provides implementations of the calculations of specular directional derivatives.
+This module provides implementations of the function :math:`\\mathcal{A}`, specular directional derivatives, specular partial derivatives, specular derivatives, and specular gradients.
 """
 
 from typing import Callable
@@ -16,13 +16,13 @@ def A(
     zero_tol: float | np.floating = 1e-8
 ) -> float | np.ndarray:
     """
-    Compute the specular derivative from one-sided directional derivatives.
+    Compute the function :math:`\\mathcal{A}` from one-sided directional derivatives.
 
-    Given real numbers `alpha` and `beta`, the function `A:R^2 -> R` is defined by 
+    Given real numbers ``alpha`` and ``beta``, the function :math:`\\mathcal{A}:\\mathbb{R}^2 \\to \\mathbb{R}` is defined by 
     
-        A(alpha, beta) = (alpha * beta - 1 + sqrt((1 + alpha^2)(1 + beta^2))) / (alpha + beta)
+        :math:`\\mathcal{A}(\\alpha, \\beta) = \\frac{\\alpha \\beta - 1 + \\sqrt((1 + \\alpha^2)(1 + \\beta^2))}{\\alpha + \\beta}`
 
-    if alpha + beta != 0; otherwise, it returns 0.
+    if ``alpha + beta != 0``; otherwise, it returns ``0``.
 
     Parameters
     ----------
@@ -31,12 +31,13 @@ def A(
     beta : float, np.floating
         One-sided directional derivative.
     zero_tol : float, np.floating
-        A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability. (default: 1e-6)
+        A small threshold used to determine if the denominator ``(alpha + beta)`` is close to zero for numerical stability.
+        Default: ``1e-8``.
 
     Returns
     -------
     float
-        The function A.
+        The function :math:`\\mathcal{A}`.
 
     Raises
     ------
@@ -61,6 +62,7 @@ def _A_scalar(
     beta: float | np.floating, 
     zero_tol: float | np.floating = 1e-8
 ) -> float:
+    """Scalar implementation of :func:`A`."""
     denominator = alpha + beta
 
     if abs(denominator) <= zero_tol:
@@ -75,6 +77,7 @@ def _A_vector(
     beta, 
     zero_tol: float | np.floating = 1e-8
 ) -> np.ndarray:
+    """Vector implementation of :func:`A`."""
     alpha = np.asanyarray(alpha, dtype=float)
     beta = np.asanyarray(beta, dtype=float)
 
@@ -101,12 +104,10 @@ def derivative(
     f: Callable[[float | np.floating], float | np.floating],
     x: float | np.floating | int,
     h: float | np.floating = 1e-6,
-    zero_tol: float | np.floating = 1e-6
+    zero_tol: float | np.floating = 1e-8
 ) -> float:
     """
-    Approximates the specular derivative of a real-valued function `f: R -> R` at point `x`.
-
-    This is computed using the `specular_directional_derivative` function in the direction `v=1.0`.
+    Approximates the specular derivative of a real-valued function :math:`f:\\mathbb{R} \\to \\mathbb{R}` at point ``x``.
 
     Parameters
     ----------
@@ -115,30 +116,30 @@ def derivative(
     x : float, np.floating, int
         The point at which the derivative is evaluated.
     h : float, np.floating
-        Step size for the finite difference approximation. (default: 1e-6)
+        Step size for the finite difference approximation.
+        Default: ``1e-6``.
     zero_tol : float, np.floating
-        A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability. (default: 1e-6)
+        A small threshold used to determine if the denominator ``(alpha + beta)`` is close to zero for numerical stability.
+        Default: ``1e-8``.
 
     Returns
     -------
     float
-        The approximated specular derivative of f at x in direction +1.
+        The approximated specular derivative of ``f`` at ``x`` in direction ``v=1.0``.
 
     Raises
     ------
     TypeError
-        If the type of `x` is not a scalar (float) or array-like (list, np.ndarray).
+        If the type of ``x`` is not a scalar (float) or array-like (list, np.ndarray).
     ValueError
-        If the step size `h` is not positive (i.e., h <= 0).
+        If the step size ``h`` is not positive (i.e., ``h`` <= 0).
     
     Examples
     --------
     >>> import specular
-
     >>> f = lambda x: max(x, 0.0)
     >>> specular.derivative(f, x=0.0)
     0.41421356237309515
-
     >>> f = lambda x: abs(x)
     >>> specular.derivative(f, x=0.0)
     0.0
@@ -162,45 +163,44 @@ def directional_derivative(
     x: list | np.ndarray,
     v: list | np.ndarray,
     h: float | np.floating = 1e-6,
-    zero_tol: float | np.floating = 1e-6
+    zero_tol: float | np.floating = 1e-8
 ) -> float:
     """
-    Approximates the specular directional derivative of a function `f: R^n -> R` at a point `x` 
-    in the direction `v`, using finite differences and the averaging operator `A`.
-
-    This method computes one-sided finite differences from both directions (forward and backward)
-    and applies the function `A(alpha, beta)` to return a specular directional derivative.
+    Approximates the specular directional derivative of a function :math:`f:\\mathbb{R}^n \\to \\mathbb{R}` at a point ``x`` in the direction ``v``.
+    The one-sided derivatives ``alpha`` and ``beta`` are approximated.
+    The function :math:`\\mathcal{A}` returns the specular directional derivative for each component of the vector ``x``.
 
     Parameters
     ----------
     f : callable
-        A real-valued function defined on an open subset of R^n.
+        A real-valued function defined on an open subset of :math:`:\\mathbb{R}^n`.
     x : list, np.ndarray
         The point at which the derivative is evaluated.
     v : list, np.ndarray
         The direction in which the derivative is taken.
     h : float, np.floating
-        The step size used in the finite difference approximation (default: 1e-6). Must be positive.
+        The step size used in the finite difference approximation. Must be positive.
+        Default: ``1e-6``.
     zero_tol : float, np.floating
-        A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability. (default: 1e-6)
+        A small threshold used to determine if the denominator ``(alpha + beta)`` is close to zero for numerical stability.
+        Default: ``1e-8``.
 
     Returns
     -------
     float
-        The approximated specular directional derivative of `f` at `x` in the direction `v`.
+        The approximated specular directional derivative of ``f`` at ``x`` in the direction ``v``.
 
     Raises
     ------
     TypeError
-        If `x` or `v` are not of valid array-like types.
+        If ``x`` or ``v`` are not of valid array-like types.
     ValueError
-        If `h <= 0`.
+        If ``h`` is less than or equal to 0 (``h`` > 0).
 
     Examples
     --------
     >>> import specular
     >>> import math
-
     >>> f = lambda x: math.sqrt(x[0]**2 + x[1]**2 + x[2]**2)
     >>> specular.directional_derivative(f, x=[0.0, 0.1, -0.1], v=[1.0, -1.0, 2.0])
     -2.1213203434708223
@@ -227,41 +227,42 @@ def partial_derivative(
     x: list | np.ndarray,
     i: int | np.integer,
     h: float| np.floating = 1e-6,
-    zero_tol: float | np.floating = 1e-6
+    zero_tol: float | np.floating = 1e-8
 ) -> float:
     """
-    Approximates the i-th specular partial derivative of a real-valued function `f: R^n -> R` at point `x` for n > 1.
+    Approximates the i-th specular partial derivative of a real-valued function :math:`f:\\mathbb{R}^n \\to \\mathbb{R}` at point ``x`` for n > 1.
 
-    This is computed using the `specular_directional_derivative` function with the direction of the `i`-th standard basis vector of `R^n`.
+    This is computed using :func:`specular_directional_derivative` with the direction of the ``i``-th standard basis vector of :math:`:\\mathbb{R}^n`.
 
     Parameters
     ----------
     f : callable
-        A real-valued function defined on R^n.
+        A real-valued function defined on :math:`:\\mathbb{R}^n`.
+        ``n`` is the dimension of ``x``.
     x : list, np.ndarray
         The point at which the derivative is evaluated.
     i : int, np.integer
-        the direction 1 <= i <= n of x_i-th partial derivative.
+        The index of the specular partial derivative with respect to x_i (1 <= ``i`` <= n).
     h : float, np.floating
-        Step size for the finite difference approximation (default: 1e-6).
+        Step size for the finite difference approximation.
+        Default: ``1e-8``. 
 
     Returns
     -------
     float
-        The approximated i-th partial specular derivative of f at x.
+        The approximated i-th partial specular derivative of ``f`` at ``x``.
 
     Raises
     ------
     TypeError
-        If `i` is not an integer.
+        If ``i`` is not an integer.
     ValueError
-        If `i` is out of valid range (1 <= i <= dimension of x).
+        If ``i`` is out of the valid range (1 <= ``i`` <= n).
 
     Examples
     --------
     >>> import specular
     >>> import math 
-    
     >>> f = lambda x: math.sqrt(x[0]**2 + x[1]**2 + x[2]**2)
     >>> specular.partial_derivative(f, x=[0.1, 2.3, -1.2], i=2)
     0.8859268982863702
@@ -284,34 +285,35 @@ def gradient(
     f: Callable[[list | np.ndarray], float | np.floating],
     x: list | np.ndarray,
     h: float| np.floating = 1e-6,
-    zero_tol: float | np.floating = 1e-6
+    zero_tol: float | np.floating = 1e-8
 ) -> np.ndarray:
     """
-    Approximates the specular gradient of a real-valued function `f: R^n -> R` at point `x` for n > 1.
+    Approximates the specular gradient of a real-valued function :math:`f:\\mathbb{R}^n \\to \\mathbb{R}` at point ``x`` for n > 1.
 
     The specular gradient is defined as the vector of all partial specular derivatives along the standard basis directions. 
 
     Parameters
     ----------
     f : callable
-        A real-valued function defined on R^n.
+        A real-valued function defined on :math:`\\mathbb{R}^n`.
     x : list, np.ndarray
         The point at which the specular gradient is evaluated.
     h : float, np.floating
-        Step size for the finite difference approximation (default: 1e-6).
+        Step size for the finite difference approximation.
+        Default: ``1e-6``. 
     zero_tol : float, np.floating
-        A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability. (default: 1e-6)
+        A small threshold used to determine if the denominator ``(alpha + beta)`` is close to zero for numerical stability.
+        Default: ``1e-8``.
 
     Returns
     -------
     np.ndarray
-        A vector (NumPy array) representing the specular gradient of f at x.
+        A vector (NumPy array) representing the specular gradient of ``f`` at ``x``.
 
     Examples
     --------
     >>> import specular
     >>> import numpy as np
-
     >>> f = lambda x: np.linalg.norm(x)
     >>> specular.gradient(f, x=[1.4, -3.47, 4.57, 9.9])
     array([ 0.12144298, -0.3010051 ,  0.39642458,  0.85877534])
