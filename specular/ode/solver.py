@@ -135,12 +135,12 @@ def classical_scheme(
     )
 
 def Euler_scheme(
+    of_Type: int | str,
     F: Callable[[float, float], float], 
     t_0: float, 
     u_0: Callable[[float], float] | float,
     T: float, 
     h: float = 1e-6,
-    of_Type: int | str = 1,
     u_1: Callable[[float], float] | float | bool = False,
     tol: float = 1e-6, 
     zero_tol: float = 1e-8,
@@ -151,6 +151,9 @@ def Euler_scheme(
 
     Parameters
     ----------
+    of_Type : int, str
+        The type of the specular Euler scheme.
+        Options: ``1``, ``'1'``, ``2``, ``'2'``, ``3``, ``'3'``, ``4``, ``'4'``, ``5``, ``'5'``, ``6``, ``'6'``.
     F : callable
         The given source function ``F`` in (IVP).
         The calling signature should be ``F(t, u)`` where ``t`` and ``u`` are scalars.
@@ -163,10 +166,6 @@ def Euler_scheme(
     h : float, optional
         The step size.
         Default: ``1e-6``.
-    of_Type : int, str
-        The type of the specular Euler scheme.
-        Options: ``1``, ``'1'``, ``2``, ``'2'``, ``3``, ``'3'``, ``4``, ``'4'``, ``5``, ``'5'``, ``6``, ``'6'``.
-        Default is 1.
     u_1 : callable, float, bool
         The numerical solution at the time ``t_1 = t_0 + h`` for Types 1, 2, and 3.
         If a float or callable is provided, it is used as the exact value.
@@ -189,7 +188,7 @@ def Euler_scheme(
     Type = str(of_Type)
 
     if Type not in ['1', '2', '3', '4', '5', '6']:
-        raise ValueError(f"Unknown type '{of_Type}'. Supported forms: '1', '2', '3', '4', '5', and '6'")
+        raise ValueError(f"Unknown type. Got {of_Type}. Supported types: '1', '2', '3', '4', '5', and '6'")
     
     scheme = 'specular Euler scheme of Type ' + Type
     steps = int((T - t_0) / h)

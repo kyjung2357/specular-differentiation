@@ -147,7 +147,7 @@ To obtain the table of the numerical results, call `.table()`.
 >>> def u_0(t_0):
 >>>     return exact_sol(t_0)
 >>> 
->>> specular.ode.solver.classical_scheme(F, t_0=0.0, u_0=u_0, T=0.9, h=0.01, scheme="implicit Euler").table(exact_sol=exact_sol)
+>>> specular.ode.solver.classical_scheme(F=F, t_0=0.0, u_0=u_0, T=0.9, h=0.01, scheme="implicit Euler").table(exact_sol=exact_sol)
 Running the implicit Euler scheme: 100%|██████████| 90/90 [00:00<?, ?it/s]
 Table saved: tables\implicit-Euler.csv
 ```
@@ -163,7 +163,7 @@ Table saved: tables\implicit-Euler.csv
 >>> def u_0(t_0):
 >>>     return exact_sol(t_0)
 >>>
->>> specular.ode.solver.classical_scheme(F, t_0=0.0, u_0=u_0, T=0.9, h=0.01, scheme="Crank-Nicolson").visualization().table()
+>>> specular.ode.solver.classical_scheme(F=F, t_0=0.0, u_0=u_0, T=0.9, h=0.01, scheme="Crank-Nicolson").visualization().table()
 Running Crank-Nicolson scheme: 100%|██████████| 90/90 [00:00<00:00, 89515.62it/s]
 ```
 
@@ -187,7 +187,7 @@ TBA
 >>> 
 >>> u_1 = exact_sol(t_0 + h)
 >>> 
->>> specular.trigonometric_scheme(F, t_0=0.0, u_0=u_0, u_1=u_1, T=2.5, h=0.1).visualization(exact_sol=exact_sol, save_path="specular-trigonometric")
+>>> specular.trigonometric_scheme(F=F, t_0=0.0, u_0=u_0, u_1=u_1, T=2.5, h=0.1).visualization(exact_sol=exact_sol, save_path="specular-trigonometric")
 Running specular trigonometric scheme: 100%|██████████| 24/24 [00:00<?, ?it/s]
 Figure saved: figures\specular-trigonometric
 ```

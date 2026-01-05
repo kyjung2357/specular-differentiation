@@ -42,7 +42,9 @@ class ODEResult:
 
         number_of_circles = max(1, len(self.time_grid) // 30)
 
-        plt.plot(self.time_grid, self.numerical_sol, linestyle='--', marker='o', color='red', markersize=5, markevery=number_of_circles, markerfacecolor='none', markeredgewidth=1.0, label=self.scheme)
+        capitalized_name = self.scheme[0].upper() + self.scheme[1:]
+        
+        plt.plot(self.time_grid, self.numerical_sol, linestyle='--', marker='o', color='red', markersize=5, markevery=number_of_circles, markerfacecolor='none', markeredgewidth=1.0, label=capitalized_name)
 
         plt.xlabel(r"Time", fontsize=10)
         plt.ylabel(r"Solution", fontsize=10)

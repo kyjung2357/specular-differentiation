@@ -13,6 +13,7 @@ class StepSize:
         'geometric_series',
         'user_defined'
     ]
+    
     def __init__(
         self, 
         name: str, 
