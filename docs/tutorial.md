@@ -127,29 +127,3 @@ Figure saved to figures\explicit-Euler
 
 ![explicit-Euler-scheme](figures/explicit-Euler.png)
 
-To obtain the table of the numerical results, call `.table()`. 
-
-```python
->>> def F(t, u):
->>>     return -(t*u)/(1-t**2)
->>> 
->>> def exact_sol(t):
->>>     return np.sqrt(1 - t**2)
->>>     
->>> def u_0(t_0):
->>>     return exact_sol(t_0)
->>> 
->>> specular.ode.classical_scheme(F=F, u_0=u_0, t_0=0.0, T=0.9, h=0.01, scheme="Implicit Euler").visualization(exact_sol=exact_sol, save_path="Implicit Euler").table(exact_sol=exact_sol, save_path="Implicit Euler")
-Figure saved to figures\Implicit-Euler
-Table saved to tables\Implicit-Euler.csv
-```
-
-![Implicit-Euler-scheme](figures/Implicit-Euler.png)
-
-### 2.2 Specular trigonometric scheme
-
-TBA 
-
-### 2.3 Specular Euler scheme
-
-TBA 
