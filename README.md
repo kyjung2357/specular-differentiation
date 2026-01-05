@@ -81,7 +81,7 @@ In [[1]](#references), seven schemes are proposed for solving ODEs numerically:
 * the *specular Euler* scheme of Type 1~6.
 * the *specular trigonometric* scheme.
 
-The following example shows that the specular Euler scheme of Type 5 yields more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
+The following example shows that the specular Euler schemes of Type 5 and 6 yield more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
 
 ![ODE-example](docs/figures/ODE-example.png)
 
