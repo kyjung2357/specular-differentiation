@@ -113,13 +113,13 @@ def error_analysis(example, norm, F, t_0, T, exact_sol):
     save_table_to_txt(df_S5, f"{example}-{norm}-Table-S5.txt", error_precision=1, ratio_precision=1)
     save_table_to_txt(df_S6, f"{example}-{norm}-Table-S6.txt", error_precision=1, ratio_precision=1)
 
-    plt.figure(figsize=(5.5, 2.5))
+    plt.figure(figsize=(6.5, 2.5))
 
-    plt.plot(df_EE["n"], df_EE["Error"], color='red', marker='x', markerfacecolor='none', markeredgecolor='red', label="Explicit Euler")
-    plt.plot(df_IE["n"], df_IE["Error"], color='blue', marker='x', markerfacecolor='none', markeredgecolor='blue', label='Implicit Euler')
-    plt.plot(df_CN["n"], df_CN["Error"], color='purple', marker='x', markerfacecolor='none', markeredgecolor='purple', label='Crank-Nicolson')
-    plt.plot(df_S5["n"], df_S5["Error"], color='green', marker='v', markerfacecolor='none', markeredgecolor='green', label="Specular Euler (Type 5)")
-    plt.plot(df_S6["n"], df_S6["Error"], color='orange', marker='v', markerfacecolor='none', markeredgecolor='orange', label="Specular Euler (Type 6)")
+    plt.plot(df_EE["n"], df_EE["Error"], color='red', marker='x', markerfacecolor='none', markeredgecolor='red', label="EE")
+    plt.plot(df_IE["n"], df_IE["Error"], color='blue', marker='x', markerfacecolor='none', markeredgecolor='blue', label='IE')
+    plt.plot(df_CN["n"], df_CN["Error"], color='purple', marker='x', markerfacecolor='none', markeredgecolor='purple', label='CN')
+    plt.plot(df_S5["n"], df_S5["Error"], color='green', marker='v', markerfacecolor='none', markeredgecolor='green', label="SE5")
+    plt.plot(df_S6["n"], df_S6["Error"], color='orange', marker='v', markerfacecolor='none', markeredgecolor='orange', label="SE6")
 
     plt.xscale('log', base=2)
     plt.yscale('log')
@@ -130,5 +130,5 @@ def error_analysis(example, norm, F, t_0, T, exact_sol):
     plt.legend(loc='center left', bbox_to_anchor=(1.02, 0.5), fontsize=9)
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
 
-    plt.savefig(f'figures/{example}-{norm}-Figure.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'figures/{example}-{norm}-Figure.png', dpi=1000, bbox_inches='tight')
     plt.show()
