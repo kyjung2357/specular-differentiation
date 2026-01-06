@@ -37,7 +37,7 @@ def gradient_method(
         start_time = time.time()
 
     # the n-dimensional case
-    if n > 0:
+    if n > 1:
         if form == 'specular gradient':
             res_x, res_f, res_k = _vector(f=f, x=x, step_size=step_size, h=h, tol=tol, zero_tol=zero_tol, max_iter=max_iter, record_history=record_history, x_history=x_history, f_history=f_history)
 
