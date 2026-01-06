@@ -71,7 +71,6 @@ def gradient_method(
     runtime = time.time() - start_time  # type: ignore
 
     if record_history:
-        print("\n")
         all_history["variables"] = x_history
         all_history["values"] = f_history
 

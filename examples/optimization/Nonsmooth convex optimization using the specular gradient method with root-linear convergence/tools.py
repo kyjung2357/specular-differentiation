@@ -13,6 +13,8 @@ import os
 sys.path.append(os.path.abspath(".."))
 from classical_methods import Adam_optimizer, BFGS_optimizer, Gradient_descent_method
 
+print("version of specular: ", specular.__version__)
+
 def ensure_length(data, length):
     data = list(data)
     if len(data) == 0:
