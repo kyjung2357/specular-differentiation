@@ -21,19 +21,19 @@ def f_2(x):
     res = np.zeros_like(x, dtype=float)
     
     mask_high = (x >= 0.5)              
-    mask_mid  = (x >= 0) & (x < 0.5)    
-    mask_low  = (x < 0)                 
+    mask_mid = (x >= 0) & (x < 0.5)    
+    mask_low = (x < 0)                 
     
     res[mask_high] = 3 * (x[mask_high] - 0.5) + (0.5**q) / q
-    res[mask_mid]  = (np.abs(x[mask_mid])**q) / q
-    res[mask_low]  = (np.abs(x[mask_low])**p) / p
+    res[mask_mid] = (np.abs(x[mask_mid])**q) / q
+    res[mask_low] = (np.abs(x[mask_low])**p) / p
     
     return np.sum(res)
 
 def f_2_torch(x):
     val_high = 3 * (x - 0.5) + (0.5**q) / q
-    val_mid  = (torch.abs(x)**q) / q
-    val_low  = (torch.abs(x)**p) / p
+    val_mid = (torch.abs(x)**q) / q
+    val_low = (torch.abs(x)**p) / p
     
     out = torch.where(x >= 0.5, val_high, torch.where(x >= 0, val_mid, val_low))
     
@@ -48,10 +48,10 @@ def f_3(x):
     
     res = np.zeros_like(x, dtype=float)
     
-    mask_in  = (abs_x <= delta)  
+    mask_in = (abs_x <= delta)  
     mask_out = (abs_x > delta)   
     
-    res[mask_in]  = 0.5 * (x[mask_in]**2)
+    res[mask_in] = 0.5 * (x[mask_in]**2)
     res[mask_out] = delta * (abs_x[mask_out] - 0.5 * delta)
     
     return np.sum(res)
