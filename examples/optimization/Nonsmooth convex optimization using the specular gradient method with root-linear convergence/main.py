@@ -35,14 +35,14 @@ def f_2_torch(x):
     val_mid  = (torch.abs(x)**q) / q
     val_low  = (torch.abs(x)**p) / p
     
-    out = torch.where(x >= 0.5, val_high, 
-                    torch.where(x >= 0, val_mid, val_low))
+    out = torch.where(x >= 0.5, val_high, torch.where(x >= 0, val_mid, val_low))
     
     return torch.sum(out)
 
 # Third example (Huber Loss)
+delta = 0.5
+
 def f_3(x):
-    delta = 0.5
     x = np.asarray(x)
     abs_x = np.abs(x)
     
@@ -57,12 +57,9 @@ def f_3(x):
     return np.sum(res)
 
 def f_3_torch(x): 
-    delta = 0.5
     abs_x = torch.abs(x)
     
-    out = torch.where(abs_x <= delta, 
-                    0.5 * (x**2), 
-                    delta * (abs_x - 0.5 * delta))
+    out = torch.where(abs_x <= delta, 0.5 * (x**2), delta * (abs_x - 0.5 * delta))
     
     return torch.sum(out)
 
@@ -80,5 +77,5 @@ num_runs = 100
 if __name__ == '__main__':
     repeat_experiment(f_1, f_1_torch, num_runs, max_iter=1000, latex_code=True, save_name='1') # type: ignore
     repeat_experiment(f_2, f_2_torch, num_runs, max_iter=2000, latex_code=True, save_name='2') # type: ignore
-    repeat_experiment(f_3, f_3_torch, num_runs, max_iter=1000, latex_code=True, save_name='3') # type: ignore
+    repeat_experiment(f_3, f_3_torch, num_runs, max_iter=500, latex_code=True, save_name='3') # type: ignore
     repeat_experiment(f_4, f_4_torch, num_runs, max_iter=2000, latex_code=True, save_name='4') # type: ignore

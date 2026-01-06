@@ -4,9 +4,9 @@ Method & Mean Min Error & Median Min Error & Std Dev \\
 \midrule
 ISGM & $5.40 \times 10^{-2}$ & $5.76 \times 10^{-14}$ & $1.36 \times 10^{-1}$ \\
 SPEG geo & $5.40 \times 10^{-2}$ & $1.99 \times 10^{-13}$ & $1.36 \times 10^{-1}$ \\
-SPEG sq & $2.75 \times 10^{-13}$ & $1.24 \times 10^{-13}$ & $1.10 \times 10^{-12}$ \\
-GD & $1.37 \times 10^{-1}$ & $2.60 \times 10^{-2}$ & $2.15 \times 10^{-1}$ \\
-Adam & $9.05 \times 10^{-36}$ & 0 & $9.00 \times 10^{-35}$ \\
+SPEG sq & $6.34 \times 10^{-9}$ & $1.27 \times 10^{-13}$ & $5.20 \times 10^{-8}$ \\
+GD & $1.99 \times 10^{-1}$ & $7.08 \times 10^{-2}$ & $2.56 \times 10^{-1}$ \\
+Adam & $5.51 \times 10^{-10}$ & $9.06 \times 10^{-26}$ & $5.48 \times 10^{-9}$ \\
 BFGS & $2.23 \times 10^{-17}$ & $2.76 \times 10^{-17}$ & $1.03 \times 10^{-17}$ \\
 \bottomrule
 \end{tabular}

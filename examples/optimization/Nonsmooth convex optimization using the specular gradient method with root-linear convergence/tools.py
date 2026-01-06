@@ -123,6 +123,7 @@ def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_nam
     plt.ylabel(r'Objective function value $f(x_k)$', fontsize='10') 
     plt.yscale('log')
     # plt.xscale('log') 
+    plt.xlim(1, max_iter)
     plt.legend(bbox_to_anchor=(1.02, 0.5), loc='center left', fontsize='10', frameon=True)
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
     plt.tight_layout()
