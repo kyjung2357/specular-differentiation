@@ -65,6 +65,7 @@ def classical_scheme(
     t_curr = t_0
     u_curr = u_0(t_0) if callable(u_0) else u_0 
 
+    all_history = {}
     t_history = [t_curr]
     u_history = [u_curr]
 
@@ -127,11 +128,13 @@ def classical_scheme(
     else:
         raise ValueError(f"Unknown form '{form}'. Supported forms: {SUPPORTED_SCHEMES}")
     
+    all_history["variables"] = np.array(t_history)
+    all_history["values"] = np.array(u_history)
+
     return ODEResult(
+        scheme= form + " scheme",
         h=h,
-        time_grid=np.array(t_history), 
-        numerical_sol=np.array(u_history), 
-        scheme= form + " scheme"
+        all_history=all_history
     )
 
 def Euler_scheme(
@@ -190,6 +193,7 @@ def Euler_scheme(
     scheme = 'specular Euler scheme of Type ' + Type
     steps = int((T - t_0) / h)
 
+    all_history = {}
     t_history = []
     u_history = []
 
@@ -356,11 +360,13 @@ def Euler_scheme(
     else:
         raise ValueError(f"Unknown type. Got {of_Type}. Supported types: '1', '2', '3', '4', '5', and '6'")
 
-    return ODEResult(
+    all_history["variables"] = np.array(t_history)
+    all_history["values"] = np.array(u_history)
+
+    return ODEResult( 
+        scheme=scheme,
         h=h,
-        time_grid=np.array(t_history), 
-        numerical_sol=np.array(u_history), 
-        scheme=scheme
+        all_history=all_history
     )
 
 def trigonometric_scheme(
@@ -405,6 +411,7 @@ def trigonometric_scheme(
     t_curr = t_0 + h
     u_curr = u_1(t_curr) if callable(u_1) else u_1
 
+    all_history = {}
     t_history = [t_prev, t_curr]
     u_history = [u_prev, u_curr]
 
@@ -420,10 +427,12 @@ def trigonometric_scheme(
         t_prev, u_prev = t_curr, u_curr
         t_curr, u_curr = t_next, u_next
 
+    all_history["variables"] = np.array(t_history)
+    all_history["values"] = np.array(u_history)
+
     return ODEResult(
+        scheme="specular trigonometric scheme",
         h=h,
-        time_grid=np.array(t_history), 
-        numerical_sol=np.array(u_history), 
-        scheme="specular trigonometric scheme"
+        all_history=all_history
     )
 

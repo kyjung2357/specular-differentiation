@@ -19,8 +19,7 @@ def gradient_method(
     max_iter: int = 1000, 
     f_j: Optional[Callable[[int | float | list | np.ndarray], int | float | np.floating]] = None,
     first_iter: Optional[int] = 2,   
-    record_history: bool = True,
-    record_time: bool = True
+    record_history: bool = True
 ) -> OptimizationResult:
 
     if h is None or h <= 0:
@@ -29,12 +28,11 @@ def gradient_method(
     x = np.array(x_0, dtype=float).copy()
     n = x.size
     
-    history = {}
+    all_history = {}
     x_history = []
     f_history = []
-    
-    if record_time:
-        start_time = time.time()
+
+    start_time = time.time()
 
     # the n-dimensional case
     if n > 1:
@@ -42,9 +40,11 @@ def gradient_method(
             res_x, res_f, res_k = _vector(f=f, x=x, step_size=step_size, h=h, tol=tol, zero_tol=zero_tol, max_iter=max_iter, record_history=record_history, x_history=x_history, f_history=f_history)
 
         elif form == 'stochastic':
+            form = 'stochastic specular gradient'
             pass # TODO
 
         elif form == 'hybrid':
+            form = 'hybrid specular gradient'
             pass # TODO
 
         else:
@@ -67,23 +67,20 @@ def gradient_method(
     else:
         raise TypeError(f"Unknown form '{form}'. Supported forms: {SUPPORTED_METHODS}")
     
-    if record_time:
-        print("\n")
-        history["time"] = time.time() - start_time  # type: ignore
+    runtime = time.time() - start_time  # type: ignore
 
     if record_history:
         print("\n")
-        history["variables"] = x_history
-        history["values"] = f_history
-
-    history["method"] = form 
+        all_history["variables"] = x_history
+        all_history["values"] = f_history
 
     return OptimizationResult(
+        method=form,
         solution=res_x, # type: ignore
         func_val=res_f, # type: ignore
         iteration=res_k, # type: ignore
-        scheme=form,
-        history=history
+        runtime=runtime,
+        all_history=all_history
     ) 
 
 def _scalar(

@@ -7,17 +7,16 @@ from typing import Optional, Callable, Tuple
 class ODEResult:
     def __init__(
         self, 
+        scheme: str,
         h: float,
-        time_grid: np.ndarray, 
-        numerical_sol: np.ndarray, 
-        scheme: str
+        all_history: dict
     ):
-        self.h = h
-        self.time_grid = time_grid
-        self.numerical_sol = numerical_sol
         self.scheme = scheme
+        self.h = h
+        self.time_grid = all_history["variables"]
+        self.numerical_sol = all_history["values"]
     
-    def values(
+    def history(
         self
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -132,8 +131,10 @@ class ODEResult:
         """
         if callable(exact_sol):
             exact_values = np.array([exact_sol(t) for t in self.time_grid])
+
         elif isinstance(exact_sol, (list, np.ndarray)):
             exact_values = np.asarray(exact_sol, dtype=float) 
+            
         else:
             raise TypeError("exact_sol must be a callable or a list/array.")
         

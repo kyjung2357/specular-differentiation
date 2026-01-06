@@ -102,7 +102,7 @@ Running the specular Euler scheme of Type 1: 100%|██████████
 <specular.ode.result.ODEResult at 0x1765982d8d0>
 ```
 
-To access the numerical results, call `.values()`.
+To access the numerical results, call `.history()`.
 It returns a tuple containing the time grid and the numerical solution.
 
 ```python
@@ -111,7 +111,7 @@ It returns a tuple containing the time grid and the numerical solution.
 >>> def F(t, u):
 >>>     return -2*u 
 >>>
->>> specular.Euler_scheme(of_Type=1, F=F, t_0=0.0, u_0=1.0, T=2.5, h=0.1).values()
+>>> specular.Euler_scheme(of_Type=1, F=F, t_0=0.0, u_0=1.0, T=2.5, h=0.1).history()
 Running the specular Euler scheme of Type 1: 100%|██████████| 24/24 [00:00<?, ?it/s]
 (array([0. , 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1. , 1.1, 1.2,
         1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2. , 2.1, 2.2, 2.3, 2.4, 2.5]),
@@ -248,9 +248,9 @@ The three classical schemes are available: the explicit Euler, the implicit Eule
 >>> T = 0.9
 >>> h = 0.05
 >>> 
->>> result_EE = specular.ode.solver.classical_scheme(F=F, t_0=t_0, u_0=u_0, T=T, h=h, scheme="explicit Euler").values()
->>> result_IE = specular.ode.solver.classical_scheme(F=F, t_0=t_0, u_0=u_0, T=T, h=h, scheme="implicit Euler").values()
->>> result_CN = specular.ode.solver.classical_scheme(F=F, t_0=t_0, u_0=u_0, T=T, h=h, scheme="Crank-Nicolson").values()
+>>> result_EE = specular.ode.solver.classical_scheme(F=F, t_0=t_0, u_0=u_0, T=T, h=h, scheme="explicit Euler").history()
+>>> result_IE = specular.ode.solver.classical_scheme(F=F, t_0=t_0, u_0=u_0, T=T, h=h, scheme="implicit Euler").history()
+>>> result_CN = specular.ode.solver.classical_scheme(F=F, t_0=t_0, u_0=u_0, T=T, h=h, scheme="Crank-Nicolson").history()
 >>> exact_values = np.array([exact_sol(t) for t in result_EE[0]])
 >>> 
 >>> plt.figure(figsize=(5.5, 2.5))
