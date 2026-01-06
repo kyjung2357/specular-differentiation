@@ -25,7 +25,7 @@ def classical_scheme(
     u_0: Callable[[float], float] | float,
     T: float, 
     h: float = 1e-6,
-    scheme: str = 'explicit Euler',
+    form: str = 'explicit Euler',
     tol: float = 1e-6, 
     max_iter: int = 100
 ) -> ODEResult:
@@ -70,14 +70,14 @@ def classical_scheme(
 
     steps = int((T - t_0) / h)
     
-    if scheme == "explicit Euler":
+    if form == "explicit Euler":
         for _ in tqdm(range(steps), desc="Running the explicit Euler scheme"):
             t_curr, u_curr = t_curr + h, u_curr + h*F(t_curr, u_curr) # type: ignore
 
             t_history.append(t_curr)
             u_history.append(u_curr)
 
-    elif scheme == "implicit Euler":
+    elif form == "implicit Euler":
         for k in tqdm(range(steps), desc="Running the implicit Euler scheme"):
             t_next = t_curr + h
 
@@ -98,7 +98,7 @@ def classical_scheme(
             t_history.append(t_curr)
             u_history.append(u_curr)
     
-    elif scheme == "Crank-Nicolson":
+    elif form == "Crank-Nicolson":
         for k in tqdm(range(steps), desc="Running Crank-Nicolson scheme"):
             t_next = t_curr + h
 
@@ -125,13 +125,13 @@ def classical_scheme(
             u_history.append(u_curr)
             
     else:
-        raise ValueError(f"Unknown form '{scheme}'. Supported forms: {SUPPORTED_SCHEMES}")
+        raise ValueError(f"Unknown form '{form}'. Supported forms: {SUPPORTED_SCHEMES}")
     
     return ODEResult(
         h=h,
         time_grid=np.array(t_history), 
         numerical_sol=np.array(u_history), 
-        scheme=scheme
+        scheme= form + " scheme"
     )
 
 def Euler_scheme(
@@ -424,6 +424,6 @@ def trigonometric_scheme(
         h=h,
         time_grid=np.array(t_history), 
         numerical_sol=np.array(u_history), 
-        scheme="specular trigonometric"
+        scheme="specular trigonometric scheme"
     )
 
