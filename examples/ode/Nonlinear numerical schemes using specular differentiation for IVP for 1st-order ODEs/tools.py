@@ -107,11 +107,11 @@ def error_analysis(example, norm, F, t_0, T, exact_sol):
     df_S5 = pd.DataFrame(compute_ratios(error_list["S5"]), columns=["n", "Error", "Ratio"])
     df_S6 = pd.DataFrame(compute_ratios(error_list["S6"]), columns=["n", "Error", "Ratio"])
 
-    save_table_to_txt(df_EE, f"{example}-{norm}-Table-EE.txt", error_precision=2, ratio_precision=3)
-    save_table_to_txt(df_IE, f"{example}-{norm}-Table-IE.txt", error_precision=2, ratio_precision=3)
-    save_table_to_txt(df_CN, f"{example}-{norm}-Table-CN.txt", error_precision=2, ratio_precision=3)
-    save_table_to_txt(df_S5, f"{example}-{norm}-Table-S5.txt", error_precision=2, ratio_precision=3)
-    save_table_to_txt(df_S6, f"{example}-{norm}-Table-S6.txt", error_precision=2, ratio_precision=3)
+    save_table_to_txt(df_EE, f"{example}-{norm}-Table-EE.txt", error_precision=1, ratio_precision=1)
+    save_table_to_txt(df_IE, f"{example}-{norm}-Table-IE.txt", error_precision=1, ratio_precision=1)
+    save_table_to_txt(df_CN, f"{example}-{norm}-Table-CN.txt", error_precision=1, ratio_precision=1)
+    save_table_to_txt(df_S5, f"{example}-{norm}-Table-S5.txt", error_precision=1, ratio_precision=1)
+    save_table_to_txt(df_S6, f"{example}-{norm}-Table-S6.txt", error_precision=1, ratio_precision=1)
 
     plt.figure(figsize=(5.5, 2.5))
 
