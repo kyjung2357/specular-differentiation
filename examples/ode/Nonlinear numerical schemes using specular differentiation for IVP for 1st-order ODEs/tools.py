@@ -92,9 +92,9 @@ def error_analysis(example, norm, F, t_0, T, exact_sol):
         
         print(f"Running for k={k}, n={n}...")
 
-        res_EE = specular.ode.classical_scheme(F=F, u_0=u_0_val, t_0=t_0, T=T, h=h, scheme="explicit Euler")
-        res_IE = specular.ode.classical_scheme(F=F, u_0=u_0_val, t_0=t_0, T=T, h=h, scheme="implicit Euler")
-        res_CN = specular.ode.classical_scheme(F=F, u_0=u_0_val, t_0=t_0, T=T, h=h, scheme="Crank-Nicolson")
+        res_EE = specular.ode.classical_scheme(F=F, u_0=u_0_val, t_0=t_0, T=T, h=h, form="explicit Euler")
+        res_IE = specular.ode.classical_scheme(F=F, u_0=u_0_val, t_0=t_0, T=T, h=h, form="implicit Euler")
+        res_CN = specular.ode.classical_scheme(F=F, u_0=u_0_val, t_0=t_0, T=T, h=h, form="Crank-Nicolson")
         res_S5 = specular.Euler_scheme(of_Type=5, F=F, t_0=t_0, u_0=u_0_val, T=T, h=h, max_iter=1000)
         res_S6 = specular.Euler_scheme(of_Type=6, F=F, t_0=t_0, u_0=u_0_val, T=T, h=h, max_iter=1000)
 

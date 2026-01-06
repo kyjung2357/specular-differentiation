@@ -19,7 +19,8 @@ def gradient_method(
     max_iter: int = 1000, 
     f_j: Optional[Callable[[int | float | list | np.ndarray], int | float | np.floating]] = None,
     first_iter: Optional[int] = 2,   
-    record_history: bool = True
+    record_history: bool = True,
+    print_bar: bool = True
 ) -> OptimizationResult:
 
     if h is None or h <= 0:
@@ -37,7 +38,7 @@ def gradient_method(
     # the n-dimensional case
     if n > 1:
         if form == 'specular gradient':
-            res_x, res_f, res_k = _vector(f=f, x=x, step_size=step_size, h=h, tol=tol, zero_tol=zero_tol, max_iter=max_iter, record_history=record_history, x_history=x_history, f_history=f_history)
+            res_x, res_f, res_k = _vector(f, x, step_size, h, tol, zero_tol, max_iter, record_history, x_history, f_history, print_bar)
 
         elif form == 'stochastic':
             form = 'stochastic specular gradient'
@@ -55,11 +56,11 @@ def gradient_method(
         x = x.item()
 
         if form == 'specular gradient':
-            res_x, res_f, res_k = _scalar(f=f, x=x, step_size=step_size, h=h, tol=tol, zero_tol=zero_tol, max_iter=max_iter, record_history=record_history, x_history=x_history, f_history=f_history)
+            res_x, res_f, res_k = _scalar(f, x, step_size, h, tol, zero_tol, max_iter, record_history, x_history, f_history, print_bar)
             
         elif form == 'implicit':
             form = 'implicit specular gradient'
-            res_x, res_f, res_k = _implicit(f=f, x=x, step_size=step_size, h=h, tol=tol, max_iter=max_iter, record_history=record_history, x_history=x_history, f_history=f_history)
+            res_x, res_f, res_k = _implicit(f, x, step_size, h, tol, max_iter, record_history, x_history, f_history, print_bar)
             
         else:
             raise TypeError(f"Unknown form '{form}'. Supported forms: {SUPPORTED_METHODS}")
@@ -93,11 +94,12 @@ def _scalar(
     max_iter,
     record_history,
     x_history,
-    f_history
+    f_history,
+    print_bar
 ) -> tuple:
     k = 1
 
-    for _ in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method"):
+    for _ in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method", disable=not print_bar):
         if record_history is True:
             x_history.append(x) # type: ignore
             f_history.append(f(x))
@@ -122,11 +124,12 @@ def _vector(
     max_iter,
     record_history,
     x_history,
-    f_history
+    f_history,
+    print_bar
 ) -> tuple:
     k = 1
 
-    for _ in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method"):
+    for _ in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method", disable=not print_bar):
         if record_history is True:
             x_history.append(x) # type: ignore
             f_history.append(f(x))
@@ -150,11 +153,12 @@ def _implicit(
     max_iter,
     record_history,
     x_history,
-    f_history
+    f_history,
+    print_bar
 ) -> tuple:
     k = 1
 
-    for _ in tqdm(range(1, max_iter + 1), desc="Running the implicit specular gradient method"):
+    for _ in tqdm(range(1, max_iter + 1), desc="Running the implicit specular gradient method", disable=not print_bar):
         if record_history is True:
             x_history.append(x) # type: ignore
             f_history.append(f(x))
