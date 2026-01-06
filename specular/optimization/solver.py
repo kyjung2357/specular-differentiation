@@ -27,7 +27,7 @@ def gradient_method(
         raise ValueError(f"Numerical differentiation 'h' needs to be positive. Got {h}")
     
     x = np.array(x_0, dtype=float).copy()
-    n = x.ndim
+    n = x.size
     
     history = {}
     x_history = []
