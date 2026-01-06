@@ -9,8 +9,8 @@
 The Python package `specular` implements *Specular differentiation* which generalizes classical differentiation.
 This implementation strictly follows the definitions, notations, and results in [[1]](#references) and [[2]](#references).
 
-A specular derivative can be understood as the average of the inclination angles of the right and left derivatives. 
-In contrast, a symmetric derivative is the average of the right and left derivatives.
+A specular derivative (the red line) can be understood as the average of the inclination angles of the right and left derivatives. 
+In contrast, a symmetric derivative (the purple line) is the average of the right and left derivatives.
 Their difference is illustrated as in the following figure.
 
 ![specular-derivative-animation](docs/figures/specular-derivative-animation.gif)
