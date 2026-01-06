@@ -5,10 +5,12 @@ from functools import partial
 from scipy.optimize import minimize
 from typing import Callable, Union, List, Tuple
 
-def Adam_optimizer(f_torch: Callable[[torch.Tensor], torch.Tensor], 
-                   x_0: Union[np.ndarray, list], 
-                   step_size: float = 0.001, 
-                   max_iter: int = 100) -> Tuple[np.ndarray, List[float]]:
+def Adam(
+    f_torch: Callable[[torch.Tensor], torch.Tensor], 
+    x_0: Union[np.ndarray, list], 
+    step_size: float = 0.001, 
+    max_iter: int = 100
+) -> Tuple[np.ndarray, List[float]]:
     """
     Performs optimization using the Adam algorithm from PyTorch.
 
@@ -50,10 +52,12 @@ def Adam_optimizer(f_torch: Callable[[torch.Tensor], torch.Tensor],
 
     return x.detach().numpy(), values
 
-def BFGS_optimizer(f_np: Callable[[np.ndarray], float], 
-                   x_0: np.ndarray, 
-                   max_iter: int = 100, 
-                   gtol: float = 1e-6) -> Tuple[np.ndarray, List[float]]:
+def BFGS(
+    f_np: Callable[[np.ndarray], float], 
+    x_0: np.ndarray, 
+    max_iter: int = 100, 
+    gtol: float = 1e-6
+) -> Tuple[np.ndarray, List[float]]:
     """
     Performs optimization using the BFGS algorithm from SciPy.
 
@@ -93,10 +97,12 @@ def BFGS_optimizer(f_np: Callable[[np.ndarray], float],
 
     return result.x, values
 
-def Gradient_descent_method(f_torch: Callable[[torch.Tensor], torch.Tensor], 
-                            x_0: Union[np.ndarray, list], 
-                            step_size: float = 0.001, 
-                            max_iter: int = 100) -> Tuple[np.ndarray, List[float]]: # type: ignore
+def Gradient_descent_method(
+    f_torch: Callable[[torch.Tensor], torch.Tensor], 
+    x_0: Union[np.ndarray, list], 
+    step_size: float = 0.001, 
+    max_iter: int = 100
+) -> Tuple[np.ndarray, List[float]]: # type: ignore
     """
     Performs optimization using the standard gradient descent algorithm.
 

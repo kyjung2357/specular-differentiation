@@ -1,0 +1,12 @@
+\begin{tabular}{llll}
+\toprule
+Method & Mean Min Error & Median Min Error & Std Dev \\
+\midrule
+ISGM & $1.64 \times 10^{-1}$ & $2.84 \times 10^{-9}$ & $3.79 \times 10^{-1}$ \\
+SPEG geo & $1.64 \times 10^{-1}$ & $2.84 \times 10^{-9}$ & $3.79 \times 10^{-1}$ \\
+SPEG sq & $4.14 \times 10^{-10}$ & $2.00 \times 10^{-10}$ & $8.74 \times 10^{-10}$ \\
+GD & $7.95 \times 10^{-3}$ & $5.43 \times 10^{-7}$ & $6.55 \times 10^{-2}$ \\
+Adam & $4.04 \times 10^{-7}$ & $5.05 \times 10^{-8}$ & $1.14 \times 10^{-6}$ \\
+BFGS & $5.12 \times 10^{-11}$ & $4.03 \times 10^{-11}$ & $2.53 \times 10^{-11}$ \\
+\bottomrule
+\end{tabular}

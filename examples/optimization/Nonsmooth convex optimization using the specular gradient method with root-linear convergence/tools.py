@@ -1,83 +1,111 @@
 import specular
 import numpy as np
 import pandas as pd
-from tqdm import tqdm 
+from tqdm import tqdm  
 import matplotlib.pyplot as plt
 from IPython.display import clear_output, display
 import matplotlib
+import sys
+import os
+import torch
+from concurrent.futures import ProcessPoolExecutor 
+
 matplotlib.rcParams['mathtext.fontset'] = 'cm'
 plt.rcParams["font.family"] = "Times New Roman"
 
-import sys
-import os
-sys.path.append(os.path.abspath(".."))
-from classical_methods import Adam_optimizer, BFGS_optimizer, Gradient_descent_method
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
 
-print("version of specular: ", specular.__version__)
+if parent_dir not in sys.path:
+    sys.path.append(parent_dir)
 
+from classical_methods import Adam, BFGS, Gradient_descent_method
+
+# -----------------------------------------------------------
+# [1] Auxiliary functions
+# -----------------------------------------------------------
 def ensure_length(data, length):
     data = list(data)
-    if len(data) == 0:
-        return [0.0] * length 
-    
-    if len(data) < length:
-        return data + [data[-1]] * (length - len(data))
-    else:
-        return data[:length]
+    if len(data) == 0: return [0.0] * length 
+    if len(data) < length: return data + [data[-1]] * (length - len(data))
+    else: return data[:length]
     
 def format_sci_latex(x):
     if isinstance(x, str): return x
-
     if x == 0: return "0"
-    
     s = "{:.2e}".format(x) 
     base, exponent = s.split('e')
-    exponent = int(exponent) 
-    
-    return fr"${base} \times 10^{{{exponent}}}$"
+    return fr"${base} \times 10^{{{int(exponent)}}}$"
 
-def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_path=False):
+# -----------------------------------------------------------
+# [2] A single function
+# -----------------------------------------------------------
+def run_single_experiment(args):
+    seed, f, f_torch, max_iter = args
+    
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.set_num_threads(1) 
+
+    history = {}
+    x_0_val = np.random.randn(1)
+    
+    # ==== Specular Methods ====
+    step_size1 = specular.StepSize(name='geometric_series', parameters=[1, 0.5])
+    
+    # ISGM
+    _, res = specular.gradient_method(f=f, x_0=x_0_val, step_size=step_size1, form='implicit', max_iter=max_iter, print_bar=False).history()
+    history["ISGM"] = ensure_length(res, max_iter)
+
+    # SPEG (geometric series)
+    _, res = specular.gradient_method(f=f, x_0=x_0_val, step_size=step_size1, max_iter=max_iter, print_bar=False).history()
+    history["SPEG geo"] = ensure_length(res, max_iter)
+
+    # SPEG (square summable not summable)
+    step_size2 = specular.StepSize(name='square_summable_not_summable', parameters=[2, 0])
+    _, res = specular.gradient_method(f=f, x_0=x_0_val, step_size=step_size2, max_iter=max_iter, print_bar=False).history()
+    history["SPEG sq"] = ensure_length(res, max_iter)
+
+    # ==== Classical Methods ====
+    
+    # Gradient Descent
+    _, res = Gradient_descent_method(f_torch=f_torch, x_0=x_0_val, step_size=0.001, max_iter=max_iter)
+    history["GD"] = ensure_length(res, max_iter)
+
+    # Adam
+    _, res = Adam(f_torch=f_torch, x_0=x_0_val, step_size=0.01, max_iter=max_iter)
+    history["Adam"] = ensure_length(res, max_iter)
+
+    # BFGS
+    _, res = BFGS(f_np=f, x_0=x_0_val, max_iter=max_iter)
+    history["BFGS"] = ensure_length(res, max_iter)
+    
+    return history
+
+# -----------------------------------------------------------
+# [3] Main function
+# -----------------------------------------------------------
+def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_name=False):
     histories = {"ISGM": [], "SPEG geo": [], "SPEG sq": [], "GD": [], "Adam": [], "BFGS": []}
 
-    for run in tqdm(range(num_runs), desc="Running Experiments"):
-        x_0_val = np.random.randn(1)
-        
-        # --- Specular gradient methods ---
-        step_size1 = specular.StepSize(name='geometric_series', parameters=[1, 0.5])
-        
-        # ISGM
-        _, res_ISGM = specular.gradient_method(f=f, x_0=x_0_val, step_size=step_size1, form='implicit', max_iter=max_iter, print_bar=False).history()
-        histories["ISGM"].append(ensure_length(res_ISGM, max_iter))
+    seeds = range(num_runs)
+    tasks = [(seed, f, f_torch, max_iter) for seed in seeds]
 
-        # SPEG (Geometric)
-        _, res_SPEG_geo = specular.gradient_method(f=f, x_0=x_0_val, step_size=step_size1, max_iter=max_iter, print_bar=False).history()
-        histories["SPEG geo"].append(ensure_length(res_SPEG_geo, max_iter))
+    print(f"Starting parallel execution with {os.cpu_count()} cores...")
 
-        # SPEG (Square Summable)
-        step_size2 = specular.StepSize(name='square_summable_not_summable', parameters=[2, 0])
-        _, res_SPEG_sq = specular.gradient_method(f=f, x_0=x_0_val, step_size=step_size2, max_iter=max_iter, print_bar=False).history()
-        histories["SPEG sq"].append(ensure_length(res_SPEG_sq, max_iter))
+    with ProcessPoolExecutor() as executor:
+        results = list(tqdm(executor.map(run_single_experiment, tasks), total=num_runs, desc="Running Experiments"))
 
-        # --- Classical Methods ---
-
-        # Gradient Descent
-        _, res_gd = Gradient_descent_method(f_torch=f_torch, x_0=x_0_val, step_size=0.001, max_iter=max_iter)
-        histories["GD"].append(ensure_length(res_gd, max_iter))
-
-        #  Adam
-        _, res_adam = Adam_optimizer(f_torch=f_torch, x_0=x_0_val, step_size=0.01, max_iter=max_iter)
-        histories["Adam"].append(ensure_length(res_adam, max_iter))
-
-        #  BFGS 
-        _, res_bfgs = BFGS_optimizer(f_np=f, x_0=x_0_val, max_iter=max_iter)
-        histories["BFGS"].append(ensure_length(res_bfgs, max_iter))
+    for single_history in results:
+        for method, data in single_history.items():
+            histories[method].append(data)
 
     # ==== Visualization ====
     plt.figure(figsize=(7, 3))
     x_axis = range(1, max_iter + 1)
 
-    colors = {'ISGM': 'red', 'SPEG geo': 'blue', 'SPEG sq': 'black', 'GD': 'green', 'Adam': 'brown', 'BFGS': 'purple'}
-    linestyles = {'ISGM': '-', 'SPEG geo': '-', 'SPEG sq': '-', 'GD': '-.', 'Adam': '-.', 'BFGS': '-.'}
+    colors = {'ISGM': 'blue', 'SPEG geo': 'red', 'SPEG sq': 'orange', 'GD': 'green', 'Adam': 'brown', 'BFGS': 'black'}
+    linestyles = {'ISGM': '-', 'SPEG geo': '-', 'SPEG sq': '-', 'GD': '-', 'Adam': '-', 'BFGS': '-'}
 
     for name, data in histories.items():
         arr = np.array(data)
@@ -94,19 +122,27 @@ def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_pat
     plt.xlabel('Iteration $k$', fontsize='10')
     plt.ylabel(r'Objective function value $f(x_k)$', fontsize='10') 
     plt.yscale('log')
+    # plt.xscale('log') 
     plt.legend(bbox_to_anchor=(1.02, 0.5), loc='center left', fontsize='10', frameon=True)
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
     plt.tight_layout()
 
-    if save_path is not False:
-        if not os.path.exists('figures'):
-            os.makedirs('figures')
-        
-        path = 'figures/' + save_path # type: ignore
-        plt.savefig(path, dpi=1000, bbox_inches='tight')
+    if save_name:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        figures_dir = os.path.join(current_dir, 'figures')
 
-    plt.show()
+        if not os.path.exists(figures_dir):
+            os.makedirs(figures_dir)
 
+        fig_name = f"figure {save_name}.png"
+        fig_path = os.path.join(figures_dir, fig_name)
+
+        plt.savefig(fig_path, dpi=500, bbox_inches='tight') # type: ignore
+        print(f"[Saved] Plot saved to: {fig_path}")
+
+    # plt.show()
+
+    # ==== Table ====
     table_data = []
     for name, runs in histories.items():
         best_errors = [np.min(run_history) for run_history in runs]
@@ -128,7 +164,19 @@ def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_pat
     print(f"\n=== Performance Summary ({num_runs} runs) ===")
     display(df_display)
 
-    # LaTeX 코드 출력
     if latex_code:
-        print("\n=== LaTeX Code ===")
-        print(df_display.to_latex(index=False, escape=False))
+        latex_str = df_display.to_latex(index=False, escape=False)
+
+        if save_name:
+            table_dir = os.path.join(current_dir, 'tables') # type: ignore
+
+            if not os.path.exists(table_dir):
+                os.makedirs(table_dir)
+
+            table_name = f"table {save_name}.txt"
+            table_path = os.path.join(table_dir, table_name)
+
+            with open(table_path, "w", encoding="utf-8") as txt_file:
+                txt_file.write(latex_str)
+            
+            print(f"[Saved] Table saved to: {table_path}")    
