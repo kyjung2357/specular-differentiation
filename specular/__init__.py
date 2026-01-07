@@ -16,11 +16,11 @@ from .ode import (
 )
 
 from .optimization import (
-    StepSize, 
+    StepSize,
     gradient_method
 )
 
-__version__ = "0.9.3"
+__version__ = "0.10.0"
 __license__ = "MIT"
 __author__ = "Kiyuob Jung"
 __email__ = "kyjung@msu.edu"
@@ -28,9 +28,9 @@ __email__ = "kyjung@msu.edu"
 __all__ = [
     "A",
     "derivative",
-    "directional_derivative", 
+    "directional_derivative",
     "partial_derivative",
-    "gradient", 
+    "gradient",
     "ode",
     "classical_scheme",
     "Euler_scheme",

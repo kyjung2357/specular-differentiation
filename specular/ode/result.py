@@ -6,7 +6,7 @@ from typing import Optional, Callable, Tuple
 
 class ODEResult:
     def __init__(
-        self, 
+        self,
         scheme: str,
         h: float,
         all_history: dict
@@ -32,7 +32,7 @@ class ODEResult:
     def visualization(
         self, 
         figure_size: tuple = (5.5, 2.5), 
-        exact_sol: Optional[Callable[[float], float]] = None,                       
+        exact_sol: Optional[Callable[[float], float]] = None,
         save_path: Optional[str] = None
     ):
         plt.figure(figsize=figure_size)
@@ -71,7 +71,7 @@ class ODEResult:
         return self
 
     def table(self,
-        exact_sol: Optional[Callable[[float], float]] = None,   
+        exact_sol: Optional[Callable[[float], float]] = None,
         save_path: Optional[str] = None
     ):
         
@@ -96,7 +96,7 @@ class ODEResult:
                 if not full_path.endswith(".csv"):
                     full_path += ".csv"
                 
-                result.to_csv(full_path) 
+                result.to_csv(full_path)
             
             print(f"Table saved: {full_path}")
 
@@ -141,7 +141,7 @@ class ODEResult:
         if exact_values.shape != self.numerical_sol.shape:
              raise ValueError(f"Shape mismatch: exact_sol {exact_values.shape} vs numerical_sol {self.numerical_sol.shape}")
         
-        error_vector = np.abs(exact_values - self.numerical_sol) 
+        error_vector = np.abs(exact_values - self.numerical_sol)
 
         if norm == 'max':
             return float(np.max(error_vector))

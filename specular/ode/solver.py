@@ -121,7 +121,7 @@ def classical_scheme(
             else:
                 print(f"Warning: step {k+1} did not converge.")
 
-            t_curr, u_curr = t_next, u_guess  
+            t_curr, u_curr = t_next, u_guess
             t_history.append(t_curr)
             u_history.append(u_curr)
             
@@ -139,7 +139,7 @@ def classical_scheme(
 
 def Euler_scheme(
     of_Type: int | str,
-    F: Callable[[float, float], float], 
+    F: Callable[[float, float], float],
     t_0: float, 
     u_0: Callable[[float], float] | float,
     T: float, 
@@ -178,7 +178,7 @@ def Euler_scheme(
         Tolerance for fixed-point iteration
         Used for Types 3, 4, 5, and 6.
     zero_tol : float | np.floating
-        A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability. 
+        A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability.
         Default: ``1e-6``.
     max_iter : int | optional
         Max iterations for fixed-point solver.
@@ -199,7 +199,7 @@ def Euler_scheme(
 
     if Type in ['1', '2', '3']:
         t_prev = t_0
-        u_prev = u_0(t_0) if callable(u_0) else u_0 
+        u_prev = u_0(t_0) if callable(u_0) else u_0
 
         t_history.append(t_prev)
         u_history.append(u_prev)
@@ -208,7 +208,7 @@ def Euler_scheme(
 
         if u_1 == False:
             # explicit Euler to get u_1
-            u_curr = u_prev + h * F(t_prev, u_prev)    
+            u_curr = u_prev + h * F(t_prev, u_prev)
         else:
             u_curr = u_1
         
@@ -247,7 +247,8 @@ def Euler_scheme(
                 u_temp = u_curr + h * F(t_curr, u_curr) # type: ignore
                 u_guess = u_temp
 
-                beta = F(t_prev, u_prev)  # type: ignore # fixed second argument
+                # fixed second argument
+                beta = F(t_prev, u_prev)  # type: ignore 
                 
                 # Fixed-point iteration
                 for _ in range(max_iter):
@@ -315,7 +316,7 @@ def Euler_scheme(
                 # Fixed-point iteration
                 for _ in range(max_iter):
                     alpha = F(t_curr, u_temp)
-                    u_guess = u_curr + h * A(alpha, beta, zero_tol=zero_tol)    
+                    u_guess = u_curr + h * A(alpha, beta, zero_tol=zero_tol)
 
                     if abs(u_guess - u_temp) < tol:
                         break
@@ -343,7 +344,7 @@ def Euler_scheme(
                     alpha = F(t_next, u_temp)
                     beta = (u_temp - u_curr) / h
 
-                    u_guess = u_curr + h * A(alpha, beta, zero_tol=zero_tol) 
+                    u_guess = u_curr + h * A(alpha, beta, zero_tol=zero_tol)
 
                     if abs(u_guess - u_temp) < tol:
                         break
@@ -353,7 +354,7 @@ def Euler_scheme(
                     print(f"Warning: fixed-point iteration did not converge at step {k+1}")
 
                 # Update for next step
-                t_curr, u_curr = t_next, u_guess    
+                t_curr, u_curr = t_next, u_guess
 
                 t_history.append(t_curr)
                 u_history.append(u_curr)
@@ -363,14 +364,14 @@ def Euler_scheme(
     all_history["variables"] = np.array(t_history)
     all_history["values"] = np.array(u_history)
 
-    return ODEResult( 
+    return ODEResult(
         scheme=scheme,
         h=h,
         all_history=all_history
     )
 
 def trigonometric_scheme(
-    F: Callable[[float], float], 
+    F: Callable[[float], float],
     t_0: float, 
     u_0: Callable[[float], float] | float,
     u_1: Callable[[float], float] | float,
@@ -406,7 +407,7 @@ def trigonometric_scheme(
         An object containing ``(t, u)`` data and the scheme name.
     """
     t_prev = t_0
-    u_prev = u_0(t_0) if callable(u_0) else u_0 
+    u_prev = u_0(t_0) if callable(u_0) else u_0
 
     t_curr = t_0 + h
     u_curr = u_1(t_curr) if callable(u_1) else u_1
