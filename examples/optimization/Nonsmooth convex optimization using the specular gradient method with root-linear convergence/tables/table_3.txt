@@ -1,6 +1,6 @@
 \begin{tabular}{llll}
 \toprule
-Method & Mean Min Error & Median Min Error & Std Dev \\
+Method & Mean & Median & Standard deviation \\
 \midrule
 ISGM & $5.40 \times 10^{-2}$ & $5.76 \times 10^{-14}$ & $1.36 \times 10^{-1}$ \\
 SPEG geo & $5.40 \times 10^{-2}$ & $1.99 \times 10^{-13}$ & $1.36 \times 10^{-1}$ \\

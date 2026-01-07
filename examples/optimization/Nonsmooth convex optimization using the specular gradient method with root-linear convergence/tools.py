@@ -153,14 +153,14 @@ def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_nam
         best_errors = [np.min(run_history) for run_history in runs]
         table_data.append({
             "Method": name,
-            "Mean Min Error": np.mean(best_errors),
-            "Median Min Error": np.median(best_errors),
-            "Std Dev": np.std(best_errors)
+            "Mean": np.mean(best_errors),
+            "Median": np.median(best_errors),
+            "Standard deviation": np.std(best_errors)
         })
 
     df_summary = pd.DataFrame(table_data)
     df_display = df_summary.copy()
-    cols_to_format = ["Mean Min Error", "Median Min Error", "Std Dev"]
+    cols_to_format = ["Mean", "Median", "Standard deviation"]
     
     for col in cols_to_format:
         if col in df_display.columns:
