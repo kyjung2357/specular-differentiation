@@ -2,7 +2,7 @@
 \toprule
 Method & Mean & Median & Standard deviation \\
 \midrule
-ISGM & $1.38 \times 10^{1}$ & $3.19 \times 10^{-13}$ & $4.19 \times 10^{1}$ \\
+ISPEG & $1.38 \times 10^{1}$ & $3.19 \times 10^{-13}$ & $4.19 \times 10^{1}$ \\
 SPEG geo & $1.38 \times 10^{1}$ & $2.29 \times 10^{-12}$ & $4.19 \times 10^{1}$ \\
 SPEG sq & $9.45 \times 10^{-8}$ & $2.51 \times 10^{-12}$ & $9.40 \times 10^{-7}$ \\
 GD geo & $6.50 \times 10^{-2}$ & $3.75 \times 10^{-2}$ & $6.97 \times 10^{-2}$ \\

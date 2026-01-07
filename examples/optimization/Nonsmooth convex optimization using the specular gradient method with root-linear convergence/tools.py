@@ -55,9 +55,9 @@ def run_single_experiment(args):
     # ==== Specular Methods ====
     step_size1 = specular.StepSize(name='geometric_series', parameters=[1, 0.5])
     
-    # ISGM
+    # ISPEG
     _, res = specular.gradient_method(f=f, x_0=x_0_val, step_size=step_size1, form='implicit', max_iter=max_iter, print_bar=False).history()
-    history["ISGM"] = ensure_length(res, max_iter)
+    history["ISPEG"] = ensure_length(res, max_iter)
 
     # SPEG (geometric series)
     _, res = specular.gradient_method(f=f, x_0=x_0_val, step_size=step_size1, max_iter=max_iter, print_bar=False).history()
@@ -92,7 +92,7 @@ def run_single_experiment(args):
 # [3] Main function
 # -----------------------------------------------------------
 def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_name=False):
-    histories = {"ISGM": [], "SPEG geo": [], "SPEG sq": [], "GD geo": [], "GD sq": [], "Adam": [], "BFGS": []}
+    histories = {"ISPEG": [], "SPEG geo": [], "SPEG sq": [], "GD geo": [], "GD sq": [], "Adam": [], "BFGS": []}
 
     seeds = range(num_runs)
     tasks = [(seed, f, f_torch, max_iter) for seed in seeds]
@@ -110,8 +110,8 @@ def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_nam
     plt.figure(figsize=(7, 3))
     x_axis = range(1, max_iter + 1)
 
-    colors = {'ISGM': 'blue', 'SPEG geo': 'red', 'SPEG sq': 'orange', 'GD geo': 'darkgreen', 'GD sq': 'limegreen', 'Adam': 'brown', 'BFGS': 'black'}
-    linestyles = {'ISGM': '-', 'SPEG geo': '-', 'SPEG sq': '-', 'GD geo': '-', 'GD sq': '-', 'Adam': '-', 'BFGS': '-'}
+    colors = {'ISPEG': 'blue', 'SPEG geo': 'red', 'SPEG sq': 'orange', 'GD geo': 'darkgreen', 'GD sq': 'limegreen', 'Adam': 'brown', 'BFGS': 'black'}
+    linestyles = {'ISPEG': '-', 'SPEG geo': '-', 'SPEG sq': '-', 'GD geo': '-', 'GD sq': '-', 'Adam': '-', 'BFGS': '-'}
 
     for name, data in histories.items():
         arr = np.array(data)
