@@ -1,6 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 import time
+import inspect
 from typing import Callable, List, Tuple, Optional, TypeAlias, Sequence
 from .result import OptimizationResult
 from .step_size import StepSize
@@ -19,7 +20,8 @@ def gradient_method(
     tol: float = 1e-6,
     zero_tol: float = 1e-8,
     max_iter: int = 1000,
-    f_j: Sequence[ComponentFunc] | None = None,
+    f_j: Sequence[ComponentFunc] | Callable | None = None,
+    m: int = 1,
     switch_iter: int | None = 2,
     record_history: bool = True,
     print_bar: bool = True
@@ -51,10 +53,17 @@ def gradient_method(
     max_iter : int, optional
         Maximum number of iterations.
         Default: ``1000``.
-    f_j : sequence of callable | None, optional
+    f_j : sequence of callable | callable | None, optional
         The component function of ``f``.
         Used for the stochastic and hybrid forms to compute a random component of the objective function.
         Default: ``None``.
+
+        * If a sequence of callables is provided, each callable should accept a single argument (the variable `x`).
+
+        * If a single callable is provided, it should accept two arguments: the variable `x` and an index `j`, and return the `j`-th component function value at `x`.
+    m : int, optional
+        The number of component functions.
+        Used for the stochastic and hybrid forms.
     switch_iter : int | None, optional
         The iteration to switch from a method to another for the hybrid form.
         Used for the hybrid form only.
@@ -101,7 +110,7 @@ def gradient_method(
                 raise ValueError("Component functions 'f_j' must be provided for the stochastic form.")
 
             form = 'stochastic specular gradient'
-            res_x, res_f, res_k = _vector_stochastic(f_j, f, f_history, x, x_history, step_size, h, tol, zero_tol, max_iter, record_history, print_bar)
+            res_x, res_f, res_k = _vector_stochastic(f, f_history, x, x_history, step_size, h, tol, zero_tol, f_j, m, max_iter, record_history, print_bar) # type: ignore
 
         elif form == 'hybrid':
             if f_j is None:
@@ -111,7 +120,7 @@ def gradient_method(
             switch_iter = switch_iter if switch_iter is not None else max_iter
 
             res_x, res_f, res_k = _vector(f, f_history, x, x_history, step_size, h, tol, zero_tol, switch_iter, record_history, print_bar)
-            res_x, res_f, res_k = _vector_stochastic(f_j, f, f_history, res_x, x_history, step_size, h, tol, zero_tol, max_iter - switch_iter, record_history, print_bar)
+            res_x, res_f, res_k = _vector_stochastic(f, f_history, res_x, x_history, step_size, h, tol, zero_tol, f_j, m, max_iter, record_history, print_bar) # type: ignore
 
         else:
             raise TypeError(f"Unknown form '{form}'. Supported forms: {SUPPORTED_METHODS}")
@@ -154,12 +163,12 @@ def _scalar(
     x: int | float,
     x_history: list,
     step_size: StepSize,
-    h: float = 1e-6,
-    tol: float = 1e-6,
-    zero_tol: float = 1e-8,
-    max_iter: int = 1000,
-    record_history: bool = True,
-    print_bar: bool = True
+    h: float,
+    tol: float,
+    zero_tol: float,
+    max_iter: int,
+    record_history: bool,
+    print_bar: bool
 ) -> tuple:
     """
     Scalar implementation of :func:`gradient_method`.
@@ -188,11 +197,11 @@ def _scalar_implicit(
     x: int | float,
     x_history: list,
     step_size: StepSize,
-    h: float = 1e-6,
-    tol: float = 1e-6,
-    max_iter: int = 1000,
-    record_history: bool = True,
-    print_bar: bool = True
+    h: float,
+    tol: float,
+    max_iter: int,
+    record_history: bool,
+    print_bar: bool
 ) -> tuple:
     """
     Scalar implementation of :func:`gradient_method`.
@@ -221,12 +230,12 @@ def _vector(
     x: list | np.ndarray,
     x_history: list,
     step_size: StepSize,
-    h: float = 1e-6,
-    tol: float = 1e-6,
-    zero_tol: float = 1e-8,
-    max_iter: int = 1000, 
-    record_history: bool = True,
-    print_bar: bool = True
+    h: float,
+    tol: float,
+    zero_tol: float,
+    max_iter: int, 
+    record_history: bool,
+    print_bar: bool
 ) -> tuple:
     """
     Vector implementation of :func:`gradient_method`.
@@ -251,15 +260,16 @@ def _vector(
     return x, f(x), k
 
 def _vector_stochastic(
-    f_j: Sequence[ComponentFunc],
     f: Callable[[list | np.ndarray], int | float | np.number],
     f_history: list,
     x: list | np.ndarray,
     x_history: list,
     step_size: StepSize,
-    h: float = 1e-6,
-    tol: float = 1e-6,
-    zero_tol: float = 1e-8,
+    h: float,
+    tol: float,
+    zero_tol: float,
+    f_j: Sequence[ComponentFunc],
+    m: int = 1,
     max_iter: int = 1000, 
     record_history: bool = True,
     print_bar: bool = True
@@ -271,13 +281,38 @@ def _vector_stochastic(
     k = 1
 
     for _ in tqdm(range(1, max_iter + 1), desc="Running the stochastic specular gradient method", disable=not print_bar):
+        if hasattr(f_j, '__len__'):
+            num_components = len(f_j)
+        else:
+            num_components = m
+        
         # A random index j is selected at each iteration
-        j = np.random.randint(len(f_j))
+        j = np.random.randint(num_components)
         component_func = f_j[j]
 
         if record_history is True:
             x_history.append(x)
             f_history.append(f(x)) 
+
+        try:
+            component_func = f_j[j]
+
+        except (TypeError, IndexError):
+            if not callable(f_j):
+                raise TypeError(f"f_j must be a list of functions or a callable. Got {type(f_j)} instead.")
+            
+            sig = inspect.signature(f_j)
+            params = list(sig.parameters.values())
+
+            has_varargs = any(p.kind in (p.VAR_POSITIONAL, p.VAR_KEYWORD) for p in params)
+
+            if len(params) < 2 and not has_varargs:
+                raise ValueError(
+                    f"The function f_j must accept at least 2 arguments (x and index). "
+                    f"Current signature is: {sig}"
+                )
+
+            component_func = lambda x_val: f_j(x_val, j)
 
         component_specular_gradient = gradient(f=component_func, x=x, h=h, zero_tol=zero_tol)
         norm = np.linalg.norm(component_specular_gradient)
