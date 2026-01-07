@@ -1,5 +1,5 @@
-from result import OptimizationResult
-from step_size import StepSize
+from .result import OptimizationResult
+from .step_size import StepSize
 import time
 import torch
 import numpy as np
@@ -58,7 +58,7 @@ def gradient_descent_method(
 def Adam(
     f_torch: Callable[[torch.Tensor], torch.Tensor],
     x_0: Union[np.ndarray, list],
-    step_size: StepSize,
+    step_size: StepSize | float,
     max_iter: int = 100
 ) -> OptimizationResult:
     """

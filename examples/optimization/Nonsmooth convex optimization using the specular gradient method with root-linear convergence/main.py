@@ -1,6 +1,7 @@
 import torch
 import numpy as np
-from tools import repeat_experiment 
+# from tools import repeat_experiment 
+from analysis import repeat_experiment 
 
 # First example
 def f_1(x): 
