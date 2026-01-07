@@ -177,7 +177,7 @@ def _scalar(
     """
     k = 1
 
-    for _ in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method", disable=not print_bar):
+    for _ in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method", disable=not print_bar, leave=False):
         if record_history is True:
             x_history.append(x)
             f_history.append(f(x))
@@ -210,7 +210,7 @@ def _scalar_implicit(
     """
     k = 1
 
-    for _ in tqdm(range(1, max_iter + 1), desc="Running the implicit specular gradient method", disable=not print_bar):
+    for _ in tqdm(range(1, max_iter + 1), desc="Running the implicit specular gradient method", disable=not print_bar, leave=False):
         if record_history is True:
             x_history.append(x)
             f_history.append(f(x))
@@ -244,7 +244,7 @@ def _vector(
     """
     k = 1
 
-    for _ in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method", disable=not print_bar):
+    for _ in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method", disable=not print_bar, leave=False):
         if record_history is True:
             x_history.append(x)
             f_history.append(f(x))
@@ -281,7 +281,7 @@ def _vector_stochastic(
     """
     k = 1
 
-    for _ in tqdm(range(1, max_iter + 1), desc="Running the stochastic specular gradient method", disable=not print_bar):
+    for _ in tqdm(range(1, max_iter + 1), desc="Running the stochastic specular gradient method", disable=not print_bar, leave=False):
         if record_history is True:
             x_history.append(x)
             f_history.append(f(x)) 

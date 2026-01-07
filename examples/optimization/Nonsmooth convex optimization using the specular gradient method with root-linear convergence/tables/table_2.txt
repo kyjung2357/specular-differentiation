@@ -2,11 +2,11 @@
 \toprule
 Method & Mean & Median & Standard deviation \\
 \midrule
-ISPEG & $1.64 \times 10^{-1}$ & $2.84 \times 10^{-9}$ & $3.79 \times 10^{-1}$ \\
-SPEG geo & $1.64 \times 10^{-1}$ & $2.84 \times 10^{-9}$ & $3.79 \times 10^{-1}$ \\
-SPEG sq & $1.28 \times 10^{-9}$ & $2.00 \times 10^{-10}$ & $9.12 \times 10^{-9}$ \\
-GD geo & $8.82 \times 10^{-2}$ & $4.45 \times 10^{-5}$ & $2.26 \times 10^{-1}$ \\
-GD sq & $1.48 \times 10^{-6}$ & $2.73 \times 10^{-6}$ & $1.33 \times 10^{-6}$ \\
+I-SPEG & $1.64 \times 10^{-1}$ & $2.84 \times 10^{-9}$ & $3.79 \times 10^{-1}$ \\
+SPEG-g & $1.64 \times 10^{-1}$ & $2.84 \times 10^{-9}$ & $3.79 \times 10^{-1}$ \\
+SPEG-s & $1.28 \times 10^{-9}$ & $2.00 \times 10^{-10}$ & $9.12 \times 10^{-9}$ \\
+GD-g & $8.82 \times 10^{-2}$ & $4.45 \times 10^{-5}$ & $2.26 \times 10^{-1}$ \\
+GD-s & $1.48 \times 10^{-6}$ & $2.73 \times 10^{-6}$ & $1.33 \times 10^{-6}$ \\
 Adam & $4.04 \times 10^{-7}$ & $5.05 \times 10^{-8}$ & $1.14 \times 10^{-6}$ \\
 BFGS & $5.12 \times 10^{-11}$ & $4.03 \times 10^{-11}$ & $2.53 \times 10^{-11}$ \\
 \bottomrule

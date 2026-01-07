@@ -8,12 +8,12 @@ if current_dir not in sys.path:
 from analysis import run_experiment, run_single_trial
 
 if __name__ == '__main__':
-    m, n = 100, 50
-    iteration = 10
+    m, n = 50, 10
+    iteration = 100
     trials = 20
     
-    file_id = "2"
-    lambda1 = 1.0
+    file_id = "5"
+    lambda1 = 100.0
     lambda2 = 1.0
 
     print(f"=== Experiment {file_id} Start ===")

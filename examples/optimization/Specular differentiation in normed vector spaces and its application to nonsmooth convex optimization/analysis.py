@@ -61,33 +61,42 @@ def run_single_trial(args):
     trial_results = {}
     trial_times = {}
 
-    step_size_obj = specular.StepSize(name='square_summable_not_summable', parameters=[4.0, 0.0])
+    step_size_squ = specular.StepSize(name='square_summable_not_summable', parameters=[4.0, 0.0])
+    step_size_geo = specular.StepSize(name='geometric_series', parameters=[1.0, 0.9])
 
     # ==== Specular gradient methods ====
     
     # SPEG
     start_time = time.time()
     _, res = specular.gradient_method(
-        f=f, x_0=x_0, step_size=step_size_obj, tol=1e-10, max_iter=iteration, print_bar=True
+        f=f, x_0=x_0, step_size=step_size_squ, tol=1e-10, max_iter=iteration, print_bar=True
     ).history()
-    trial_results["SPEG"] = ensure_length(res, iteration)
-    trial_times["SPEG"] = time.time() - start_time
+    trial_results["SPEG-s"] = ensure_length(res, iteration)
+    trial_times["SPEG-s"] = time.time() - start_time
+
+    # SPEG geo
+    start_time = time.time()
+    _, res = specular.gradient_method(
+        f=f, x_0=x_0, step_size=step_size_geo, tol=1e-10, max_iter=iteration, print_bar=True
+    ).history()
+    trial_results["SPEG-g"] = ensure_length(res, iteration)
+    trial_times["SPEG-g"] = time.time() - start_time
 
     # SSPEG
     start_time = time.time()
     _, res = specular.gradient_method(
-        f=f, x_0=x_0, step_size=step_size_obj, form='stochastic', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m, print_bar=True # type: ignore
+        f=f, x_0=x_0, step_size=step_size_squ, form='stochastic', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m, print_bar=True # type: ignore
     ).history()
-    trial_results["SSPEG"] = ensure_length(res, iteration)
-    trial_times["SSPEG"] = time.time() - start_time
+    trial_results["S-SPEG"] = ensure_length(res, iteration)
+    trial_times["S-SPEG"] = time.time() - start_time
     
     # # HSPEG
     start_time = time.time()
     _, res = specular.gradient_method(
-        f=f, x_0=x_0, step_size=step_size_obj, form='hybrid', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m,switch_iter=10, print_bar=True # type: ignore
+        f=f, x_0=x_0, step_size=step_size_squ, form='hybrid', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m,switch_iter=10, print_bar=True # type: ignore
     ).history()
-    trial_results["HSPEG"] = ensure_length(res, iteration)
-    trial_times["HSPEG"] = time.time() - start_time
+    trial_results["H-SPEG"] = ensure_length(res, iteration)
+    trial_times["H-SPEG"] = time.time() - start_time
 
     # ==== Classical Methods ====
 
@@ -125,7 +134,7 @@ def run_experiment(file_number, trials, iteration, m, n, lambda1, lambda2):
     print(f"\n[Experiment Start] Number: {file_number}")
     print(f"Settings: m={m}, n={n}, λ1={lambda1}, λ2={lambda2}")
 
-    methods = ["SPEG", "SSPEG", "HSPEG", "GD", "Adam", "BFGS"]
+    methods = ["SPEG-s", "SPEG-g", "S-SPEG", "H-SPEG", "GD", "Adam", "BFGS"]
     all_results = {method: [] for method in methods}
     running_times = {method: [] for method in methods}
     summary_stats = {}
@@ -156,7 +165,7 @@ def run_experiment(file_number, trials, iteration, m, n, lambda1, lambda2):
     print("\n[Analysis]")
     print(" Generating plots and tables")
 
-    colors = {'SPEG': 'red', 'GD': 'orange', 'SSPEG': 'blue', 'Adam': 'skyblue', 'HSPEG': 'purple', 'BFGS': 'black'}
+    colors = {'SPEG-s': 'red', 'GD': 'orange', 'S-SPEG': 'blue', 'Adam': 'brown', 'H-SPEG': 'purple', 'BFGS': 'black', 'SPEG-g': 'green'}
     
     plt.figure(figsize=(7.5, 3))
 
@@ -210,8 +219,8 @@ def run_experiment(file_number, trials, iteration, m, n, lambda1, lambda2):
     os.makedirs(os.path.join(base_dir, 'tables'), exist_ok=True)
     os.makedirs(os.path.join(base_dir, 'figures'), exist_ok=True)
     
-    path_txt = os.path.join(base_dir, f'tables/table_{file_number}_({m}_{n}_{lambda1}_{lambda2}).txt')
-    path_fig = os.path.join(base_dir, f'figures/figure_{file_number}_({m}_{n}_{lambda1}_{lambda2}).png')
+    path_txt = os.path.join(base_dir, f'tables/table_{file_number}_({m},{n},{lambda1},{lambda2}).txt')
+    path_fig = os.path.join(base_dir, f'figures/figure_{file_number}_({m},{n},{lambda1},{lambda2}).png')
 
     with open(os.path.join(base_dir, path_txt), "w", encoding="utf-8") as table_file:
         table_file.write(display_df.to_latex(escape=False))

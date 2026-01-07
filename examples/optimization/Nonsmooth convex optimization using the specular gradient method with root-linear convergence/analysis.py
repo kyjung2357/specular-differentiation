@@ -37,37 +37,37 @@ def run_single_experiment(args):
     # ISPEG
     _, res = specular.gradient_method(
         f=f, x_0=x_0_val, step_size=step_size1, form='implicit', 
-        max_iter=max_iter, print_bar=False
+        max_iter=max_iter, print_bar=True
     ).history()
-    history["ISPEG"] = ensure_length(res, max_iter)
+    history["I-SPEG"] = ensure_length(res, max_iter)
 
     # SPEG (geometric series)
     _, res = specular.gradient_method(
         f=f, x_0=x_0_val, step_size=step_size1, 
-        max_iter=max_iter, print_bar=False
+        max_iter=max_iter, print_bar=True
     ).history()
-    history["SPEG geo"] = ensure_length(res, max_iter)
+    history["SPEG-g"] = ensure_length(res, max_iter)
 
     # SPEG (square summable not summable)
     step_size2 = specular.StepSize(name='square_summable_not_summable', parameters=[2, 0])
     _, res = specular.gradient_method(
         f=f, x_0=x_0_val, step_size=step_size2, 
-        max_iter=max_iter, print_bar=False
+        max_iter=max_iter, print_bar=True
     ).history()
-    history["SPEG sq"] = ensure_length(res, max_iter)
+    history["SPEG-s"] = ensure_length(res, max_iter)
 
     # ==== Classical Methods ====
     # Gradient Descent (geometric series)
     _, res = gradient_descent_method(
         f_torch=f_torch, x_0=x_0_val, step_size=step_size1, max_iter=max_iter
     ).history()
-    history["GD geo"] = ensure_length(res, max_iter)
+    history["GD-g"] = ensure_length(res, max_iter)
 
     # Gradient Descent (square summable not summable)
     _, res = gradient_descent_method(
         f_torch=f_torch, x_0=x_0_val, step_size=step_size2, max_iter=max_iter
     ).history()
-    history["GD sq"] = ensure_length(res, max_iter)
+    history["GD-s"] = ensure_length(res, max_iter)
 
     # Adam
     _, res = Adam(
@@ -87,7 +87,7 @@ def run_single_experiment(args):
 # [2] Main function
 # -----------------------------------------------------------
 def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_name=False):
-    histories = {"ISPEG": [], "SPEG geo": [], "SPEG sq": [], "GD geo": [], "GD sq": [], "Adam": [], "BFGS": []}
+    histories = {"I-SPEG": [], "SPEG-g": [], "SPEG-s": [], "GD-g": [], "GD-s": [], "Adam": [], "BFGS": []}
 
     seeds = range(num_runs)
     tasks = [(seed, f, f_torch, max_iter) for seed in seeds]
@@ -107,12 +107,12 @@ def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_nam
     x_axis = range(1, max_iter + 1)
 
     colors = {
-        'ISPEG': 'blue', 'SPEG geo': 'red', 'SPEG sq': 'orange', 
-        'GD geo': 'darkgreen', 'GD sq': 'limegreen', 'Adam': 'brown', 'BFGS': 'black'
+        'I-SPEG': 'blue', 'SPEG-g': 'red', 'SPEG-s': 'orange', 
+        'GD-g': 'darkgreen', 'GD-s': 'limegreen', 'Adam': 'brown', 'BFGS': 'black'
     }
     linestyles = {
-        'ISPEG': '-', 'SPEG geo': '-', 'SPEG sq': '-', 
-        'GD geo': '-', 'GD sq': '-', 'Adam': '-', 'BFGS': '-'
+        'I-SPEG': '-', 'SPEG-g': '-', 'SPEG-s': '-', 
+        'GD-g': '-', 'GD-s': '-', 'Adam': '-', 'BFGS': '-'
     }
 
     for name, data in histories.items():
