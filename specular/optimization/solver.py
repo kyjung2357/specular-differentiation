@@ -281,6 +281,10 @@ def _vector_stochastic(
     k = 1
 
     for _ in tqdm(range(1, max_iter + 1), desc="Running the stochastic specular gradient method", disable=not print_bar):
+        if record_history is True:
+            x_history.append(x)
+            f_history.append(f(x)) 
+
         if hasattr(f_j, '__len__'):
             num_components = len(f_j)
         else:
@@ -288,11 +292,6 @@ def _vector_stochastic(
         
         # A random index j is selected at each iteration
         j = np.random.randint(num_components)
-        component_func = f_j[j]
-
-        if record_history is True:
-            x_history.append(x)
-            f_history.append(f(x)) 
 
         try:
             component_func = f_j[j]
