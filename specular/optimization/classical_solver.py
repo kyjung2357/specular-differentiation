@@ -27,7 +27,7 @@ def gradient_descent_method(
     x_history = [x.detach().cpu().numpy().copy()]
     f_history = [f_torch(x.detach()).item()]
 
-    for k in range(max_iter):
+    for k in range(1, max_iter + 1):
         if x.grad is not None:
             x.grad.zero_()
 
