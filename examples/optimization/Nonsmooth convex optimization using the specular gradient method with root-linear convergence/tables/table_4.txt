@@ -5,7 +5,7 @@ Method & Mean & Median & Standard deviation \\
 ISGM & $1.22 \times 10^{-1}$ & $9.93 \times 10^{-15}$ & $2.96 \times 10^{-1}$ \\
 SPEG geo & $1.22 \times 10^{-1}$ & $2.61 \times 10^{-14}$ & $2.96 \times 10^{-1}$ \\
 SPEG sq & $9.18 \times 10^{-10}$ & $1.65 \times 10^{-14}$ & $9.13 \times 10^{-9}$ \\
-GD geo & $1.11 \times 10^{-1}$ & 0 & $2.42 \times 10^{-1}$ \\
+GD geo & $1.11 \times 10^{-1}$ & $2.22 \times 10^{-16}$ & $2.42 \times 10^{-1}$ \\
 GD sq & $2.07 \times 10^{-6}$ & $2.07 \times 10^{-6}$ & 0 \\
 Adam & $4.09 \times 10^{-7}$ & $1.35 \times 10^{-7}$ & $8.09 \times 10^{-7}$ \\
 BFGS & $9.24 \times 10^{-12}$ & $4.97 \times 10^{-12}$ & $8.48 \times 10^{-12}$ \\

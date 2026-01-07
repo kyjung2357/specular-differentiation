@@ -21,6 +21,8 @@ if parent_dir not in sys.path:
 
 from classical_methods import Adam, BFGS, Gradient_descent_method
 
+machine_epsilon = np.finfo(float).eps
+
 # -----------------------------------------------------------
 # [1] Auxiliary functions
 # -----------------------------------------------------------
@@ -150,7 +152,7 @@ def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_nam
     # ==== Table ====
     table_data = []
     for name, runs in histories.items():
-        best_errors = [np.min(run_history) for run_history in runs]
+        best_errors = [max(np.min(run_history), machine_epsilon) for run_history in runs]
         table_data.append({
             "Method": name,
             "Mean": np.mean(best_errors),
