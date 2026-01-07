@@ -8,7 +8,7 @@ class OptimizationResult:
             self, 
             method: str,
             solution: np.ndarray, 
-            func_val: np.ndarray, 
+            func_val: int | float | np.number, 
             iteration: int, 
             runtime: float,
             all_history: dict
