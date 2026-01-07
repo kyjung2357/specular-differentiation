@@ -118,9 +118,10 @@ def gradient_method(
             
             form = 'hybrid specular gradient'
             switch_iter = switch_iter if switch_iter is not None else max_iter
+            remaining_iter = max_iter - switch_iter
 
             res_x, res_f, res_k = _vector(f, f_history, x, x_history, step_size, h, tol, zero_tol, switch_iter, record_history, print_bar)
-            res_x, res_f, res_k = _vector_stochastic(f, f_history, res_x, x_history, step_size, h, tol, zero_tol, f_j, m, max_iter, record_history, print_bar) # type: ignore
+            res_x, res_f, res_k = _vector_stochastic(f, f_history, res_x, x_history, step_size, h, tol, zero_tol, f_j, m, remaining_iter, record_history, print_bar) # type: ignore
 
         else:
             raise TypeError(f"Unknown form '{form}'. Supported forms: {SUPPORTED_METHODS}")

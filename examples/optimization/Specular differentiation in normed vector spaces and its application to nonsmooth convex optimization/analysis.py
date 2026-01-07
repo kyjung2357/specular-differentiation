@@ -15,10 +15,12 @@ import matplotlib
 matplotlib.rcParams['mathtext.fontset'] = 'cm'
 plt.rcParams["font.family"] = "Times New Roman"
 
-# -----------------------------------------------------------
+# ============================================================================--
 # 1. Single Trial Execution
-# -----------------------------------------------------------
-def run_single_trial(trial_idx, m, n, lambda1, lambda2, iteration):
+# ============================================================================--
+def run_single_trial(args):
+    trial_idx, m, n, lambda1, lambda2, iteration = args
+    
     np.random.seed(trial_idx) 
     torch.manual_seed(trial_idx)
     torch.set_num_threads(1)
@@ -91,8 +93,9 @@ def run_single_trial(trial_idx, m, n, lambda1, lambda2, iteration):
 
     # Gradient Descent
     start_time = time.time()
+    constant_step_size = specular.StepSize(name='constant', parameters=0.001)
     _, res = gradient_descent_method(
-        f_torch=f_torch, x_0=x_0, step_size=step_size_obj, max_iter=iteration
+        f_torch=f_torch, x_0=x_0, step_size=constant_step_size, max_iter=iteration
     ).history()
     trial_results["GD"] = ensure_length(res, iteration)
     trial_times["GD"] = time.time() - start_time
@@ -112,41 +115,49 @@ def run_single_trial(trial_idx, m, n, lambda1, lambda2, iteration):
     ).history()
     trial_results["BFGS"] = ensure_length(res, iteration)
     trial_times["BFGS"] = time.time() - start_time
-
+    
     return trial_results, trial_times
 
-# -----------------------------------------------------------
+# ============================================================================--
 # 2. Main Analysis Logic
-# -----------------------------------------------------------
-def run_experiment(file_number, trials, iteration, part_of_iteration, m, n, lambda1, lambda2):
-    
-    # 결과 저장소
-    all_results = {"SPEG": [], "GD": [], "SSPEG": [], "Adam": [], "HSPEG": [], "BFGS": []}
-    running_times = {"SPEG": [], "GD": [], "SSPEG": [], "Adam": [], "HSPEG": [], "BFGS": []}
-    summary_stats = {}
+# ============================================================================--
+def run_experiment(file_number, trials, iteration, m, n, lambda1, lambda2):
+    print(f"\n[Experiment Start] Number: {file_number}")
+    print(f"Settings: m={m}, n={n}, λ1={lambda1}, λ2={lambda2}")
 
-    print(f"Starting {trials} trials | m={m}, n={n}, λ1={lambda1}, λ2={lambda2}")
+    methods = ["SPEG", "SSPEG", "HSPEG", "GD", "Adam", "BFGS"]
+    all_results = {method: [] for method in methods}
+    running_times = {method: [] for method in methods}
+    summary_stats = {}
 
     tasks = [(i, m, n, lambda1, lambda2, iteration) for i in range(trials)]
     
-    # 병렬 처리
     num_workers = min(os.cpu_count(), trials) # type: ignore
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
-        futures = [executor.submit(run_single_trial, task) for task in tasks]
+        futures = [executor.submit(run_single_trial, task) for task in tasks] # type: ignore
         
-        for future in tqdm(as_completed(futures), total=trials, desc="Progress"):
+        for future in tqdm(as_completed(futures), total=trials, desc="Processing Trials", leave=False):
             try:
                 t_res, t_time = future.result()
-                for key in all_results.keys():
-                    all_results[key].append(t_res[key])
-                    running_times[key].append(t_time[key])
+                
+                for method in methods:
+                    if method in t_res:
+                        all_results[method].append(t_res[method])
+                    
+                    if method in t_time:
+                        running_times[method].append(t_time[method])
+                        
             except Exception as e:
-                print(f"Trial failed: {e}")
+                import traceback
+                print(f"\n[Error] Trial failed: {e}")
+                traceback.print_exc()
 
-    # --- Visualization & Analysis ---
+    # ==== Visualization & Analysis ====
+    print("\n[Analysis]")
+    print(" Generating plots and tables")
+
     colors = {'SPEG': 'red', 'GD': 'orange', 'SSPEG': 'blue', 'Adam': 'skyblue', 'HSPEG': 'purple', 'BFGS': 'black'}
     
-    # GridSpec Plot
     plt.figure(figsize=(7.5, 3))
 
     for name, results_list in all_results.items():
@@ -155,34 +166,31 @@ def run_experiment(file_number, trials, iteration, part_of_iteration, m, n, lamb
         df = pd.DataFrame(results_list).T
         df.columns = [f'trial_{j+1}' for j in range(len(results_list))]
         
-        # 통계 계산
         min_vals = df.min(axis=0)
         mean_curve = df.mean(axis=1)
+        median_curve = df.median(axis=1)
         std_curve = df.std(axis=1)
 
-        # 요약 통계 저장
         summary_stats[name] = {
-            'Avg Min': min_vals.mean(),
-            'Std Min': min_vals.std()
+            'Mean': min_vals.mean(),
+            'Median': min_vals.median(),
+            'Standard deviation': min_vals.std()
         }
 
-        # Plot Data 준비
         x_data = df.index + 1
-        x_part = x_data[:part_of_iteration]
-        mean_part = mean_curve.iloc[:part_of_iteration]
-        std_part = std_curve.iloc[:part_of_iteration]
-
-        # 하단 그래프 (전체 구간)
-        plt.plot(mean_part, label=name, color=colors[name])
+        
+        plt.plot(x_data, mean_curve, label=name, color=colors.get(name, 'black'), linewidth=1.5)
+        
+        plt.plot(x_data, median_curve, color=colors.get(name, 'black'), linestyle='--', alpha=0.5, linewidth=1)
+        
         plt.fill_between(
             x_data, 
             (mean_curve - std_curve), 
             (mean_curve + std_curve),
-            color=colors[name], 
+            color=colors.get(name, 'black'), 
             alpha=0.15
         )
-
-    # --- Summary & Save ---
+    # ==== Summary & Save ====
     print("\n[Running Time Summary]")
     for name, times in running_times.items():
         if times:
@@ -191,21 +199,22 @@ def run_experiment(file_number, trials, iteration, part_of_iteration, m, n, lamb
 
     print("\n[Final Performance Summary]")
     summary_df = pd.DataFrame(summary_stats).T
+    display_df = summary_df.copy()
+
+    for col in display_df.columns:
+        display_df[col] = display_df[col].apply(format_sci_latex)
+        
     pd.options.display.float_format = '{:.4e}'.format
     
     base_dir = os.path.dirname(os.path.abspath(__file__))
     os.makedirs(os.path.join(base_dir, 'tables'), exist_ok=True)
     os.makedirs(os.path.join(base_dir, 'figures'), exist_ok=True)
+    
+    path_txt = os.path.join(base_dir, f'tables/table_{file_number}_({m}_{n}_{lambda1}_{lambda2}).txt')
+    path_fig = os.path.join(base_dir, f'figures/figure_{file_number}_({m}_{n}_{lambda1}_{lambda2}).png')
 
-    path_txt = os.path.join(base_dir, f'tables/table_{file_number}.txt')
-    path_fig = os.path.join(base_dir, f'figures/figure_{file_number}.png')
-
-    save_table_to_txt(
-        summary_df, 
-        filename=path_txt,
-        precision=4,
-        formatting="exponential"
-    )
+    with open(os.path.join(base_dir, path_txt), "w", encoding="utf-8") as table_file:
+        table_file.write(display_df.to_latex(escape=False))
 
     print(summary_df)
 
@@ -220,4 +229,3 @@ def run_experiment(file_number, trials, iteration, part_of_iteration, m, n, lamb
 
     plt.tight_layout() 
     plt.savefig(path_fig, dpi=300, bbox_inches='tight')
-    plt.show()

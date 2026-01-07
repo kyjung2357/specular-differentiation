@@ -1,0 +1,12 @@
+\begin{tabular}{llll}
+\toprule
+ & Mean & Median & Standard deviation \\
+\midrule
+SPEG & $2.00 \times 10^{0}$ & $2.03 \times 10^{0}$ & $1.39 \times 10^{-1}$ \\
+SSPEG & $2.62 \times 10^{1}$ & $2.80 \times 10^{1}$ & $8.86 \times 10^{0}$ \\
+HSPEG & $2.00 \times 10^{0}$ & $2.03 \times 10^{0}$ & $1.39 \times 10^{-1}$ \\
+GD & $8.57 \times 10^{1}$ & $8.67 \times 10^{1}$ & $1.14 \times 10^{1}$ \\
+Adam & $7.92 \times 10^{1}$ & $8.01 \times 10^{1}$ & $1.12 \times 10^{1}$ \\
+BFGS & $6.95 \times 10^{0}$ & $6.85 \times 10^{0}$ & $1.26 \times 10^{0}$ \\
+\bottomrule
+\end{tabular}
