@@ -111,9 +111,9 @@ class ODEResult:
 
         Parameters
         ----------
-        exact_sol : callable, list, np.ndarray
+        exact_sol : callable | list | np.ndarray
             A function that returns the exact solution at a given time ``t``, or a list/array containing the exact values corresponding to ``time_grid``.
-        norm : str, optional
+        norm : str | optional
             The type of norm to use ``'max'``, ``'l2'``, or ``'l1'``.
             Default: ``'max'``
 

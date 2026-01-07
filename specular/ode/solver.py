@@ -47,14 +47,14 @@ def classical_scheme(
     h : float, optional
         The step size.
         Default: ``1e-6``.
-    form : str, optional
+    form : str | optional
         The form of the numerical scheme. 
         Options: ``'explicit_Euler'``, ``'implicit_Euler'``, ``'Crank-Nicolson'``.
         Default: ``'explicit_Euler'``.
-    tol : float, optional
+    tol : float | optional
         Tolerance for fixed-point iteration.
         Used for implicit Euler and Crank-Nicolson schemes.
-    max_iter : int, optional
+    max_iter : int | optional
         Max iterations for fixed-point solver.
 
     Returns
@@ -154,7 +154,7 @@ def Euler_scheme(
 
     Parameters
     ----------
-    of_Type : int, str
+    of_Type : int | str
         The type of the specular Euler scheme.
         Options: ``1``, ``'1'``, ``2``, ``'2'``, ``3``, ``'3'``, ``4``, ``'4'``, ``5``, ``'5'``, ``6``, ``'6'``.
     F : callable
@@ -166,21 +166,21 @@ def Euler_scheme(
         The given initial condition ``u_0`` in (IVP).
     T : float
         The end time of the simulation.
-    h : float, optional
+    h : float | optional
         The step size.
         Default: ``1e-6``.
-    u_1 : callable, float, bool
+    u_1 : callable | float | bool
         The numerical solution at the time ``t_1 = t_0 + h`` for Types 1, 2, and 3.
         If a float or callable is provided, it is used as the exact value.
         If False, the explicit Euler scheme is applied.
         Default: ``False``.
-    tol : float, optional
+    tol : float | optional
         Tolerance for fixed-point iteration
         Used for Types 3, 4, 5, and 6.
-    zero_tol : float, np.floating
+    zero_tol : float | np.floating
         A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability. 
         Default: ``1e-6``.
-    max_iter : int, optional
+    max_iter : int | optional
         Max iterations for fixed-point solver.
 
     Returns
@@ -389,14 +389,14 @@ def trigonometric_scheme(
         The starting time of the simulation.
     u_0 : callable
         The given initial condition ``u_0`` in (IVP).
-    u_1 : callable, float, bool
+    u_1 : callable | float | bool
         The numerical solution at the time ``t_1 = t_0 + h`` for Types 1, 2, and 3.
         If a float or callable is provided, it is used as the exact value.
         If False, the explicit Euler scheme is applied.
         Default: ``False``.
     T : float
         The end time of the simulation.
-    h : float, optional
+    h : float | optional
         The step size.
         Default: ``1e-6``.
 

@@ -24,11 +24,11 @@ def A(
 
     Parameters
     ----------
-    alpha : float, np.floating
+    alpha : float | np.floating | int | list | np.ndarray
         One-sided directional derivative.
-    beta : float, np.floating
+    beta : float | np.floating | int | list | np.ndarray
         One-sided directional derivative.
-    zero_tol : float, np.floating
+    zero_tol : float | np.floating
         A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
         Default: ``1e-8``.
 
@@ -109,12 +109,12 @@ def derivative(
     ----------
     f : callable
         A real-valued function of a single real variable.
-    x : float, np.floating, int
+    x : float | np.floating | int 
         The point at which the derivative is evaluated.
-    h : float, np.floating
+    h : float | np.floating 
         Step size for the finite difference approximation.
         Default: ``1e-6``.
-    zero_tol : float, np.floating
+    zero_tol : float | np.floating 
         A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
         Default: ``1e-8``.
 
@@ -170,14 +170,14 @@ def directional_derivative(
     ----------
     f : callable
         A real-valued function defined on an open subset of :math:`\\mathbb{R}^n`.
-    x : list, np.ndarray
+    x : list | np.ndarray
         The point at which the derivative is evaluated.
-    v : list, np.ndarray
+    v : list | np.ndarray
         The direction in which the derivative is taken.
-    h : float, np.floating
+    h : float | np.floating
         The step size used in the finite difference approximation. Must be positive.
         Default: ``1e-6``.
-    zero_tol : float, np.floating
+    zero_tol : float | np.floating
         A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
         Default: ``1e-8``.
 
@@ -239,11 +239,11 @@ def partial_derivative(
     f : callable
         A real-valued function defined on :math:`\\mathbb{R}^n`.
         ``n`` is the dimension of ``x``.
-    x : list, np.ndarray
+    x : list | np.ndarray
         The point at which the derivative is evaluated.
-    i : int, np.integer
+    i : int | np.integer
         The index of the specular partial derivative with respect to :math:`x_i` (``1 <= i <= n``).
-    h : float, np.floating
+    h : float | np.floating
         Step size for the finite difference approximation.
         Default: ``1e-8``. 
 
@@ -296,12 +296,12 @@ def gradient(
     ----------
     f : callable
         A real-valued function defined on :math:`\\mathbb{R}^n`.
-    x : list, np.ndarray
+    x : list | np.ndarray
         The point at which the specular gradient is evaluated.
-    h : float, np.floating
+    h : float | np.floating
         Step size for the finite difference approximation.
         Default: ``1e-6``. 
-    zero_tol : float, np.floating
+    zero_tol : float | np.floating
         A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
         Default: ``1e-8``.
 

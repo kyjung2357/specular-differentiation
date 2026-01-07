@@ -4,7 +4,7 @@ from typing import Callable, Tuple, List
 
 class StepSize:
     """
-    step size h_k > 0 for k = 1, 2, ...
+    Step size rules for optimization methods.
     """
     __options__ = [
         'constant',
@@ -20,14 +20,38 @@ class StepSize:
         parameters: float | np.floating | int | Tuple | list | np.ndarray | Callable
     ):
         """
-        Step sizes.
+        The step size rules for optimization methods: 
+
+        :math:`x_{k+1} = x_k - h_k s_k`, 
+        
+        where :math:`s_k` is the search direction and :math:`h_k > 0` is the step size at iteration `k >= 1`.
 
         Parameters
         ----------
         name : str
             Options: 'constant', 'not_summable', 'square_summable_not_summable', 'geometric_series', 'user_defined'
-        parameters : float, np.floating, int, Tuple, list, np.ndarray, Callable
-            parameters for step sizes.
+        parameters : float | int | tuple | list | np.ndarray | Callable
+            The parameters required for the selected step size rule:
+
+            * 'constant': float or int
+
+                A number `a > 0` for the rule `h_k = a` for each `k`.
+            
+            * 'not_summable': float or int
+
+                A number `a > 0` for the rule `h_k = a / sqrt{k}` for each `k`.
+            
+            * 'square_summable_not_summable': list or tuple
+
+                A pair of numbers `[a, b]`, where `a > 0` and `b >= 0`, for the rule `a / (b + k)` for each `k`.
+            
+            * 'geometric_series': list or tuple
+
+                A pair of numbers `[a, r]`, where `a > 0` and `0 < r < 1`, for the rule :math:`a * r^k` for each `k`.
+            
+            * 'user_defined': Callable
+
+                A function that takes the current iteration `k` as input and returns the step size (float).
         """
         self.step_size = name
         self.parameters = parameters
@@ -57,16 +81,16 @@ class StepSize:
                 raise TypeError(f"For 'square_summable_not_summable' step size, parameters must be a list. Got {type(self.parameters)}")
             
             if len(self.parameters) != 2:
-                raise ValueError(f"For 'square_summable_not_summable' step size, only two parameters [a, b] are required for a/(b + k). Got {self.parameters}")
+                raise ValueError(f"For 'square_summable_not_summable' step size, only two parameters [a, b] are required for a / (b + k). Got {self.parameters}")
             
             self.a = self.parameters[0]
             self.b = self.parameters[1]
 
             if self.a <= 0:
-                raise ValueError(f"For 'square_summable_not_summable' step size, a must be positive for a/(b + k). Got a: {self.a}")
+                raise ValueError(f"For 'square_summable_not_summable' step size, a must be positive for a / (b + k). Got a: {self.a}")
             
             if self.b < 0:
-                raise ValueError(f"For 'square_summable_not_summable' step size, b are must be nonnegative for a/(b + k). Got b: {self.b}")
+                raise ValueError(f"For 'square_summable_not_summable' step size, b are must be nonnegative for a / (b + k). Got b: {self.b}")
 
             self._rule = self._square_summable_not_summable
 
@@ -75,7 +99,7 @@ class StepSize:
                 raise TypeError(f"For 'geometric_series' step size, parameters must be a list. Got {type(self.parameters)}")
             
             if len(self.parameters) != 2:
-                raise ValueError(f"For 'geometric_series' step size, only two parameters [a, r] are required for a * r^k. Got {self.parameters}")
+                raise ValueError(f"For 'geometric_series' step size, only two parameters [a, r] are required for a * r**k. Got {self.parameters}")
             
             self.a = self.parameters[0]
             self.r = self.parameters[1]

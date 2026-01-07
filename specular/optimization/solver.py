@@ -60,7 +60,7 @@ def gradient_method(
             
         elif form == 'implicit':
             form = 'implicit specular gradient'
-            res_x, res_f, res_k = _implicit(f, x, step_size, h, tol, max_iter, record_history, x_history, f_history, print_bar)
+            res_x, res_f, res_k = _scalar_implicit(f, x, step_size, h, tol, max_iter, record_history, x_history, f_history, print_bar)
             
         else:
             raise TypeError(f"Unknown form '{form}'. Supported forms: {SUPPORTED_METHODS}")
@@ -96,6 +96,10 @@ def _scalar(
     f_history,
     print_bar
 ) -> tuple:
+    """
+    Scalar implementation of :func:`gradient_method`.
+    The specular gradient method in the one-dimensional case.    
+    """
     k = 1
 
     for _ in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method", disable=not print_bar):
@@ -126,6 +130,10 @@ def _vector(
     f_history,
     print_bar
 ) -> tuple:
+    """
+    Vector implementation of :func:`gradient_method`.
+    The specular gradient method in the n-dimensional case.
+    """
     k = 1
 
     for _ in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method", disable=not print_bar):
@@ -143,7 +151,7 @@ def _vector(
     
     return x, f(x), k
 
-def _implicit(
+def _scalar_implicit(
     f,
     x,
     step_size,
@@ -155,6 +163,10 @@ def _implicit(
     f_history,
     print_bar
 ) -> tuple:
+    """
+    Scalar implementation of :func:`gradient_method`.
+    The implicit specular gradient method in the one-dimensional case.
+    """
     k = 1
 
     for _ in tqdm(range(1, max_iter + 1), desc="Running the implicit specular gradient method", disable=not print_bar):
