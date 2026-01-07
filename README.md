@@ -6,7 +6,7 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/kyjung2357/specular-differentiation/badge)](https://www.codefactor.io/repository/github/kyjung2357/specular-differentiation)
 [![CodeQL Advanced](https://github.com/kyjung2357/specular-differentiation/actions/workflows/codeql.yml/badge.svg)](https://github.com/kyjung2357/specular-differentiation/actions/workflows/codeql.yml)
 
-The Python package `specular` implements *Specular differentiation* which generalizes classical differentiation.
+The Python package `specular` implements *specular differentiation* which generalizes classical differentiation.
 This implementation strictly follows the definitions, notations, and results in [[1]](#references) and [[2]](#references).
 
 A specular derivative (the red line) can be understood as the average of the inclination angles of the right and left derivatives. 
@@ -68,8 +68,8 @@ Two applications are provided in this repository.
 In [[2]](#references), three methods are proposed for optimizing nonsmooth convex objective functions:
 
 * the *specular gradient (SPEG)* method.
-* the *stochastic specular gradient (SSPEG)* method.
-* the *hybrid specular gradient (HSPEG)* method.
+* the *stochastic specular gradient (S-SPEG)* method.
+* the *hybrid specular gradient (H-SPEG)* method.
 
 The following example compares the three proposed methods with the classical methods: [gradient descent](https://en.wikipedia.org/wiki/Gradient_descent) (GD), [Adaptive Moment Estimation](https://arxiv.org/abs/1412.6980) (Adam), and [Broyden-Fletcher-Goldfarb-Shanno](https://en.wikipedia.org/wiki/Broyden%E2%80%93Fletcher%E2%80%93Goldfarb%E2%80%93Shanno_algorithm) (BFGS).
 

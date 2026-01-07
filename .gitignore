@@ -4,3 +4,10 @@ unpublished/
 specular_differentiation.egg-info/
 *.eff-info/
 TODO/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+examples/ode/Nonlinear_numerical_schemes_using_specular_diff_for_IVP_for_1st_ODEs/__pycache__
+examples/optimization/Nonsmooth_convex_opt_using_SPEG_with_R-linear_convergence/__pycache__
+examples/optimization/Specular_diff_in_nvs_and_its_app_to_nonsmooth_convex_opt/__pycache__
