@@ -266,7 +266,7 @@ def _vector_stochastic(
 ) -> tuple:
     """
     Vector implementation of :func:`gradient_method`.
-    The specular gradient method in the n-dimensional case.
+    The stochastic specular gradient method in the n-dimensional case.
     """
     k = 1
 
