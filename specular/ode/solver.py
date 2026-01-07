@@ -45,7 +45,7 @@ def classical_scheme(
     T : float
         The end time of the simulation.
     h : float, optional
-        The step size.
+        Mesh size used in the finite difference approximation. Must be positive.
         Default: ``1e-6``.
     form : str | optional
         The form of the numerical scheme. 
@@ -75,8 +75,8 @@ def classical_scheme(
         for _ in tqdm(range(steps), desc="Running the explicit Euler scheme"):
             t_curr, u_curr = t_curr + h, u_curr + h*F(t_curr, u_curr) # type: ignore
 
-            t_history.append(t_curr)
-            u_history.append(u_curr)
+            t_history.append(t_curr) 
+            u_history.append(u_curr) 
 
     elif form == "implicit Euler":
         for k in tqdm(range(steps), desc="Running the implicit Euler scheme"):
@@ -166,8 +166,8 @@ def Euler_scheme(
         The given initial condition ``u_0`` in (IVP).
     T : float
         The end time of the simulation.
-    h : float | optional
-        The step size.
+    h : float, optional
+        Mesh size used in the finite difference approximation. Must be positive.
         Default: ``1e-6``.
     u_1 : callable | float | bool
         The numerical solution at the time ``t_1 = t_0 + h`` for Types 1, 2, and 3.
@@ -396,8 +396,8 @@ def trigonometric_scheme(
         Default: ``False``.
     T : float
         The end time of the simulation.
-    h : float | optional
-        The step size.
+    h : float, optional
+        Mesh size used in the finite difference approximation. Must be positive.
         Default: ``1e-6``.
 
     Returns

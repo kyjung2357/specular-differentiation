@@ -56,7 +56,7 @@ def BFGS(
     f_np: Callable[[np.ndarray], float], 
     x_0: np.ndarray, 
     max_iter: int = 100, 
-    gtol: float = 1e-6
+    tol: float = 1e-6
 ) -> Tuple[np.ndarray, List[float]]:
     """
     Performs optimization using the BFGS algorithm from SciPy.
@@ -73,7 +73,7 @@ def BFGS(
     max_iter : int, optional
         The maximum number of iterations to perform. 
         Default is 100.
-    gtol : float, optional
+    tol : float, optional
         Tolerance for the gradient norm. The iteration will stop when the gradient's norm is less than this value. 
         Default is 1e-6.
 
@@ -93,7 +93,7 @@ def BFGS(
                       x_0,
                       method='BFGS',
                       callback=bfgs_callback,
-                      options={'maxiter': max_iter, 'gtol': gtol})
+                      options={'maxiter': max_iter, 'gtol': tol})
 
     return result.x, values
 
@@ -106,9 +106,7 @@ def Gradient_descent_method(
     """
     Performs optimization using the standard gradient descent algorithm.
 
-    This function minimizes a given objective function `f_torch` starting from an
-    initial point `x_0`. The update is performed manually using PyTorch's
-    autograd engine to compute gradients.
+    This function minimizes a given objective function `f_torch` starting from an initial point `x_0`. The update is performed manually using PyTorch's autograd engine to compute gradients.
 
     Parameters
     ----------
@@ -143,12 +141,12 @@ def Gradient_descent_method(
         loss.backward()
 
         if callable(step_size):
-            lr = step_size(k) 
+            h_k = step_size(k) 
         else:
-            lr = step_size    
+            h_k = step_size    
 
         with torch.no_grad():
-            x -= lr * x.grad # type: ignore
+            x -= h_k * x.grad # type: ignore
 
         values.append(loss.item())
 
