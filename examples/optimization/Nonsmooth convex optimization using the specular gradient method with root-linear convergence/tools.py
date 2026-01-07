@@ -68,9 +68,13 @@ def run_single_experiment(args):
 
     # ==== Classical Methods ====
     
-    # Gradient Descent
-    _, res = Gradient_descent_method(f_torch=f_torch, x_0=x_0_val, step_size=0.001, max_iter=max_iter)
-    history["GD"] = ensure_length(res, max_iter)
+    # Gradient Descent (geometric series)
+    _, res = Gradient_descent_method(f_torch=f_torch, x_0=x_0_val, step_size=step_size1, max_iter=max_iter)
+    history["GD geo"] = ensure_length(res, max_iter)
+
+    # Gradient Descent (square summable not summable)
+    _, res = Gradient_descent_method(f_torch=f_torch, x_0=x_0_val, step_size=step_size2, max_iter=max_iter)
+    history["GD sq"] = ensure_length(res, max_iter)
 
     # Adam
     _, res = Adam(f_torch=f_torch, x_0=x_0_val, step_size=0.01, max_iter=max_iter)
@@ -86,7 +90,7 @@ def run_single_experiment(args):
 # [3] Main function
 # -----------------------------------------------------------
 def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_name=False):
-    histories = {"ISGM": [], "SPEG geo": [], "SPEG sq": [], "GD": [], "Adam": [], "BFGS": []}
+    histories = {"ISGM": [], "SPEG geo": [], "SPEG sq": [], "GD geo": [], "GD sq": [], "Adam": [], "BFGS": []}
 
     seeds = range(num_runs)
     tasks = [(seed, f, f_torch, max_iter) for seed in seeds]
@@ -104,8 +108,8 @@ def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_nam
     plt.figure(figsize=(7, 3))
     x_axis = range(1, max_iter + 1)
 
-    colors = {'ISGM': 'blue', 'SPEG geo': 'red', 'SPEG sq': 'orange', 'GD': 'green', 'Adam': 'brown', 'BFGS': 'black'}
-    linestyles = {'ISGM': '-', 'SPEG geo': '-', 'SPEG sq': '-', 'GD': '-', 'Adam': '-', 'BFGS': '-'}
+    colors = {'ISGM': 'blue', 'SPEG geo': 'red', 'SPEG sq': 'orange', 'GD geo': 'darkgreen', 'GD sq': 'limegreen', 'Adam': 'brown', 'BFGS': 'black'}
+    linestyles = {'ISGM': '-', 'SPEG geo': '-', 'SPEG sq': '-', 'GD geo': '-', 'GD sq': '-', 'Adam': '-', 'BFGS': '-'}
 
     for name, data in histories.items():
         arr = np.array(data)
@@ -135,10 +139,10 @@ def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_nam
         if not os.path.exists(figures_dir):
             os.makedirs(figures_dir)
 
-        fig_name = f"figure {save_name}.png"
+        fig_name = f"figure_{save_name}.pdf"
         fig_path = os.path.join(figures_dir, fig_name)
 
-        plt.savefig(fig_path, dpi=500, bbox_inches='tight') # type: ignore
+        plt.savefig(fig_path, dpi=1000, bbox_inches='tight') # type: ignore
         print(f"[Saved] Plot saved to: {fig_path}")
 
     # plt.show()
@@ -174,7 +178,7 @@ def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_nam
             if not os.path.exists(table_dir):
                 os.makedirs(table_dir)
 
-            table_name = f"table {save_name}.txt"
+            table_name = f"table_{save_name}.txt"
             table_path = os.path.join(table_dir, table_name)
 
             with open(table_path, "w", encoding="utf-8") as txt_file:

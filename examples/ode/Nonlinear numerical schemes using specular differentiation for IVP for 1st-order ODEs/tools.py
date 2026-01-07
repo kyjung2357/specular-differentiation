@@ -13,10 +13,6 @@ plt.rcParams["font.family"] = "Times New Roman"
 def compute_ratios(
         error_list: List[Tuple[int, float]]
 ) -> List[Tuple[int, float, Optional[float]]]:
-    """
-    Computes the convergence order (p) from a list of errors.
-    Works for ANY sequence of n (not just doubling).
-    """
     ratio_list = []
     for i in range(len(error_list)):
         n, e = error_list[i]
@@ -41,11 +37,6 @@ def save_table_to_txt(
     error_precision: int = 2,
     ratio_precision: int = 2
 ) -> None:
-    """
-    Saves a DataFrame of convergence results to a text file in LaTeX table format.
-    Uses proper scientific notation (e.g., $1.23 \times 10^{-5}$) for errors.
-    """
-    
     if not os.path.exists('tables'):
         os.makedirs('tables')
 
@@ -120,15 +111,14 @@ def error_analysis(example, norm, F, t_0, T, exact_sol):
     plt.plot(df_CN["n"], df_CN["Error"], color='purple', marker='x', markerfacecolor='none', markeredgecolor='purple', label='CN')
     plt.plot(df_S5["n"], df_S5["Error"], color='green', marker='v', markerfacecolor='none', markeredgecolor='green', label="SE5")
     plt.plot(df_S6["n"], df_S6["Error"], color='orange', marker='v', markerfacecolor='none', markeredgecolor='orange', label="SE6")
-
+    plt.xlim(7, 2**17+2**14+2**13)
     plt.xscale('log', base=2)
     plt.yscale('log')
-
     plt.xlabel(r"Number of time steps $N$", fontsize=10)
     ylabel_str = fr"Error $\mathcal{{E}}(N, {norm_label_map[norm]})$"
     plt.ylabel(ylabel_str, fontsize=10)
     plt.legend(loc='center left', bbox_to_anchor=(1.02, 0.5), fontsize=9)
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
-
-    plt.savefig(f'figures/{example}-{norm}-Figure.png', dpi=1000, bbox_inches='tight')
+    plt.tight_layout()
+    plt.savefig(f'figures/{example}-{norm}-Figure.pdf', dpi=1000, bbox_inches='tight')
     plt.show()

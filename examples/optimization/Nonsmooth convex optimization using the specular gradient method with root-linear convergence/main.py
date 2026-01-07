@@ -77,5 +77,5 @@ num_runs = 100
 if __name__ == '__main__':
     repeat_experiment(f_1, f_1_torch, num_runs, max_iter=1000, latex_code=True, save_name='1') # type: ignore
     repeat_experiment(f_2, f_2_torch, num_runs, max_iter=2000, latex_code=True, save_name='2') # type: ignore
-    repeat_experiment(f_3, f_3_torch, num_runs, max_iter=500, latex_code=True, save_name='3') # type: ignore
+    repeat_experiment(f_3, f_3_torch, num_runs, max_iter=1000, latex_code=True, save_name='3')  # type: ignore
     repeat_experiment(f_4, f_4_torch, num_runs, max_iter=2000, latex_code=True, save_name='4') # type: ignore

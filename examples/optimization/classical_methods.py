@@ -100,7 +100,7 @@ def BFGS(
 def Gradient_descent_method(
     f_torch: Callable[[torch.Tensor], torch.Tensor], 
     x_0: Union[np.ndarray, list], 
-    step_size: float = 0.001, 
+    step_size: Callable | float = 0.001, 
     max_iter: int = 100
 ) -> Tuple[np.ndarray, List[float]]: # type: ignore
     """
@@ -135,16 +135,20 @@ def Gradient_descent_method(
 
     values = [f_torch(x.detach()).item()]
 
-    for _ in range(max_iter):
+    for k in range(1, max_iter + 1):
         if x.grad is not None:
             x.grad.zero_()
 
         loss = f_torch(x)
-
         loss.backward()
 
+        if callable(step_size):
+            lr = step_size(k) 
+        else:
+            lr = step_size    
+
         with torch.no_grad():
-            x -= step_size * x.grad # type: ignore
+            x -= lr * x.grad # type: ignore
 
         values.append(loss.item())
 
