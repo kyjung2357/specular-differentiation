@@ -1,1 +1,1 @@
-See [README.md](/examples/README.md#optimization).
+See [README](/examples/README.md#optimization).
