@@ -8,8 +8,8 @@ if current_dir not in sys.path:
 from analysis import run_experiment, run_single_trial
 
 if __name__ == '__main__':
-    m, n = 50, 10
-    iteration = 100
+    m, n = 500, 100
+    iteration = 10000
     trials = 20
     
     file_id = "5"

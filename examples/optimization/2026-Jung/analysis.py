@@ -219,8 +219,8 @@ def run_experiment(file_number, trials, iteration, m, n, lambda1, lambda2):
     os.makedirs(os.path.join(base_dir, 'tables'), exist_ok=True)
     os.makedirs(os.path.join(base_dir, 'figures'), exist_ok=True)
     
-    path_txt = os.path.join(base_dir, f'tables/table_{file_number}_({m},{n},{lambda1},{lambda2}).txt')
-    path_fig = os.path.join(base_dir, f'figures/figure_{file_number}_({m},{n},{lambda1},{lambda2}).png')
+    path_txt = os.path.join(base_dir, f'tables/table{file_number}({m},{n},{lambda1},{lambda2}).txt')
+    path_fig = os.path.join(base_dir, f'figures/figure{file_number}({m},{n},{lambda1},{lambda2}).png')
 
     with open(os.path.join(base_dir, path_txt), "w", encoding="utf-8") as table_file:
         table_file.write(display_df.to_latex(escape=False))
