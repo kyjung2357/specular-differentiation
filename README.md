@@ -17,11 +17,11 @@ Their difference is illustrated as in the following figure.
 
 Also, `specular` includes the following applications:
 
-* [**Initial value problems for ordinary differential equations**](examples/README.md#ordinary-differential-equation)
+* [**Ordinary differential equation**](examples/README.md#ordinary-differential-equation)
   * **Directory**: `examples/ode/`
   * **References**: [[1]](#references), [[3]](#references), [[4]](#references)
 
-* [**Nonsmooth convex optimization**](examples/README.md#optimization)
+* [**Optimization**](examples/README.md#optimization)
   * **Directory**: `examples/optimization/`
   * **References**: [[2]](#references), [[5]](#references)
 
