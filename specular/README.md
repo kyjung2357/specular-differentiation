@@ -1,1 +1,1 @@
-See [tutorial document](/docs/).
+See [documentation](/docs/).
