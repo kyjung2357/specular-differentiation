@@ -1,7 +1,7 @@
 # Specular Differentiation tutorial
 
 Denote by $ℕ$ the set of all positive integers. 
-For each $n \in ℕ$, denote by $ℝ$ the $n$-dimensional Euclidean space.
+For each $n \in ℕ$, denote by $ℝ^n$ the $n$-dimensional Euclidean space.
 
 ## 1. Calculation of specular differentiation
 
