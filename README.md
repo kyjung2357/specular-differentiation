@@ -67,19 +67,7 @@ Detailed usage examples can be found in [documentation](/docs/).
 Specular differentiation is defined in normed vector spaces, allowing for applications in higher-dimensional Euclidean spaces. 
 Two applications are provided in this repository.
 
-### Nonsmooth convex optimization
-
-In [[2]](#references), three methods are proposed for optimizing nonsmooth convex objective functions:
-
-* the *specular gradient (SPEG)* method
-* the *stochastic specular gradient (S-SPEG)* method
-* the *hybrid specular gradient (H-SPEG)* method
-
-The following example compares the three proposed methods with the classical methods: [gradient descent](https://en.wikipedia.org/wiki/Gradient_descent) (GD), [Adaptive Moment Estimation](https://arxiv.org/abs/1412.6980) (Adam), and [Broyden-Fletcher-Goldfarb-Shanno](https://en.wikipedia.org/wiki/Broyden%E2%80%93Fletcher%E2%80%93Goldfarb%E2%80%93Shanno_algorithm) (BFGS).
-
-![ODE-example](docs/figures/optimization-example.png)
-
-### Initial value problems for ordinary differential equations
+### [Ordinary differential equation](examples/README.md#ordinary-differential-equation)
 
 In [[1]](#references), seven schemes are proposed for solving ODEs numerically:
 
@@ -90,13 +78,21 @@ The following example shows that the specular Euler schemes of Type 5 and 6 yiel
 
 ![ODE-example](docs/figures/ODE-example.png)
 
+### [Optimization](examples/README.md#optimization)
+
+In [[2]](#references), three methods are proposed for optimizing nonsmooth convex objective functions:
+
+* the *specular gradient (SPEG)* method
+* the *stochastic specular gradient (S-SPEG)* method
+* the *hybrid specular gradient (H-SPEG)* method
+
+The following example compares the three proposed methods with the classical methods: [gradient descent](https://en.wikipedia.org/wiki/Gradient_descent) (GD), [Adaptive Moment Estimation](https://arxiv.org/abs/1412.6980) (Adam), and [Broyden-Fletcher-Goldfarb-Shanno](https://en.wikipedia.org/wiki/Broyden%E2%80%93Fletcher%E2%80%93Goldfarb%E2%80%93Shanno_algorithm) (BFGS).
+
+![optimization-example](docs/figures/optimization-example.png)
+
 ## LaTeX symbol
 
-To use the symbol for specular differentiation in your LaTeX document, please refer to the following instructions.
-
-### Setup 
-
-Add the following code to your LaTeX preamble (before `\begin{document}`):
+To use the specular differentiation symbol in your LaTeX document, add the following code to your preamble (before `\begin{document}`):
 
 ```latex
 % Required packages
