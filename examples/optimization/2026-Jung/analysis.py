@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 import torch
 import matplotlib.pyplot as plt
-import time
 import os
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -19,7 +18,7 @@ plt.rcParams["font.family"] = "Times New Roman"
 # 1. Single Trial Execution
 # ============================================================================--
 def run_single_trial(args):
-    trial_idx, m, n, lambda1, lambda2, iteration = args
+    trial_idx, m, n, lambda1, lambda2, iteration, methods = args
     
     np.random.seed(trial_idx) 
     torch.manual_seed(trial_idx)
@@ -66,75 +65,82 @@ def run_single_trial(args):
 
     # ==== Specular gradient methods ====
     
-    # SPEG
-    start_time = time.time()
-    _, res = specular.gradient_method(
-        f=f, x_0=x_0, step_size=step_size_squ, tol=1e-10, max_iter=iteration, print_bar=True
-    ).history()
-    trial_results["SPEG-s"] = ensure_length(res, iteration)
-    trial_times["SPEG-s"] = time.time() - start_time
+    # SPEG with square summable step size
+    if "SPEG" in methods:
+        _, res, runtime = specular.gradient_method(
+            f=f, x_0=x_0, step_size=step_size_squ, tol=1e-10, max_iter=iteration, print_bar=True
+        ).history()
+        trial_results["SPEG"] = ensure_length(res, iteration)
+        trial_times["SPEG"] = runtime
 
-    # SPEG geo
-    start_time = time.time()
-    _, res = specular.gradient_method(
-        f=f, x_0=x_0, step_size=step_size_geo, tol=1e-10, max_iter=iteration, print_bar=True
-    ).history()
-    trial_results["SPEG-g"] = ensure_length(res, iteration)
-    trial_times["SPEG-g"] = time.time() - start_time
+    # SPEG with square summable step size
+    if "SPEG-s" in methods:
+        _, res, runtime = specular.gradient_method(
+            f=f, x_0=x_0, step_size=step_size_squ, tol=1e-10, max_iter=iteration, print_bar=True
+        ).history()
+        trial_results["SPEG-s"] = ensure_length(res, iteration)
+        trial_times["SPEG-s"] = runtime
+    
+    # SPEG with geometric step size
+    if "SPEG-g" in methods:
+        _, res, runtime = specular.gradient_method(
+            f=f, x_0=x_0, step_size=step_size_geo, tol=1e-10, max_iter=iteration, print_bar=True
+        ).history()
+        trial_results["SPEG-g"] = ensure_length(res, iteration)
+        trial_times["SPEG-g"] = runtime
 
     # SSPEG
-    start_time = time.time()
-    _, res = specular.gradient_method(
-        f=f, x_0=x_0, step_size=step_size_squ, form='stochastic', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m, print_bar=True # type: ignore
-    ).history()
-    trial_results["S-SPEG"] = ensure_length(res, iteration)
-    trial_times["S-SPEG"] = time.time() - start_time
+    if "S-SPEG" in methods:
+        _, res, runtime = specular.gradient_method(
+            f=f, x_0=x_0, step_size=step_size_squ, form='stochastic', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m, print_bar=True # type: ignore
+        ).history()
+        trial_results["S-SPEG"] = ensure_length(res, iteration)
+        trial_times["S-SPEG"] = runtime
     
-    # # HSPEG
-    start_time = time.time()
-    _, res = specular.gradient_method(
-        f=f, x_0=x_0, step_size=step_size_squ, form='hybrid', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m,switch_iter=10, print_bar=True # type: ignore
-    ).history()
-    trial_results["H-SPEG"] = ensure_length(res, iteration)
-    trial_times["H-SPEG"] = time.time() - start_time
+    # HSPEG
+    if "H-SPEG" in methods:
+        _, res, runtime = specular.gradient_method(
+            f=f, x_0=x_0, step_size=step_size_squ, form='hybrid', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m,switch_iter=10, print_bar=True # type: ignore
+        ).history()
+        trial_results["H-SPEG"] = ensure_length(res, iteration)
+        trial_times["H-SPEG"] = runtime
 
     # ==== Classical Methods ====
 
     # Gradient Descent
-    start_time = time.time()
-    constant_step_size = specular.StepSize(name='constant', parameters=0.001)
-    _, res = gradient_descent_method(
-        f_torch=f_torch, x_0=x_0, step_size=constant_step_size, max_iter=iteration
-    ).history()
-    trial_results["GD"] = ensure_length(res, iteration)
-    trial_times["GD"] = time.time() - start_time
+    if "GD" in methods:
+        constant_step_size = specular.StepSize(name='constant', parameters=0.001)
+        _, res, runtime = gradient_descent_method(
+            f_torch=f_torch, x_0=x_0, step_size=constant_step_size, max_iter=iteration
+        ).history()
+        trial_results["GD"] = ensure_length(res, iteration)
+        trial_times["GD"] = runtime
 
     # Adam
-    start_time = time.time()
-    _, res = Adam(
-        f_torch=f_torch, x_0=x_0, step_size=0.01, max_iter=iteration
-    ).history()
-    trial_results["Adam"] = ensure_length(res, iteration)
-    trial_times["Adam"] = time.time() - start_time
+    if "Adam" in methods:
+        _, res, runtime = Adam(
+            f_torch=f_torch, x_0=x_0, step_size=0.01, max_iter=iteration
+        ).history()
+        trial_results["Adam"] = ensure_length(res, iteration)
+        trial_times["Adam"] = runtime
 
     # BFGS
-    start_time = time.time()
-    _, res = BFGS(
-        f_np=f, x_0=x_0, max_iter=iteration, tol=1e-6
-    ).history()
-    trial_results["BFGS"] = ensure_length(res, iteration)
-    trial_times["BFGS"] = time.time() - start_time
+    if "BFGS" in methods:
+        _, res, runtime = BFGS(
+            f_np=f, x_0=x_0, max_iter=iteration, tol=1e-6
+        ).history()
+        trial_results["BFGS"] = ensure_length(res, iteration)
+        trial_times["BFGS"] = runtime
     
     return trial_results, trial_times
 
 # ============================================================================--
 # 2. Main Analysis Logic
 # ============================================================================--
-def run_experiment(file_number, trials, iteration, m, n, lambda1, lambda2):
+def run_experiment(methods, file_number, trials, iteration, m, n, lambda1, lambda2, pdf=False):
     print(f"\n[Experiment Start] Number: {file_number}")
     print(f"Settings: m={m}, n={n}, λ1={lambda1}, λ2={lambda2}")
 
-    methods = ["SPEG-s", "SPEG-g", "S-SPEG", "H-SPEG", "GD", "Adam", "BFGS"]
     all_results = {method: [] for method in methods}
     running_times = {method: [] for method in methods}
     summary_stats = {}
@@ -165,9 +171,9 @@ def run_experiment(file_number, trials, iteration, m, n, lambda1, lambda2):
     print("\n[Analysis]")
     print(" Generating plots and tables")
 
-    colors = {'SPEG-s': 'red', 'GD': 'orange', 'S-SPEG': 'blue', 'Adam': 'brown', 'H-SPEG': 'purple', 'BFGS': 'black', 'SPEG-g': 'green'}
+    colors = {'SPEG': 'red', 'SPEG-s': 'red', 'SPEG-g': 'brown', 'S-SPEG': 'blue', 'H-SPEG': 'purple', 'GD': 'orange', 'Adam': 'green',  'BFGS': 'black'}
     
-    plt.figure(figsize=(7.5, 3))
+    plt.figure(figsize=(6, 3))
 
     for name, results_list in all_results.items():
         if not results_list: continue
@@ -219,8 +225,8 @@ def run_experiment(file_number, trials, iteration, m, n, lambda1, lambda2):
     os.makedirs(os.path.join(base_dir, 'tables'), exist_ok=True)
     os.makedirs(os.path.join(base_dir, 'figures'), exist_ok=True)
     
-    path_txt = os.path.join(base_dir, f'tables/table{file_number}({m},{n},{lambda1},{lambda2}).txt')
-    path_fig = os.path.join(base_dir, f'figures/figure{file_number}({m},{n},{lambda1},{lambda2}).png')
+    path_txt = os.path.join(base_dir, f'tables/table{file_number}({m}_{n}_{lambda1}_{lambda2}).txt')
+    path_fig = os.path.join(base_dir, f'figures/figure{file_number}({m}_{n}_{lambda1}_{lambda2}).{"pdf" if pdf else "png"}')
 
     with open(os.path.join(base_dir, path_txt), "w", encoding="utf-8") as table_file:
         table_file.write(display_df.to_latex(escape=False))
@@ -237,4 +243,4 @@ def run_experiment(file_number, trials, iteration, m, n, lambda1, lambda2):
     plt.legend(loc='center left', bbox_to_anchor=(1.02, 0.5), borderaxespad=0., fontsize=10)
 
     plt.tight_layout() 
-    plt.savefig(path_fig, dpi=300, bbox_inches='tight')
+    plt.savefig(path_fig, dpi=1000, bbox_inches='tight')

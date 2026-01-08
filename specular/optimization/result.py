@@ -43,13 +43,13 @@ class OptimizationResult:
 
     def history(
         self
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> Tuple[np.ndarray, np.ndarray, float]:
         """
         Returns the time grid and the numerical solution as a tuple.
         
         Returns
         -------
-        Tuple[np.ndarray, np.ndarray]
-            (x_history, f_history)
+        Tuple[np.ndarray, np.ndarray, float]
+            (x_history, f_history, runtime)
         """
-        return self.all_history["variables"], self.all_history["values"]
+        return self.all_history["variables"], self.all_history["values"], self.runtime
