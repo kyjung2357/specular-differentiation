@@ -1,4 +1,4 @@
-# Example
+# Examples
 
 This directory includes applications of specular differentiation.
 Each subdirectory is based on a paper.
