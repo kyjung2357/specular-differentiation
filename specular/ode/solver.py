@@ -218,61 +218,11 @@ def Euler_scheme(
         if Type == '1':
             _of_Type_1(F, h, zero_tol, steps, t_prev, t_curr, u_prev, u_curr, t_history, u_history)
 
-            # for _ in tqdm(range(steps - 1), desc="Running the specular Euler scheme of Type 1"):
-            #     t_next = t_curr + h
-            #     u_next = u_curr + h * A(F(t_curr, u_curr), F(t_prev, u_prev), zero_tol=zero_tol)    # type: ignore
-
-            #     # Update for next step
-            #     t_prev, u_prev = t_curr, u_curr
-            #     t_curr, u_curr = t_next, u_next
-
-            #     t_history.append(t_curr)
-            #     u_history.append(u_curr)
-
         elif Type == '2':
             _of_Type_2(F, h, zero_tol, steps, t_prev, t_curr, u_prev, u_curr, t_history, u_history)
-            # for _ in tqdm(range(steps - 1), desc="Running the specular Euler scheme of Type 2"):
-            #     t_next = t_curr + h
-            #     u_next = u_curr + h * A(F(t_curr, u_curr), (u_curr - u_prev)/h, zero_tol=zero_tol) # type: ignore
-
-            #     # Update for next step
-            #     t_prev, u_prev = t_curr, u_curr
-            #     t_curr, u_curr = t_next, u_next
-
-            #     t_history.append(t_curr)
-            #     u_history.append(u_curr)
 
         elif Type == '3':
             _of_Type_3(F, h, tol, zero_tol, max_iter, steps, t_prev, t_curr, u_prev, u_curr, t_history, u_history)
-
-            # for k in tqdm(range(steps - 1), desc="Running the specular Euler scheme of Type 3"):
-            #     t_next = t_curr + h
-
-            #     # Initial guess: explicit Euler
-            #     u_temp = u_curr + h * F(t_curr, u_curr) # type: ignore
-            #     u_guess = u_temp
-
-            #     # fixed second argument
-            #     beta = F(t_prev, u_prev)  # type: ignore 
-                
-            #     # Fixed-point iteration
-            #     for _ in range(max_iter):
-            #         alpha = (u_temp - u_curr) / h # type: ignore
-            #         u_guess = u_curr + h * A(alpha, beta, zero_tol=zero_tol)  # type: ignore
-
-            #         if abs(u_guess - u_temp) < tol:
-            #             break
-
-            #         u_temp = u_guess
-            #     else:
-            #         print(f"Warning: fixed-point iteration did not converge at step {k+1}")
-
-            #     # Update for next step
-            #     t_prev, u_prev = t_curr, u_curr
-            #     t_curr, u_curr = t_next, u_guess 
-
-            #     t_history.append(t_curr)
-            #     u_history.append(u_curr)
 
     elif Type in ['4', '5', '6']:
         t_curr = t_0
@@ -284,89 +234,12 @@ def Euler_scheme(
         if Type == '4':
             _of_Type_4(F, h, tol, zero_tol, max_iter, steps, t_curr, u_curr, t_history, u_history)
 
-            # for k in tqdm(range(steps), desc="Running the specular Euler scheme of Type 4"):
-            #     t_next = t_curr + h
-
-            #     # Initial guess: explicit Euler
-            #     u_temp = u_curr + h * F(t_curr, u_curr)
-            #     u_guess = u_temp
-                
-            #     beta = F(t_curr, u_curr)  # fixed second argument
-
-            #     # Fixed-point iteration
-            #     for _ in range(max_iter):
-            #         alpha = (u_temp - u_curr) / h
-            #         u_guess = u_curr + h * A(alpha, beta, zero_tol=zero_tol) 
-
-            #         if abs(u_guess - u_temp) < tol:
-            #             break
-
-            #         u_temp = u_guess
-            #     else:
-            #         print(f"Warning: fixed-point iteration did not converge at step {k+1}")
-
-            #     # Update for next step
-            #     t_curr, u_curr = t_next, u_guess  
-
-            #     t_history.append(t_curr)
-            #     u_history.append(u_curr)
-
         elif Type == '5':
             _of_Type_5(F, h, tol, zero_tol, max_iter, steps, t_curr, u_curr, t_history, u_history)
-            # for k in tqdm(range(steps), desc="Running the specular Euler scheme of Type 5"):
-            #     beta = F(t_curr, u_curr)  # fixed second argument
-            #     t_curr = t_curr + h
-
-            #     # Initial guess: explicit Euler
-            #     u_temp = u_curr + h * beta 
-            #     u_guess = u_temp
-
-            #     # Fixed-point iteration
-            #     for _ in range(max_iter):
-            #         alpha = F(t_curr, u_temp)
-            #         u_guess = u_curr + h * A(alpha, beta, zero_tol=zero_tol)
-
-            #         if abs(u_guess - u_temp) < tol:
-            #             break
-
-            #         u_temp = u_guess
-            #     else:
-            #         print(f"Warning: fixed-point iteration did not converge at step {k+1}")
-
-            #     # Update for next step
-            #     u_curr = u_guess    
-
-            #     t_history.append(t_curr)
-            #     u_history.append(u_curr)
 
         elif Type == '6':
             _of_Type_6(F, h, tol, zero_tol, max_iter, steps, t_curr, u_curr, t_history, u_history)
-            # for k in tqdm(range(steps), desc="Running the specular Euler scheme of Type 6"):
-            #     t_next = t_curr + h
 
-            #     # Initial guess: explicit Euler
-            #     u_temp = u_curr + h * F(t_curr, u_curr)
-            #     u_guess = u_temp
-
-            #     # Fixed-point iteration
-            #     for _ in range(max_iter):
-            #         alpha = F(t_next, u_temp)
-            #         beta = (u_temp - u_curr) / h
-
-            #         u_guess = u_curr + h * A(alpha, beta, zero_tol=zero_tol)
-
-            #         if abs(u_guess - u_temp) < tol:
-            #             break
-                    
-            #         u_temp = u_guess
-            #     else:
-            #         print(f"Warning: fixed-point iteration did not converge at step {k+1}")
-
-            #     # Update for next step
-            #     t_curr, u_curr = t_next, u_guess
-
-            #     t_history.append(t_curr)
-            #     u_history.append(u_curr)
     else:
         raise ValueError(f"Unknown type. Got {of_Type}. Supported types: '1', '2', '3', '4', '5', and '6'")
 
@@ -380,6 +253,9 @@ def Euler_scheme(
     )
 
 def _of_Type_1(F, h, zero_tol, steps, t_prev, t_curr, u_prev, u_curr, t_history, u_history):
+    """
+    Implements the specular Euler scheme of Type 1.
+    """
     for _ in tqdm(range(steps - 1), desc="Running the specular Euler scheme of Type 1"):
         t_next = t_curr + h
         u_next = u_curr + h * A(F(t_curr, u_curr), F(t_prev, u_prev), zero_tol=zero_tol)
@@ -392,6 +268,9 @@ def _of_Type_1(F, h, zero_tol, steps, t_prev, t_curr, u_prev, u_curr, t_history,
         u_history.append(u_curr)
 
 def _of_Type_2(F, h, zero_tol, steps, t_prev, t_curr, u_prev, u_curr, t_history, u_history):
+    """
+    Implements the specular Euler scheme of Type 2.
+    """
     for _ in tqdm(range(steps - 1), desc="Running the specular Euler scheme of Type 2"):
         t_next = t_curr + h
         u_next = u_curr + h * A(F(t_curr, u_curr), (u_curr - u_prev)/h, zero_tol=zero_tol)
@@ -404,6 +283,9 @@ def _of_Type_2(F, h, zero_tol, steps, t_prev, t_curr, u_prev, u_curr, t_history,
         u_history.append(u_curr)
 
 def _of_Type_3(F, h, tol, zero_tol, max_iter, steps, t_prev, t_curr, u_prev, u_curr, t_history, u_history):
+    """
+    Implements the specular Euler scheme of Type 3.
+    """
     for k in tqdm(range(steps - 1), desc="Running the specular Euler scheme of Type 3"):
         t_next = t_curr + h
 
@@ -434,6 +316,9 @@ def _of_Type_3(F, h, tol, zero_tol, max_iter, steps, t_prev, t_curr, u_prev, u_c
         u_history.append(u_curr)
 
 def _of_Type_4(F, h, tol, zero_tol, max_iter, steps, t_curr, u_curr, t_history, u_history):
+    """
+    Implements the specular Euler scheme of Type 4.
+    """
     for k in tqdm(range(steps), desc="Running the specular Euler scheme of Type 4"):
         t_next = t_curr + h
 
@@ -462,6 +347,9 @@ def _of_Type_4(F, h, tol, zero_tol, max_iter, steps, t_curr, u_curr, t_history, 
         u_history.append(u_curr)
 
 def _of_Type_5(F, h, tol, zero_tol, max_iter, steps, t_curr, u_curr, t_history, u_history):
+    """
+    Implements the specular Euler scheme of Type 5.
+    """
     for k in tqdm(range(steps), desc="Running the specular Euler scheme of Type 5"):
         beta = F(t_curr, u_curr)  # fixed second argument
         t_curr = t_curr + h
@@ -489,6 +377,9 @@ def _of_Type_5(F, h, tol, zero_tol, max_iter, steps, t_curr, u_curr, t_history, 
         u_history.append(u_curr)
 
 def _of_Type_6(F, h, tol, zero_tol, max_iter, steps, t_curr, u_curr, t_history, u_history):
+    """
+    Implements the specular Euler scheme of Type 6.
+    """
     for k in tqdm(range(steps), desc="Running the specular Euler scheme of Type 6"):
         t_next = t_curr + h
 
