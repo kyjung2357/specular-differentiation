@@ -17,22 +17,26 @@ Their difference is illustrated as in the following figure.
 
 Also, `specular` includes the following applications:
 
-* [**Nonsmooth convex optimization**](#nonsmooth-convex-optimization)
-  * Directory: `examples/optimization/`.
-  * Related reference: [[2]](#references), [[5]](#references).
-
-* [**Initial value problems for ordinary differential equations**](#initial-value-problems-for-ordinary-differential-equations)
+* [**Initial value problems for ordinary differential equations**](./examples/ode/)
   * Directory: `examples/ode/`.
   * Related reference: [[1]](#references), [[3]](#references), [[4]](#references).
 
+* [**Nonsmooth convex optimization**](./examples/optimization/)
+  * Directory: `examples/optimization/`.
+  * Related reference: [[2]](#references), [[5]](#references).
+
 ## Installation
 
-### Dependencies
+### Requirements
 
-specular-differentiation requires:
+`specular-differentiation` requires:
 
-* Python 3.11 or later
-* NumPy 2.2.5 or later
+* **Python** >= 3.11
+* `ipython` >= 8.12.3
+* `matplotlib` >= 3.10.8
+* `numpy` >= 2.4.0
+* `pandas` >= 2.3.3
+* `tqdm` >= 4.67.1
 
 ### User installation
 
