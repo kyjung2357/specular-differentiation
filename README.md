@@ -18,12 +18,12 @@ Their difference is illustrated as in the following figure.
 Also, `specular` includes the following applications:
 
 * [**Initial value problems for ordinary differential equations**](./examples/ode/)
-  * Directory: `examples/ode/`.
-  * Related reference: [[1]](#references), [[3]](#references), [[4]](#references).
+  * **Directory**: `examples/ode/`
+  * **References**: [[1]](#references), [[3]](#references), [[4]](#references)
 
 * [**Nonsmooth convex optimization**](./examples/optimization/)
-  * Directory: `examples/optimization/`.
-  * Related reference: [[2]](#references), [[5]](#references).
+  * **Directory**: `examples/optimization/`
+  * **References**: [[2]](#references), [[5]](#references)
 
 ## Installation
 
@@ -71,9 +71,9 @@ Two applications are provided in this repository.
 
 In [[2]](#references), three methods are proposed for optimizing nonsmooth convex objective functions:
 
-* the *specular gradient (SPEG)* method.
-* the *stochastic specular gradient (S-SPEG)* method.
-* the *hybrid specular gradient (H-SPEG)* method.
+* the *specular gradient (SPEG)* method
+* the *stochastic specular gradient (S-SPEG)* method
+* the *hybrid specular gradient (H-SPEG)* method
 
 The following example compares the three proposed methods with the classical methods: [gradient descent](https://en.wikipedia.org/wiki/Gradient_descent) (GD), [Adaptive Moment Estimation](https://arxiv.org/abs/1412.6980) (Adam), and [Broyden-Fletcher-Goldfarb-Shanno](https://en.wikipedia.org/wiki/Broyden%E2%80%93Fletcher%E2%80%93Goldfarb%E2%80%93Shanno_algorithm) (BFGS).
 
@@ -83,8 +83,8 @@ The following example compares the three proposed methods with the classical met
 
 In [[1]](#references), seven schemes are proposed for solving ODEs numerically:
 
-* the *specular Euler* scheme of Type 1~6.
-* the *specular trigonometric* scheme.
+* the *specular Euler* scheme of Type 1~6
+* the *specular trigonometric* scheme
 
 The following example shows that the specular Euler schemes of Type 5 and 6 yield more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
 
