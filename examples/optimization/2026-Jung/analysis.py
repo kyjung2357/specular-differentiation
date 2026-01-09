@@ -61,7 +61,7 @@ def run_single_trial(args):
     trial_times = {}
 
     step_size_squ = specular.StepSize(name='square_summable_not_summable', parameters=[4.0, 0.0])
-    step_size_geo = specular.StepSize(name='geometric_series', parameters=[1.0, 0.9])
+    step_size_geo = specular.StepSize(name='geometric_series', parameters=[1.0, 0.5])
 
     # ==== Specular gradient methods ====
     
@@ -145,7 +145,7 @@ def run_experiment(methods, file_number, trials, iteration, m, n, lambda1, lambd
     running_times = {method: [] for method in methods}
     summary_stats = {}
 
-    tasks = [(i, m, n, lambda1, lambda2, iteration) for i in range(trials)]
+    tasks = [(i, m, n, lambda1, lambda2, iteration, methods) for i in range(trials)]
     
     num_workers = min(os.cpu_count(), trials) # type: ignore
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
@@ -171,7 +171,7 @@ def run_experiment(methods, file_number, trials, iteration, m, n, lambda1, lambd
     print("\n[Analysis]")
     print(" Generating plots and tables")
 
-    colors = {'SPEG': 'red', 'SPEG-s': 'red', 'SPEG-g': 'brown', 'S-SPEG': 'blue', 'H-SPEG': 'purple', 'GD': 'orange', 'Adam': 'green',  'BFGS': 'black'}
+    colors = {'SPEG': 'red', 'SPEG-s': 'red', 'SPEG-g': 'brown', 'S-SPEG': 'blue', 'H-SPEG': 'purple', 'GD': 'orange', 'Adam': 'green', 'BFGS': 'black'}
     
     plt.figure(figsize=(6, 3))
 
@@ -205,6 +205,7 @@ def run_experiment(methods, file_number, trials, iteration, m, n, lambda1, lambd
             color=colors.get(name, 'black'), 
             alpha=0.15
         )
+
     # ==== Summary & Save ====
     print("\n[Running Time Summary]")
     for name, times in running_times.items():
@@ -225,8 +226,8 @@ def run_experiment(methods, file_number, trials, iteration, m, n, lambda1, lambd
     os.makedirs(os.path.join(base_dir, 'tables'), exist_ok=True)
     os.makedirs(os.path.join(base_dir, 'figures'), exist_ok=True)
     
-    path_txt = os.path.join(base_dir, f'tables/table{file_number}({m}_{n}_{lambda1}_{lambda2}).txt')
-    path_fig = os.path.join(base_dir, f'figures/figure{file_number}({m}_{n}_{lambda1}_{lambda2}).{"pdf" if pdf else "png"}')
+    path_txt = os.path.join(base_dir, f'tables/table{file_number}-{m}-{n}-{lambda1}-{lambda2}.txt')
+    path_fig = os.path.join(base_dir, f'figures/figure{file_number}-{m}-{n}-{lambda1}-{lambda2}.{"pdf" if pdf else "png"}')
 
     with open(os.path.join(base_dir, path_txt), "w", encoding="utf-8") as table_file:
         table_file.write(display_df.to_latex(escape=False))

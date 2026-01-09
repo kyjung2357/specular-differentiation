@@ -9,7 +9,7 @@ def ensure_length(data, length):
 def format_sci_latex(x):
     if isinstance(x, str): return x
     if x == 0: return "0"
-    s = "{:.2e}".format(x) 
+    s = "{:.4e}".format(x) 
     base, exponent = s.split('e')
     return fr"${base} \times 10^{{{int(exponent)}}}$"
 

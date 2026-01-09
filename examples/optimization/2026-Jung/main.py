@@ -5,39 +5,39 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.append(current_dir)
 
-from analysis import run_experiment, run_single_trial
+from analysis import run_experiment
 
 if __name__ == '__main__':
     trials = 20
     iteration = 10000
 
-    methods = ["SPEG-s", "SPEG-g", "GD", "Adam", "BFGS"]
+    # methods = ["SPEG-s", "SPEG-g", "GD", "Adam", "BFGS"]
 
-    run_experiment(
-        methods=methods,
-        file_number=1,
-        trials=trials,
-        iteration=iteration,
-        m=50,
-        n=100,
-        lambda1=0.01,
-        lambda2=1.0,
-        pdf=True
-    )
+    # run_experiment(
+    #     methods=methods,
+    #     file_number=1,
+    #     trials=trials,
+    #     iteration=iteration,
+    #     m=50,
+    #     n=100,
+    #     lambda1=0.01,
+    #     lambda2=1.0,
+    #     pdf=True
+    # )
+    
+    # methods = ["SPEG-s", "SPEG-g", "S-SPEG", "H-SPEG", "GD", "Adam", "BFGS"]
 
-    methods = ["SPEG-s", "SPEG-g", "S-SPEG", "H-SPEG", "GD", "Adam", "BFGS"]
-
-    run_experiment(
-        methods=methods,
-        file_number=2,
-        trials=trials,
-        iteration=iteration,
-        m=500,
-        n=100,
-        lambda1=0.0,
-        lambda2=0.0,
-        pdf=False
-    )
+    # run_experiment(
+    #     methods=methods,
+    #     file_number=2,
+    #     trials=trials,
+    #     iteration=iteration,
+    #     m=500,
+    #     n=100,
+    #     lambda1=0.0,
+    #     lambda2=0.0,
+    #     pdf=False
+    # )
 
     methods = ["SPEG", "S-SPEG", "H-SPEG", "GD", "Adam", "BFGS"]
 
@@ -50,6 +50,20 @@ if __name__ == '__main__':
         n=100,
         lambda1=0.0,
         lambda2=0.0,
+        pdf=True
+    )
+
+    methods = ["SPEG", "S-SPEG", "H-SPEG", "GD", "Adam", "BFGS"]
+
+    run_experiment(
+        methods=methods,
+        file_number=4,
+        trials=trials,
+        iteration=iteration,
+        m=500,
+        n=100,
+        lambda1=100.0,
+        lambda2=1.0,
         pdf=True
     )
 
