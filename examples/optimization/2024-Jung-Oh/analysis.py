@@ -35,14 +35,14 @@ def run_single_experiment(args):
     step_size1 = specular.StepSize(name='geometric_series', parameters=[1, 0.5])
     
     # ISPEG
-    _, res = specular.gradient_method(
+    _, res, _ = specular.gradient_method(
         f=f, x_0=x_0_val, step_size=step_size1, form='implicit', 
         max_iter=max_iter, print_bar=True
     ).history()
     history["I-SPEG"] = ensure_length(res, max_iter)
 
     # SPEG (geometric series)
-    _, res = specular.gradient_method(
+    _, res, _ = specular.gradient_method(
         f=f, x_0=x_0_val, step_size=step_size1, 
         max_iter=max_iter, print_bar=True
     ).history()
@@ -50,7 +50,7 @@ def run_single_experiment(args):
 
     # SPEG (square summable not summable)
     step_size2 = specular.StepSize(name='square_summable_not_summable', parameters=[2, 0])
-    _, res = specular.gradient_method(
+    _, res, _ = specular.gradient_method(
         f=f, x_0=x_0_val, step_size=step_size2, 
         max_iter=max_iter, print_bar=True
     ).history()
@@ -58,25 +58,25 @@ def run_single_experiment(args):
 
     # ==== Classical Methods ====
     # Gradient Descent (geometric series)
-    _, res = gradient_descent_method(
+    _, res, _ = gradient_descent_method(
         f_torch=f_torch, x_0=x_0_val, step_size=step_size1, max_iter=max_iter
     ).history()
     history["GD-g"] = ensure_length(res, max_iter)
 
     # Gradient Descent (square summable not summable)
-    _, res = gradient_descent_method(
+    _, res, _ = gradient_descent_method(
         f_torch=f_torch, x_0=x_0_val, step_size=step_size2, max_iter=max_iter
     ).history()
     history["GD-s"] = ensure_length(res, max_iter)
 
     # Adam
-    _, res = Adam(
+    _, res, _ = Adam(
         f_torch=f_torch, x_0=x_0_val, step_size=0.01, max_iter=max_iter
     ).history()
     history["Adam"] = ensure_length(res, max_iter)
 
     # BFGS
-    _, res = BFGS(
+    _, res, _ = BFGS(
         f_np=f, x_0=x_0_val, max_iter=max_iter
     ).history()
     history["BFGS"] = ensure_length(res, max_iter)
@@ -86,7 +86,9 @@ def run_single_experiment(args):
 # -----------------------------------------------------------
 # [2] Main function
 # -----------------------------------------------------------
-def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_name=False):
+def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_name=False, show=False):
+    print(f"\n[Experiment Start] Name: {save_name}")
+
     histories = {"I-SPEG": [], "SPEG-g": [], "SPEG-s": [], "GD-g": [], "GD-s": [], "Adam": [], "BFGS": []}
 
     seeds = range(num_runs)
@@ -148,7 +150,8 @@ def repeat_experiment(f, f_torch, num_runs, max_iter, latex_code=False, save_nam
         plt.savefig(fig_path, dpi=1000, bbox_inches='tight') 
         print(f"[Saved] Plot saved to: {fig_path}")
 
-    # plt.show()
+    if show:
+        plt.show()
 
     # ==== Table ====
     table_data = []

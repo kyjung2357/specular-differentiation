@@ -50,7 +50,8 @@ if __name__ == '__main__':
         n=100,
         lambda1=0.0,
         lambda2=0.0,
-        pdf=True
+        pdf=True,
+        show=False
     )
 
     methods = ["SPEG", "S-SPEG", "H-SPEG", "GD", "Adam", "BFGS"]
@@ -64,7 +65,8 @@ if __name__ == '__main__':
         n=100,
         lambda1=100.0,
         lambda2=1.0,
-        pdf=True
+        pdf=True,
+        show=False
     )
 
     # ==========================================

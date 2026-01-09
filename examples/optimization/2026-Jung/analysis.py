@@ -137,7 +137,7 @@ def run_single_trial(args):
 # ============================================================================--
 # 2. Main Analysis Logic
 # ============================================================================--
-def run_experiment(methods, file_number, trials, iteration, m, n, lambda1, lambda2, pdf=False):
+def run_experiment(methods, file_number, trials, iteration, m, n, lambda1, lambda2, pdf=False, show=False):
     print(f"\n[Experiment Start] Number: {file_number}")
     print(f"Settings: m={m}, n={n}, λ1={lambda1}, λ2={lambda2}")
 
@@ -245,3 +245,6 @@ def run_experiment(methods, file_number, trials, iteration, m, n, lambda1, lambd
 
     plt.tight_layout() 
     plt.savefig(path_fig, dpi=1000, bbox_inches='tight')
+
+    if show:
+        plt.show()
