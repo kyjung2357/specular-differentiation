@@ -1,14 +1,17 @@
 """
-==================================================
-Calculations of specular directional derivatives
-==================================================
+========================================
+Calculations of specular differentiation
+========================================
 
-This module provides implementations of the function :math:`\\mathcal{A}`, specular directional derivatives, specular partial derivatives, specular derivatives, and specular gradients.
+This module provides implementations of the function :math:`\\mathcal{A}`, specular directional derivatives, specular partial derivatives, specular derivatives, specular gradients, and specular Jacobians.
+
+Computations are based on the finite difference approximation of one-sided (directional) derivatives.
 """
 
 from typing import Callable
 import math
 import numpy as np
+
 
 def A(
     alpha: float | np.number | int | list | np.ndarray,
@@ -47,11 +50,14 @@ def A(
     >>> import specular
     >>> specular.calculation.A(1.0, 2.0)
     1.3874258867227933
+    >>> specular.calculation.A([1.0, 2.4], [2.0, 4.1])
+    array([1.38742589, 3.04807583])
     """
     if np.isscalar(alpha) and np.isscalar(beta):
         return _A_scalar(alpha, beta, zero_tol=zero_tol) # type: ignore
     
-    return _A_vector(alpha, beta, zero_tol=zero_tol)
+    return _A_vector(alpha, beta, zero_tol=zero_tol) # type: ignore
+
 
 def _A_scalar(
     alpha: float | np.number, 
@@ -68,9 +74,10 @@ def _A_scalar(
 
     return numerator / denominator # type: ignore
 
+
 def _A_vector(
-    alpha, 
-    beta, 
+    alpha: list | np.ndarray, 
+    beta: list | np.ndarray, 
     zero_tol: float = 1e-8
 ) -> np.ndarray:
     """Vector implementation of :func:`A`."""
@@ -96,19 +103,24 @@ def _A_vector(
 
     return result
 
+
 def derivative(
-    f: Callable[[int | float | np.number], int | float | np.number],
+    f: Callable[[int | float | np.number], int | float | np.number | list | np.ndarray],
     x: float | np.number | int,
     h: float = 1e-6,
     zero_tol: float = 1e-8
-) -> float:
+) -> float | np.ndarray:
     """
-    Approximates the specular derivative of a real-valued function :math:`f:\\mathbb{R} \\to \\mathbb{R}` at point ``x``.
+    Approximates the specular derivative of a function :math:`f:\\mathbb{R} \\to \\mathbb{R}^m` at a scalar point ``x``.
+    
+    If ``f`` returns a scalar, the result is a float.
+    If ``f`` returns a vector, the result is a vector (component-wise derivative).
+
 
     Parameters
     ----------
     f : callable
-        A real-valued function of a single real variable.
+        A function of a single real variable, returning a scalar or a vector.
     x : float | np.number | int 
         The point at which the derivative is evaluated.
     h : float, optional
@@ -120,7 +132,7 @@ def derivative(
 
     Returns
     -------
-    float
+    float | np.ndarray
         The approximated specular derivative of ``f`` at ``x``.
 
     Raises
@@ -140,19 +152,39 @@ def derivative(
     >>> specular.derivative(f, x=0.0)
     0.0
     """
-    try:
-        x = float(x)
-        h = float(h)
-    except TypeError:
-        raise TypeError(f"Input 'x' must be a scalar. Got {type(x).__name__}. Use `specular.directional_derivative` for vectors.")
-    
     if h <= 0:
         raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
     
-    alpha = (f(x + h) - f(x))/h
-    beta = (f(x) - f(x - h))/h
+    try:
+        x = float(x)
 
-    return _A_scalar(alpha=alpha, beta=beta, zero_tol=zero_tol)
+    except TypeError:
+        raise TypeError(
+            f"Input 'x' must be a scalar. "
+            f"Got {type(x).__name__}. "
+            "Use `specular.directional_derivative`, `specular.gradient`, or `specular.jacobian` for vectors inputs."
+        )
+
+    f_val = f(x)
+
+    # f is real-valued
+    if np.ndim(f_val) == 0:
+        alpha = (f(x + h) - f_val) / h # type: ignore
+        beta = (f_val - f(x - h)) / h # type: ignore
+        
+        return _A_scalar(alpha, beta, zero_tol=zero_tol) # type: ignore
+
+    # f is vector-valued
+    else:
+        f_val = np.asarray(f_val, dtype=float)
+        f_right = np.asarray(f(x + h), dtype=float)
+        f_left = np.asarray(f(x - h), dtype=float)
+
+        alpha = (f_right - f_val) / h
+        beta = (f_val - f_left) / h
+        
+        return _A_vector(alpha, beta, zero_tol=zero_tol)
+
 
 def directional_derivative(
     f: Callable[[list | np.ndarray], int | float | np.number],
@@ -202,25 +234,41 @@ def directional_derivative(
     >>> specular.directional_derivative(f, x=[0.0, 0.1, -0.1], v=[1.0, -1.0, 2.0])
     -2.1213203434708223
     """
+    if h <= 0:
+        raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
+    
     x = np.asarray(x, dtype=float)
     v = np.asarray(v, dtype=float)
 
     if x.ndim == 0:
-        raise TypeError(f"Input 'x' must be a vector. Got {type(x).__name__}. Use `specular.derivative` for scalar inputs.")
+        raise TypeError(
+            f"Input 'x' must be a vector. "
+            f"Got {type(x).__name__}. "
+            "Use `specular.derivative` for scalar inputs."
+        )
     
     if v.ndim == 0:
-        raise TypeError(f"Input 'v' must be a vector. Got {type(v).__name__}.")
+        raise TypeError(
+            "Input 'v' must be a vector. "
+            f"Got {type(v).__name__}."
+        )
     
     if x.shape != v.shape:
         raise ValueError(f"Shape mismatch: x {x.shape} vs v {v.shape}")
     
-    if h <= 0:
-        raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
-    
-    alpha = (f(x + h * v) - f(x))/h
-    beta = (f(x) - f(x - h * v))/h
+    f_val = f(x) 
 
-    return float(_A_vector(alpha=alpha, beta=beta, zero_tol=zero_tol))
+    if np.ndim(f_val) != 0:
+        raise ValueError(
+            "Function f must return a scalar value. "
+            f"Got shape {np.shape(f_val)}."
+        )
+    
+    alpha = (f(x + h * v) - f_val)/h
+    beta = (f_val - f(x - h * v))/h
+
+    return _A_scalar(alpha, beta, zero_tol=zero_tol)
+
 
 def partial_derivative(
     f: Callable[[list | np.ndarray], int |float | np.number],
@@ -274,7 +322,7 @@ def partial_derivative(
 
     if not isinstance(i, (int, np.integer)):
         raise TypeError(f"Index 'i' must be an integer. Got {type(i).__name__}")
-    
+
     n = x.size
     if i < 1 or i > n:
         raise ValueError(f"Index 'i' must be between 1 and {n} (dimension of x). Got {i}")
@@ -283,6 +331,7 @@ def partial_derivative(
     e_i[i - 1] = 1.0
 
     return directional_derivative(f, x, e_i, h, zero_tol)
+
 
 def gradient(
     f: Callable[[list | np.ndarray], int |float | np.number],
@@ -293,7 +342,7 @@ def gradient(
     """
     Approximates the specular gradient of a real-valued function :math:`f:\\mathbb{R}^n \\to \\mathbb{R}` at point ``x`` for ``n > 1``.
 
-    The specular gradient is defined as the vector of all partial specular derivatives along the standard basis directions. 
+    The specular gradient is defined as the vector of all partial specular derivatives along the standard basis directions.
 
     Parameters
     ----------
@@ -319,6 +368,7 @@ def gradient(
         If ``x`` is not of a valid array-like type.
     ValueError
         If ``f`` does not return a scalar value.
+        If ``h`` is not positive.
 
     Examples
     --------
@@ -328,39 +378,129 @@ def gradient(
     >>> specular.gradient(f, x=[1.4, -3.47, 4.57, 9.9])
     array([ 0.12144298, -0.3010051 ,  0.39642458,  0.85877534])
     """
+    if h <= 0:
+        raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
+    
     x = np.asarray(x, dtype=float)
     
     if x.ndim != 1:
-        raise TypeError(f"Input 'x' must be a vector. Got {type(x).__name__}. Use `specular.derivative` for scalar inputs.")
+        raise TypeError(
+            f"Input 'x' must be a vector. "
+            f"Got {type(x).__name__} with shape {x.shape}. "
+            "Use `specular.derivative` for scalar inputs."
+        )
     
-    n = x.size 
+    n = x.size
     I = np.eye(n)
 
-    f_center = f(x) 
+    f_val = f(x)
 
-    if np.ndim(f_center) != 0:
-        raise ValueError(f"Function f must return a scalar value. Got shape {np.shape(f_center)}.")
-    
+    if np.ndim(f_val) != 0:
+        raise ValueError(
+            "Function f must return a scalar value. "
+            f"Got shape {np.shape(f_val)}."
+        )
+
     x_right = x + h*I
     x_left = x - h*I
 
-    try:
-        f_right = f(x_right)
-        if np.ndim(f_right) != 1 or np.size(f_right) != n:
-            raise ValueError (f"Function f must return a scalar for each input vector. Got shape {np.ndim(f_right)}.")
+    f_right = np.array([f(row) for row in x_right], dtype=float)
+    f_left = np.array([f(row) for row in x_left], dtype=float)
+    
+    # try:
+    #     f_right = f(x_right)
+    #     if np.ndim(f_right) != 1 or np.size(f_right) != n:
+    #         raise ValueError (
+    #             "Function f must return a scalar for each input vector. "
+    #             f"Got shape {np.ndim(f_right)}."
+    #         )
         
-    except Exception:
-        f_right = np.array([f(row) for row in x_right])
+    # except Exception:
+    #     f_right = np.array([f(row) for row in x_right])
 
-    try:
-        f_left = f(x_left)
-        if np.ndim(f_left) != 1 or np.size(f_left) != n:
-            raise ValueError(f"Function f must return a scalar for each input vector. Got shape {np.ndim(f_left)}.")
+    # try:
+    #     f_left = f(x_left)
+    #     if np.ndim(f_left) != 1 or np.size(f_left) != n:
+    #         raise ValueError(
+    #             "Function f must return a scalar for each input vector. "
+    #             f"Got shape {np.ndim(f_left)}.")
         
-    except Exception:
-        f_left = np.array([f(row) for row in x_left])
+    # except Exception:
+    #     f_left = np.array([f(row) for row in x_left])
 
-    alpha = (f_right - f_center) / h 
-    beta = (f_center - f_left) / h 
+    alpha = (f_right - f_val) / h 
+    beta = (f_val - f_left) / h 
 
-    return _A_vector(alpha=alpha, beta=beta, zero_tol=zero_tol)
+    return _A_vector(alpha, beta, zero_tol=zero_tol) # type: ignore
+
+
+def jacobian(
+    f: Callable[[list | np.ndarray], int | float | np.number | list | np.ndarray],
+    x: list | np.ndarray,
+    h: float = 1e-6,
+    zero_tol: float = 1e-8
+) -> np.ndarray:
+    """
+    Approximates the specular Jacobian matrix of a vector-valued function :math:`f:\\mathbb{R}^n \\to \\mathbb{R}^m`.
+
+    Returns a matrix of shape (m, n) where J[j, i] is the partial derivative of f_j with respect to x_i (1 <= i <= n, 1 <= j <= m).
+
+    Raises
+    ------
+    TypeError
+        If ``x`` is not of a valid array-like type.
+    ValueError
+        If ``h`` is not positive.
+    """
+    if h <= 0:
+        raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
+
+    x = np.asarray(x, dtype=float)
+
+    if x.ndim != 1:
+        raise TypeError(
+            f"Input 'x' must be a vector. "
+            f"Got {type(x).__name__} with shape {x.shape}. "
+            "Use `specular.derivative` for scalar inputs."
+        )
+
+    n = x.size
+
+    f_val = np.asarray(f(x), dtype=float)
+
+    if f_val.ndim == 0:
+        f_val = f_val.reshape(1)
+
+    m = f_val.size
+
+    I = np.eye(n)
+    
+    x_right = x + h * I
+    x_left = x - h * I
+
+    # try:
+    #     f_right = np.asarray(f(x_right), dtype=float)
+    #     f_left = np.asarray(f(x_left), dtype=float)
+
+    #     if f_right.size != n * m or f_left.size != n * m:
+    #         raise ValueError("Vectorization mismatch")
+
+    # except Exception:
+    #     f_right = np.array([f(row) for row in x_right], dtype=float)
+    #     f_left = np.array([f(row) for row in x_left], dtype=float)
+
+    # f_right = np.asarray(f_right, dtype=float).reshape(n, m)
+    # f_left = np.asarray(f_left, dtype=float).reshape(n, m)
+
+    f_right = np.array([f(row) for row in x_right], dtype=float)
+    f_left = np.array([f(row) for row in x_left], dtype=float)
+
+    f_right = f_right.reshape(n, m)
+    f_left = f_left.reshape(n, m)
+
+    alpha = (f_right - f_val) / h
+    beta = (f_val - f_left) / h
+
+    J_transposed = _A_vector(alpha, beta, zero_tol=zero_tol)
+
+    return J_transposed.T

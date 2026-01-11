@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 import time
 import inspect
-from typing import Callable, List, Tuple, Optional, TypeAlias, Sequence
+from typing import Callable, TypeAlias, Sequence
 from .result import OptimizationResult
 from .step_size import StepSize
 from ..calculation import derivative, gradient
@@ -159,7 +159,7 @@ def gradient_method(
     ) 
 
 def _scalar(
-    f: Callable[[int | float | np.number], int | float | np.number],
+    f: Callable[[int | float | np.number], int | float | np.number | list | np.ndarray],
     f_history: list,
     x: int | float,
     x_history: list,
@@ -183,11 +183,11 @@ def _scalar(
             f_history.append(f(x))
 
         specular_derivative = derivative(f=f, x=x, h=h, zero_tol=zero_tol)
-
-        if abs(specular_derivative) < tol:
+        norm = np.linalg.norm(specular_derivative)
+        if norm < tol:
             break
         
-        x -= step_size(k)*(specular_derivative / abs(specular_derivative))
+        x -= step_size(k)*(specular_derivative / norm) # type: ignore
         k += 1
     
     return x, f(x), k

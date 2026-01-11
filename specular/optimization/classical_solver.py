@@ -44,7 +44,7 @@ def gradient_descent_method(
     end_time = time.time()
 
     return OptimizationResult(
-        method="Gradient Descent",
+        method="gradient descent",
         solution=x_history[-1],
         func_val=f_history[-1],
         iteration=max_iter,

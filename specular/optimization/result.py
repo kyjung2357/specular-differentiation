@@ -14,18 +14,18 @@ class OptimizationResult:
             all_history: dict
     ):
         self.method = method
-        self.x = solution 
-        self.f = func_val
-        self.k = iteration
+        self.solution = solution
+        self.func_val = func_val
+        self.iteration = iteration
         self.runtime = runtime
         self.all_history = all_history
 
     def __repr__(self):
         return (
             f"[{self.method}]\n"
-            f"    solution: {self.x}\n"
-            f"  func value: {self.f}\n"
-            f"   iteration: {self.k}"
+            f"    solution: {self.solution}\n"
+            f"  func value: {self.func_val}\n"
+            f"   iteration: {self.iteration}"
         )
     
     def last_record(
@@ -39,7 +39,7 @@ class OptimizationResult:
         Tuple[float, float]
             (x, f(x), runtime)
         """
-        return self.x, self.f, self.runtime # type: ignore
+        return self.solution, self.func_val, self.runtime # type: ignore
 
     def history(
         self

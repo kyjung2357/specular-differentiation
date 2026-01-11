@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -14,19 +14,6 @@ long_description = long_description.replace(
 )
 
 setup(
-    name="specular-differentiation",  
-    version="0.11.11",                  
-    author="Kiyuob Jung",          
-    author_email="kyjung@msu.edu", 
-    description="Specular differentiation in normed vector spaces and its applications",
-    long_description=long_description, 
-    long_description_content_type="text/markdown", 
-    url="https://github.com/kyjung2357/specular-differentiation",
-    packages=find_packages(),        
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-    ],
-    python_requires='>=3.11',       
+    long_description=long_description,
+    long_description_content_type="text/markdown",
 )

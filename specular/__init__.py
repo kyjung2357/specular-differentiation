@@ -6,7 +6,8 @@ from .calculation import (
     derivative,
     directional_derivative,
     partial_derivative,
-    gradient
+    gradient,
+    jacobian
 )
 
 from .ode import (
@@ -20,7 +21,7 @@ from .optimization import (
     gradient_method
 )
 
-__version__ = "0.11.11"
+__version__ = "0.12.0"
 __license__ = "MIT"
 __author__ = "Kiyuob Jung"
 __email__ = "kyjung@msu.edu"
@@ -31,6 +32,7 @@ __all__ = [
     "directional_derivative",
     "partial_derivative",
     "gradient",
+    "jacobian",
     "ode",
     "classical_scheme",
     "Euler_scheme",
