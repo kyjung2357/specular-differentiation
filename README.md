@@ -56,7 +56,8 @@ This adds the following dependencies:
 
 * **[JAX](https://docs.jax.dev/en/latest/index.html)** (`jax`, `jaxlib` >= 0.4):
 
-[!IMPORTANT] This feature is experimental for now. See [Notes](docs/notes_for_jax.ipynb).
+> [!IMPORTANT]
+> This feature is experimental for now. See [Notes](docs/notes_for_jax.ipynb).
 
 ```bash
 pip install "specular-differentiation[jax]"
