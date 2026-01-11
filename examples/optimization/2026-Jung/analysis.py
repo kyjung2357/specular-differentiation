@@ -18,7 +18,7 @@ plt.rcParams["font.family"] = "Times New Roman"
 # 1. Single Trial Execution
 # ============================================================================--
 def run_single_trial(args):
-    trial_idx, m, n, lambda1, lambda2, iteration, methods = args
+    trial_idx, m, n, lambda1, lambda2, iteration, methods, backend_name = args
     
     np.random.seed(trial_idx) 
     torch.manual_seed(trial_idx)
@@ -62,48 +62,59 @@ def run_single_trial(args):
 
     step_size_squ = specular.StepSize(name='square_summable_not_summable', parameters=[4.0, 0.0])
     step_size_geo = specular.StepSize(name='geometric_series', parameters=[1.0, 0.5])
+    
+    backends = {
+        "numpy": specular.gradient_method}
+    
+    if backend_name not in backends:
+        raise ValueError(f"Unknown backend: {backend_name}. Available: {list(backends.keys())}")
 
     # ==== Specular gradient methods ====
     
     # SPEG with square summable step size
     if "SPEG" in methods:
-        _, res, runtime = specular.gradient_method(
-            f=f, x_0=x_0, step_size=step_size_squ, tol=1e-10, max_iter=iteration, print_bar=True
-        ).history()
-        trial_results["SPEG"] = ensure_length(res, iteration)
-        trial_times["SPEG"] = runtime
+        if backend_name == 'numpy':
+            _, res, runtime = backends['numpy'](
+                f=f, x_0=x_0, step_size=step_size_squ, tol=1e-10, max_iter=iteration, print_bar=True
+            ).history()
+            trial_results["SPEG"] = ensure_length(res, iteration)
+            trial_times["SPEG"] = runtime
 
     # SPEG with square summable step size
     if "SPEG-s" in methods:
-        _, res, runtime = specular.gradient_method(
-            f=f, x_0=x_0, step_size=step_size_squ, tol=1e-10, max_iter=iteration, print_bar=True
-        ).history()
-        trial_results["SPEG-s"] = ensure_length(res, iteration)
-        trial_times["SPEG-s"] = runtime
+        if backend_name == 'numpy':
+            _, res, runtime = backends['numpy'](
+                f=f, x_0=x_0, step_size=step_size_squ, tol=1e-10, max_iter=iteration, print_bar=True
+            ).history()
+            trial_results["SPEG-s"] = ensure_length(res, iteration)
+            trial_times["SPEG-s"] = runtime
     
     # SPEG with geometric step size
     if "SPEG-g" in methods:
-        _, res, runtime = specular.gradient_method(
-            f=f, x_0=x_0, step_size=step_size_geo, tol=1e-10, max_iter=iteration, print_bar=True
-        ).history()
-        trial_results["SPEG-g"] = ensure_length(res, iteration)
-        trial_times["SPEG-g"] = runtime
+        if backend_name == 'numpy':
+            _, res, runtime = backends['numpy'](
+                f=f, x_0=x_0, step_size=step_size_geo, tol=1e-10, max_iter=iteration, print_bar=True
+            ).history()
+            trial_results["SPEG-g"] = ensure_length(res, iteration)
+            trial_times["SPEG-g"] = runtime
 
     # SSPEG
     if "S-SPEG" in methods:
-        _, res, runtime = specular.gradient_method(
-            f=f, x_0=x_0, step_size=step_size_squ, form='stochastic', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m, print_bar=True # type: ignore
-        ).history()
-        trial_results["S-SPEG"] = ensure_length(res, iteration)
-        trial_times["S-SPEG"] = runtime
+        if backend_name == 'numpy':
+            _, res, runtime = backends['numpy'](
+                f=f, x_0=x_0, step_size=step_size_squ, form='stochastic', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m, print_bar=True # type: ignore
+            ).history()
+            trial_results["S-SPEG"] = ensure_length(res, iteration)
+            trial_times["S-SPEG"] = runtime
     
     # HSPEG
     if "H-SPEG" in methods:
-        _, res, runtime = specular.gradient_method(
-            f=f, x_0=x_0, step_size=step_size_squ, form='hybrid', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m,switch_iter=10, print_bar=True # type: ignore
-        ).history()
-        trial_results["H-SPEG"] = ensure_length(res, iteration)
-        trial_times["H-SPEG"] = runtime
+        if backend_name == 'numpy':
+            _, res, runtime = backends['numpy'](
+                f=f, x_0=x_0, step_size=step_size_squ, form='hybrid', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m,switch_iter=10, print_bar=True # type: ignore
+            ).history()
+            trial_results["H-SPEG"] = ensure_length(res, iteration)
+            trial_times["H-SPEG"] = runtime
 
     # ==== Classical Methods ====
 
@@ -137,15 +148,16 @@ def run_single_trial(args):
 # ============================================================================--
 # 2. Main Analysis Logic
 # ============================================================================--
-def run_experiment(methods, file_number, trials, iteration, m, n, lambda1, lambda2, pdf=False, show=False):
+def run_experiment(methods, file_number, trials, iteration, m, n, lambda1, lambda2, backend="numpy", pdf=False, show=False):
     print(f"\n[Experiment Start] Number: {file_number}")
+    print(f"Backend: {backend}")
     print(f"Settings: m={m}, n={n}, λ1={lambda1}, λ2={lambda2}")
 
     all_results = {method: [] for method in methods}
     running_times = {method: [] for method in methods}
     summary_stats = {}
 
-    tasks = [(i, m, n, lambda1, lambda2, iteration, methods) for i in range(trials)]
+    tasks = [(i, m, n, lambda1, lambda2, iteration, methods, backend) for i in range(trials)]
     
     num_workers = min(os.cpu_count(), trials) # type: ignore
     with ProcessPoolExecutor(max_workers=num_workers) as executor:

@@ -9,7 +9,7 @@ from analysis import run_experiment
 
 if __name__ == '__main__':
     trials = 20
-    iteration = 10000
+    iteration = 100
 
     # methods = ["SPEG-s", "SPEG-g", "GD", "Adam", "BFGS"]
 

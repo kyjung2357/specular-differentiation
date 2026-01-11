@@ -7,6 +7,8 @@ from .calculation import (
     jacobian
 )
 
+from .optimization import gradient_method
+
 __all__ = [
     "A",
     "derivative",
@@ -14,4 +16,5 @@ __all__ = [
     "partial_derivative",
     "gradient",
     "jacobian",
+    "gradient_method",
 ]

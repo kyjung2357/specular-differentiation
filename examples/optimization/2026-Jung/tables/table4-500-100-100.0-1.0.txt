@@ -2,11 +2,11 @@
 \toprule
  & Mean & Median & Standard deviation \\
 \midrule
-SPEG & $1.4608 \times 10^{3}$ & $1.3737 \times 10^{3}$ & $3.9426 \times 10^{2}$ \\
-S-SPEG & $1.4791 \times 10^{3}$ & $1.3823 \times 10^{3}$ & $4.0569 \times 10^{2}$ \\
-H-SPEG & $1.4608 \times 10^{3}$ & $1.3737 \times 10^{3}$ & $3.9426 \times 10^{2}$ \\
-GD & $2.7281 \times 10^{3}$ & $2.7288 \times 10^{3}$ & $4.6032 \times 10^{2}$ \\
-Adam & $7.3454 \times 10^{3}$ & $7.2667 \times 10^{3}$ & $6.7203 \times 10^{2}$ \\
-BFGS & $2.2014 \times 10^{3}$ & $2.3622 \times 10^{3}$ & $6.6948 \times 10^{2}$ \\
+SPEG & $1.4109 \times 10^{2}$ & $7.6989 \times 10^{1}$ & $1.3401 \times 10^{2}$ \\
+S-SPEG & $1.4657 \times 10^{2}$ & $9.0300 \times 10^{1}$ & $1.3679 \times 10^{2}$ \\
+H-SPEG & $2.3239 \times 10^{1}$ & $1.6887 \times 10^{1}$ & $1.6895 \times 10^{1}$ \\
+GD & $4.8280 \times 10^{2}$ & $4.8436 \times 10^{2}$ & $1.1404 \times 10^{1}$ \\
+Adam & $1.8581 \times 10^{3}$ & $1.7958 \times 10^{3}$ & $4.4333 \times 10^{2}$ \\
+BFGS & $3.0856 \times 10^{2}$ & $3.0771 \times 10^{2}$ & $6.6138 \times 10^{1}$ \\
 \bottomrule
 \end{tabular}
