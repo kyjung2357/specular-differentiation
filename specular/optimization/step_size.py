@@ -35,19 +35,19 @@ class StepSize:
 
             * 'constant': float or int
 
-                A number `a > 0` for the rule `h_k = a` for each `k`.
+                A number `a > 0` for the rule :math:`h_k = a` for each `k`.
             
             * 'not_summable': float or int
 
-                A number `a > 0` for the rule `h_k = a / sqrt{k}` for each `k`.
+                A number `a > 0` for the rule :math:`h_k = a / sqrt{k}` for each `k`.
             
             * 'square_summable_not_summable': list or tuple
 
-                A pair of numbers `[a, b]`, where `a > 0` and `b >= 0`, for the rule `a / (b + k)` for each `k`.
+                A pair of numbers `[a, b]`, where `a > 0` and `b >= 0`, for the rule :math:`h_k = a / (b + k)` for each `k`.
             
             * 'geometric_series': list or tuple
 
-                A pair of numbers `[a, r]`, where `a > 0` and `0 < r < 1`, for the rule :math:`a * r^k` for each `k`.
+                A pair of numbers `[a, r]`, where `a > 0` and `0 < r < 1`, for the rule :math:`h_k = a * r^k` for each `k`.
             
             * 'user_defined': Callable
 
