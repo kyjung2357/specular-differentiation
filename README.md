@@ -56,6 +56,8 @@ This adds the following dependencies:
 
 * **[JAX](https://docs.jax.dev/en/latest/index.html)** (`jax`, `jaxlib` >= 0.4):
 
+[!IMPORTANT] This feature is experimental for now. See [Notes](docs/notes_for_jax.ipynb).
+
 ```bash
 pip install "specular-differentiation[jax]"
 ```
@@ -145,9 +147,9 @@ $\partial^{\sd}_v f(x)$
 
 ## References
 
-[1] K. Jung. *Nonlinear numerical schemes using specular differentiation for initial value problems of first-order ordinary differential equations*. arXiv preprint arXiv:??, 2025.
+[1] K. Jung. *Nonlinear numerical schemes using specular differentiation for initial value problems of first-order ordinary differential equations*. arXiv preprint arXiv:????.?????, TBA.
 
-[2] K. Jung. *Specular differentiation in normed vector spaces and its applications to nonsmooth convex optimization*. arXiv preprint arXiv:??, 2025. 
+[2] K. Jung. *Specular differentiation in normed vector spaces and its applications to nonsmooth convex optimization*. arXiv preprint arXiv:????.?????, TBA. 
 
 [3] K. Jung and J. Oh. [*The specular derivative*](https://arxiv.org/abs/2210.06062). arXiv preprint arXiv:2210.06062, 2022.
 

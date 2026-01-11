@@ -9,7 +9,7 @@ from analysis import run_experiment
 
 if __name__ == '__main__':
     trials = 20
-    iteration = 100
+    iteration = 1000
 
     # methods = ["SPEG-s", "SPEG-g", "GD", "Adam", "BFGS"]
 
@@ -39,20 +39,20 @@ if __name__ == '__main__':
     #     pdf=False
     # )
 
-    methods = ["SPEG", "S-SPEG", "H-SPEG", "GD", "Adam", "BFGS"]
+    # methods = ["SPEG", "S-SPEG", "H-SPEG", "GD", "Adam", "BFGS"]
 
-    run_experiment(
-        methods=methods,
-        file_number=3,
-        trials=trials,
-        iteration=iteration,
-        m=500,
-        n=100,
-        lambda1=0.0,
-        lambda2=0.0,
-        pdf=True,
-        show=False
-    )
+    # run_experiment(
+    #     methods=methods,
+    #     file_number=3,
+    #     trials=trials,
+    #     iteration=iteration,
+    #     m=500,
+    #     n=100,
+    #     lambda1=0.0,
+    #     lambda2=0.0,
+    #     pdf=True,
+    #     show=False
+    # )
 
     methods = ["SPEG", "S-SPEG", "H-SPEG", "GD", "Adam", "BFGS"]
 
@@ -68,6 +68,21 @@ if __name__ == '__main__':
         pdf=True,
         show=False
     )
+
+    # methods = ["SPEG", "S-SPEG", "H-SPEG", "GD", "Adam", "BFGS"]
+
+    # run_experiment(
+    #     methods=methods,
+    #     file_number=999,
+    #     trials=trials,
+    #     iteration=iteration,
+    #     m=500,
+    #     n=100,
+    #     lambda1=0.1,
+    #     lambda2=1.0,
+    #     pdf=True,
+    #     show=False
+    # )
 
     # ==========================================
     # For users who want to run many experiments
