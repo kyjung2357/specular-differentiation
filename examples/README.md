@@ -17,8 +17,8 @@ Each subdirectory is based on a paper.
 
 * **Directory**: `examples/optimization/`
 * **Requirements**: 
-  * `scipy` >= 1.16.3
-  * `torch` >= 2.7.0
+  * `scipy` >= 1.10.0
+  * `torch` >= 2.0.0
 
 ### [2024-Jung-Oh](/examples/optimization/2024-Jung-Oh/)
 

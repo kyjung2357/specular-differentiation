@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "specular-differentiation"
-version = "0.12.0"
+version = "0.12.1"
 description = "Specular differentiation in normed vector spaces and its applications"
 requires-python = ">=3.11"
 license = {text = "MIT License"}
@@ -36,12 +36,12 @@ jax = [
     "jax>=0.4",
     "jaxlib>=0.4"
 ]
-test = [
-    "pytest>=7.0"
-]
 
 dev = [
-    "specular-differentiation[jax,test]"
+    "specular-differentiation[jax]",
+    "pytest>=7.0",
+    "scipy>=1.10.0",
+    "torch>=2.0.0"
 ]
 
 [tool.setuptools.packages.find]

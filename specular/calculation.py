@@ -391,7 +391,7 @@ def gradient(
         )
     
     n = x.size
-    I = np.eye(n)
+    identity = np.eye(n)
 
     f_val = f(x)
 
@@ -401,32 +401,11 @@ def gradient(
             f"Got shape {np.shape(f_val)}."
         )
 
-    x_right = x + h*I
-    x_left = x - h*I
+    x_right = x + h*identity
+    x_left = x - h*identity
 
     f_right = np.array([f(row) for row in x_right], dtype=float)
     f_left = np.array([f(row) for row in x_left], dtype=float)
-    
-    # try:
-    #     f_right = f(x_right)
-    #     if np.ndim(f_right) != 1 or np.size(f_right) != n:
-    #         raise ValueError (
-    #             "Function f must return a scalar for each input vector. "
-    #             f"Got shape {np.ndim(f_right)}."
-    #         )
-        
-    # except Exception:
-    #     f_right = np.array([f(row) for row in x_right])
-
-    # try:
-    #     f_left = f(x_left)
-    #     if np.ndim(f_left) != 1 or np.size(f_left) != n:
-    #         raise ValueError(
-    #             "Function f must return a scalar for each input vector. "
-    #             f"Got shape {np.ndim(f_left)}.")
-        
-    # except Exception:
-    #     f_left = np.array([f(row) for row in x_left])
 
     alpha = (f_right - f_val) / h 
     beta = (f_val - f_left) / h 
@@ -473,24 +452,10 @@ def jacobian(
 
     m = f_val.size
 
-    I = np.eye(n)
+    identity = np.eye(n)
     
-    x_right = x + h * I
-    x_left = x - h * I
-
-    # try:
-    #     f_right = np.asarray(f(x_right), dtype=float)
-    #     f_left = np.asarray(f(x_left), dtype=float)
-
-    #     if f_right.size != n * m or f_left.size != n * m:
-    #         raise ValueError("Vectorization mismatch")
-
-    # except Exception:
-    #     f_right = np.array([f(row) for row in x_right], dtype=float)
-    #     f_left = np.array([f(row) for row in x_left], dtype=float)
-
-    # f_right = np.asarray(f_right, dtype=float).reshape(n, m)
-    # f_left = np.asarray(f_left, dtype=float).reshape(n, m)
+    x_right = x + h * identity
+    x_left = x - h * identity
 
     f_right = np.array([f(row) for row in x_right], dtype=float)
     f_left = np.array([f(row) for row in x_left], dtype=float)

@@ -139,15 +139,15 @@ def gradient(
         raise TypeError(f"Input 'x' must be a vector. Got shape {x.shape}.")
 
     n = x.size
-    I = jnp.eye(n)
+    identity = jnp.eye(n)
 
     f_val = jnp.asarray(f(x))
 
     if f_val.ndim != 0:
         raise ValueError(f"Function f must return a scalar. Got shape {f_val.shape}.")
 
-    x_right_batch = x + h * I
-    x_left_batch = x - h * I
+    x_right_batch = x + h * identity
+    x_left_batch = x - h * identity
     
     f_right = jax.vmap(f)(x_right_batch)
     f_left = jax.vmap(f)(x_left_batch)
@@ -183,10 +183,10 @@ def jacobian(
         f_center = f_center.reshape(1)
         
     m = f_center.size
-    I = jnp.eye(n)
+    identity = jnp.eye(n)
     
-    x_right_batch = x + h * I
-    x_left_batch = x - h * I
+    x_right_batch = x + h * identity
+    x_left_batch = x - h * identity
 
     f_right = jax.vmap(f)(x_right_batch)
     f_left = jax.vmap(f)(x_left_batch)

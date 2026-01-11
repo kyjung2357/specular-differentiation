@@ -40,10 +40,38 @@ Also, `specular` includes the following applications:
 
 ### User installation
 
+**Standard Installation (NumPy backend)**
+
 The package is available on PyPI:
 
 ```bash
 pip install specular-differentiation
+```
+
+**Advanced Installation (JAX backend)**
+
+By default, the package uses the NumPy backend (CPU). 
+To enable hardware acceleration, you can install the package with the JAX backend (GPU/TPU). 
+This adds the following dependencies:
+
+* **[JAX](https://docs.jax.dev/en/latest/index.html)** (`jax`, `jaxlib` >= 0.4):
+
+```bash
+pip install "specular-differentiation[jax]"
+```
+
+**Developer installation**
+
+To install all dependencies including tests, docs, and examples.
+This adds the following dependencies:
+
+* **[JAX](https://docs.jax.dev/en/latest/index.html)** (`jax`, `jaxlib` >= 0.4):
+* **[SciPy](https://scipy.org/)** (`scipy` >= 1.10.0)
+* **[PyTorch](https://pytorch.org/)** (`torch` >= 2.0.0)
+* **[Pytest](https://docs.pytest.org/en/stable/)** (`pytest` >= 7.0)
+
+```bash
+pip install -e ".[dev]"
 ```
 
 ### Quick start
