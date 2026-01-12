@@ -1,4 +1,4 @@
-# Core API: calculation
+# 1. Calculation
 
 The [`calculation`](../specular/calculation.py) module provides five primary functions to calculate specular differentiation, depending on the dimension of input.
 
@@ -16,9 +16,7 @@ The [`calculation`](../specular/calculation.py) module provides five primary fun
 
 ---
 
-## 1. Calculation
-
-### 1.1 One-dimensional Euclidean Space ($n=1$)
+## 1.1 One-dimensional Euclidean Space ($n=1$)
 
 In $ℝ$, the *specular derivative* can be calculated using the function `derivative`.
 
@@ -32,7 +30,7 @@ specular.derivative(f, x=0.0)
 # Output: 0.41421356237309515
 ```
 
-### 1.2 the $n$-dimensional Euclidean space ($n>1$)
+## 1.2 the $n$-dimensional Euclidean space ($n>1$)
 
 In $ℝ^n$, the *specular directional derivative* of a function $f: ℝ^n \to ℝ$ at a point $x \in ℝ^n$ in the direction $v \in ℝ^n$ can be calculated using the function `directional_derivative`.
 
