@@ -21,7 +21,7 @@ from .optimization import (
     gradient_method
 )
 
-__version__ = "0.13.0"
+__version__ = "0.13.1"
 __license__ = "MIT"
 __author__ = "Kiyuob Jung"
 __email__ = "kyjung@msu.edu"

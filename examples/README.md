@@ -3,7 +3,7 @@
 This directory includes applications of specular differentiation.
 Each subdirectory is based on a paper.
 
-## [Ordinary differential equation](/examples/ode/)
+## Ordinary differential equation
 
 * **Directory**: `examples/ode/`
 
@@ -13,7 +13,7 @@ Each subdirectory is based on a paper.
   * **Keywords**: generalized differentiation, Mean Value Theorem, Fermat's Theorem, explicit Euler scheme, implicit Euler scheme, Crank-Nicolson scheme
   * **Reference**: TBA
   
-## [Optimization](/examples/optimization/)
+## Optimization
 
 * **Directory**: `examples/optimization/`
 * **Requirements**: 

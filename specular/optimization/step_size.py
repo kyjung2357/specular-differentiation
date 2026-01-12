@@ -52,6 +52,30 @@ class StepSize:
             * 'user_defined': Callable
 
                 A function that takes the current iteration `k` as input and returns the step size (float).
+        
+        Examples
+        --------
+        >>> from specular.optimization.step_size import StepSize
+        >>> 
+        >>> # 'constant': h_k = a
+        >>> step = StepSize(name='constant', parameters=0.5)
+        >>> 
+        >>> # 'not_summable' rule: h_k = a / sqrt(k)
+        >>> # a = 2.0
+        >>> step = StepSize(name='not_summable', parameters=2.0)
+        >>> 
+        >>> # 'square_summable_not_summable' rule: h_k = a / (b + k
+        >>> # a = 10, b = 2
+        >>> step = StepSize(name='square_summable_not_summable', parameters=[10.0, 2.0])
+        >>> 
+        >>> # 'geometric_series' rule: h_k = a * r^k
+        >>> # a = 1.0, r = 0.5
+        >>> step = StepSize(name='geometric_series', parameters=[1.0, 0.5])
+        >>> 
+        >>> # 'user_defined' callable.
+        >>> # Custom rule: h_k = 1 / k^2
+        >>> custom_rule = lambda k: 1.0 / (k**2)
+        >>> step = StepSize(name='user_defined', parameters=custom_rule)
         """
         self.step_size = name
         self.parameters = parameters
