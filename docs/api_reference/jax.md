@@ -17,8 +17,8 @@ See the [official homepage](https://docs.jax.dev/en/latest/index.html).
 ## 4.3 Example
 
 For a detailed comparison of the algorithms, please refer to the following scripts:
-* **`docs/jax/jax_example.py`**: A basic implementation using the JAX backend.
-* **`examples/optimization/2026-Jung/main.py`**: The full experimental setup used in the paper.
+* [`docs/api_reference/jax_example.py`](/docs/api_reference/jax_example.py): A basic implementation using the JAX backend.
+* [`examples/optimization/2026-Jung/main.py`](/examples/optimization/2026-Jung/main.py): The full experimental setup used in the paper.
 
 > [!NOTE]
 > Preliminary tests show that the computation time is **shorter than BFGS**; however, the exact theoretical reasons for this performance gain are still being investigated and have not yet been fully proven.
