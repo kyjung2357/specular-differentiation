@@ -138,10 +138,11 @@ To cite this repository:
 @software{specular2026,
   author  = {Kiyuob Jung},
   title   = {specular-differentiation},
-  url     = {https://github.com/your-id/specular-differentiation},
+  url     = {https://github.com/kyjung2357/specular-differentiation},
   version = {0.13.0},
   year    = {2026},
-  doi     = {Pending},
+  doi     = {TBA},
+  note    = {Documentation: https://kyjung2357.github.io/specular-differentiation},
 }
 ```
 
