@@ -1,5 +1,5 @@
 
-# 2. Ordinary differential equations
+# 2.2. Ordinary differential equations
 
 Let the source function $F:[t_0, T] \times ℝ \to ℝ$ be given, and the initial data $u_0:ℝ \to ℝ$ be given. 
 Consider the initial value problem:
@@ -17,7 +17,7 @@ To solve the problem numerically, the subpackage [`ode`](/specular/ode/solver.py
 * the implicit Euler scheme
 * the Crank-Nicolson scheme
 
-### 2.1 Specular Euler scheme
+### 2.2.1 Specular Euler scheme
 
 All functions return an instance of the `ODEResult` class that encapsulates the numerical results.
 
@@ -73,7 +73,7 @@ specular.Euler_scheme(of_Type='1', F=F, t_0=0.0, u_0=u_0, T=2.5, h=0.1).visualiz
 # Output: Figure saved: figures\specular-Euler-scheme-of-Type-1
 ```
 
-![specular-Euler-scheme-of-Type-1](/docs/figures/specular-Euler-scheme-of-Type-1.png)
+![specular-Euler-scheme-of-Type-1](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-Euler-scheme-of-Type-1.png)
 
 To obtain the table of the numerical results, call `.table()`. 
 
@@ -133,7 +133,7 @@ specular.Euler_scheme(of_Type=5, F=F, t_0=0.0, u_0=u_0, T=10.0, h=0.1).total_err
 # Output: 0.0011409613137273178
 ```
 
-### 2.2 Specular trigonometric scheme
+### 2.2.2 Specular trigonometric scheme
 
 ```python
 import specular
@@ -154,9 +154,9 @@ specular.trigonometric_scheme(F=F, t_0=0.0, u_0=u_0, u_1=u_1, T=2.5, h=0.1).visu
 # Output: Figure saved: figures\specular-trigonometric
 ```
 
-![specular-trigonometric-scheme](/docs/figures/specular-trigonometric.png)
+![specular-trigonometric-scheme](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-trigonometric.png)
 
-### 2.3 Classical schemes
+### 2.2.3 Classical schemes
 
 The three classical schemes are available: the explicit Euler, the implicit Euler, and the Crank-Nicolson schemes.
 
@@ -198,18 +198,5 @@ plt.show()
 # Output: Running Crank-Nicolson scheme: 100%|██████████| 18/18 [00:00<00:00, 17988.44it/s]
 ```
 
-![classical-schemes](/docs/figures/classical-schemes.png)
+![classical-schemes](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/classical-schemes.png)
 
-## Continue reading
-
-### [API Reference](./README.md)
-
-* [1. Calculation](./calculation.md)
-* [3. Optimization](./optimization.md)
-* [4. JAX backend](./jax.md)
-
-### [Examples](/examples/README.md)
-
-* [2026-Jung](/examples/ode/2026-Jung/main.ipynb)
-* [2024-Jung-Oh](/examples/optimization/2024-Jung-Oh/main.py)
-* [2026-Jung](/examples/optimization/2026-Jung/main.py)

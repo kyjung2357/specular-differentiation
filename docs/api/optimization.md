@@ -1,4 +1,4 @@
-# 3. Optimization
+# 2.3. Optimization
 
 Consider the optimization problem:
 
@@ -20,7 +20,7 @@ $$
 where $h_k > 0$ is the step size and $s_k$ is the specular gradient for each $k \in \mathbb{N}$.
 
 
-## 3.1 Step Size Rules (`StepSize`)
+## 2.3.1 Step Size Rules (`StepSize`)
 
 The `StepSize` class defines how the step size $h_k$ evolves during optimization:
 $x_{k+1} = x_k - h_k s_k$
@@ -37,6 +37,15 @@ $x_{k+1} = x_k - h_k s_k$
 
 ---
 
+### TEST
+
+::: specular.optimization.step_size.StepSize
+    options:
+      show_root_heading: false
+      members:
+        - __init__
+        - __call__
+
 ### Quick Example
 ```python
 from specular.optimization.step_size import StepSize
@@ -48,7 +57,7 @@ print(h_1)
 # Output: 3.3333333333333335
 ```
 
-## 3.2 The specular gradient method
+## 2.3.2 The specular gradient method
 
 ### The one dimensional case
 ```python
@@ -97,7 +106,7 @@ res2 = specular.gradient_method(f=f, x_0=x_0, step_size=step_size, form='stochas
 res3 = specular.gradient_method(f=f_quad_vector, x_0=x_0, step_size=step_size, form='hybrid', f_j=f_components, switch_iter=5, max_iter=20)
 ```
 
-### 3.3 `OptimizationResult`
+### 2.3.3 `OptimizationResult`
 
 The class `OptimizationResult` collects the optimization results.
 To get history of optimization, call `history()`.
@@ -115,17 +124,3 @@ step_size = specular.StepSize('square_summable_not_summable', [0.5, 1.0])
 # Specular gradient method
 res_x, res_f, res_time = specular.gradient_method(f=f, x_0=x_0, step_size=step_size, form='specular gradient', max_iter=50).history()
 ```
-
-## Continue reading
-
-### [API Reference](./README.md)
-
-* [1. Calculation](./calculation.md)
-* [2. ODE](./ode.md)
-* [4. JAX backend](./jax.md)
-
-### [Examples](/examples/README.md)
-
-* [2026-Jung](/examples/ode/2026-Jung/main.ipynb)
-* [2024-Jung-Oh](/examples/optimization/2024-Jung-Oh/main.py)
-* [2026-Jung](/examples/optimization/2026-Jung/main.py)

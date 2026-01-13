@@ -1,0 +1,59 @@
+site_name: Specular Differentiation
+site_url: https://kyjung2357.github.io/specular-differentiation
+repo_url: https://github.com/kyjung2357/specular-differentiation
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - content.code.copy
+    - navigation.expand
+    - navigation.indexes
+    - navigation.footer
+    - navigation.tabs
+    - navigation.tabs.sticky
+
+plugins:
+  - search
+  - callouts
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [.]
+          options:
+            show_source: true
+            show_root_heading: true
+            heading_level: 1
+  - include-markdown:
+      rewrite_relative_urls: true
+  
+
+nav:
+  - Home: index.md
+  - 1. Getting Started: started.md
+  - 2. API Reference:
+    - overview: api/index.md
+    - 2.1. Calculation: api/calculation.md
+    - 2.2. ODE: api/ode.md
+    - 2.3. Optimization: api/optimization.md
+    - 2.4. JAX: api/jax.md
+  - 3. Examples: examples/index.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences

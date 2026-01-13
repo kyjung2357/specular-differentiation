@@ -13,13 +13,13 @@ A specular derivative (the red line) can be understood as the average of the inc
 In contrast, a symmetric derivative (the purple line) is the average of the right and left derivatives.
 Their difference is illustrated as in the following figure.
 
-![specular-derivative-animation](./docs/figures/specular-derivative-animation.gif)
+![specular-derivative-animation](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-derivative-animation.gif)
 
 ## Table of Contents
 * [Introduction](#installation)
 * [Applications](#applications)
 * [Documentation](#documentation)
-* [LaTeX](#laTeX)
+* [LaTeX macro](#latex-macro)
 * [Citing specular-differentiation](#citing-specular-differentiation)
 * [References](#references)
 
@@ -81,7 +81,7 @@ In [[1]](#references), seven schemes are proposed for solving ODEs numerically:
 
 The following example shows that the specular Euler schemes of Type 5 and 6 yield more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
 
-![ODE-example](./docs/figures/ODE-example.png)
+![ODE-example](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/ODE-example.png)
 
 ### [Optimization](./examples/README.md#optimization)
 
@@ -96,15 +96,15 @@ In [[2]](#references), three methods are proposed for optimizing nonsmooth conve
 
 The following example compares the three proposed methods with the classical methods: [gradient descent](https://en.wikipedia.org/wiki/Gradient_descent) (GD), [Adaptive Moment Estimation](https://arxiv.org/abs/1412.6980) (Adam), and [Broyden-Fletcher-Goldfarb-Shanno](https://en.wikipedia.org/wiki/Broyden%E2%80%93Fletcher%E2%80%93Goldfarb%E2%80%93Shanno_algorithm) (BFGS).
 
-![optimization-example](./docs/figures/optimization-example.png)
+![optimization-example](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/optimization-example.png)
 
 ## Documentation
 
-* [Getting Started](./docs/getting_started.md)
-* [API Reference](./docs/api_reference/README.md)
-* [Examples](./examples/README.md)
+* [1. Getting Started](started.md)
+* [2. API Reference](api/index.md)
+* [3. Examples](examples/index.md)
 
-## LaTeX
+## LaTeX macro
 
 To use the specular differentiation symbol in your LaTeX document, add the following code to your preamble (before `\begin{document}`):
 
@@ -135,12 +135,12 @@ To cite this repository:
 
 ```bibtex
 @software{specular2026github,
-  author = {Kiyuob Jung},
-  title = {specular-differentiation},
-  url = {https://github.com/your-id/specular-differentiation},
+  author  = {Kiyuob Jung},
+  title   = {specular-differentiation},
+  url     = {https://github.com/your-id/specular-differentiation},
   version = {0.13.0},
-  year = {2026},
-  doi = {Pending},
+  year    = {2026},
+  doi     = {Pending},
 }
 ```
 

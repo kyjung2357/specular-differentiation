@@ -1,6 +1,6 @@
-# Getting Started
+# 1. Getting Started
 
-## User installation
+## 1.1. User installation
 
 **Standard Installation (NumPy backend)**
 
@@ -27,12 +27,12 @@ This adds the following dependencies:
 
 * **[JAX](https://docs.jax.dev/en/latest/index.html)** (`jax`, `jaxlib` >= 0.4):
 
-> [!NOTE]
-> This feature is experimental for now. See [Notes](/docs/api_reference/jax.md).
-
 ```bash
 pip install "specular-differentiation[jax]"
 ```
+
+> [!NOTE]
+> This feature is experimental for now. See [Notes](/docs/api/jax.md).
 
 **Developer installation**
 
@@ -48,7 +48,7 @@ This adds the following dependencies:
 pip install -e ".[dev]"
 ```
 
-## Quick start
+## 1.2. Quick start
 
 The following simple example calculates the specular derivative of the [ReLU function](https://en.wikipedia.org/wiki/Rectified_linear_unit) $f(x) = max(0, x)$ at the origin.
 
@@ -60,7 +60,7 @@ specular.derivative(ReLU, x=0)
 # Output: 0.41421356237309515
 ```
 
-## JAX Backend Usage
+## 1.3. JAX Backend Usage
 
 To leverage **JAX** for hardware acceleration instead of the standard NumPy backend, import `specular.jax`:
 
@@ -84,19 +84,4 @@ ReLU = lambda x: jax.numpy.maximum(x, 0)
 sjax.derivative(ReLU, 0.0)
 # Output: Array(0.41421356, dtype=float64)
 ```
-
-## Continue reading
-
-### [API Reference](./api_reference/README.md)
-
-* [1. Calculation](./api_reference/calculation.md)
-* [2. ODE](./api_reference/ode.md)
-* [3. Optimization](./api_reference/optimization.md)
-* [4. JAX backend](./api_reference/jax.md)
-
-### [Examples](/examples/README.md)
-
-* [2026-Jung](/examples/ode/2026-Jung/)
-* [2024-Jung-Oh](/examples/optimization/2024-Jung-Oh/)
-* [2026-Jung](/examples/optimization/2026-Jung/)
 

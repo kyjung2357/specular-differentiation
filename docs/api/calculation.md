@@ -1,4 +1,4 @@
-# 1. Calculation
+# 2.1. Calculation
 
 The [`calculation`](../specular/calculation.py) module provides five primary functions to calculate specular differentiation, depending on the dimension of input.
 
@@ -77,17 +77,3 @@ specular.partial_derivative(f, x=[0.1, 2.3, -1.2], i=2)
 specular.partial_derivative(f, x=[0.1, 2.3, -1.2], i=3)
 # Output: -0.4622227292028128
 ```
-
-## Continue reading
-
-### [API Reference](./README.md)
-
-* [2. ODE](./ode.md)
-* [3. Optimization](./optimization.md)
-* [4. JAX backend](./jax.md)
-
-### [Examples](/examples/README.md)
-
-* [2026-Jung](/examples/ode/2026-Jung/main.ipynb)
-* [2024-Jung-Oh](/examples/optimization/2024-Jung-Oh/main.py)
-* [2026-Jung](/examples/optimization/2026-Jung/main.py)
