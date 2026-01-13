@@ -1,7 +1,24 @@
 
 # 2.2. Ordinary differential equations
 
-### 2.2.1 Specular Euler scheme
+Let the source function $F:[t_0, T] \times ℝ \to ℝ$ be given, and the initial data $u_0:ℝ \to ℝ$ be given. 
+Consider the initial value problem:
+
+$$
+u'(t) = F(t, u(t))
+$$ 
+
+with the initial condition $u(t_0) = u_0(t_0)$.
+
+To solve the problem numerically, the subpackage [`specular.ode.solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/ode/solver.py) provides the following numerical schemes:
+
+* the *specular Euler* scheme (Type 1 ~ 6)
+* the *specular trigonometric* scheme
+* the explicit Euler scheme
+* the implicit Euler scheme
+* the Crank-Nicolson scheme
+
+### 2.2.1. Specular Euler scheme
 
 All functions return an instance of the `ODEResult` class that encapsulates the numerical results.
 
@@ -117,7 +134,7 @@ specular.Euler_scheme(of_Type=5, F=F, t_0=0.0, u_0=u_0, T=10.0, h=0.1).total_err
 # Output: 0.0011409613137273178
 ```
 
-### 2.2.2 Specular trigonometric scheme
+### 2.2.2. Specular trigonometric scheme
 
 ```python
 import specular
@@ -140,7 +157,7 @@ specular.trigonometric_scheme(F=F, t_0=0.0, u_0=u_0, u_1=u_1, T=2.5, h=0.1).visu
 
 ![specular-trigonometric-scheme](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-trigonometric.png)
 
-### 2.2.3 Classical schemes
+### 2.2.3. Classical schemes
 
 The three classical schemes are available: the explicit Euler, the implicit Euler, and the Crank-Nicolson schemes.
 
@@ -184,3 +201,20 @@ plt.show()
 
 ![classical-schemes](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/classical-schemes.png)
 
+
+
+## 2.2.4. API Reference
+
+::: specular.ode.solver
+    options:
+      show_root_heading: false
+      members:
+        - __init__
+        - __call__
+
+::: specular.ode.result
+    options:
+      show_root_heading: false
+      members:
+        - __init__
+        - __call__
