@@ -1,22 +1,13 @@
 # 2.1. Calculation
 
-The [`calculation`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/calculation.py) module provides five primary functions to calculate specular differentiation, depending on the dimension of input.
+::: specular.calculation
+    handler: python
+    options:
+      show_root_heading: true
+      show_source: true
 
----
 
-## Quick Reference
-
-| Function | Space | Description |Input Type | Output Type |
-| :--- | :--- | :--- | :--- | :--- |
-| `derivative` | $\mathbb{R} \to \mathbb{R}^m$ | specular derivative | `float` | `float`, `np.ndarray`
-| `directional_derivative` | $\mathbb{R}^n \to \mathbb{R}$ | specular directional derivative in direction $v \in \mathbb{R}^n$ | `np.ndarry` | `float` |
-| `partial_derivative` | $\mathbb{R}^n \to \mathbb{R}$ | specular partial derivative w.r.t. $v = x_i$ | `np.ndarray` | `float`
-| `gradient` | $\mathbb{R}^n \to \mathbb{R}$ | specular gradient vector | `np.ndarray` | `np.ndarray` |
-| `jacobian` | $\mathbb{R}^n \to \mathbb{R}^m$ | specular jacobian matrix | `np.ndarray` | `np.ndarray` |
-
----
-
-## 1.1 One-dimensional Euclidean Space ($n=1$)
+## 2.1.1 One-dimensional Euclidean Space ($n=1$)
 
 In $ℝ$, the *specular derivative* can be calculated using the function `derivative`.
 
@@ -30,7 +21,7 @@ specular.derivative(f, x=0.0)
 # Output: 0.41421356237309515
 ```
 
-## 1.2 the $n$-dimensional Euclidean space ($n>1$)
+## 2.1.2 the $n$-dimensional Euclidean space ($n>1$)
 
 In $ℝ^n$, the *specular directional derivative* of a function $f: ℝ^n \to ℝ$ at a point $x \in ℝ^n$ in the direction $v \in ℝ^n$ can be calculated using the function `directional_derivative`.
 

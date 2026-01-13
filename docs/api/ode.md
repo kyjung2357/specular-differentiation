@@ -1,22 +1,6 @@
 
 # 2.2. Ordinary differential equations
 
-Let the source function $F:[t_0, T] \times ℝ \to ℝ$ be given, and the initial data $u_0:ℝ \to ℝ$ be given. 
-Consider the initial value problem:
-
-$$
-u'(t) = F(t, u(t))
-$$ 
-
-with the initial condition $u(t_0) = u_0(t_0)$.
-To solve the problem numerically, the subpackage [`ode`](/specular/ode/solver.py) provides the following methods:
-
-* the *specular Euler* scheme (Type 1 ~ 6)
-* the *specular trigonometric* scheme
-* the explicit Euler scheme
-* the implicit Euler scheme
-* the Crank-Nicolson scheme
-
 ### 2.2.1 Specular Euler scheme
 
 All functions return an instance of the `ODEResult` class that encapsulates the numerical results.

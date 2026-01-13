@@ -1,50 +1,14 @@
 # 2.3. Optimization
 
-Consider the optimization problem:
-
-$$
-\min_{x \in \mathbb{R}^n} f(x),
-$$
-
-where $f:\mathbb{R}^n \to \mathbb{R}$ is convex.
-To solve the problem numerically, the module The [`optimization`](/specular/optimization/solver.py) subpackage  provides the following methods:
-
-* the *specular gradient (SPEG)* method
-* the *stochastic specular gradient (S-SPEG)* method
-* the *hybrid specular gradient (H-SPEG)* method
-
-Given an initial point $x_0 \in \mathbb{R}^n$, method takes the form: 
-$$
-x_{k+1} = x_k - h_k s_k,
-$$
-where $h_k > 0$ is the step size and $s_k$ is the specular gradient for each $k \in \mathbb{N}$.
-
-
-## 2.3.1 Step Size Rules (`StepSize`)
-
-The `StepSize` class defines how the step size $h_k$ evolves during optimization:
-$x_{k+1} = x_k - h_k s_k$
-
-### Available Options
-
-| Name | Rule (Formula) | Type | Input | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| `constant` | $h_k = a$ | `float` | `a` | Fixed step size for all $k$. |
-| `not_summable` | $h_k = a / \sqrt{k}$ | `float` | `a` | $\lim_{k \to \infty }h_k = 0$, but $\sum h_k = \infty$. |
-| `square_summable_not_summable` | $h_k = a / (b + k)$ | `list` | `[a, b]` | $\sum h_k^2 < \infty$ and $\sum h_k = \infty$. |
-| `geometric_series` | $h_k = a \cdot r^k$ | `list` | `[a, r]` | Exponentially decaying step size. |
-| `user_defined` | Custom | `Callable` | `f(k)` | User-provided function of iteration $k$. |
-
----
-
-### TEST
-
 ::: specular.optimization.step_size.StepSize
     options:
       show_root_heading: false
       members:
         - __init__
         - __call__
+
+
+
 
 ### Quick Example
 ```python
