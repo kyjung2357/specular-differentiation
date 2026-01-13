@@ -643,6 +643,58 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#21-calculation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1. Calculation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#22-ode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 ODE
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#23-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Optimization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#24-jax-backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 JAX Backend
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -662,33 +714,179 @@
 
 
 <h1 id="2-api-reference">2. API Reference</h1>
-<div class="grid cards">
+<p>The specular package consists of the following modules and subpackages.</p>
+<h2 id="21-calculation"><a href="calculation/">2.1. Calculation</a></h2>
 <ul>
 <li>
-<p><strong><a href="calculation/">2.1. Calculation</a></strong>
-    ---</p>
+<p>The <a href="https://github.com/kyjung2357/specular-differentiation/blob/main/specular/calculation.py"><code>specular.calculation</code></a> module provides five primary functions to calculate specular differentiation, depending on the dimension of input.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Function</th>
+<th style="text-align: left;">Space</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Input Type</th>
+<th style="text-align: left;">Output Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>derivative</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\mathbb{R} \to \mathbb{R}^m\)</span></td>
+<td style="text-align: left;">specular derivative</td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;"><code>float</code>, <code>np.ndarray</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>directional_derivative</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\mathbb{R}^n \to \mathbb{R}\)</span></td>
+<td style="text-align: left;">specular directional derivative in direction <span class="arithmatex">\(v \in \mathbb{R}^n\)</span></td>
+<td style="text-align: left;"><code>np.ndarry</code></td>
+<td style="text-align: left;"><code>float</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>partial_derivative</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\mathbb{R}^n \to \mathbb{R}\)</span></td>
+<td style="text-align: left;">specular partial derivative w.r.t. <span class="arithmatex">\(v = x_i\)</span></td>
+<td style="text-align: left;"><code>np.ndarray</code></td>
+<td style="text-align: left;"><code>float</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>gradient</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\mathbb{R}^n \to \mathbb{R}\)</span></td>
+<td style="text-align: left;">specular gradient vector</td>
+<td style="text-align: left;"><code>np.ndarray</code></td>
+<td style="text-align: left;"><code>np.ndarray</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>jacobian</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\mathbb{R}^n \to \mathbb{R}^m\)</span></td>
+<td style="text-align: left;">specular jacobian matrix</td>
+<td style="text-align: left;"><code>np.ndarray</code></td>
+<td style="text-align: left;"><code>np.ndarray</code></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<h2 id="22-ode"><a href="ode/">2.2 ODE</a></h2>
 <ul>
-<li><code>specular.calculation</code> </li>
-<li><a href="calculation/#212-the--dimensional-euclidean-space-">2.1.2 the $n$-dimensional Euclidean space ($n&gt;1$)</a></li>
+<li>Let the source function <span class="arithmatex">\(F:[t_0, T] \times ℝ \to ℝ\)</span> be given, and the initial data <span class="arithmatex">\(u_0:ℝ \to ℝ\)</span> be given. 
+Consider the initial value problem:</li>
 </ul>
+<div class="arithmatex">\[
+u'(t) = F(t, u(t))
+\]</div>
+<p>with the initial condition <span class="arithmatex">\(u(t_0) = u_0(t_0)\)</span>.</p>
+<ul>
+<li>
+<p>To solve the problem numerically, the subpackage <a href="https://github.com/kyjung2357/specular-differentiation/blob/main/specular/ode/solver.py"><code>specular.ode.solver</code></a> provides the following numerical schemes:</p>
 </li>
 <li>
-<p><strong><a href="ode/">2.2 ODE</a></strong>
-    ---
-    상미분 방정식 풀이 관련 API입니다.</p>
+<p>the <em>specular Euler</em> scheme (Type 1 ~ 6)</p>
+</li>
+<li>the <em>specular trigonometric</em> scheme</li>
+<li>the explicit Euler scheme</li>
+<li>the implicit Euler scheme</li>
+<li>
+<p>the Crank-Nicolson scheme</p>
 </li>
 <li>
-<p><strong><a href="optimization/">2.3 Optimization</a></strong>
-    ---
-    최적화 알고리즘 모음입니다.</p>
-</li>
-<li>
-<p><strong><a href="jax/">2.4 JAX Backend</a></strong>
-    ---
-    JAX 가속 기능을 설명합니다.</p>
+<p>The <a href="https://github.com/kyjung2357/specular-differentiation/blob/main/specular/ode/result.py"><code>specular.ode.result</code></a> module provides the <code>ODEResult</code> class to store the results.</p>
 </li>
 </ul>
-</div>
+<h2 id="23-optimization"><a href="optimization/">2.3 Optimization</a></h2>
+<ul>
+<li>Consider the optimization problem:</li>
+</ul>
+<div class="arithmatex">\[
+\min_{x \in \mathbb{R}^n} f(x),
+\]</div>
+<p>where <span class="arithmatex">\(f:\mathbb{R}^n \to \mathbb{R}\)</span> is convex.</p>
+<ul>
+<li>
+<p>To solve the problem numerically, the subpackage <a href="https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/solver.py"><code>specular.optimization.solver</code></a> provides the following methods:</p>
+</li>
+<li>
+<p>the <em>specular gradient (SPEG)</em> method</p>
+</li>
+<li>the <em>stochastic specular gradient (S-SPEG)</em> method</li>
+<li>
+<p>the <em>hybrid specular gradient (H-SPEG)</em> method</p>
+</li>
+<li>
+<p>Given an initial point <span class="arithmatex">\(x_0 \in \mathbb{R}^n\)</span>, method takes the form: </p>
+</li>
+</ul>
+<div class="arithmatex">\[
+x_{k+1} = x_k - h_k s_k,
+\]</div>
+<p>where <span class="arithmatex">\(h_k &gt; 0\)</span> is the step size and <span class="arithmatex">\(s_k\)</span> is the specular gradient for each <span class="arithmatex">\(k \in \mathbb{N}\)</span>.</p>
+<ul>
+<li>
+<p>The <a href="https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/step_size.py"><code>specular.optimization.step_size</code></a> module provides the <code>StepSize</code> class to define step size <span class="arithmatex">\(h_k\)</span>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Rule (Formula)</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Input</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>constant</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(h_k = a\)</span></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;"><code>a</code></td>
+<td style="text-align: left;">Fixed step size for all <span class="arithmatex">\(k\)</span>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>not_summable</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(h_k = a / \sqrt{k}\)</span></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;"><code>a</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\lim_{k \to \infty }h_k = 0\)</span>, but <span class="arithmatex">\(\sum h_k = \infty\)</span>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>square_summable_not_summable</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(h_k = a / (b + k)\)</span></td>
+<td style="text-align: left;"><code>list</code></td>
+<td style="text-align: left;"><code>[a, b]</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\sum h_k^2 &lt; \infty\)</span> and <span class="arithmatex">\(\sum h_k = \infty\)</span>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>geometric_series</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(h_k = a \cdot r^k\)</span></td>
+<td style="text-align: left;"><code>list</code></td>
+<td style="text-align: left;"><code>[a, r]</code></td>
+<td style="text-align: left;">Exponentially decaying step size.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>user_defined</code></td>
+<td style="text-align: left;">Custom</td>
+<td style="text-align: left;"><code>Callable</code></td>
+<td style="text-align: left;"><code>f(k)</code></td>
+<td style="text-align: left;">User-provided function of iteration <span class="arithmatex">\(k\)</span>.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>The <a href="https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/result.py"><code>specular.optimization.result</code></a> module provides the <code>OptimizationResult</code> class to store the results.</p>
+</li>
+</ul>
+<h2 id="24-jax-backend"><a href="jax/">2.4 JAX Backend</a></h2>
+<ul>
+<li>
+<p>The <a href="https://github.com/kyjung2357/specular-differentiation/blob/main/specular/jax/calculation.py"><code>specular.jax.calculation</code></a> module provides JAX implementations of the calculations in <code>specular.calculation</code>.</p>
+</li>
+<li>
+<p>The <a href="https://github.com/kyjung2357/specular-differentiation/blob/main/specular/jax/optimization/solver.py"><code>specular.jax.optimization.solver</code></a> module provides JAX implementations of the numerical schemes in <code>specular.optimization.solver</code>.</p>
+</li>
+</ul>
 
 
 
@@ -782,6 +980,12 @@
     
     
       <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
   </body>

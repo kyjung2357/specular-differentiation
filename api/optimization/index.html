@@ -549,24 +549,6 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    2.3. Optimization
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -583,64 +565,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#231-step-size-rules-stepsize" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2.3.1 Step Size Rules (StepSize)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2.3.1 Step Size Rules (StepSize)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#available-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Available Options
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#test" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        TEST
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -729,53 +653,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#231-step-size-rules-stepsize" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2.3.1 Step Size Rules (StepSize)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2.3.1 Step Size Rules (StepSize)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#available-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Available Options
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#test" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        TEST
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -795,76 +672,6 @@
 
 
 <h1 id="23-optimization">2.3. Optimization</h1>
-<p>Consider the optimization problem:</p>
-<p>$$
-\min_{x \in \mathbb{R}^n} f(x),
-$$</p>
-<p>where $f:\mathbb{R}^n \to \mathbb{R}$ is convex.
-To solve the problem numerically, the module The <a href="/specular/optimization/solver.py"><code>optimization</code></a> subpackage  provides the following methods:</p>
-<ul>
-<li>the <em>specular gradient (SPEG)</em> method</li>
-<li>the <em>stochastic specular gradient (S-SPEG)</em> method</li>
-<li>the <em>hybrid specular gradient (H-SPEG)</em> method</li>
-</ul>
-<p>Given an initial point $x_0 \in \mathbb{R}^n$, method takes the form: 
-$$
-x_{k+1} = x_k - h_k s_k,
-$$
-where $h_k &gt; 0$ is the step size and $s_k$ is the specular gradient for each $k \in \mathbb{N}$.</p>
-<h2 id="231-step-size-rules-stepsize">2.3.1 Step Size Rules (<code>StepSize</code>)</h2>
-<p>The <code>StepSize</code> class defines how the step size $h_k$ evolves during optimization:
-$x_{k+1} = x_k - h_k s_k$</p>
-<h3 id="available-options">Available Options</h3>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Name</th>
-<th style="text-align: left;">Rule (Formula)</th>
-<th style="text-align: left;">Type</th>
-<th style="text-align: left;">Input</th>
-<th style="text-align: left;">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>constant</code></td>
-<td style="text-align: left;">$h_k = a$</td>
-<td style="text-align: left;"><code>float</code></td>
-<td style="text-align: left;"><code>a</code></td>
-<td style="text-align: left;">Fixed step size for all $k$.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>not_summable</code></td>
-<td style="text-align: left;">$h_k = a / \sqrt{k}$</td>
-<td style="text-align: left;"><code>float</code></td>
-<td style="text-align: left;"><code>a</code></td>
-<td style="text-align: left;">$\lim_{k \to \infty }h_k = 0$, but $\sum h_k = \infty$.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>square_summable_not_summable</code></td>
-<td style="text-align: left;">$h_k = a / (b + k)$</td>
-<td style="text-align: left;"><code>list</code></td>
-<td style="text-align: left;"><code>[a, b]</code></td>
-<td style="text-align: left;">$\sum h_k^2 &lt; \infty$ and $\sum h_k = \infty$.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>geometric_series</code></td>
-<td style="text-align: left;">$h_k = a \cdot r^k$</td>
-<td style="text-align: left;"><code>list</code></td>
-<td style="text-align: left;"><code>[a, r]</code></td>
-<td style="text-align: left;">Exponentially decaying step size.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>user_defined</code></td>
-<td style="text-align: left;">Custom</td>
-<td style="text-align: left;"><code>Callable</code></td>
-<td style="text-align: left;"><code>f(k)</code></td>
-<td style="text-align: left;">User-provided function of iteration $k$.</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h3 id="test">TEST</h3>
 
 
 <div class="doc doc-object doc-class">
@@ -1678,6 +1485,12 @@ To get history of optimization, call <code>history()</code>.</p>
     
     
       <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
   </body>
