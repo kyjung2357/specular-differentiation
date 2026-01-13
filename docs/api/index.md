@@ -1,4 +1,3 @@
-
 # 2. API Reference
 
 The specular package consists of the following modules and subpackages.
