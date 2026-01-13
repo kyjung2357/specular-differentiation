@@ -1,6 +1,6 @@
 # 2.1. Calculation
 
-The [`calculation`](../specular/calculation.py) module provides five primary functions to calculate specular differentiation, depending on the dimension of input.
+The [`calculation`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/calculation.py) module provides five primary functions to calculate specular differentiation, depending on the dimension of input.
 
 ---
 

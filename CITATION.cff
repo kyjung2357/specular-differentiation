@@ -8,8 +8,9 @@ authors:
 title: "specular-differentiation"
 version: 1.0.0
 date-released: 2026-01-09
-url: "https://github.com/kyjung2357/specular-differentiation"
+url: "https://kyjung2357.github.io/specular-differentiation"
 # doi: "10.5281/zenodo.1234567"
+repository-code: "https://github.com/kyjung2357/specular-differentiation"
 keywords:
   - python
   - ordinary-differential-equation
