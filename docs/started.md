@@ -32,7 +32,7 @@ pip install "specular-differentiation[jax]"
 ```
 
 > [!NOTE]
-> This feature is experimental for now. See [Notes](api/jax.md).
+> This feature is experimental for now. See [2.4 JAX backend](api/jax.md).
 
 **Developer installation**
 

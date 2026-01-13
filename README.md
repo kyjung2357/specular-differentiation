@@ -51,7 +51,7 @@ pip install specular-differentiation
 pip install "specular-differentiation[jax]"
 ```
 
-See [the documentation](./docs/started.md) for advanced installation (JAX backend, Pytest).
+See [the documentation](docs/api/jax.md) for advanced installation (JAX backend, Pytest).
 
 ### Quick start
 
@@ -70,7 +70,7 @@ specular.derivative(ReLU, x=0)
 Specular differentiation is defined in normed vector spaces, allowing for applications in higher-dimensional Euclidean spaces. 
 The `specular` package includes the following applications.
 
-### [Ordinary differential equation](./examples/README.md#ordinary-differential-equation)
+### [Ordinary differential equation](docs/api/ode.md)
 
 * **Directory**: `examples/ode/`
 * **References**: [[1]](#references), [[3]](#references), [[4]](#references)
@@ -84,7 +84,7 @@ The following example shows that the specular Euler schemes of Type 5 and 6 yiel
 
 ![ODE-example](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/ODE-example.png)
 
-### [Optimization](./examples/README.md#optimization)
+### [Optimization](docs/api/optimization.md)
 
 * **Directory**: `examples/optimization/`
 * **References**: [[2]](#references), [[5]](#references)
@@ -135,7 +135,7 @@ $\partial^{\sd}_v f(x)$
 To cite this repository:
 
 ```bibtex
-@software{specular2026github,
+@software{specular2026,
   author  = {Kiyuob Jung},
   title   = {specular-differentiation},
   url     = {https://github.com/your-id/specular-differentiation},
