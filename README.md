@@ -138,7 +138,7 @@ To cite this repository:
 ```bibtex
 @software{Jung_specular-differentiation_2026,
   author = {Jung, Kiyuob},
-  doi = {10.5281/zenodo.18246735},
+  doi = {10.5281/zenodo.18246734},
   license = {MIT},
   month = jan,
   title = {{specular-differentiation}},
