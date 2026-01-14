@@ -136,14 +136,15 @@ $\partial^{\sd}_v f(x)$
 To cite this repository:
 
 ```bibtex
-@software{specular2026,
-  author  = {Kiyuob Jung},
-  title   = {specular-differentiation},
-  url     = {https://github.com/kyjung2357/specular-differentiation},
-  version = {0.13.0},
-  year    = {2026},
-  doi     = {TBA},
-  note    = {Documentation: https://kyjung2357.github.io/specular-differentiation},
+@software{Jung_specular-differentiation_2026,
+  author = {Jung, Kiyuob},
+  doi = {10.5281/zenodo.18246735},
+  license = {MIT},
+  month = jan,
+  title = {{specular-differentiation}},
+  url = {https://github.com/kyjung2357/specular-differentiation},
+  version = {1.0.0},
+  year = {2026},
 }
 ```
 
