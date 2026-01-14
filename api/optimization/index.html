@@ -549,6 +549,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.3. Optimization
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -565,6 +583,97 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#232-the-specular-gradient-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3.2. The specular gradient method
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.3.2. The specular gradient method">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-one-dimensional-case" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The one dimensional case
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#higher-dimensional-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Higher dimensional cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#233-optimizationresult" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3.3. OptimizationResult
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#234-api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3.4. API Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -653,6 +762,86 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#232-the-specular-gradient-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3.2. The specular gradient method
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.3.2. The specular gradient method">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-one-dimensional-case" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The one dimensional case
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#higher-dimensional-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Higher dimensional cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#233-optimizationresult" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3.3. OptimizationResult
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#234-api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3.4. API Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -672,13 +861,151 @@
 
 
 <h1 id="23-optimization">2.3. Optimization</h1>
+<p>Consider the optimization problem:</p>
+<div class="arithmatex">\[
+\min_{x \in \mathbb{R}^n} f(x),
+\]</div>
+<p>where <span class="arithmatex">\(f:\mathbb{R}^n \to \mathbb{R}\)</span> is convex.</p>
+<p>To solve the problem numerically, the subpackage <a href="https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/solver.py"><code>specular.optimization.solver</code></a> provides the following methods:</p>
+<ul>
+<li>the <em>specular gradient (SPEG)</em> method</li>
+<li>the <em>stochastic specular gradient (S-SPEG)</em> method</li>
+<li>the <em>hybrid specular gradient (H-SPEG)</em> method</li>
+</ul>
+<p>Given an initial point <span class="arithmatex">\(x_0 \in \mathbb{R}^n\)</span>, method takes the form: </p>
+<div class="arithmatex">\[
+x_{k+1} = x_k - h_k s_k,
+\]</div>
+<p>where <span class="arithmatex">\(h_k &gt; 0\)</span> is the step size and <span class="arithmatex">\(s_k\)</span> is the specular gradient for each <span class="arithmatex">\(k \in \mathbb{N}\)</span>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Rule (Formula)</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Input</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>constant</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(h_k = a\)</span></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;"><code>a</code></td>
+<td style="text-align: left;">Fixed step size for all <span class="arithmatex">\(k\)</span>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>not_summable</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(h_k = a / \sqrt{k}\)</span></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;"><code>a</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\lim_{k \to \infty }h_k = 0\)</span>, but <span class="arithmatex">\(\sum h_k = \infty\)</span>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>square_summable_not_summable</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(h_k = a / (b + k)\)</span></td>
+<td style="text-align: left;"><code>list</code></td>
+<td style="text-align: left;"><code>[a, b]</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\sum h_k^2 &lt; \infty\)</span> and <span class="arithmatex">\(\sum h_k = \infty\)</span>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>geometric_series</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(h_k = a \cdot r^k\)</span></td>
+<td style="text-align: left;"><code>list</code></td>
+<td style="text-align: left;"><code>[a, r]</code></td>
+<td style="text-align: left;">Exponentially decaying step size.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>user_defined</code></td>
+<td style="text-align: left;">Custom</td>
+<td style="text-align: left;"><code>Callable</code></td>
+<td style="text-align: left;"><code>f(k)</code></td>
+<td style="text-align: left;">User-provided function of iteration <span class="arithmatex">\(k\)</span>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="quick-example">Quick Example</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">specular.optimization.step_size</span><span class="w"> </span><span class="kn">import</span> <span class="n">StepSize</span>
+
+<span class="c1"># Use a square-summable rule: h_k = 10 / (2 + k)</span>
+<span class="n">step</span> <span class="o">=</span> <span class="n">StepSize</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;square_summable_not_summable&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+<span class="n">h_1</span> <span class="o">=</span> <span class="n">step</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">h_1</span><span class="p">)</span>
+<span class="c1"># Output: 3.3333333333333335</span>
+</code></pre></div>
+<h2 id="232-the-specular-gradient-method">2.3.2. The specular gradient method</h2>
+<h3 id="the-one-dimensional-case">The one dimensional case</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span> 
+
+<span class="c1"># Objective function: f(x) = |x|</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">step_size</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">StepSize</span><span class="p">(</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span> 
+
+<span class="c1"># Specular gradient method</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">gradient_method</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">x_0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;specular gradient&#39;</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="higher-dimensional-cases">Higher dimensional cases</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span> 
+
+<span class="c1"># Objective function: f(x) = sum(x^2)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="c1"># Component functions for Stochastic test</span>
+<span class="c1"># f(x) = x1^2 + x2^2</span>
+<span class="c1"># f1(x) = x1^2, f2(x) = x2^2</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">f_comp_1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">f_comp_2</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="n">f_components</span> <span class="o">=</span> <span class="p">[</span><span class="n">f_comp_1</span><span class="p">,</span> <span class="n">f_comp_2</span><span class="p">]</span>
+
+<span class="n">x_0</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+<span class="n">step_size</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">StepSize</span><span class="p">(</span><span class="s1">&#39;square_summable_not_summable&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span> 
+
+<span class="c1"># Specular gradient method</span>
+<span class="n">res1</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">gradient_method</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">x_0</span><span class="o">=</span><span class="n">x_0</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;specular gradient&#39;</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="c1"># Stochastic specular gradient method</span>
+<span class="n">res2</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">gradient_method</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">x_0</span><span class="o">=</span><span class="n">x_0</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;stochastic&#39;</span><span class="p">,</span> <span class="n">f_j</span><span class="o">=</span><span class="n">f_components</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># hybrid specular gradient method</span>
+<span class="n">res3</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">gradient_method</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">f_quad_vector</span><span class="p">,</span> <span class="n">x_0</span><span class="o">=</span><span class="n">x_0</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;hybrid&#39;</span><span class="p">,</span> <span class="n">f_j</span><span class="o">=</span><span class="n">f_components</span><span class="p">,</span> <span class="n">switch_iter</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="233-optimizationresult">2.3.3. <code>OptimizationResult</code></h2>
+<p>The class <code>OptimizationResult</code> collects the optimization results.
+To get history of optimization, call <code>history()</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span> 
+
+<span class="c1"># Objective function: f(x) = sum(x^2)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="n">x_0</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+<span class="n">step_size</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">StepSize</span><span class="p">(</span><span class="s1">&#39;square_summable_not_summable&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span> 
+
+<span class="c1"># Specular gradient method</span>
+<span class="n">res_x</span><span class="p">,</span> <span class="n">res_f</span><span class="p">,</span> <span class="n">res_time</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">gradient_method</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">x_0</span><span class="o">=</span><span class="n">x_0</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;specular gradient&#39;</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">history</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="234-api-reference">2.3.4. API Reference</h2>
 
 
 <div class="doc doc-object doc-class">
 
 
 
-<a id="specular.optimization.step_size.StepSize"></a>
+<h1 id="specular.optimization.step_size.StepSize" class="doc doc-heading">
+            <code>specular.optimization.step_size.StepSize</code>
+
+
+</h1>
+
+
     <div class="doc doc-contents first">
 
 
@@ -863,13 +1190,7 @@
 <span class="normal">171</span>
 <span class="normal">172</span>
 <span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StepSize</span><span class="p">:</span>
+<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StepSize</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Step size rules for optimization methods.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -887,62 +1208,56 @@
         <span class="n">parameters</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Tuple</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Callable</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The step size rules for optimization methods:</span>
+<span class="sd">        The step size rules for optimization methods $x_{k+1} = x_k - h_k s_k$, where $s_k$ is the search direction and $h_k &gt; 0$ is the step size at iteration $k &gt;= 1$.</span>
 
-<span class="sd">        :math:`x_{k+1} = x_k - h_k s_k`,</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            name (str):</span>
+<span class="sd">                Options: &#39;constant&#39;, &#39;not_summable&#39;, &#39;square_summable_not_summable&#39;, &#39;geometric_series&#39;, &#39;user_defined&#39;</span>
+<span class="sd">            parameters (float | int | tuple | list | np.ndarray | Callable):</span>
+<span class="sd">                The parameters required for the selected step size rule:</span>
 
-<span class="sd">        where :math:`s_k` is the search direction and :math:`h_k &gt; 0` is the step size at iteration `k &gt;= 1`.</span>
+<span class="sd">                * &#39;constant&#39;: float or int</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        name : str</span>
-<span class="sd">            Options: &#39;constant&#39;, &#39;not_summable&#39;, &#39;square_summable_not_summable&#39;, &#39;geometric_series&#39;, &#39;user_defined&#39;</span>
-<span class="sd">        parameters : float | int | tuple | list | np.ndarray | Callable</span>
-<span class="sd">            The parameters required for the selected step size rule:</span>
+<span class="sd">                    A number `a &gt; 0` for the rule :math:`h_k = a` for each `k`.</span>
 
-<span class="sd">            * &#39;constant&#39;: float or int</span>
+<span class="sd">                * &#39;not_summable&#39;: float or int</span>
 
-<span class="sd">                A number `a &gt; 0` for the rule :math:`h_k = a` for each `k`.</span>
+<span class="sd">                    A number `a &gt; 0` for the rule :math:`h_k = a / sqrt{k}` for each `k`.</span>
 
-<span class="sd">            * &#39;not_summable&#39;: float or int</span>
+<span class="sd">                * &#39;square_summable_not_summable&#39;: list or tuple</span>
 
-<span class="sd">                A number `a &gt; 0` for the rule :math:`h_k = a / sqrt{k}` for each `k`.</span>
+<span class="sd">                    A pair of numbers `[a, b]`, where `a &gt; 0` and `b &gt;= 0`, for the rule :math:`h_k = a / (b + k)` for each `k`.</span>
 
-<span class="sd">            * &#39;square_summable_not_summable&#39;: list or tuple</span>
+<span class="sd">                * &#39;geometric_series&#39;: list or tuple</span>
 
-<span class="sd">                A pair of numbers `[a, b]`, where `a &gt; 0` and `b &gt;= 0`, for the rule :math:`h_k = a / (b + k)` for each `k`.</span>
+<span class="sd">                    A pair of numbers `[a, r]`, where `a &gt; 0` and `0 &lt; r &lt; 1`, for the rule :math:`h_k = a * r^k` for each `k`.</span>
 
-<span class="sd">            * &#39;geometric_series&#39;: list or tuple</span>
+<span class="sd">                * &#39;user_defined&#39;: Callable</span>
 
-<span class="sd">                A pair of numbers `[a, r]`, where `a &gt; 0` and `0 &lt; r &lt; 1`, for the rule :math:`h_k = a * r^k` for each `k`.</span>
+<span class="sd">                    A function that takes the current iteration `k` as input and returns the step size (float).</span>
 
-<span class="sd">            * &#39;user_defined&#39;: Callable</span>
-
-<span class="sd">                A function that takes the current iteration `k` as input and returns the step size (float).</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; from specular.optimization.step_size import StepSize</span>
-<span class="sd">        &gt;&gt;&gt; </span>
-<span class="sd">        &gt;&gt;&gt; # &#39;constant&#39;: h_k = a</span>
-<span class="sd">        &gt;&gt;&gt; step = StepSize(name=&#39;constant&#39;, parameters=0.5)</span>
-<span class="sd">        &gt;&gt;&gt; </span>
-<span class="sd">        &gt;&gt;&gt; # &#39;not_summable&#39; rule: h_k = a / sqrt(k)</span>
-<span class="sd">        &gt;&gt;&gt; # a = 2.0</span>
-<span class="sd">        &gt;&gt;&gt; step = StepSize(name=&#39;not_summable&#39;, parameters=2.0)</span>
-<span class="sd">        &gt;&gt;&gt; </span>
-<span class="sd">        &gt;&gt;&gt; # &#39;square_summable_not_summable&#39; rule: h_k = a / (b + k</span>
-<span class="sd">        &gt;&gt;&gt; # a = 10, b = 2</span>
-<span class="sd">        &gt;&gt;&gt; step = StepSize(name=&#39;square_summable_not_summable&#39;, parameters=[10.0, 2.0])</span>
-<span class="sd">        &gt;&gt;&gt; </span>
-<span class="sd">        &gt;&gt;&gt; # &#39;geometric_series&#39; rule: h_k = a * r^k</span>
-<span class="sd">        &gt;&gt;&gt; # a = 1.0, r = 0.5</span>
-<span class="sd">        &gt;&gt;&gt; step = StepSize(name=&#39;geometric_series&#39;, parameters=[1.0, 0.5])</span>
-<span class="sd">        &gt;&gt;&gt; </span>
-<span class="sd">        &gt;&gt;&gt; # &#39;user_defined&#39; callable.</span>
-<span class="sd">        &gt;&gt;&gt; # Custom rule: h_k = 1 / k^2</span>
-<span class="sd">        &gt;&gt;&gt; custom_rule = lambda k: 1.0 / (k**2)</span>
-<span class="sd">        &gt;&gt;&gt; step = StepSize(name=&#39;user_defined&#39;, parameters=custom_rule)</span>
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; from specular.optimization.step_size import StepSize</span>
+<span class="sd">            &gt;&gt;&gt; </span>
+<span class="sd">            &gt;&gt;&gt; # &#39;constant&#39;: h_k = a</span>
+<span class="sd">            &gt;&gt;&gt; step = StepSize(name=&#39;constant&#39;, parameters=0.5)</span>
+<span class="sd">            &gt;&gt;&gt; </span>
+<span class="sd">            &gt;&gt;&gt; # &#39;not_summable&#39; rule: h_k = a / sqrt(k)</span>
+<span class="sd">            &gt;&gt;&gt; # a = 2.0</span>
+<span class="sd">            &gt;&gt;&gt; step = StepSize(name=&#39;not_summable&#39;, parameters=2.0)</span>
+<span class="sd">            &gt;&gt;&gt; </span>
+<span class="sd">            &gt;&gt;&gt; # &#39;square_summable_not_summable&#39; rule: h_k = a / (b + k</span>
+<span class="sd">            &gt;&gt;&gt; # a = 10, b = 2</span>
+<span class="sd">            &gt;&gt;&gt; step = StepSize(name=&#39;square_summable_not_summable&#39;, parameters=[10.0, 2.0])</span>
+<span class="sd">            &gt;&gt;&gt; </span>
+<span class="sd">            &gt;&gt;&gt; # &#39;geometric_series&#39; rule: h_k = a * r^k</span>
+<span class="sd">            &gt;&gt;&gt; # a = 1.0, r = 0.5</span>
+<span class="sd">            &gt;&gt;&gt; step = StepSize(name=&#39;geometric_series&#39;, parameters=[1.0, 0.5])</span>
+<span class="sd">            &gt;&gt;&gt; </span>
+<span class="sd">            &gt;&gt;&gt; # &#39;user_defined&#39; callable.</span>
+<span class="sd">            &gt;&gt;&gt; # Custom rule: h_k = 1 / k^2</span>
+<span class="sd">            &gt;&gt;&gt; custom_rule = lambda k: 1.0 / (k**2)</span>
+<span class="sd">            &gt;&gt;&gt; step = StepSize(name=&#39;user_defined&#39;, parameters=custom_rule)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">step_size</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
@@ -1064,65 +1379,140 @@
 <div class="doc doc-object doc-function">
 
 
-<h1 id="specular.optimization.step_size.StepSize.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span></code>
+<h2 id="specular.optimization.step_size.StepSize.__call__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__call__</span><span class="p">(</span><span class="n">k</span><span class="p">)</span></code>
 
-</h1>
+</h2>
 
 
     <div class="doc doc-contents ">
 
-        <p>The step size rules for optimization methods:</p>
-<p>:math:<code>x_{k+1} = x_k - h_k s_k</code>,</p>
-<p>where :math:<code>s_k</code> is the search direction and :math:<code>h_k &gt; 0</code> is the step size at iteration <code>k &gt;= 1</code>.</p>
-<h3 id="specular.optimization.step_size.StepSize.__init__--parameters">Parameters</h3>
-<p>name : str
-    Options: 'constant', 'not_summable', 'square_summable_not_summable', 'geometric_series', 'user_defined'
-parameters : float | int | tuple | list | np.ndarray | Callable
-    The parameters required for the selected step size rule:</p>
-<pre><code>* 'constant': float or int
+        <p>Returns the step size at iteration k.</p>
 
-    A number `a &gt; 0` for the rule :math:`h_k = a` for each `k`.
 
-* 'not_summable': float or int
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular\optimization\step_size.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the step size at iteration k.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rule</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
 
-    A number `a &gt; 0` for the rule :math:`h_k = a / sqrt{k}` for each `k`.
+</div>
 
-* 'square_summable_not_summable': list or tuple
+<div class="doc doc-object doc-function">
 
-    A pair of numbers `[a, b]`, where `a &gt; 0` and `b &gt;= 0`, for the rule :math:`h_k = a / (b + k)` for each `k`.
 
-* 'geometric_series': list or tuple
+<h2 id="specular.optimization.step_size.StepSize.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span></code>
 
-    A pair of numbers `[a, r]`, where `a &gt; 0` and `0 &lt; r &lt; 1`, for the rule :math:`h_k = a * r^k` for each `k`.
+</h2>
 
-* 'user_defined': Callable
 
-    A function that takes the current iteration `k` as input and returns the step size (float).
-</code></pre>
-<h3 id="specular.optimization.step_size.StepSize.__init__--examples">Examples</h3>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>from specular.optimization.step_size import StepSize</p>
-<h2 id="specular.optimization.step_size.StepSize.__init__--constant-h_k-a">'constant': h_k = a</h2>
-<p>step = StepSize(name='constant', parameters=0.5)</p>
-<h2 id="specular.optimization.step_size.StepSize.__init__--not_summable-rule-h_k-a-sqrtk">'not_summable' rule: h_k = a / sqrt(k)</h2>
-<h2 id="specular.optimization.step_size.StepSize.__init__--a-20">a = 2.0</h2>
-<p>step = StepSize(name='not_summable', parameters=2.0)</p>
-<h2 id="specular.optimization.step_size.StepSize.__init__--square_summable_not_summable-rule-h_k-a-b-k">'square_summable_not_summable' rule: h_k = a / (b + k</h2>
-<h2 id="specular.optimization.step_size.StepSize.__init__--a-10-b-2">a = 10, b = 2</h2>
-<p>step = StepSize(name='square_summable_not_summable', parameters=[10.0, 2.0])</p>
-<h2 id="specular.optimization.step_size.StepSize.__init__--geometric_series-rule-h_k-a-rk">'geometric_series' rule: h_k = a * r^k</h2>
-<h2 id="specular.optimization.step_size.StepSize.__init__--a-10-r-05">a = 1.0, r = 0.5</h2>
-<p>step = StepSize(name='geometric_series', parameters=[1.0, 0.5])</p>
-<h2 id="specular.optimization.step_size.StepSize.__init__--user_defined-callable">'user_defined' callable.</h2>
-<h2 id="specular.optimization.step_size.StepSize.__init__--custom-rule-h_k-1-k2">Custom rule: h_k = 1 / k^2</h2>
-<p>custom_rule = lambda k: 1.0 / (k**2)
-step = StepSize(name='user_defined', parameters=custom_rule)</p>
-</blockquote>
-</blockquote>
-</blockquote>
+    <div class="doc doc-contents ">
+
+        <p>The step size rules for optimization methods <span class="arithmatex">\(x_{k+1} = x_k - h_k s_k\)</span>, where <span class="arithmatex">\(s_k\)</span> is the search direction and <span class="arithmatex">\(h_k &gt; 0\)</span> is the step size at iteration <span class="arithmatex">\(k &gt;= 1\)</span>.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Options: 'constant', 'not_summable', 'square_summable_not_summable', 'geometric_series', 'user_defined'</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>parameters</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> | <span title="int">int</span> | <span title="tuple">tuple</span> | <span title="list">list</span> | <span title="numpy.ndarray">ndarray</span> | <span title="typing.Callable">Callable</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The parameters required for the selected step size rule:</p>
+<ul>
+<li>
+<p>'constant': float or int</p>
+<p>A number <code>a &gt; 0</code> for the rule :math:<code>h_k = a</code> for each <code>k</code>.</p>
+</li>
+<li>
+<p>'not_summable': float or int</p>
+<p>A number <code>a &gt; 0</code> for the rule :math:<code>h_k = a / sqrt{k}</code> for each <code>k</code>.</p>
+</li>
+<li>
+<p>'square_summable_not_summable': list or tuple</p>
+<p>A pair of numbers <code>[a, b]</code>, where <code>a &gt; 0</code> and <code>b &gt;= 0</code>, for the rule :math:<code>h_k = a / (b + k)</code> for each <code>k</code>.</p>
+</li>
+<li>
+<p>'geometric_series': list or tuple</p>
+<p>A pair of numbers <code>[a, r]</code>, where <code>a &gt; 0</code> and <code>0 &lt; r &lt; 1</code>, for the rule :math:<code>h_k = a * r^k</code> for each <code>k</code>.</p>
+</li>
+<li>
+<p>'user_defined': Callable</p>
+<p>A function that takes the current iteration <code>k</code> as input and returns the step size (float).</p>
+</li>
+</ul>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">specular.optimization.step_size</span><span class="w"> </span><span class="kn">import</span> <span class="n">StepSize</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># &#39;constant&#39;: h_k = a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">step</span> <span class="o">=</span> <span class="n">StepSize</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># &#39;not_summable&#39; rule: h_k = a / sqrt(k)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># a = 2.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">step</span> <span class="o">=</span> <span class="n">StepSize</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;not_summable&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># &#39;square_summable_not_summable&#39; rule: h_k = a / (b + k</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># a = 10, b = 2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">step</span> <span class="o">=</span> <span class="n">StepSize</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;square_summable_not_summable&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># &#39;geometric_series&#39; rule: h_k = a * r^k</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># a = 1.0, r = 0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">step</span> <span class="o">=</span> <span class="n">StepSize</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;geometric_series&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># &#39;user_defined&#39; callable.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Custom rule: h_k = 1 / k^2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">custom_rule</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">k</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">step</span> <span class="o">=</span> <span class="n">StepSize</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;user_defined&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">custom_rule</span><span class="p">)</span>
+</code></pre></div>
 
 
             <details class="mkdocstrings-source">
@@ -1198,74 +1588,62 @@ step = StepSize(name='user_defined', parameters=custom_rule)</p>
 <span class="normal">85</span>
 <span class="normal">86</span>
 <span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Tuple</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="n">Callable</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The step size rules for optimization methods:</span>
+<span class="sd">    The step size rules for optimization methods $x_{k+1} = x_k - h_k s_k$, where $s_k$ is the search direction and $h_k &gt; 0$ is the step size at iteration $k &gt;= 1$.</span>
 
-<span class="sd">    :math:`x_{k+1} = x_k - h_k s_k`,</span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        name (str):</span>
+<span class="sd">            Options: &#39;constant&#39;, &#39;not_summable&#39;, &#39;square_summable_not_summable&#39;, &#39;geometric_series&#39;, &#39;user_defined&#39;</span>
+<span class="sd">        parameters (float | int | tuple | list | np.ndarray | Callable):</span>
+<span class="sd">            The parameters required for the selected step size rule:</span>
 
-<span class="sd">    where :math:`s_k` is the search direction and :math:`h_k &gt; 0` is the step size at iteration `k &gt;= 1`.</span>
+<span class="sd">            * &#39;constant&#39;: float or int</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    name : str</span>
-<span class="sd">        Options: &#39;constant&#39;, &#39;not_summable&#39;, &#39;square_summable_not_summable&#39;, &#39;geometric_series&#39;, &#39;user_defined&#39;</span>
-<span class="sd">    parameters : float | int | tuple | list | np.ndarray | Callable</span>
-<span class="sd">        The parameters required for the selected step size rule:</span>
+<span class="sd">                A number `a &gt; 0` for the rule :math:`h_k = a` for each `k`.</span>
 
-<span class="sd">        * &#39;constant&#39;: float or int</span>
+<span class="sd">            * &#39;not_summable&#39;: float or int</span>
 
-<span class="sd">            A number `a &gt; 0` for the rule :math:`h_k = a` for each `k`.</span>
+<span class="sd">                A number `a &gt; 0` for the rule :math:`h_k = a / sqrt{k}` for each `k`.</span>
 
-<span class="sd">        * &#39;not_summable&#39;: float or int</span>
+<span class="sd">            * &#39;square_summable_not_summable&#39;: list or tuple</span>
 
-<span class="sd">            A number `a &gt; 0` for the rule :math:`h_k = a / sqrt{k}` for each `k`.</span>
+<span class="sd">                A pair of numbers `[a, b]`, where `a &gt; 0` and `b &gt;= 0`, for the rule :math:`h_k = a / (b + k)` for each `k`.</span>
 
-<span class="sd">        * &#39;square_summable_not_summable&#39;: list or tuple</span>
+<span class="sd">            * &#39;geometric_series&#39;: list or tuple</span>
 
-<span class="sd">            A pair of numbers `[a, b]`, where `a &gt; 0` and `b &gt;= 0`, for the rule :math:`h_k = a / (b + k)` for each `k`.</span>
+<span class="sd">                A pair of numbers `[a, r]`, where `a &gt; 0` and `0 &lt; r &lt; 1`, for the rule :math:`h_k = a * r^k` for each `k`.</span>
 
-<span class="sd">        * &#39;geometric_series&#39;: list or tuple</span>
+<span class="sd">            * &#39;user_defined&#39;: Callable</span>
 
-<span class="sd">            A pair of numbers `[a, r]`, where `a &gt; 0` and `0 &lt; r &lt; 1`, for the rule :math:`h_k = a * r^k` for each `k`.</span>
+<span class="sd">                A function that takes the current iteration `k` as input and returns the step size (float).</span>
 
-<span class="sd">        * &#39;user_defined&#39;: Callable</span>
-
-<span class="sd">            A function that takes the current iteration `k` as input and returns the step size (float).</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; from specular.optimization.step_size import StepSize</span>
-<span class="sd">    &gt;&gt;&gt; </span>
-<span class="sd">    &gt;&gt;&gt; # &#39;constant&#39;: h_k = a</span>
-<span class="sd">    &gt;&gt;&gt; step = StepSize(name=&#39;constant&#39;, parameters=0.5)</span>
-<span class="sd">    &gt;&gt;&gt; </span>
-<span class="sd">    &gt;&gt;&gt; # &#39;not_summable&#39; rule: h_k = a / sqrt(k)</span>
-<span class="sd">    &gt;&gt;&gt; # a = 2.0</span>
-<span class="sd">    &gt;&gt;&gt; step = StepSize(name=&#39;not_summable&#39;, parameters=2.0)</span>
-<span class="sd">    &gt;&gt;&gt; </span>
-<span class="sd">    &gt;&gt;&gt; # &#39;square_summable_not_summable&#39; rule: h_k = a / (b + k</span>
-<span class="sd">    &gt;&gt;&gt; # a = 10, b = 2</span>
-<span class="sd">    &gt;&gt;&gt; step = StepSize(name=&#39;square_summable_not_summable&#39;, parameters=[10.0, 2.0])</span>
-<span class="sd">    &gt;&gt;&gt; </span>
-<span class="sd">    &gt;&gt;&gt; # &#39;geometric_series&#39; rule: h_k = a * r^k</span>
-<span class="sd">    &gt;&gt;&gt; # a = 1.0, r = 0.5</span>
-<span class="sd">    &gt;&gt;&gt; step = StepSize(name=&#39;geometric_series&#39;, parameters=[1.0, 0.5])</span>
-<span class="sd">    &gt;&gt;&gt; </span>
-<span class="sd">    &gt;&gt;&gt; # &#39;user_defined&#39; callable.</span>
-<span class="sd">    &gt;&gt;&gt; # Custom rule: h_k = 1 / k^2</span>
-<span class="sd">    &gt;&gt;&gt; custom_rule = lambda k: 1.0 / (k**2)</span>
-<span class="sd">    &gt;&gt;&gt; step = StepSize(name=&#39;user_defined&#39;, parameters=custom_rule)</span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from specular.optimization.step_size import StepSize</span>
+<span class="sd">        &gt;&gt;&gt; </span>
+<span class="sd">        &gt;&gt;&gt; # &#39;constant&#39;: h_k = a</span>
+<span class="sd">        &gt;&gt;&gt; step = StepSize(name=&#39;constant&#39;, parameters=0.5)</span>
+<span class="sd">        &gt;&gt;&gt; </span>
+<span class="sd">        &gt;&gt;&gt; # &#39;not_summable&#39; rule: h_k = a / sqrt(k)</span>
+<span class="sd">        &gt;&gt;&gt; # a = 2.0</span>
+<span class="sd">        &gt;&gt;&gt; step = StepSize(name=&#39;not_summable&#39;, parameters=2.0)</span>
+<span class="sd">        &gt;&gt;&gt; </span>
+<span class="sd">        &gt;&gt;&gt; # &#39;square_summable_not_summable&#39; rule: h_k = a / (b + k</span>
+<span class="sd">        &gt;&gt;&gt; # a = 10, b = 2</span>
+<span class="sd">        &gt;&gt;&gt; step = StepSize(name=&#39;square_summable_not_summable&#39;, parameters=[10.0, 2.0])</span>
+<span class="sd">        &gt;&gt;&gt; </span>
+<span class="sd">        &gt;&gt;&gt; # &#39;geometric_series&#39; rule: h_k = a * r^k</span>
+<span class="sd">        &gt;&gt;&gt; # a = 1.0, r = 0.5</span>
+<span class="sd">        &gt;&gt;&gt; step = StepSize(name=&#39;geometric_series&#39;, parameters=[1.0, 0.5])</span>
+<span class="sd">        &gt;&gt;&gt; </span>
+<span class="sd">        &gt;&gt;&gt; # &#39;user_defined&#39; callable.</span>
+<span class="sd">        &gt;&gt;&gt; # Custom rule: h_k = 1 / k^2</span>
+<span class="sd">        &gt;&gt;&gt; custom_rule = lambda k: 1.0 / (k**2)</span>
+<span class="sd">        &gt;&gt;&gt; step = StepSize(name=&#39;user_defined&#39;, parameters=custom_rule)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">step_size</span> <span class="o">=</span> <span class="n">name</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
@@ -1288,31 +1666,623 @@ step = StepSize(name='user_defined', parameters=custom_rule)</p>
 
 </div>
 
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<h1 id="specular.optimization.solver" class="doc doc-heading">
+            <code>specular.optimization.solver</code>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
 <div class="doc doc-object doc-function">
 
 
-<h1 id="specular.optimization.step_size.StepSize.__call__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__call__</span><span class="p">(</span><span class="n">k</span><span class="p">)</span></code>
+<h2 id="specular.optimization.solver.gradient_method" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">gradient_method</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x_0</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;specular gradient&#39;</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span> <span class="n">zero_tol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">f_j</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">switch_iter</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">record_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">print_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
-</h1>
+</h2>
 
 
     <div class="doc doc-contents ">
 
-        <p>Returns the step size at iteration k.</p>
+        <p>The specular gradient method for minimizing a nonsmooth convex function.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>f</code>
+            </td>
+            <td>
+                  <code><span title="callable">callable</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The objective function to minimize.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>x_0</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | <span title="float">float</span> | <span title="list">list</span> | <span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The starting point for the optimization.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>step_size</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="specular.optimization.step_size.StepSize" href="#specular.optimization.step_size.StepSize">StepSize</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The step size <code>h_k</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>h</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh size used in the finite difference approximation. Must be positive.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-06</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>form</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The form of the specular gradient method.
+Supported forms: <code>'specular gradient'</code>, <code>'implicit'</code>, <code>'stochastic'</code>, <code>'hybrid'</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;specular gradient&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>tol</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tolerance for iterations.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-06</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>zero_tol</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A small threshold used to determine if the denominator <code>alpha + beta</code> is close to zero for numerical stability.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-08</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>max_iter</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum number of iterations.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1000</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>f_j</code>
+            </td>
+            <td>
+                  <code>sequence of callable | callable | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The component function of <code>f</code>.
+Used for the stochastic and hybrid forms to compute a random component of the objective function.</p>
+<ul>
+<li>
+<p>If a sequence of callables is provided, each callable should accept a single argument (the variable <code>x</code>).</p>
+</li>
+<li>
+<p>If a single callable is provided, it should accept two arguments: the variable <code>x</code> and an index <code>j</code>, and return the <code>j</code>-th component function value at <code>x</code>.</p>
+</li>
+</ul>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>m</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The number of component functions.
+Used for the stochastic and hybrid forms.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>switch_iter</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The iteration to switch from a method to another for the hybrid form.
+Used for the hybrid form only.</p>
+              </div>
+            </td>
+            <td>
+                  <code>2</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>record_history</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to record the history of variables and function values.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>print_bar</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to print the progress bar.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="OptimizationResult (specular.optimization.result.OptimizationResult)" href="#specular.optimization.result.OptimizationResult">OptimizationResult</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The result of the optimization containing the solution, function value, number of iterations, runtime, and history.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>h</code> is not positive.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="TypeError">TypeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If an unknown <code>form</code> is provided.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
-              <summary>Source code in <code>specular\optimization\step_size.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
+              <summary>Source code in <code>specular\optimization\solver.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
-<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">gradient_method</span><span class="p">(</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">],</span>
+    <span class="n">x_0</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">step_size</span><span class="p">:</span> <span class="n">StepSize</span><span class="p">,</span>
+    <span class="n">h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+    <span class="n">form</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;specular gradient&#39;</span><span class="p">,</span>
+    <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+    <span class="n">zero_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span><span class="p">,</span>
+    <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">f_j</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">ComponentFunc</span><span class="p">]</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">m</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">switch_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">record_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">print_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizationResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the step size at iteration k.</span>
+<span class="sd">    The specular gradient method for minimizing a nonsmooth convex function.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        f (callable):</span>
+<span class="sd">            The objective function to minimize.</span>
+<span class="sd">        x_0 (int | float | list | np.ndarray):</span>
+<span class="sd">            The starting point for the optimization.</span>
+<span class="sd">        step_size (StepSize):</span>
+<span class="sd">            The step size `h_k`.</span>
+<span class="sd">        h (float, optional):</span>
+<span class="sd">            Mesh size used in the finite difference approximation. Must be positive.</span>
+<span class="sd">        form (str, optional):</span>
+<span class="sd">            The form of the specular gradient method.</span>
+<span class="sd">            Supported forms: ``&#39;specular gradient&#39;``, ``&#39;implicit&#39;``, ``&#39;stochastic&#39;``, ``&#39;hybrid&#39;``.</span>
+<span class="sd">        tol (float, optional):</span>
+<span class="sd">            Tolerance for iterations.</span>
+<span class="sd">        zero_tol (float, optional):</span>
+<span class="sd">            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.</span>
+<span class="sd">        max_iter (int, optional):</span>
+<span class="sd">            Maximum number of iterations.</span>
+<span class="sd">        f_j (sequence of callable | callable | None, optional):</span>
+<span class="sd">            The component function of ``f``.</span>
+<span class="sd">            Used for the stochastic and hybrid forms to compute a random component of the objective function.</span>
+
+<span class="sd">            * If a sequence of callables is provided, each callable should accept a single argument (the variable `x`).</span>
+
+<span class="sd">            * If a single callable is provided, it should accept two arguments: the variable `x` and an index `j`, and return the `j`-th component function value at `x`.</span>
+<span class="sd">        m (int, optional):</span>
+<span class="sd">            The number of component functions.</span>
+<span class="sd">            Used for the stochastic and hybrid forms.</span>
+<span class="sd">        switch_iter (int | None, optional):</span>
+<span class="sd">            The iteration to switch from a method to another for the hybrid form.</span>
+<span class="sd">            Used for the hybrid form only.</span>
+<span class="sd">        record_history (bool, optional):</span>
+<span class="sd">            Whether to record the history of variables and function values.</span>
+<span class="sd">        print_bar (bool, optional):</span>
+<span class="sd">            Whether to print the progress bar.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The result of the optimization containing the solution, function value, number of iterations, runtime, and history.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError:</span>
+<span class="sd">            If ``h`` is not positive.</span>
+<span class="sd">        TypeError:</span>
+<span class="sd">            If an unknown ``form`` is provided.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rule</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">h</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mesh size &#39;h&#39; must be positive. Got </span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="n">all_history</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">x_history</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">f_history</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># the n-dimensional case</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;specular gradient&#39;</span><span class="p">:</span>
+            <span class="n">res_x</span><span class="p">,</span> <span class="n">res_f</span><span class="p">,</span> <span class="n">res_k</span> <span class="o">=</span> <span class="n">_vector</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f_history</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x_history</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">zero_tol</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">record_history</span><span class="p">,</span> <span class="n">print_bar</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;stochastic&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">f_j</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Component functions &#39;f_j&#39; must be provided for the stochastic form.&quot;</span><span class="p">)</span>
+
+            <span class="n">form</span> <span class="o">=</span> <span class="s1">&#39;stochastic specular gradient&#39;</span>
+            <span class="n">res_x</span><span class="p">,</span> <span class="n">res_f</span><span class="p">,</span> <span class="n">res_k</span> <span class="o">=</span> <span class="n">_vector_stochastic</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f_history</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x_history</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">zero_tol</span><span class="p">,</span> <span class="n">f_j</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">record_history</span><span class="p">,</span> <span class="n">print_bar</span><span class="p">)</span> <span class="c1"># type: ignore</span>
+
+        <span class="k">elif</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;hybrid&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">f_j</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Component functions &#39;f_j&#39; must be provided for the stochastic form.&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Phase 1: deterministic</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="s1">&#39;hybrid specular gradient&#39;</span>
+            <span class="n">switch_iter</span> <span class="o">=</span> <span class="n">switch_iter</span> <span class="k">if</span> <span class="n">switch_iter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">max_iter</span>
+            <span class="n">remaining_iter</span> <span class="o">=</span> <span class="n">max_iter</span> <span class="o">-</span> <span class="n">switch_iter</span>
+
+            <span class="c1"># Phase 2: stochastic</span>
+            <span class="n">res_x</span><span class="p">,</span> <span class="n">res_f</span><span class="p">,</span> <span class="n">res_k</span> <span class="o">=</span> <span class="n">_vector</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f_history</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x_history</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">zero_tol</span><span class="p">,</span> <span class="n">switch_iter</span><span class="p">,</span> <span class="n">record_history</span><span class="p">,</span> <span class="n">print_bar</span><span class="p">)</span>
+            <span class="n">res_x</span><span class="p">,</span> <span class="n">res_f</span><span class="p">,</span> <span class="n">res_k</span> <span class="o">=</span> <span class="n">_vector_stochastic</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f_history</span><span class="p">,</span> <span class="n">res_x</span><span class="p">,</span> <span class="n">x_history</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">zero_tol</span><span class="p">,</span> <span class="n">f_j</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">remaining_iter</span><span class="p">,</span> <span class="n">record_history</span><span class="p">,</span> <span class="n">print_bar</span><span class="p">)</span> <span class="c1"># type: ignore</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown form &#39;</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s2">&#39;. Supported forms: </span><span class="si">{</span><span class="n">SUPPORTED_METHODS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># the one-dimensional case</span>
+    <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;specular gradient&#39;</span><span class="p">:</span>
+            <span class="n">res_x</span><span class="p">,</span> <span class="n">res_f</span><span class="p">,</span> <span class="n">res_k</span> <span class="o">=</span> <span class="n">_scalar</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f_history</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x_history</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">zero_tol</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">record_history</span><span class="p">,</span> <span class="n">print_bar</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;implicit&#39;</span><span class="p">:</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="s1">&#39;implicit specular gradient&#39;</span>
+            <span class="n">res_x</span><span class="p">,</span> <span class="n">res_f</span><span class="p">,</span> <span class="n">res_k</span> <span class="o">=</span> <span class="n">_scalar_implicit</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f_history</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x_history</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">record_history</span><span class="p">,</span> <span class="n">print_bar</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown form &#39;</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s2">&#39;. Supported forms: </span><span class="si">{</span><span class="n">SUPPORTED_METHODS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown form &#39;</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s2">&#39;. Supported forms: </span><span class="si">{</span><span class="n">SUPPORTED_METHODS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">runtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+
+    <span class="k">if</span> <span class="n">record_history</span><span class="p">:</span>
+        <span class="n">all_history</span><span class="p">[</span><span class="s2">&quot;variables&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_history</span>
+        <span class="n">all_history</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_history</span>
+
+    <span class="k">return</span> <span class="n">OptimizationResult</span><span class="p">(</span>
+        <span class="n">method</span><span class="o">=</span><span class="n">form</span><span class="p">,</span>
+        <span class="n">solution</span><span class="o">=</span><span class="n">res_x</span><span class="p">,</span>
+        <span class="n">func_val</span><span class="o">=</span><span class="n">res_f</span><span class="p">,</span>
+        <span class="n">iteration</span><span class="o">=</span><span class="n">res_k</span><span class="p">,</span>
+        <span class="n">runtime</span><span class="o">=</span><span class="n">runtime</span><span class="p">,</span>
+        <span class="n">all_history</span><span class="o">=</span><span class="n">all_history</span>
+    <span class="p">)</span> 
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1325,73 +2295,315 @@ step = StepSize(name='user_defined', parameters=custom_rule)</p>
 
     </div>
 
-</div><h3 id="quick-example">Quick Example</h3>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">specular.optimization.step_size</span><span class="w"> </span><span class="kn">import</span> <span class="n">StepSize</span>
+</div><hr />
 
-<span class="c1"># Use a square-summable rule: h_k = 10 / (2 + k)</span>
-<span class="n">step</span> <span class="o">=</span> <span class="n">StepSize</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;square_summable_not_summable&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-<span class="n">h_1</span> <span class="o">=</span> <span class="n">step</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">h_1</span><span class="p">)</span>
-<span class="c1"># Output: 3.3333333333333335</span>
-</code></pre></div>
-<h2 id="232-the-specular-gradient-method">2.3.2 The specular gradient method</h2>
-<h3 id="the-one-dimensional-case">The one dimensional case</h3>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span> 
 
-<span class="c1"># Objective function: f(x) = |x|</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<div class="doc doc-object doc-module">
 
-<span class="n">step_size</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">StepSize</span><span class="p">(</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span> 
 
-<span class="c1"># Specular gradient method</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">gradient_method</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">x_0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;specular gradient&#39;</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-</code></pre></div>
-<h3 id="higher-dimensional-cases">Higher dimensional cases</h3>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span> 
 
-<span class="c1"># Objective function: f(x) = sum(x^2)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<h1 id="specular.optimization.result" class="doc doc-heading">
+            <code>specular.optimization.result</code>
 
-<span class="c1"># Component functions for Stochastic test</span>
-<span class="c1"># f(x) = x1^2 + x2^2</span>
-<span class="c1"># f1(x) = x1^2, f2(x) = x2^2</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">f_comp_1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">f_comp_2</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+</h1>
 
-<span class="n">f_components</span> <span class="o">=</span> <span class="p">[</span><span class="n">f_comp_1</span><span class="p">,</span> <span class="n">f_comp_2</span><span class="p">]</span>
+    <div class="doc doc-contents first">
 
-<span class="n">x_0</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
-<span class="n">step_size</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">StepSize</span><span class="p">(</span><span class="s1">&#39;square_summable_not_summable&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span> 
 
-<span class="c1"># Specular gradient method</span>
-<span class="n">res1</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">gradient_method</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">x_0</span><span class="o">=</span><span class="n">x_0</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;specular gradient&#39;</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 
-<span class="c1"># Stochastic specular gradient method</span>
-<span class="n">res2</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">gradient_method</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">x_0</span><span class="o">=</span><span class="n">x_0</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;stochastic&#39;</span><span class="p">,</span> <span class="n">f_j</span><span class="o">=</span><span class="n">f_components</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 
-<span class="c1"># hybrid specular gradient method</span>
-<span class="n">res3</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">gradient_method</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">f_quad_vector</span><span class="p">,</span> <span class="n">x_0</span><span class="o">=</span><span class="n">x_0</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;hybrid&#39;</span><span class="p">,</span> <span class="n">f_j</span><span class="o">=</span><span class="n">f_components</span><span class="p">,</span> <span class="n">switch_iter</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-</code></pre></div>
-<h3 id="233-optimizationresult">2.3.3 <code>OptimizationResult</code></h3>
-<p>The class <code>OptimizationResult</code> collects the optimization results.
-To get history of optimization, call <code>history()</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span> 
 
-<span class="c1"># Objective function: f(x) = sum(x^2)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
 
-<span class="n">x_0</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
-<span class="n">step_size</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">StepSize</span><span class="p">(</span><span class="s1">&#39;square_summable_not_summable&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span> 
 
-<span class="c1"># Specular gradient method</span>
-<span class="n">res_x</span><span class="p">,</span> <span class="n">res_f</span><span class="p">,</span> <span class="n">res_time</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">gradient_method</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">x_0</span><span class="o">=</span><span class="n">x_0</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;specular gradient&#39;</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">history</span><span class="p">()</span>
-</code></pre></div>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="specular.optimization.result.OptimizationResult" class="doc doc-heading">
+            <code>OptimizationResult</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>specular\optimization\result.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">OptimizationResult</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> 
+            <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">solution</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> 
+            <span class="n">func_val</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> 
+            <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
+            <span class="n">runtime</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">all_history</span><span class="p">:</span> <span class="nb">dict</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solution</span> <span class="o">=</span> <span class="n">solution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func_val</span> <span class="o">=</span> <span class="n">func_val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iteration</span> <span class="o">=</span> <span class="n">iteration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span> <span class="o">=</span> <span class="n">runtime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_history</span> <span class="o">=</span> <span class="n">all_history</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;    solution: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  func value: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">func_val</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;   iteration: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">iteration</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">last_record</span><span class="p">(</span>
+        <span class="bp">self</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the final solution x, the value of f at x, and the runtime as a tuple.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (x, f(x), runtime)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">func_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span> <span class="c1"># type: ignore</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">history</span><span class="p">(</span>
+        <span class="bp">self</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the time grid and the numerical solution as a tuple.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (x_history, f_history, runtime)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_history</span><span class="p">[</span><span class="s2">&quot;variables&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_history</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="specular.optimization.result.OptimizationResult.history" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">history</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Returns the time grid and the numerical solution as a tuple.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="typing.Tuple">Tuple</span>[<span title="numpy.ndarray">ndarray</span>, <span title="numpy.ndarray">ndarray</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>(x_history, f_history, runtime)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular\optimization\result.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">history</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the time grid and the numerical solution as a tuple.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (x_history, f_history, runtime)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_history</span><span class="p">[</span><span class="s2">&quot;variables&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_history</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="specular.optimization.result.OptimizationResult.last_record" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">last_record</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Returns the final solution x, the value of f at x, and the runtime as a tuple.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="typing.Tuple">Tuple</span>[<span title="float">float</span>, <span title="float">float</span>, <span title="float">float</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>(x, f(x), runtime)</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular\optimization\result.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">last_record</span><span class="p">(</span>
+    <span class="bp">self</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the final solution x, the value of f at x, and the runtime as a tuple.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (x, f(x), runtime)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">func_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span> <span class="c1"># type: ignore</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 
 

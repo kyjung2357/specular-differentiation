@@ -493,6 +493,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2.1. Calculation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -509,6 +527,58 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#211-one-dimensional-euclidean-space-n1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.1. One-dimensional Euclidean Space (\(n=1\))
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#212-the-n-dimensional-euclidean-space-n1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.2. the \(n\)-dimensional Euclidean space (\(n&gt;1\))
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#213-api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.3. API Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -653,6 +723,47 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#211-one-dimensional-euclidean-space-n1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.1. One-dimensional Euclidean Space (\(n=1\))
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#212-the-n-dimensional-euclidean-space-n1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.2. the \(n\)-dimensional Euclidean space (\(n&gt;1\))
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#213-api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1.3. API Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -672,6 +783,105 @@
 
 
 <h1 id="21-calculation">2.1. Calculation</h1>
+<p>Directory: <code>specular/calculation/</code></p>
+<p>The <a href="https://github.com/kyjung2357/specular-differentiation/blob/main/specular/calculation.py"><code>specular.calculation</code></a> module provides five primary functions to calculate specular differentiation, depending on the dimension of input.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Function</th>
+<th style="text-align: left;">Space</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Input Type</th>
+<th style="text-align: left;">Output Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>derivative</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\mathbb{R} \to \mathbb{R}^m\)</span></td>
+<td style="text-align: left;">specular derivative</td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;"><code>float</code>, <code>np.ndarray</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>directional_derivative</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\mathbb{R}^n \to \mathbb{R}\)</span></td>
+<td style="text-align: left;">specular directional derivative in direction <span class="arithmatex">\(v \in \mathbb{R}^n\)</span></td>
+<td style="text-align: left;"><code>np.ndarry</code></td>
+<td style="text-align: left;"><code>float</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>partial_derivative</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\mathbb{R}^n \to \mathbb{R}\)</span></td>
+<td style="text-align: left;">specular partial derivative w.r.t. <span class="arithmatex">\(v = x_i\)</span></td>
+<td style="text-align: left;"><code>np.ndarray</code></td>
+<td style="text-align: left;"><code>float</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>gradient</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\mathbb{R}^n \to \mathbb{R}\)</span></td>
+<td style="text-align: left;">specular gradient vector</td>
+<td style="text-align: left;"><code>np.ndarray</code></td>
+<td style="text-align: left;"><code>np.ndarray</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>jacobian</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\mathbb{R}^n \to \mathbb{R}^m\)</span></td>
+<td style="text-align: left;">specular jacobian matrix</td>
+<td style="text-align: left;"><code>np.ndarray</code></td>
+<td style="text-align: left;"><code>np.ndarray</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="211-one-dimensional-euclidean-space-n1">2.1.1. One-dimensional Euclidean Space (<span class="arithmatex">\(n=1\)</span>)</h2>
+<p>In <span class="arithmatex">\(ℝ\)</span>, the <em>specular derivative</em> can be calculated using the function <code>derivative</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+<span class="n">specular</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="c1"># Output: 0.41421356237309515</span>
+</code></pre></div>
+<h2 id="212-the-n-dimensional-euclidean-space-n1">2.1.2. the <span class="arithmatex">\(n\)</span>-dimensional Euclidean space (<span class="arithmatex">\(n&gt;1\)</span>)</h2>
+<p>In <span class="arithmatex">\(ℝ^n\)</span>, the <em>specular directional derivative</em> of a function <span class="arithmatex">\(f: ℝ^n \to ℝ\)</span> at a point <span class="arithmatex">\(x \in ℝ^n\)</span> in the direction <span class="arithmatex">\(v \in ℝ^n\)</span> can be calculated using the function <code>directional_derivative</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span> 
+
+<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">specular</span><span class="o">.</span><span class="n">directional_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">],</span> <span class="n">v</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+<span class="c1"># Output: -2.1213203434708223</span>
+</code></pre></div>
+<p>Let <span class="arithmatex">\(e_1, e_2, \ldots, e_n\)</span> be the standard basis of <span class="arithmatex">\(ℝ^n\)</span>.
+For each <span class="arithmatex">\(i \in ℕ\)</span> with <span class="arithmatex">\(1 \leq i \leq n\)</span>, the <em>specular partial derivative</em> with respect to a variable <span class="arithmatex">\(x_i\)</span> can be calculated using the function <code>partial_derivative</code>, which yields the same result as <code>directional_derivative</code> with direction <span class="arithmatex">\(v=e_i\)</span>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">specular</span><span class="o">.</span><span class="n">partial_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span> <span class="n">i</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="c1"># Output: 0.8859268982863702</span>
+<span class="n">specular</span><span class="o">.</span><span class="n">directional_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span> <span class="n">v</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="c1"># Output: 0.8859268982863702</span>
+</code></pre></div>
+<p>Also, the <em>specular gradient</em> can be calculated using <code>gradient</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">specular</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">])</span>
+<span class="c1"># Output: [ 0.03851856  0.8859269  -0.46222273]</span>
+<span class="n">specular</span><span class="o">.</span><span class="n">partial_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># Output: 0.03851856078540371</span>
+<span class="n">specular</span><span class="o">.</span><span class="n">partial_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span> <span class="n">i</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="c1"># Output: 0.8859268982863702</span>
+<span class="n">specular</span><span class="o">.</span><span class="n">partial_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span> <span class="n">i</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="c1"># Output: -0.4622227292028128</span>
+</code></pre></div>
+<h2 id="213-api-reference">2.1.3. API Reference</h2>
 
 
 <div class="doc doc-object doc-module">
@@ -686,11 +896,23 @@
 
     <div class="doc doc-contents first">
 
-        <p>========================================
-Calculations of specular differentiation
-========================================</p>
-<p>This module provides implementations of the function :math:<code>\mathcal{A}</code>, specular directional derivatives, specular partial derivatives, specular derivatives, specular gradients, and specular Jacobians.</p>
-<p>Computations are based on the finite difference approximation of one-sided (directional) derivatives.</p>
+        <p>This module provides implementations of specular directional derivatives, specular partial derivatives, specular derivatives, specular gradients, and specular Jacobians.</p>
+<p>The calculations are based on the function <span class="arithmatex">\(\mathcal{A}:\mathbb{R}^2 \to \mathbb{R}\)</span> defined by </p>
+<div class="arithmatex">\[
+\mathcal{A}(\alpha, \beta) =
+\begin{cases}
+    \frac{\alpha \beta - 1 + \sqrt{(1 + \alpha^2)(1 + \beta^2)}}{\alpha + \beta} &amp; \text{if } \alpha + \beta \neq 0, \\
+    0 &amp; \text{otherwise.}
+\end{cases}
+\]</div>
+<p>The parameters <span class="arithmatex">\(\alpha\)</span> and <span class="arithmatex">\(\beta\)</span> are intended to represent right and left derivatives.
+In the code, computations are based on the finite difference approximation of one-sided (directional) derivatives:</p>
+<div class="arithmatex">\[
+\alpha \approx \frac{f(x + hv) - f(x)}{h}
+\qquad \text{and} \qquad
+\beta \approx \frac{f(x) - f(x - hv)}{h},
+\]</div>
+<p>where a function <span class="arithmatex">\(f : \mathbb{R}^n \to \mathbb{R}\)</span>, a real number <span class="arithmatex">\(h &gt; 0\)</span>, and vectors <span class="arithmatex">\(x, v \in \mathbb{R}^n\)</span>.</p>
 
 
 
@@ -723,56 +945,130 @@ Calculations of specular differentiation
 
     <div class="doc doc-contents ">
 
-        <p>Compute the function :math:<code>\mathcal{A}</code> from one-sided directional derivatives.</p>
-<p>Given real numbers <code>alpha</code> and <code>beta</code>, the function :math:<code>\mathcal{A}:\mathbb{R}^2 \to \mathbb{R}</code> is defined by </p>
-<pre><code>:math:`\mathcal{A}(\alpha, \beta) = \frac{\alpha \beta - 1 + \sqrt((1 + \alpha^2)(1 + \beta^2))}{\alpha + \beta}` if ``alpha + beta != 0``; otherwise, it returns ``0``.
-</code></pre>
-<h4 id="specular.calculation.A--parameters">Parameters</h4>
-<p>alpha : float | np.number | int | list | np.ndarray
-    One-sided directional derivative.
-beta : float | np.number | int | list | np.ndarray
-    One-sided directional derivative.
-zero_tol : float, optional
-    A small threshold used to determine if the denominator <code>alpha + beta</code> is close to zero for numerical stability.
-    Default: <code>1e-8</code>.</p>
-<h4 id="specular.calculation.A--returns">Returns</h4>
-<p>float
-    The function :math:<code>\mathcal{A}</code>.</p>
-<h4 id="specular.calculation.A--raises">Raises</h4>
-<p>ValueError
-    If <code>alpha</code> and <code>beta</code> have different shape.</p>
-<h4 id="specular.calculation.A--examples">Examples</h4>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>import specular
-specular.calculation.A(1.0, 2.0)
-1.3874258867227933
-specular.calculation.A([1.0, 2.4], [2.0, 4.1])
-array([1.38742589, 3.04807583])</p>
-</blockquote>
-</blockquote>
-</blockquote>
+        <p>Compute the function <span class="arithmatex">\(\mathcal{A}\)</span> from one-sided directional derivatives.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>alpha</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> | <span title="numpy.number">number</span> | <span title="int">int</span> | <span title="list">list</span> | <span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>One-sided directional derivative.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>beta</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> | <span title="numpy.number">number</span> | <span title="int">int</span> | <span title="list">list</span> | <span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>One-sided directional derivative.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>zero_tol</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A small threshold used to determine if the denominator <code>alpha + beta</code> is close to zero for numerical stability.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-08</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="float">float</span> | <span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The function <span class="arithmatex">\(\mathcal{A}\)</span>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>alpha</code> and <code>beta</code> have different shape.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">specular</span><span class="o">.</span><span class="n">calculation</span><span class="o">.</span><span class="n">A</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+<span class="go">1.3874258867227933</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">specular</span><span class="o">.</span><span class="n">calculation</span><span class="o">.</span><span class="n">A</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.1</span><span class="p">])</span>
+<span class="go">array([1.38742589, 3.04807583])</span>
+</code></pre></div>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>specular\calculation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
@@ -800,45 +1096,40 @@ array([1.38742589, 3.04807583])</p>
 <span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
-<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">A</span><span class="p">(</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">A</span><span class="p">(</span>
     <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">zero_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the function :math:`\\mathcal{A}` from one-sided directional derivatives.</span>
+<span class="sd">    Compute the function $\\mathcal{A}$ from one-sided directional derivatives.</span>
 
-<span class="sd">    Given real numbers ``alpha`` and ``beta``, the function :math:`\\mathcal{A}:\\mathbb{R}^2 \\to \\mathbb{R}` is defined by </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        alpha (float | np.number | int | list | np.ndarray):</span>
+<span class="sd">            One-sided directional derivative.</span>
+<span class="sd">        beta (float | np.number | int | list | np.ndarray):</span>
+<span class="sd">            One-sided directional derivative.</span>
+<span class="sd">        zero_tol (float, optional):</span>
+<span class="sd">            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.</span>
 
-<span class="sd">        :math:`\\mathcal{A}(\\alpha, \\beta) = \\frac{\\alpha \\beta - 1 + \\sqrt((1 + \\alpha^2)(1 + \\beta^2))}{\\alpha + \\beta}` if ``alpha + beta != 0``; otherwise, it returns ``0``.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The function $\\mathcal{A}$.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    alpha : float | np.number | int | list | np.ndarray</span>
-<span class="sd">        One-sided directional derivative.</span>
-<span class="sd">    beta : float | np.number | int | list | np.ndarray</span>
-<span class="sd">        One-sided directional derivative.</span>
-<span class="sd">    zero_tol : float, optional</span>
-<span class="sd">        A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.</span>
-<span class="sd">        Default: ``1e-8``.</span>
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError:</span>
+<span class="sd">            If ``alpha`` and ``beta`` have different shape.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    float</span>
-<span class="sd">        The function :math:`\\mathcal{A}`.</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    ValueError</span>
-<span class="sd">        If ``alpha`` and ``beta`` have different shape.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import specular</span>
-<span class="sd">    &gt;&gt;&gt; specular.calculation.A(1.0, 2.0)</span>
-<span class="sd">    1.3874258867227933</span>
-<span class="sd">    &gt;&gt;&gt; specular.calculation.A([1.0, 2.4], [2.0, 4.1])</span>
-<span class="sd">    array([1.38742589, 3.04807583])</span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; import specular</span>
+<span class="sd">        &gt;&gt;&gt; specular.calculation.A(1.0, 2.0)</span>
+<span class="sd">        1.3874258867227933</span>
+<span class="sd">        &gt;&gt;&gt; specular.calculation.A([1.0, 2.4], [2.0, 4.1])</span>
+<span class="sd">        array([1.38742589, 3.04807583])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">beta</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">_A_scalar</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">zero_tol</span><span class="o">=</span><span class="n">zero_tol</span><span class="p">)</span> <span class="c1"># type: ignore</span>
@@ -861,52 +1152,160 @@ array([1.38742589, 3.04807583])</p>
 
     <div class="doc doc-contents ">
 
-        <p>Approximates the specular derivative of a function :math:<code>f:\mathbb{R} \to \mathbb{R}^m</code> at a scalar point <code>x</code>.</p>
-<p>If <code>f</code> returns a scalar, the result is a float.
-If <code>f</code> returns a vector, the result is a vector (component-wise derivative).</p>
-<h4 id="specular.calculation.derivative--parameters">Parameters</h4>
-<p>f : callable
-    A function of a single real variable, returning a scalar or a vector.
-x : float | np.number | int 
-    The point at which the derivative is evaluated.
-h : float, optional
-    Mesh size used in the finite difference approximation. Must be positive.
-    Default: <code>1e-6</code>.
-zero_tol : float, optional 
-    A small threshold used to determine if the denominator <code>alpha + beta</code> is close to zero for numerical stability.
-    Default: <code>1e-8</code>.</p>
-<h4 id="specular.calculation.derivative--returns">Returns</h4>
-<p>float | np.ndarray
-    The approximated specular derivative of <code>f</code> at <code>x</code>.</p>
-<h4 id="specular.calculation.derivative--raises">Raises</h4>
-<p>TypeError
-    If the type of <code>x</code> is not a scalar.
-ValueError
-    If <code>h</code> is not positive.</p>
-<h4 id="specular.calculation.derivative--examples">Examples</h4>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>import specular
-f = lambda x: max(x, 0.0)
-specular.derivative(f, x=0.0)
-0.41421356237309515
-f = lambda x: abs(x)
-specular.derivative(f, x=0.0)
-0.0</p>
-</blockquote>
-</blockquote>
-</blockquote>
+        <p>Approximates the specular derivative of a function <span class="arithmatex">\(f:\mathbb{R} \to \mathbb{R}^m\)</span> at a scalar point <span class="arithmatex">\(x\)</span>.</p>
+<p>If <code>f</code> returns a scalar, the result is a float.</p>
+<p>If <code>f</code> returns a vector, the result is a vector (component-wise derivative).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>f</code>
+            </td>
+            <td>
+                  <code><span title="callable">callable</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A function of a single real variable, returning a scalar or a vector.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>x</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> | <span title="numpy.number">number</span> | <span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The point at which the derivative is evaluated.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>h</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh size used in the finite difference approximation. Must be positive.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-06</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>zero_tol</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A small threshold used to determine if the denominator <code>alpha + beta</code> is close to zero for numerical stability.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-08</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="float">float</span> | <span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The approximated specular derivative of <code>f</code> at <code>x</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="TypeError">TypeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the type of <code>x</code> is not a scalar.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>h</code> is not positive.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">specular</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="go">0.41421356237309515</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">specular</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="go">0.0</span>
+</code></pre></div>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>specular\calculation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
@@ -978,55 +1377,46 @@ specular.derivative(f, x=0.0)
 <span class="normal">181</span>
 <span class="normal">182</span>
 <span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">derivative</span><span class="p">(</span>
+<span class="normal">184</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">derivative</span><span class="p">(</span>
     <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">],</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
     <span class="n">x</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
     <span class="n">zero_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Approximates the specular derivative of a function :math:`f:\\mathbb{R} \\to \\mathbb{R}^m` at a scalar point ``x``.</span>
+<span class="sd">    Approximates the specular derivative of a function $f:\\mathbb{R} \\to \\mathbb{R}^m$ at a scalar point $x$.</span>
 
 <span class="sd">    If ``f`` returns a scalar, the result is a float.</span>
+
 <span class="sd">    If ``f`` returns a vector, the result is a vector (component-wise derivative).</span>
 
+<span class="sd">    Parameters:</span>
+<span class="sd">        f (callable):</span>
+<span class="sd">            A function of a single real variable, returning a scalar or a vector.</span>
+<span class="sd">        x (float | np.number | int):</span>
+<span class="sd">            The point at which the derivative is evaluated.</span>
+<span class="sd">        h (float, optional):</span>
+<span class="sd">            Mesh size used in the finite difference approximation. Must be positive.</span>
+<span class="sd">        zero_tol (float, optional):</span>
+<span class="sd">            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    f : callable</span>
-<span class="sd">        A function of a single real variable, returning a scalar or a vector.</span>
-<span class="sd">    x : float | np.number | int </span>
-<span class="sd">        The point at which the derivative is evaluated.</span>
-<span class="sd">    h : float, optional</span>
-<span class="sd">        Mesh size used in the finite difference approximation. Must be positive.</span>
-<span class="sd">        Default: ``1e-6``.</span>
-<span class="sd">    zero_tol : float, optional </span>
-<span class="sd">        A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.</span>
-<span class="sd">        Default: ``1e-8``.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    float | np.ndarray</span>
+<span class="sd">    Returns:</span>
 <span class="sd">        The approximated specular derivative of ``f`` at ``x``.</span>
 
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        If the type of ``x`` is not a scalar.</span>
-<span class="sd">    ValueError</span>
-<span class="sd">        If ``h`` is not positive.</span>
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError:</span>
+<span class="sd">            If the type of ``x`` is not a scalar.</span>
+<span class="sd">        ValueError:</span>
+<span class="sd">            If ``h`` is not positive.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import specular</span>
-<span class="sd">    &gt;&gt;&gt; f = lambda x: max(x, 0.0)</span>
-<span class="sd">    &gt;&gt;&gt; specular.derivative(f, x=0.0)</span>
-<span class="sd">    0.41421356237309515</span>
-<span class="sd">    &gt;&gt;&gt; f = lambda x: abs(x)</span>
-<span class="sd">    &gt;&gt;&gt; specular.derivative(f, x=0.0)</span>
-<span class="sd">    0.0</span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; import specular</span>
+<span class="sd">        &gt;&gt;&gt; f = lambda x: max(x, 0.0)</span>
+<span class="sd">        &gt;&gt;&gt; specular.derivative(f, x=0.0)</span>
+<span class="sd">        0.41421356237309515</span>
+<span class="sd">        &gt;&gt;&gt; f = lambda x: abs(x)</span>
+<span class="sd">        &gt;&gt;&gt; specular.derivative(f, x=0.0)</span>
+<span class="sd">        0.0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mesh size &#39;h&#39; must be positive. Got </span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1077,48 +1467,175 @@ specular.derivative(f, x=0.0)
 
     <div class="doc doc-contents ">
 
-        <p>Approximates the specular directional derivative of a function :math:<code>f:\mathbb{R}^n \to \mathbb{R}</code> at a point <code>x</code> in the direction <code>v</code>.
-The one-sided derivatives <code>alpha</code> and <code>beta</code> are approximated.
-The function :math:<code>\mathcal{A}</code> returns the specular directional derivative for each component of the vector <code>x</code>.</p>
-<h4 id="specular.calculation.directional_derivative--parameters">Parameters</h4>
-<p>f : callable
-    A real-valued function defined on an open subset of :math:<code>\mathbb{R}^n</code>.
-x : list | np.ndarray
-    The point at which the derivative is evaluated.
-v : list | np.ndarray
-    The direction in which the derivative is taken.
-h : float, optional
-    Mesh size used in the finite difference approximation. Must be positive.
-    Default: <code>1e-6</code>.
-zero_tol : float, optional
-    A small threshold used to determine if the denominator <code>alpha + beta</code> is close to zero for numerical stability.
-    Default: <code>1e-8</code>.</p>
-<h4 id="specular.calculation.directional_derivative--returns">Returns</h4>
-<p>float
-    The approximated specular directional derivative of <code>f</code> at <code>x</code> in the direction <code>v</code> as a scalar.</p>
-<h4 id="specular.calculation.directional_derivative--raises">Raises</h4>
-<p>TypeError
-    If <code>x</code> or <code>v</code> are not of valid array-like types.
-ValueError
-    If <code>x</code> and <code>v</code> have different shape.
-    If <code>h</code> is not positive.</p>
-<h4 id="specular.calculation.directional_derivative--examples">Examples</h4>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>import specular
-import math
-f = lambda x: math.sqrt(x[0]<strong>2 + x[1]</strong>2 + x[2]**2)
-specular.directional_derivative(f, x=[0.0, 0.1, -0.1], v=[1.0, -1.0, 2.0])
--2.1213203434708223</p>
-</blockquote>
-</blockquote>
-</blockquote>
+        <p>Approximates the specular directional derivative of a function <span class="arithmatex">\(f:\mathbb{R}^n \to \mathbb{R}\)</span> at a point <span class="arithmatex">\(x\)</span> in the direction <span class="arithmatex">\(v\)</span>.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>f</code>
+            </td>
+            <td>
+                  <code><span title="callable">callable</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A function of a real vector variable, returning a scalar.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>x</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span> | <span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The point at which the derivative is evaluated.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>v</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span> | <span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The direction in which the derivative is taken.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>h</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh size used in the finite difference approximation. Must be positive.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-06</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>zero_tol</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A small threshold used to determine if the denominator <code>alpha + beta</code> is close to zero for numerical stability.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-08</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The approximated specular directional derivative of <code>f</code> at <code>x</code> in the direction <code>v</code> as a scalar.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="TypeError">TypeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>x</code> or <code>v</code> are not of valid array-like types.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>x</code> and <code>v</code> have different shape.
+If <code>h</code> is not positive.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">specular</span><span class="o">.</span><span class="n">directional_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">],</span> <span class="n">v</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+<span class="go">-2.1213203434708223</span>
+</code></pre></div>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>specular\calculation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">189</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
 <span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
@@ -1188,18 +1705,7 @@ specular.directional_derivative(f, x=[0.0, 0.1, -0.1], v=[1.0, -1.0, 2.0])
 <span class="normal">256</span>
 <span class="normal">257</span>
 <span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">directional_derivative</span><span class="p">(</span>
+<span class="normal">259</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">directional_derivative</span><span class="p">(</span>
     <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">],</span>
     <span class="n">x</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">v</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
@@ -1207,45 +1713,36 @@ specular.directional_derivative(f, x=[0.0, 0.1, -0.1], v=[1.0, -1.0, 2.0])
     <span class="n">zero_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Approximates the specular directional derivative of a function :math:`f:\\mathbb{R}^n \\to \\mathbb{R}` at a point ``x`` in the direction ``v``.</span>
-<span class="sd">    The one-sided derivatives ``alpha`` and ``beta`` are approximated.</span>
-<span class="sd">    The function :math:`\\mathcal{A}` returns the specular directional derivative for each component of the vector ``x``.</span>
+<span class="sd">    Approximates the specular directional derivative of a function $f:\\mathbb{R}^n \\to \\mathbb{R}$ at a point $x$ in the direction $v$.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    f : callable</span>
-<span class="sd">        A real-valued function defined on an open subset of :math:`\\mathbb{R}^n`.</span>
-<span class="sd">    x : list | np.ndarray</span>
-<span class="sd">        The point at which the derivative is evaluated.</span>
-<span class="sd">    v : list | np.ndarray</span>
-<span class="sd">        The direction in which the derivative is taken.</span>
-<span class="sd">    h : float, optional</span>
-<span class="sd">        Mesh size used in the finite difference approximation. Must be positive.</span>
-<span class="sd">        Default: ``1e-6``.</span>
-<span class="sd">    zero_tol : float, optional</span>
-<span class="sd">        A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.</span>
-<span class="sd">        Default: ``1e-8``.</span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        f (callable):</span>
+<span class="sd">            A function of a real vector variable, returning a scalar.</span>
+<span class="sd">        x (list | np.ndarray):</span>
+<span class="sd">            The point at which the derivative is evaluated.</span>
+<span class="sd">        v (list | np.ndarray):</span>
+<span class="sd">            The direction in which the derivative is taken.</span>
+<span class="sd">        h (float, optional):</span>
+<span class="sd">            Mesh size used in the finite difference approximation. Must be positive.</span>
+<span class="sd">        zero_tol (float, optional):</span>
+<span class="sd">            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    float</span>
+<span class="sd">    Returns:</span>
 <span class="sd">        The approximated specular directional derivative of ``f`` at ``x`` in the direction ``v`` as a scalar.</span>
 
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        If ``x`` or ``v`` are not of valid array-like types.</span>
-<span class="sd">    ValueError</span>
-<span class="sd">        If ``x`` and ``v`` have different shape.</span>
-<span class="sd">        If ``h`` is not positive.</span>
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError:</span>
+<span class="sd">            If ``x`` or ``v`` are not of valid array-like types.</span>
+<span class="sd">        ValueError:</span>
+<span class="sd">            If ``x`` and ``v`` have different shape.</span>
+<span class="sd">            If ``h`` is not positive.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import specular</span>
-<span class="sd">    &gt;&gt;&gt; import math</span>
-<span class="sd">    &gt;&gt;&gt; f = lambda x: math.sqrt(x[0]**2 + x[1]**2 + x[2]**2)</span>
-<span class="sd">    &gt;&gt;&gt; specular.directional_derivative(f, x=[0.0, 0.1, -0.1], v=[1.0, -1.0, 2.0])</span>
-<span class="sd">    -2.1213203434708223</span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; import specular</span>
+<span class="sd">        &gt;&gt;&gt; import math</span>
+<span class="sd">        &gt;&gt;&gt; f = lambda x: math.sqrt(x[0]**2 + x[1]**2 + x[2]**2)</span>
+<span class="sd">        &gt;&gt;&gt; specular.directional_derivative(f, x=[0.0, 0.1, -0.1], v=[1.0, -1.0, 2.0])</span>
+<span class="sd">        -2.1213203434708223</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mesh size &#39;h&#39; must be positive. Got </span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1298,45 +1795,177 @@ specular.directional_derivative(f, x=[0.0, 0.1, -0.1], v=[1.0, -1.0, 2.0])
 
     <div class="doc doc-contents ">
 
-        <p>Approximates the specular gradient of a real-valued function :math:<code>f:\mathbb{R}^n \to \mathbb{R}</code> at point <code>x</code> for <code>n &gt; 1</code>.</p>
+        <p>Approximates the specular gradient of a real-valued function <span class="arithmatex">\(f:\mathbb{R}^n \to \mathbb{R}\)</span> at point <span class="arithmatex">\(x\)</span> for <span class="arithmatex">\(n &gt; 1\)</span>.</p>
 <p>The specular gradient is defined as the vector of all partial specular derivatives along the standard basis directions.</p>
-<h4 id="specular.calculation.gradient--parameters">Parameters</h4>
-<p>f : callable
-    A real-valued function defined on :math:<code>\mathbb{R}^n</code>.
-x : list | np.ndarray
-    The point at which the specular gradient is evaluated.
-h : float, optional
-    Mesh size used in the finite difference approximation. Must be positive.
-    Default: <code>1e-6</code>.
-zero_tol : float, optional
-    A small threshold used to determine if the denominator <code>alpha + beta</code> is close to zero for numerical stability.
-    Default: <code>1e-8</code>.</p>
-<h4 id="specular.calculation.gradient--returns">Returns</h4>
-<p>np.ndarray
-    The approximated specular gradient of <code>f</code> at <code>x</code> as a vector.</p>
-<h4 id="specular.calculation.gradient--raises">Raises</h4>
-<p>TypeError
-    If <code>x</code> is not of a valid array-like type.
-ValueError
-    If <code>f</code> does not return a scalar value.
-    If <code>h</code> is not positive.</p>
-<h4 id="specular.calculation.gradient--examples">Examples</h4>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>import specular
-import numpy as np
-f = lambda x: np.linalg.norm(x)
-specular.gradient(f, x=[1.4, -3.47, 4.57, 9.9])
-array([ 0.12144298, -0.3010051 ,  0.39642458,  0.85877534])</p>
-</blockquote>
-</blockquote>
-</blockquote>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>f</code>
+            </td>
+            <td>
+                  <code><span title="callable">callable</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A function of a real vector variable, returning a scalar.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>x</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span> | <span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The point at which the specular gradient is evaluated.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>h</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh size used in the finite difference approximation. Must be positive.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-06</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>zero_tol</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A small threshold used to determine if the denominator <code>alpha + beta</code> is close to zero for numerical stability.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-08</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The approximated specular gradient of <code>f</code> at <code>x</code> as a vector.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="TypeError">TypeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>x</code> is not of a valid array-like type.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>f</code> does not return a scalar value.
+If <code>h</code> is not positive.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">specular</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">1.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.47</span><span class="p">,</span> <span class="mf">4.57</span><span class="p">,</span> <span class="mf">9.9</span><span class="p">])</span>
+<span class="go">array([ 0.12144298, -0.3010051 ,  0.39642458,  0.85877534])</span>
+</code></pre></div>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>specular\calculation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">336</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
 <span class="normal">337</span>
 <span class="normal">338</span>
 <span class="normal">339</span>
@@ -1387,76 +2016,43 @@ array([ 0.12144298, -0.3010051 ,  0.39642458,  0.85877534])</p>
 <span class="normal">384</span>
 <span class="normal">385</span>
 <span class="normal">386</span>
-<span class="normal">387</span>
-<span class="normal">388</span>
-<span class="normal">389</span>
-<span class="normal">390</span>
-<span class="normal">391</span>
-<span class="normal">392</span>
-<span class="normal">393</span>
-<span class="normal">394</span>
-<span class="normal">395</span>
-<span class="normal">396</span>
-<span class="normal">397</span>
-<span class="normal">398</span>
-<span class="normal">399</span>
-<span class="normal">400</span>
-<span class="normal">401</span>
-<span class="normal">402</span>
-<span class="normal">403</span>
-<span class="normal">404</span>
-<span class="normal">405</span>
-<span class="normal">406</span>
-<span class="normal">407</span>
-<span class="normal">408</span>
-<span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">gradient</span><span class="p">(</span>
+<span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">gradient</span><span class="p">(</span>
     <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="nb">int</span> <span class="o">|</span><span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">],</span>
     <span class="n">x</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
     <span class="n">zero_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Approximates the specular gradient of a real-valued function :math:`f:\\mathbb{R}^n \\to \\mathbb{R}` at point ``x`` for ``n &gt; 1``.</span>
+<span class="sd">    Approximates the specular gradient of a real-valued function $f:\\mathbb{R}^n \\to \\mathbb{R}$ at point $x$ for $n &gt; 1$.</span>
 
 <span class="sd">    The specular gradient is defined as the vector of all partial specular derivatives along the standard basis directions.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    f : callable</span>
-<span class="sd">        A real-valued function defined on :math:`\\mathbb{R}^n`.</span>
-<span class="sd">    x : list | np.ndarray</span>
-<span class="sd">        The point at which the specular gradient is evaluated.</span>
-<span class="sd">    h : float, optional</span>
-<span class="sd">        Mesh size used in the finite difference approximation. Must be positive.</span>
-<span class="sd">        Default: ``1e-6``.</span>
-<span class="sd">    zero_tol : float, optional</span>
-<span class="sd">        A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.</span>
-<span class="sd">        Default: ``1e-8``.</span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        f (callable):</span>
+<span class="sd">            A function of a real vector variable, returning a scalar.</span>
+<span class="sd">        x (list | np.ndarray):</span>
+<span class="sd">            The point at which the specular gradient is evaluated.</span>
+<span class="sd">        h (float, optional):</span>
+<span class="sd">            Mesh size used in the finite difference approximation. Must be positive.</span>
+<span class="sd">        zero_tol (float, optional):</span>
+<span class="sd">            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    np.ndarray</span>
+<span class="sd">    Returns:</span>
 <span class="sd">        The approximated specular gradient of ``f`` at ``x`` as a vector.</span>
 
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        If ``x`` is not of a valid array-like type.</span>
-<span class="sd">    ValueError</span>
-<span class="sd">        If ``f`` does not return a scalar value.</span>
-<span class="sd">        If ``h`` is not positive.</span>
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError:</span>
+<span class="sd">            If ``x`` is not of a valid array-like type.</span>
+<span class="sd">        ValueError:</span>
+<span class="sd">            If ``f`` does not return a scalar value.</span>
+<span class="sd">            If ``h`` is not positive.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import specular</span>
-<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">    &gt;&gt;&gt; f = lambda x: np.linalg.norm(x)</span>
-<span class="sd">    &gt;&gt;&gt; specular.gradient(f, x=[1.4, -3.47, 4.57, 9.9])</span>
-<span class="sd">    array([ 0.12144298, -0.3010051 ,  0.39642458,  0.85877534])</span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; import specular</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; f = lambda x: np.linalg.norm(x)</span>
+<span class="sd">        &gt;&gt;&gt; specular.gradient(f, x=[1.4, -3.47, 4.57, 9.9])</span>
+<span class="sd">        array([ 0.12144298, -0.3010051 ,  0.39642458,  0.85877534])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mesh size &#39;h&#39; must be positive. Got </span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1477,7 +2073,7 @@ array([ 0.12144298, -0.3010051 ,  0.39642458,  0.85877534])</p>
 
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">f_val</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Function f must return a scalar value. &quot;</span>
+            <span class="s2">&quot;Function &#39;f&#39; must return a scalar value. &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;Got shape </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">f_val</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
 
@@ -1508,18 +2104,174 @@ array([ 0.12144298, -0.3010051 ,  0.39642458,  0.85877534])</p>
 
     <div class="doc doc-contents ">
 
-        <p>Approximates the specular Jacobian matrix of a vector-valued function :math:<code>f:\mathbb{R}^n \to \mathbb{R}^m</code>.</p>
-<p>Returns a matrix of shape (m, n) where J[j, i] is the partial derivative of f_j with respect to x_i (1 &lt;= i &lt;= n, 1 &lt;= j &lt;= m).</p>
-<h4 id="specular.calculation.jacobian--raises">Raises</h4>
-<p>TypeError
-    If <code>x</code> is not of a valid array-like type.
-ValueError
-    If <code>h</code> is not positive.</p>
+        <p>Approximates the specular Jacobian matrix of a vector-valued function <span class="arithmatex">\(f:\mathbb{R}^n \to \mathbb{R}^m\)</span>.</p>
+<p>Returns a matrix of shape (<span class="arithmatex">\(m\)</span>, <span class="arithmatex">\(n\)</span>) where <span class="arithmatex">\(J[j, i]\)</span> is the partial derivative of a component function <span class="arithmatex">\(f_j\)</span> with respect to <span class="arithmatex">\(x_i\)</span> (<span class="arithmatex">\(1 \leq i \leq n\)</span>, <span class="arithmatex">\(1 \leq j \leq m\)</span>.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>f</code>
+            </td>
+            <td>
+                  <code><span title="callable">callable</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A function of a real vector variable, returning a vector.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>x</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span> | <span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The point at which the specular gradient is evaluated.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>h</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh size used in the finite difference approximation. Must be positive.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-06</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>zero_tol</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A small threshold used to determine if the denominator <code>alpha + beta</code> is close to zero for numerical stability.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-08</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The approximated specular Jacobian of <code>f</code> at <code>x</code> as a matrix.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="TypeError">TypeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>x</code> is not of a valid array-like type.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>h</code> is not positive.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>specular\calculation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">416</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
 <span class="normal">417</span>
 <span class="normal">418</span>
 <span class="normal">419</span>
@@ -1560,37 +2312,35 @@ ValueError
 <span class="normal">454</span>
 <span class="normal">455</span>
 <span class="normal">456</span>
-<span class="normal">457</span>
-<span class="normal">458</span>
-<span class="normal">459</span>
-<span class="normal">460</span>
-<span class="normal">461</span>
-<span class="normal">462</span>
-<span class="normal">463</span>
-<span class="normal">464</span>
-<span class="normal">465</span>
-<span class="normal">466</span>
-<span class="normal">467</span>
-<span class="normal">468</span>
-<span class="normal">469</span>
-<span class="normal">470</span>
-<span class="normal">471</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">jacobian</span><span class="p">(</span>
+<span class="normal">457</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">jacobian</span><span class="p">(</span>
     <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
     <span class="n">x</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
     <span class="n">zero_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Approximates the specular Jacobian matrix of a vector-valued function :math:`f:\\mathbb{R}^n \\to \\mathbb{R}^m`.</span>
+<span class="sd">    Approximates the specular Jacobian matrix of a vector-valued function $f:\\mathbb{R}^n \\to \\mathbb{R}^m$.</span>
 
-<span class="sd">    Returns a matrix of shape (m, n) where J[j, i] is the partial derivative of f_j with respect to x_i (1 &lt;= i &lt;= n, 1 &lt;= j &lt;= m).</span>
+<span class="sd">    Returns a matrix of shape ($m$, $n$) where $J[j, i]$ is the partial derivative of a component function $f_j$ with respect to $x_i$ ($1 \\leq i \\leq n$, $1 \\leq j \\leq m$.</span>
 
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        If ``x`` is not of a valid array-like type.</span>
-<span class="sd">    ValueError</span>
-<span class="sd">        If ``h`` is not positive.</span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        f (callable):</span>
+<span class="sd">            A function of a real vector variable, returning a vector.</span>
+<span class="sd">        x (list | np.ndarray):</span>
+<span class="sd">            The point at which the specular gradient is evaluated.</span>
+<span class="sd">        h (float, optional):</span>
+<span class="sd">            Mesh size used in the finite difference approximation. Must be positive.</span>
+<span class="sd">        zero_tol (float, optional):</span>
+<span class="sd">            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The approximated specular Jacobian of ``f`` at ``x`` as a matrix.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError:</span>
+<span class="sd">            If ``x`` is not of a valid array-like type.</span>
+<span class="sd">        ValueError:</span>
+<span class="sd">            If ``h`` is not positive.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mesh size &#39;h&#39; must be positive. Got </span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1647,47 +2397,184 @@ ValueError
 
     <div class="doc doc-contents ">
 
-        <p>Approximates the i-th specular partial derivative of a real-valued function :math:<code>f:\mathbb{R}^n \to \mathbb{R}</code> at point <code>x</code> for <code>n &gt; 1</code>.</p>
-<p>This is computed using :func:<code>specular_directional_derivative</code> with the direction of the <code>i</code>-th standard basis vector of :math:<code>\mathbb{R}^n</code>.</p>
-<h4 id="specular.calculation.partial_derivative--parameters">Parameters</h4>
-<p>f : callable
-    A real-valued function defined on :math:<code>\mathbb{R}^n</code>.
-    <code>n</code> is the dimension of <code>x</code>.
-x : list | np.ndarray
-    The point at which the derivative is evaluated.
-i : int | np.integer
-    The index of the specular partial derivative with respect to :math:<code>x_i</code> (<code>1 &lt;= i &lt;= n</code>).
-h : float, optional
-    Mesh size used in the finite difference approximation. Must be positive.
-    Default: <code>1e-6</code>.
-zero_tol : float, optional
-    A small threshold used to determine if the denominator <code>alpha + beta</code> is close to zero for numerical stability.
-    Default: <code>1e-8</code>.</p>
-<h4 id="specular.calculation.partial_derivative--returns">Returns</h4>
-<p>float
-    The approximated <code>i</code>-th partial specular derivative of <code>f</code> at <code>x</code> as a scalar.</p>
-<h4 id="specular.calculation.partial_derivative--raises">Raises</h4>
-<p>TypeError
-    If <code>i</code> is not an integer.
-ValueError
-    If <code>i</code> is out of the valid range (<code>1 &lt;= i &lt;= n</code>).</p>
-<h4 id="specular.calculation.partial_derivative--examples">Examples</h4>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>import specular
-import math 
-f = lambda x: math.sqrt(x[0]<strong>2 + x[1]</strong>2 + x[2]**2)
-specular.partial_derivative(f, x=[0.1, 2.3, -1.2], i=2)
-0.8859268982863702</p>
-</blockquote>
-</blockquote>
-</blockquote>
+        <p>Approximates the i-th specular partial derivative of a real-valued function <span class="arithmatex">\(f:\mathbb{R}^n \to \mathbb{R}\)</span> at point <span class="arithmatex">\(x\)</span> for <span class="arithmatex">\(n &gt; 1\)</span>.</p>
+<p>This is computed using <code>specular.directional_derivative</code> with the direction of the <span class="arithmatex">\(i\)</span>-th standard basis vector of <span class="arithmatex">\(\mathbb{R}^n\)</span>.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>f</code>
+            </td>
+            <td>
+                  <code><span title="callable">callable</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A function of a real vector variable, returning a scalar.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>x</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span> | <span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The point at which the derivative is evaluated.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>i</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | <span title="numpy.integer">integer</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The index of the specular partial derivative with respect to <span class="arithmatex">\(x_i\)</span> (<code>1 &lt;= i &lt;= n</code>).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>h</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mesh size used in the finite difference approximation. Must be positive.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-06</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>zero_tol</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A small threshold used to determine if the denominator <code>alpha + beta</code> is close to zero for numerical stability.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1e-08</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The approximated <code>i</code>-th partial specular derivative of <code>f</code> at <code>x</code> as a scalar.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="TypeError">TypeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>i</code> is not an integer.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>i</code> is out of the valid range (<code>1 &lt;= i &lt;= n</code>).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Examples:</span></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">specular</span><span class="o">.</span><span class="n">partial_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span> <span class="n">i</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">0.8859268982863702</span>
+</code></pre></div>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>specular\calculation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">273</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
 <span class="normal">274</span>
 <span class="normal">275</span>
 <span class="normal">276</span>
@@ -1728,26 +2615,7 @@ specular.partial_derivative(f, x=[0.1, 2.3, -1.2], i=2)
 <span class="normal">311</span>
 <span class="normal">312</span>
 <span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">partial_derivative</span><span class="p">(</span>
+<span class="normal">314</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">partial_derivative</span><span class="p">(</span>
     <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="nb">int</span> <span class="o">|</span><span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">],</span>
     <span class="n">x</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">i</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span>
@@ -1755,45 +2623,37 @@ specular.partial_derivative(f, x=[0.1, 2.3, -1.2], i=2)
     <span class="n">zero_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Approximates the i-th specular partial derivative of a real-valued function :math:`f:\\mathbb{R}^n \\to \\mathbb{R}` at point ``x`` for ``n &gt; 1``.</span>
+<span class="sd">    Approximates the i-th specular partial derivative of a real-valued function $f:\\mathbb{R}^n \\to \\mathbb{R}$ at point $x$ for $n &gt; 1$.</span>
 
-<span class="sd">    This is computed using :func:`specular_directional_derivative` with the direction of the ``i``-th standard basis vector of :math:`\\mathbb{R}^n`.</span>
+<span class="sd">    This is computed using ``specular.directional_derivative`` with the direction of the $i$-th standard basis vector of $\\mathbb{R}^n$.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    f : callable</span>
-<span class="sd">        A real-valued function defined on :math:`\\mathbb{R}^n`.</span>
-<span class="sd">        ``n`` is the dimension of ``x``.</span>
-<span class="sd">    x : list | np.ndarray</span>
-<span class="sd">        The point at which the derivative is evaluated.</span>
-<span class="sd">    i : int | np.integer</span>
-<span class="sd">        The index of the specular partial derivative with respect to :math:`x_i` (``1 &lt;= i &lt;= n``).</span>
-<span class="sd">    h : float, optional</span>
-<span class="sd">        Mesh size used in the finite difference approximation. Must be positive.</span>
-<span class="sd">        Default: ``1e-6``.</span>
-<span class="sd">    zero_tol : float, optional</span>
-<span class="sd">        A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.</span>
-<span class="sd">        Default: ``1e-8``.</span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        f (callable):</span>
+<span class="sd">            A function of a real vector variable, returning a scalar.</span>
+<span class="sd">        x (list | np.ndarray):</span>
+<span class="sd">            The point at which the derivative is evaluated.</span>
+<span class="sd">        i (int | np.integer):</span>
+<span class="sd">            The index of the specular partial derivative with respect to $x_i$ (``1 &lt;= i &lt;= n``).</span>
+<span class="sd">        h (float, optional):</span>
+<span class="sd">            Mesh size used in the finite difference approximation. Must be positive.</span>
+<span class="sd">        zero_tol (float, optional):</span>
+<span class="sd">            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    float</span>
+<span class="sd">    Returns:</span>
 <span class="sd">        The approximated ``i``-th partial specular derivative of ``f`` at ``x`` as a scalar.</span>
 
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        If ``i`` is not an integer.</span>
-<span class="sd">    ValueError</span>
-<span class="sd">        If ``i`` is out of the valid range (``1 &lt;= i &lt;= n``).</span>
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError:</span>
+<span class="sd">            If ``i`` is not an integer.</span>
+<span class="sd">        ValueError:</span>
+<span class="sd">            If ``i`` is out of the valid range (``1 &lt;= i &lt;= n``).</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import specular</span>
-<span class="sd">    &gt;&gt;&gt; import math </span>
-<span class="sd">    &gt;&gt;&gt; f = lambda x: math.sqrt(x[0]**2 + x[1]**2 + x[2]**2)</span>
-<span class="sd">    &gt;&gt;&gt; specular.partial_derivative(f, x=[0.1, 2.3, -1.2], i=2)</span>
-<span class="sd">    0.8859268982863702</span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; import specular</span>
+<span class="sd">        &gt;&gt;&gt; import math </span>
+<span class="sd">        &gt;&gt;&gt; f = lambda x: math.sqrt(x[0]**2 + x[1]**2 + x[2]**2)</span>
+<span class="sd">        &gt;&gt;&gt; specular.partial_derivative(f, x=[0.1, 2.3, -1.2], i=2)</span>
+<span class="sd">        0.8859268982863702</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 
@@ -1820,54 +2680,7 @@ specular.partial_derivative(f, x=[0.1, 2.3, -1.2], i=2)
 
     </div>
 
-</div><h2 id="211-one-dimensional-euclidean-space-n1">2.1.1 One-dimensional Euclidean Space (<span class="arithmatex">\(n=1\)</span>)</h2>
-<p>In <span class="arithmatex">\(ℝ\)</span>, the <em>specular derivative</em> can be calculated using the function <code>derivative</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
-
-<span class="n">specular</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-<span class="c1"># Output: 0.41421356237309515</span>
-</code></pre></div>
-<h2 id="212-the-n-dimensional-euclidean-space-n1">2.1.2 the <span class="arithmatex">\(n\)</span>-dimensional Euclidean space (<span class="arithmatex">\(n&gt;1\)</span>)</h2>
-<p>In <span class="arithmatex">\(ℝ^n\)</span>, the <em>specular directional derivative</em> of a function <span class="arithmatex">\(f: ℝ^n \to ℝ\)</span> at a point <span class="arithmatex">\(x \in ℝ^n\)</span> in the direction <span class="arithmatex">\(v \in ℝ^n\)</span> can be calculated using the function <code>directional_derivative</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">math</span> 
-
-<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">specular</span><span class="o">.</span><span class="n">directional_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">],</span> <span class="n">v</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
-<span class="c1"># Output: -2.1213203434708223</span>
-</code></pre></div>
-<p>Let <span class="arithmatex">\(e_1, e_2, \ldots, e_n\)</span> be the standard basis of <span class="arithmatex">\(ℝ^n\)</span>.
-For each <span class="arithmatex">\(i \in ℕ\)</span> with <span class="arithmatex">\(1 \leq i \leq n\)</span>, the <em>specular partial derivative</em> with respect to a variable <span class="arithmatex">\(x_i\)</span> can be calculated using the function <code>partial_derivative</code>, which yields the same result as <code>directional_derivative</code> with direction <span class="arithmatex">\(v=e_i\)</span>.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-
-<span class="n">specular</span><span class="o">.</span><span class="n">partial_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span> <span class="n">i</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="c1"># Output: 0.8859268982863702</span>
-<span class="n">specular</span><span class="o">.</span><span class="n">directional_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span> <span class="n">v</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
-<span class="c1"># Output: 0.8859268982863702</span>
-</code></pre></div>
-<p>Also, the <em>specular gradient</em> can be calculated using <code>gradient</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-
-<span class="n">specular</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">])</span>
-<span class="c1"># Output: [ 0.03851856  0.8859269  -0.46222273]</span>
-<span class="n">specular</span><span class="o">.</span><span class="n">partial_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="c1"># Output: 0.03851856078540371</span>
-<span class="n">specular</span><span class="o">.</span><span class="n">partial_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span> <span class="n">i</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="c1"># Output: 0.8859268982863702</span>
-<span class="n">specular</span><span class="o">.</span><span class="n">partial_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.2</span><span class="p">],</span> <span class="n">i</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="c1"># Output: -0.4622227292028128</span>
-</code></pre></div>
+</div>
 
 
 

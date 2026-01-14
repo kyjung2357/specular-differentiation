@@ -518,6 +518,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Started
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -961,6 +1000,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Started
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1039,7 +1117,7 @@
 <a href="https://pypi.org/project/specular-differentiation/"><img alt="License" src="https://img.shields.io/pypi/l/specular-differentiation.svg" /></a>
 <a href="https://www.codefactor.io/repository/github/kyjung2357/specular-differentiation"><img alt="CodeFactor" src="https://www.codefactor.io/repository/github/kyjung2357/specular-differentiation/badge" /></a>
 <a href="https://github.com/kyjung2357/specular-differentiation/actions/workflows/codeql.yml"><img alt="CodeQL Advanced" src="https://github.com/kyjung2357/specular-differentiation/actions/workflows/codeql.yml/badge.svg" /></a>
-<a href="https://github.com/kyjung2357/specular-differentiation/actions/workflows/pages/pages-build-deployment"><img alt="pages-build-deployment" src="https://github.com/kyjung2357/specular-differentiation/actions/workflows/pages/pages-build-deployment/badge.svg?branch=gh-pages" /></a></p>
+<a href="https://kyjung2357.github.io/specular-differentiation"><img alt="Docs" src="https://img.shields.io/github/deployments/kyjung2357/specular-differentiation/github-pages?label=docs&amp;logo=github" /></a></p>
 <p>The Python package <code>specular</code> implements <em>specular differentiation</em> which generalizes classical differentiation.
 This implementation strictly follows the definitions, notations, and results in <a href="#references">[1]</a> and <a href="#references">[2]</a>.</p>
 <p>A specular derivative (the red line) can be understood as the average of the inclination angles of the right and left derivatives. 
@@ -1111,11 +1189,9 @@ The <code>specular</code> package includes the following applications.</p>
 <p>The following example compares the three proposed methods with the classical methods: <a href="https://en.wikipedia.org/wiki/Gradient_descent">gradient descent</a> (GD), <a href="https://arxiv.org/abs/1412.6980">Adaptive Moment Estimation</a> (Adam), and <a href="https://en.wikipedia.org/wiki/Broyden%E2%80%93Fletcher%E2%80%93Goldfarb%E2%80%93Shanno_algorithm">Broyden-Fletcher-Goldfarb-Shanno</a> (BFGS).</p>
 <p><img alt="optimization-example" src="https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/optimization-example.png" /></p>
 <h2 id="documentation">Documentation</h2>
-<ul>
-<li><a href="started/">1. Getting Started</a></li>
-<li><a href="api/">2. API Reference</a></li>
-<li><a href="examples/">3. Examples</a></li>
-</ul>
+<h3 id="getting-started"><a href="started/">Getting Started</a></h3>
+<h3 id="api-reference"><a href="api/">API Reference</a></h3>
+<h3 id="examples"><a href="examples/">Examples</a></h3>
 <h2 id="latex-macro">LaTeX macro</h2>
 <p>To use the specular differentiation symbol in your LaTeX document, add the following code to your preamble (before <code>\begin{document}</code>):</p>
 <div class="highlight"><pre><span></span><code><span class="c">% Required packages</span>
@@ -1138,10 +1214,11 @@ The <code>specular</code> package includes the following applications.</p>
 <div class="highlight"><pre><span></span><code><span class="nc">@software</span><span class="p">{</span><span class="nl">specular2026</span><span class="p">,</span>
 <span class="w">  </span><span class="na">author</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="s">{Kiyuob Jung}</span><span class="p">,</span>
 <span class="w">  </span><span class="na">title</span><span class="w">   </span><span class="p">=</span><span class="w"> </span><span class="s">{specular-differentiation}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">url</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">{https://github.com/your-id/specular-differentiation}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">url</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">{https://github.com/kyjung2357/specular-differentiation}</span><span class="p">,</span>
 <span class="w">  </span><span class="na">version</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{0.13.0}</span><span class="p">,</span>
 <span class="w">  </span><span class="na">year</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="s">{2026}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">doi</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">{Pending}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">doi</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="s">{TBA}</span><span class="p">,</span>
+<span class="w">  </span><span class="na">note</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="s">{Documentation: https://kyjung2357.github.io/specular-differentiation}</span><span class="p">,</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="references">References</h2>

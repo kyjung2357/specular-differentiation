@@ -631,7 +631,7 @@
   <a href="#241-for-now" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.4.1 For now
+        2.4.1. For now
       
     </span>
   </a>
@@ -642,7 +642,7 @@
   <a href="#242-why-jax" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.4.2 Why JAX?
+        2.4.2. Why JAX?
       
     </span>
   </a>
@@ -653,7 +653,18 @@
   <a href="#243-example" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.4.3 Example
+        2.4.3. Example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#244-api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4.4. API Reference
       
     </span>
   </a>
@@ -733,7 +744,7 @@
   <a href="#241-for-now" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.4.1 For now
+        2.4.1. For now
       
     </span>
   </a>
@@ -744,7 +755,7 @@
   <a href="#242-why-jax" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.4.2 Why JAX?
+        2.4.2. Why JAX?
       
     </span>
   </a>
@@ -755,7 +766,18 @@
   <a href="#243-example" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.4.3 Example
+        2.4.3. Example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#244-api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4.4. API Reference
       
     </span>
   </a>
@@ -784,23 +806,23 @@
 
 <h1 id="24-jax-backend">2.4. JAX backend</h1>
 <p>See the <a href="https://docs.jax.dev/en/latest/index.html">official homepage</a> of JAX.</p>
-<h2 id="241-for-now">2.4.1 For now</h2>
+<h2 id="241-for-now">2.4.1. For now</h2>
 <ul>
 <li>This feature is currently experimental and undergoing verification.</li>
 <li>Benchmarks indicate significant speedups compared to the NumPy backend.</li>
 <li>Full GPU support and optimization are planned but not yet finalized.</li>
 <li>Requirement: Your objective function must use <code>jax.numpy</code> instead of standard <code>numpy</code> to avoid errors.</li>
 </ul>
-<h2 id="242-why-jax">2.4.2 Why JAX?</h2>
+<h2 id="242-why-jax">2.4.2. Why JAX?</h2>
 <ul>
 <li>The JAX is chosen as the primary acceleration backend due to its high compatibility and similar syntax to NumPy. </li>
 <li>The core calculation logic is planned to be ported to other backends like <em>PyTorch</em> or <em>TensorFlow</em> to provide native GPU/TPU support and broader ecosystem integration.</li>
 </ul>
-<h2 id="243-example">2.4.3 Example</h2>
+<h2 id="243-example">2.4.3. Example</h2>
 <p>For a detailed comparison of the algorithms, please refer to the following scripts:</p>
 <ul>
 <li>
-<p><a href="https://github.com/kyjung2357/specular-differentiation/blob/main/docs/api/jax_example.py"><code>docs/api/jax_example.py</code></a>: A basic implementation using the JAX backend.</p>
+<p><a href="https://github.com/kyjung2357/specular-differentiation/blob/main/examples/optimization/jax/main.py"><code>examples/jax/main.py</code></a>: A basic implementation using the JAX backend.</p>
 </li>
 <li>
 <p><a href="https://github.com/kyjung2357/specular-differentiation/blob/main/examples/optimization/2026-Jung/main.py"><code>examples/optimization/2026-Jung/main.py</code></a>: The full experimental setup used in the paper.</p>
@@ -809,6 +831,793 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Preliminary tests show that the computation time is <strong>shorter than BFGS</strong>; however, the exact theoretical reasons for this performance gain are still being investigated and have not yet been fully proven.</p>
+</div>
+<h2 id="244-api-reference">2.4.4. API Reference</h2>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<h1 id="specular.jax.calculation" class="doc doc-heading">
+            <code>specular.jax.calculation</code>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+        <p>This module provides JAX-based implementations of the function <span class="arithmatex">\(\mathcal{A}\)</span>, specular directional derivatives, specular partial derivatives, specular derivatives, specular gradients, and specular Jacobians.</p>
+<p>It utilizes <code>jax.numpy</code> for GPU/TPU acceleration and <code>jax.vmap</code> for auto-vectorization.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="specular.jax.calculation.A" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">A</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">zero_tol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>JAX version of <code>specular.calculation.A</code>.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular\jax\calculation.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">A</span><span class="p">(</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">beta</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">zero_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    JAX version of ``specular.calculation.A``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="n">denominator</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">+</span> <span class="n">beta</span>
+
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">denominator</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">zero_tol</span>
+
+    <span class="n">safe_denominator</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">denominator</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+    <span class="n">numerator</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">beta</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">alpha</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">beta</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">numerator</span> <span class="o">/</span> <span class="n">safe_denominator</span>
+
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="specular.jax.calculation.derivative" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span> <span class="n">zero_tol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>JAX version of <code>specular.derivative</code>.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular\jax\calculation.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">derivative</span><span class="p">(</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">ArrayLike</span><span class="p">],</span> <span class="n">ArrayLike</span><span class="p">],</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+    <span class="n">zero_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArrayLike</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    JAX version of ``specular.derivative``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mesh size &#39;h&#39; must be positive. Got </span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input &#39;x&#39; must be a scalar. Got shape </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="n">f_val</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">f_right</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">h</span><span class="p">))</span>
+    <span class="n">f_left</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">h</span><span class="p">))</span>
+
+    <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_right</span> <span class="o">-</span> <span class="n">f_val</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_val</span> <span class="o">-</span> <span class="n">f_left</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span>
+
+    <span class="k">return</span> <span class="n">A</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">zero_tol</span><span class="o">=</span><span class="n">zero_tol</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="specular.jax.calculation.directional_derivative" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">directional_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span> <span class="n">zero_tol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>JAX version of <code>specular.directional_derivative</code>.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular\jax\calculation.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">directional_derivative</span><span class="p">(</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">ArrayLike</span><span class="p">],</span> <span class="n">ArrayLike</span><span class="p">],</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">v</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+    <span class="n">zero_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    JAX version of ``specular.directional_derivative``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mesh size &#39;h&#39; must be positive. Got </span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">v</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input &#39;x&#39; and &#39;v&#39; must be vectors.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape mismatch: x </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> vs v </span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">f_val</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">f_val</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function f must return a scalar. Got shape </span><span class="si">{</span><span class="n">f_val</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">h</span> <span class="o">*</span> <span class="n">v</span><span class="p">)</span> <span class="o">-</span> <span class="n">f_val</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_val</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">h</span> <span class="o">*</span> <span class="n">v</span><span class="p">))</span> <span class="o">/</span> <span class="n">h</span>
+
+    <span class="k">return</span> <span class="n">A</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">zero_tol</span><span class="o">=</span><span class="n">zero_tol</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="specular.jax.calculation.gradient" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">gradient</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span> <span class="n">zero_tol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>JAX version of <code>specular.gradient</code>.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular\jax\calculation.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">gradient</span><span class="p">(</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">ArrayLike</span><span class="p">],</span> <span class="n">ArrayLike</span><span class="p">],</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+    <span class="n">zero_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    JAX version of ``specular.gradient``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mesh size &#39;h&#39; must be positive. Got </span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input &#39;x&#39; must be a vector. Got shape </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">identity</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="n">f_val</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">f_val</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function f must return a scalar. Got shape </span><span class="si">{</span><span class="n">f_val</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="n">x_right_batch</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">h</span> <span class="o">*</span> <span class="n">identity</span>
+    <span class="n">x_left_batch</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">h</span> <span class="o">*</span> <span class="n">identity</span>
+
+    <span class="n">f_right</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">x_right_batch</span><span class="p">)</span>
+    <span class="n">f_left</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">x_left_batch</span><span class="p">)</span>
+
+    <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_right</span> <span class="o">-</span> <span class="n">f_val</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_val</span> <span class="o">-</span> <span class="n">f_left</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span>
+
+    <span class="k">return</span> <span class="n">A</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">zero_tol</span><span class="o">=</span><span class="n">zero_tol</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="specular.jax.calculation.jacobian" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">jacobian</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span> <span class="n">zero_tol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>JAX version of <code>specular.jacobian</code>.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular\jax\calculation.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">jacobian</span><span class="p">(</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">ArrayLike</span><span class="p">],</span> <span class="n">ArrayLike</span><span class="p">],</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+    <span class="n">zero_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    JAX version of ``specular.jacobian``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mesh size &#39;h&#39; must be positive. Got </span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input &#39;x&#39; must be a vector. Got shape </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="n">f_center</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">f_center</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">f_center</span> <span class="o">=</span> <span class="n">f_center</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">f_center</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">identity</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="n">x_right_batch</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">h</span> <span class="o">*</span> <span class="n">identity</span>
+    <span class="n">x_left_batch</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">h</span> <span class="o">*</span> <span class="n">identity</span>
+
+    <span class="n">f_right</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">x_right_batch</span><span class="p">)</span>
+    <span class="n">f_left</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">x_left_batch</span><span class="p">)</span>
+
+    <span class="n">f_right</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">f_right</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+    <span class="n">f_left</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">f_left</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+
+    <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_right</span> <span class="o">-</span> <span class="n">f_center</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_center</span> <span class="o">-</span> <span class="n">f_left</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span>
+
+    <span class="n">J_transposed</span> <span class="o">=</span> <span class="n">A</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">zero_tol</span><span class="o">=</span><span class="n">zero_tol</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">J_transposed</span><span class="o">.</span><span class="n">T</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="specular.jax.calculation.partial_derivative" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">partial_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span> <span class="n">zero_tol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>JAX version of <code>specular.partial_derivative</code>.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular\jax\calculation.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">partial_derivative</span><span class="p">(</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">ArrayLike</span><span class="p">],</span> <span class="n">ArrayLike</span><span class="p">],</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+    <span class="n">zero_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    JAX version of ``specular.partial_derivative``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Index &#39;i&#39; must be between 1 and </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="n">e_i</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">e_i</span> <span class="o">=</span> <span class="n">e_i</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> 
+
+    <span class="k">return</span> <span class="n">directional_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">e_i</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">zero_tol</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><hr />
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<h1 id="specular.jax.optimization.solver" class="doc doc-heading">
+            <code>specular.jax.optimization.solver</code>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="specular.jax.optimization.solver.gradient_method" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">gradient_method</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x_0</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="s1">&#39;specular gradient&#39;</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span> <span class="n">zero_tol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">f_j</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">switch_iter</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">record_history</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>JAX implementation of <code>specular.gradient_method</code>.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular\jax\optimization\solver.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">gradient_method</span><span class="p">(</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">x_0</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">step_size</span><span class="p">:</span> <span class="n">StepSize</span><span class="p">,</span>
+    <span class="n">h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+    <span class="n">form</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;specular gradient&#39;</span><span class="p">,</span>
+    <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+    <span class="n">zero_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span><span class="p">,</span>
+    <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">f_j</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">m</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">switch_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">record_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizationResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    JAX implementation of ``specular.gradient_method``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mesh size &#39;h&#39; must be positive. Got </span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">x_0_jax</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="n">step_func</span> <span class="o">=</span> <span class="n">_create_step_fn</span><span class="p">(</span><span class="n">step_size</span><span class="p">)</span>
+
+    <span class="n">all_history</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;specular gradient&#39;</span><span class="p">:</span>
+        <span class="n">res_x</span><span class="p">,</span> <span class="n">x_history</span><span class="p">,</span> <span class="n">res_f</span><span class="p">,</span> <span class="n">f_history</span><span class="p">,</span> <span class="n">res_k</span> <span class="o">=</span> <span class="n">_vector_jax</span><span class="p">(</span>
+            <span class="n">f</span><span class="p">,</span> <span class="n">x_0_jax</span><span class="p">,</span> <span class="n">step_func</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">zero_tol</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">record_history</span><span class="p">,</span> <span class="n">k_start</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;stochastic&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">f_j</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Component functions &#39;f_j&#39; must be provided for the stochastic form.&quot;</span><span class="p">)</span>
+
+        <span class="n">form</span> <span class="o">=</span> <span class="s1">&#39;stochastic specular gradient&#39;</span>
+        <span class="n">res_x</span><span class="p">,</span> <span class="n">x_history</span><span class="p">,</span> <span class="n">res_f</span><span class="p">,</span> <span class="n">f_history</span><span class="p">,</span> <span class="n">res_k</span> <span class="o">=</span> <span class="n">_vector_stochastic_jax</span><span class="p">(</span>
+            <span class="n">f</span><span class="p">,</span> <span class="n">x_0_jax</span><span class="p">,</span> <span class="n">step_func</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">zero_tol</span><span class="p">,</span> <span class="n">f_j</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">record_history</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">k_start</span><span class="o">=</span><span class="mi">1</span> <span class="c1"># type: ignore</span>
+        <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">form</span> <span class="o">==</span> <span class="s1">&#39;hybrid&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">f_j</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Component functions &#39;f_j&#39; must be provided for the stochastic form.&quot;</span><span class="p">)</span>
+
+        <span class="n">form</span> <span class="o">=</span> <span class="s1">&#39;hybrid specular gradient&#39;</span>
+        <span class="n">switch_iter</span> <span class="o">=</span> <span class="n">switch_iter</span> <span class="k">if</span> <span class="n">switch_iter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">max_iter</span>
+        <span class="n">remaining_iter</span> <span class="o">=</span> <span class="n">max_iter</span> <span class="o">-</span> <span class="n">switch_iter</span>
+
+        <span class="c1"># Phase 1: Deterministic</span>
+        <span class="n">x_1</span><span class="p">,</span> <span class="n">hist_x1</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">hist_f1</span><span class="p">,</span> <span class="n">k1</span> <span class="o">=</span> <span class="n">_vector_jax</span><span class="p">(</span>
+            <span class="n">f</span><span class="p">,</span> <span class="n">x_0_jax</span><span class="p">,</span> <span class="n">step_func</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">zero_tol</span><span class="p">,</span> <span class="n">switch_iter</span><span class="p">,</span> <span class="n">record_history</span><span class="p">,</span> <span class="n">k_start</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Phase 2: Stochastic</span>
+        <span class="n">res_x</span><span class="p">,</span> <span class="n">hist_x2</span><span class="p">,</span> <span class="n">res_f</span><span class="p">,</span> <span class="n">hist_f2</span><span class="p">,</span> <span class="n">k2</span> <span class="o">=</span> <span class="n">_vector_stochastic_jax</span><span class="p">(</span>
+            <span class="n">f</span><span class="p">,</span> <span class="n">x_1</span><span class="p">,</span> <span class="n">step_func</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">zero_tol</span><span class="p">,</span> <span class="n">f_j</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">remaining_iter</span><span class="p">,</span> <span class="n">record_history</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">k_start</span><span class="o">=</span><span class="n">k1</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">record_history</span> <span class="ow">and</span> <span class="n">hist_x1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+             <span class="n">x_history</span> <span class="o">=</span> <span class="p">(</span><span class="n">hist_x1</span><span class="p">,</span> <span class="n">hist_x2</span><span class="p">)</span>
+             <span class="n">f_history</span> <span class="o">=</span> <span class="p">(</span><span class="n">hist_f1</span><span class="p">,</span> <span class="n">hist_f2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+             <span class="n">x_history</span><span class="p">,</span> <span class="n">f_history</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="n">res_k</span> <span class="o">=</span> <span class="n">k1</span> <span class="o">+</span> <span class="n">k2</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown form for JAX backend: &#39;</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s2">&#39;. Supported forms: </span><span class="si">{</span><span class="n">SUPPORTED_METHODS</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">res_x</span><span class="o">.</span><span class="n">block_until_ready</span><span class="p">()</span>
+    <span class="n">runtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+
+    <span class="n">final_x_hist</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">final_f_hist</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">record_history</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x_history</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">final_x_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_history</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_history</span><span class="p">[</span><span class="mi">1</span><span class="p">])],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">final_f_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f_history</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f_history</span><span class="p">[</span><span class="mi">1</span><span class="p">])],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># type: ignore</span>
+
+        <span class="k">elif</span> <span class="n">x_history</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">final_x_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_history</span><span class="p">)</span>
+            <span class="n">final_f_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f_history</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">final_x_hist</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+             <span class="n">final_x_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">final_x_hist</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_0_jax</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+             <span class="n">final_f_hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">final_f_hist</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x_0_jax</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># type: ignore</span>
+
+        <span class="n">all_history</span><span class="p">[</span><span class="s2">&quot;variables&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">final_x_hist</span>
+        <span class="n">all_history</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">final_f_hist</span>
+
+    <span class="k">return</span> <span class="n">OptimizationResult</span><span class="p">(</span>
+        <span class="n">method</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;JAX </span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">solution</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res_x</span><span class="p">),</span>
+        <span class="n">func_val</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">res_f</span><span class="p">),</span>
+        <span class="n">iteration</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">res_k</span><span class="p">),</span>
+        <span class="n">runtime</span><span class="o">=</span><span class="n">runtime</span><span class="p">,</span>
+        <span class="n">all_history</span><span class="o">=</span><span class="n">all_history</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
 </div>
 
 
