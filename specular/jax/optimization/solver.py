@@ -2,7 +2,7 @@ import time
 import numpy as np
 import jax
 import jax.numpy as jnp
-from typing import Callable, Any, Tuple
+from typing import Callable, Any
 from specular.optimization.result import OptimizationResult
 from specular.optimization.step_size import StepSize
 import specular.jax as sjax
@@ -66,7 +66,7 @@ def gradient_method(
     record_history: bool = True
 ) -> OptimizationResult:
     """
-    JAX implementation of the specular gradient method.
+    JAX implementation of ``specular.gradient_method``.
     """
     if h <= 0:
         raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
@@ -106,7 +106,7 @@ def gradient_method(
             f, x_0_jax, step_func, h, tol, zero_tol, switch_iter, record_history, k_start=1
         )
         
-        # Phase 2: Stochastic (Continue step count k)
+        # Phase 2: Stochastic
         res_x, hist_x2, res_f, hist_f2, k2 = _vector_stochastic_jax(
             f, x_1, step_func, h, tol, zero_tol, f_j, m, remaining_iter, record_history, seed, k_start=k1 + 1
         )
@@ -166,7 +166,7 @@ def _vector_jax(
     k_start: int = 1
 ) -> tuple:
     """
-    Vector implementation of :func:`gradient_method`
+    Vector implementation of ``specular.jax.gradient_method``
     The specular gradient method in the n-dimensional case.
     """
     def body_fun(carry, _):
@@ -183,7 +183,6 @@ def _vector_jax(
         update = step_func(k) * (specular_gradient / safe_norm) # type: ignore
         x_new = jnp.where(new_active, x - update, x)
         
-        # [수정] Return updated values (x_new) for history to avoid duplicates and capture last step
         return (x_new, k + 1, new_active), (x_new, f(x_new))
 
     init_val = (x_0_jax, k_start, jnp.array(True))
@@ -191,7 +190,6 @@ def _vector_jax(
     
     res_x, res_k_final, _ = final_val
     
-    # Total iterations performed in this call
     iter_count = res_k_final - k_start
 
     if record_history:
@@ -217,13 +215,15 @@ def _vector_stochastic_jax(
     k_start: int = 1
 ) -> tuple:
     """
-    Vector implementation of :func:`gradient_method`.
+    Vector implementation of ``specular.jax.gradient_method``.
     The stochastic specular gradient method in the n-dimensional case.
     """
     def body_fun(carry, _):
         x, k, active, key = carry
         
         key, subkey = jax.random.split(key)
+
+        # A random index j is selected at each iteration
         j = jax.random.randint(subkey, (), 0, m)
         
         def f_comp(val): return f_j(val, j) # type: ignore

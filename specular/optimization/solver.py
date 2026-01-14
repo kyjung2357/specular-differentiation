@@ -29,63 +29,50 @@ def gradient_method(
     """
     The specular gradient method for minimizing a nonsmooth convex function.
 
-    Parameters
-    ----------
-    f : callable
-        The objective function to minimize.
-    x_0 : int | float | list | np.ndarray
-        The starting point for the optimization.
-    step_size : StepSize
-        The step size `h_k`.
-    h : float, optional
-        Mesh size used in the finite difference approximation. Must be positive.
-        Default: ``1e-6``.
-    form : str, optional
-        The form of the specular gradient method.
-        Supported forms: ``'specular gradient'``, ``'implicit'``, ``'stochastic'``, ``'hybrid'``.
-        Default: ``'specular gradient'``.
-    tol : float, optional
-        Tolerance for iterations.
-        Default: ``1e-6``.
-    zero_tol : float, optional
-        A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
-        Default: ``1e-8``.
-    max_iter : int, optional
-        Maximum number of iterations.
-        Default: ``1000``.
-    f_j : sequence of callable | callable | None, optional
-        The component function of ``f``.
-        Used for the stochastic and hybrid forms to compute a random component of the objective function.
-        Default: ``None``.
+    Parameters:
+        f (callable):
+            The objective function to minimize.
+        x_0 (int | float | list | np.ndarray):
+            The starting point for the optimization.
+        step_size (StepSize):
+            The step size `h_k`.
+        h (float, optional):
+            Mesh size used in the finite difference approximation. Must be positive.
+        form (str, optional):
+            The form of the specular gradient method.
+            Supported forms: ``'specular gradient'``, ``'implicit'``, ``'stochastic'``, ``'hybrid'``.
+        tol (float, optional):
+            Tolerance for iterations.
+        zero_tol (float, optional):
+            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
+        max_iter (int, optional):
+            Maximum number of iterations.
+        f_j (sequence of callable | callable | None, optional):
+            The component function of ``f``.
+            Used for the stochastic and hybrid forms to compute a random component of the objective function.
 
-        * If a sequence of callables is provided, each callable should accept a single argument (the variable `x`).
+            * If a sequence of callables is provided, each callable should accept a single argument (the variable `x`).
 
-        * If a single callable is provided, it should accept two arguments: the variable `x` and an index `j`, and return the `j`-th component function value at `x`.
-    m : int, optional
-        The number of component functions.
-        Used for the stochastic and hybrid forms.
-    switch_iter : int | None, optional
-        The iteration to switch from a method to another for the hybrid form.
-        Used for the hybrid form only.
-        Default: ``2``.
-    record_history : bool, optional
-        Whether to record the history of variables and function values.
-        Default: ``True``.
-    print_bar : bool, optional
-        Whether to print the progress bar.
-        Default: ``True``.
+            * If a single callable is provided, it should accept two arguments: the variable `x` and an index `j`, and return the `j`-th component function value at `x`.
+        m (int, optional):
+            The number of component functions.
+            Used for the stochastic and hybrid forms.
+        switch_iter (int | None, optional):
+            The iteration to switch from a method to another for the hybrid form.
+            Used for the hybrid form only.
+        record_history (bool, optional):
+            Whether to record the history of variables and function values.
+        print_bar (bool, optional):
+            Whether to print the progress bar.
 
-    Returns
-    -------
-    OptimizationResult
+    Returns:
         The result of the optimization containing the solution, function value, number of iterations, runtime, and history.
     
-    Raises
-    ------
-    ValueError
-        If ``h`` is not positive.
-    TypeError
-        If an unknown ``form`` is provided.
+    Raises:
+        ValueError:
+            If ``h`` is not positive.
+        TypeError:
+            If an unknown ``form`` is provided.
     """
 
     if h is None or h <= 0:
@@ -116,10 +103,12 @@ def gradient_method(
             if f_j is None:
                 raise ValueError("Component functions 'f_j' must be provided for the stochastic form.")
             
+            # Phase 1: deterministic
             form = 'hybrid specular gradient'
             switch_iter = switch_iter if switch_iter is not None else max_iter
             remaining_iter = max_iter - switch_iter
 
+            # Phase 2: stochastic
             res_x, res_f, res_k = _vector(f, f_history, x, x_history, step_size, h, tol, zero_tol, switch_iter, record_history, print_bar)
             res_x, res_f, res_k = _vector_stochastic(f, f_history, res_x, x_history, step_size, h, tol, zero_tol, f_j, m, remaining_iter, record_history, print_bar) # type: ignore
 
@@ -172,7 +161,7 @@ def _scalar(
     print_bar: bool
 ) -> tuple:
     """
-    Scalar implementation of :func:`gradient_method`.
+    Scalar implementation of ``specular.gradient_method``.
     The specular gradient method in the one-dimensional case.
     """
     k = 1
@@ -205,7 +194,7 @@ def _scalar_implicit(
     print_bar: bool
 ) -> tuple:
     """
-    Scalar implementation of :func:`gradient_method`.
+    Scalar implementation of ``specular.gradient_method``.
     The implicit specular gradient method in the one-dimensional case.
     """
     k = 1
@@ -239,7 +228,7 @@ def _vector(
     print_bar: bool
 ) -> tuple:
     """
-    Vector implementation of :func:`gradient_method`.
+    Vector implementation of ``specular.gradient_method``.
     The specular gradient method in the n-dimensional case.
     """
     k = 1
@@ -276,8 +265,8 @@ def _vector_stochastic(
     print_bar: bool = True
 ) -> tuple:
     """
-    Vector implementation of :func:`gradient_method`.
-    The stochastic specular gradient method in the n-dimensional case.
+    Vector implementation of ``specular.gradient_method``.
+    The stochastic specular gradient method in the $n$-dimensional case.
     """
     k = 1
 

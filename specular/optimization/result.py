@@ -34,9 +34,7 @@ class OptimizationResult:
         """
         Returns the final solution x, the value of f at x, and the runtime as a tuple.
         
-        Returns
-        -------
-        Tuple[float, float]
+        Returns:
             (x, f(x), runtime)
         """
         return self.solution, self.func_val, self.runtime # type: ignore
@@ -47,9 +45,7 @@ class OptimizationResult:
         """
         Returns the time grid and the numerical solution as a tuple.
         
-        Returns
-        -------
-        Tuple[np.ndarray, np.ndarray, float]
+        Returns:
             (x_history, f_history, runtime)
         """
         return self.all_history["variables"], self.all_history["values"], self.runtime

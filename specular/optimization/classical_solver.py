@@ -15,9 +15,7 @@ def gradient_descent_method(
     """
     Performs optimization using standard gradient descent.
 
-    Returns
-    -------
-    OptimizationResult
+    Returns:
         The result of the optimization containing the solution, function value, number of iterations, runtime, and history.
     """
     start_time = time.time()
@@ -64,9 +62,7 @@ def Adam(
     """
     Performs optimization using the Adam algorithm from PyTorch.
     
-    Returns
-    -------
-    OptimizationResult
+    Returns:
         The result of the optimization containing the solution, function value, number of iterations, runtime, and history.
     """
     start_time = time.time()
@@ -117,9 +113,7 @@ def BFGS(
     """
     Performs optimization using the BFGS algorithm from SciPy.
 
-    Returns
-    -------
-    OptimizationResult
+    Returns:
         The result of the optimization containing the solution, function value, number of iterations, runtime, and history.
     """
     start_time = time.time()

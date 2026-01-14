@@ -28,15 +28,15 @@ For a detailed comparison of the algorithms, please refer to the following scrip
 ## 2.4.4. API Reference
 
 ::: specular.jax.calculation
+    handler: python
     options:
-      show_root_heading: false
-      members:
-        - __init__
-        - __call__
+      show_root_heading: true
+      show_source: true
 
+---
 ::: specular.jax.optimization.solver
+    handler: python
     options:
-      show_root_heading: false
-      members:
-        - __init__
-        - __call__
+      show_root_heading: true
+      show_source: true
+    

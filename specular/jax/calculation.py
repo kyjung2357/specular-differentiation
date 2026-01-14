@@ -1,9 +1,5 @@
 """
-==============================================
-Calculations of specular differentiation (JAX)
-==============================================
-
-This module provides JAX-based implementations of the function :math:`\\mathcal{A}`, specular directional derivatives, specular partial derivatives, specular derivatives, specular gradients, and specular Jacobians.
+This module provides JAX-based implementations of the function $\\mathcal{A}$, specular directional derivatives, specular partial derivatives, specular derivatives, specular gradients, and specular Jacobians.
 
 It utilizes `jax.numpy` for GPU/TPU acceleration and `jax.vmap` for auto-vectorization.
 """
@@ -21,7 +17,7 @@ def A(
     zero_tol: float = 1e-8
 ) -> Array:
     """
-    JAX version of :func:`specular.calculation.A`.
+    JAX version of ``specular.calculation.A``.
     """
     alpha = jnp.asarray(alpha, dtype=float)
     beta = jnp.asarray(beta, dtype=float)
@@ -46,7 +42,7 @@ def derivative(
     zero_tol: float = 1e-8
 ) -> ArrayLike:
     """
-    JAX version of :func:`specular.derivative`.
+    JAX version of ``specular.derivative``.
     """
     if h <= 0:
         raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
@@ -74,7 +70,7 @@ def directional_derivative(
     zero_tol: float = 1e-8
 ) -> float | Array:
     """
-    JAX version of :func:`specular.directional_derivative`.
+    JAX version of ``specular.directional_derivative``.
     """
     if h <= 0:
         raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
@@ -107,7 +103,7 @@ def partial_derivative(
     zero_tol: float = 1e-8
 ) -> float | Array:
     """
-    JAX version of :func:`specular.partial_derivative`.
+    JAX version of ``specular.partial_derivative``.
     """
     x = jnp.asarray(x, dtype=float)
     n = x.size
@@ -128,7 +124,7 @@ def gradient(
     zero_tol: float = 1e-8
 ) -> Array:
     """
-    JAX version of :func:`specular.gradient`.
+    JAX version of ``specular.gradient``.
     """
     if h <= 0:
         raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
@@ -165,7 +161,7 @@ def jacobian(
     zero_tol: float = 1e-8
 ) -> Array:
     """
-    JAX version of :func:`specular.jacobian`.
+    JAX version of ``specular.jacobian``.
     """
     if h <= 0:
         raise ValueError(f"Mesh size 'h' must be positive. Got {h}")

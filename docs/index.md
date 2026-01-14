@@ -101,9 +101,9 @@ The following example compares the three proposed methods with the classical met
 
 ## Documentation
 
-* [1. Getting Started](started.md)
-* [2. API Reference](api/index.md)
-* [3. Examples](examples/index.md)
+### [Getting Started](started.md)
+### [API Reference](api/index.md)
+### [Examples](examples/index.md)
 
 ## LaTeX macro
 

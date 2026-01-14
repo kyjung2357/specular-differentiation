@@ -22,9 +22,7 @@ class ODEResult:
         """
         Returns the time grid and the numerical solution as a tuple.
         
-        Returns
-        -------
-        Tuple[np.ndarray, np.ndarray]
+        Returns:
             (time_grid, numerical_sol)
         """
         return self.time_grid, self.numerical_sol
@@ -109,25 +107,20 @@ class ODEResult:
         """
         Calculates the error between the numerical solution and the exact solution.
 
-        Parameters
-        ----------
-        exact_sol : callable | list | np.ndarray
-            A function that returns the exact solution at a given time ``t``, or a list/array containing the exact values corresponding to ``time_grid``.
-        norm : str | optional
-            The type of norm to use ``'max'``, ``'l2'``, or ``'l1'``.
-            Default: ``'max'``
+        Parameters:
+            exact_sol (callable | list | np.ndarray):
+                A function that returns the exact solution at a given time ``t``, or a list/array containing the exact values corresponding to ``time_grid``.
+            norm (str | optional):
+                The type of norm to use ``'max'``, ``'l2'``, or ``'l1'``.
 
-        Returns
-        -------
-        float
+        Returns:
             The computed error value.
 
-        Raises
-        ------
-        TypeError
-            If ``exact_sol`` is neither a callable nor a list/array.
-        ValueError
-            If ``exact_sol`` (list) shape does not match ``numerical_sol``.
+        Raises:
+            TypeError:
+                If ``exact_sol`` is neither a callable nor a list/array.
+            ValueError:
+                If ``exact_sol`` (list) shape does not match ``numerical_sol``.
         """
         if callable(exact_sol):
             exact_values = np.array([exact_sol(t) for t in self.time_grid])

@@ -201,20 +201,17 @@ plt.show()
 
 ![classical-schemes](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/classical-schemes.png)
 
-
-
 ## 2.2.4. API Reference
 
 ::: specular.ode.solver
+    handler: python
     options:
-      show_root_heading: false
-      members:
-        - __init__
-        - __call__
+      show_root_heading: true
+      show_source: true
 
+---
 ::: specular.ode.result
+    handler: python
     options:
-      show_root_heading: false
-      members:
-        - __init__
-        - __call__
+      show_root_heading: true
+      show_source: true

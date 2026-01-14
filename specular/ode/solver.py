@@ -1,12 +1,12 @@
 """
-==============================================================
-Numerical methods for solving ordinary differential equations
-==============================================================
-
-Let the source function F:[t_0, T]xR -> R be given, and the initial data u_0:R -> R be given. 
+Let the source function $F:[t_0, T] \\times \\mathbb{R} \\to \\mathbb{R}$ be given, and the initial data $u_0:\\mathbb{R} \\to \\mathbb{R}$ be given. 
 Consider the initial value problem:
-(IVP)              u'(t) = F(t, u(t))
-with the initial condition u(t_0) = u_0(t_0).
+
+$$
+u'(t) = F(t, u(t))  \\qquad \\text{(IVP)}
+$$
+
+with the initial condition $u(t_0) = u_0(t_0)$.
 To solve (IVP) numerically, this module provides implementations of the specular Euler schemes, the Crank-Nicolson scheme, and the specular trigonometric scheme.
 """
 
@@ -33,33 +33,28 @@ def classical_scheme(
     Solves an initial value problem (IVP) using classical numerical schemes.
     Supported forms: explicit Euler, implicit Euler, and Crank-Nicolson.
 
-    Parameters
-    ----------
-    F : callable
-        The given source function ``F`` in (IVP).
-        The calling signature should be ``F(t, u)`` where ``t`` and ``u`` are scalars.
-    t_0 : float
-        The starting time of the simulation.
-    u_0 : callable
-        The given initial condition ``u_0`` in (IVP).
-    T : float
-        The end time of the simulation.
-    h : float, optional
-        Mesh size used in the finite difference approximation. Must be positive.
-        Default: ``1e-6``.
-    form : str | optional
-        The form of the numerical scheme. 
-        Options: ``'explicit_Euler'``, ``'implicit_Euler'``, ``'Crank-Nicolson'``.
-        Default: ``'explicit_Euler'``.
-    tol : float | optional
-        Tolerance for fixed-point iteration.
-        Used for implicit Euler and Crank-Nicolson schemes.
-    max_iter : int | optional
-        Max iterations for fixed-point solver.
+    Parameters:
+        F (callable):
+            The given source function ``F`` in (IVP).
+            The calling signature should be ``F(t, u)`` where ``t`` and ``u`` are scalars.
+        t_0 (float):
+            The starting time of the simulation.
+        u_0 (callable):
+            The given initial condition ``u_0`` in (IVP).
+        T (float):
+            The end time of the simulation.
+        h (float, optional):
+            Mesh size used in the finite difference approximation. Must be positive.
+        form (str | optional):
+            The form of the numerical scheme. 
+            Options: ``'explicit_Euler'``, ``'implicit_Euler'``, ``'Crank-Nicolson'``.
+        tol (float | optional):
+            Tolerance for fixed-point iteration.
+            Used for implicit Euler and Crank-Nicolson schemes.
+        max_iter (int | optional):
+            Max iterations for fixed-point solver.
 
-    Returns
-    -------
-    ODEResult
+    Returns:
         An object containing ``(t, u)`` data and the scheme name.
     """
     t_curr = t_0
@@ -152,40 +147,34 @@ def Euler_scheme(
     """
     Solves an initial value problem (IVP) using the specular Euler scheme of Type 1, 2, 3, 4, 5, and 6.
 
-    Parameters
-    ----------
-    of_Type : int | str
-        The type of the specular Euler scheme.
-        Options: ``1``, ``'1'``, ``2``, ``'2'``, ``3``, ``'3'``, ``4``, ``'4'``, ``5``, ``'5'``, ``6``, ``'6'``.
-    F : callable
-        The given source function ``F`` in (IVP).
-        The calling signature should be ``F(t, u)`` where ``t`` and ``u`` are scalars.
-    t_0 : float
-        The starting time of the simulation.
-    u_0 : callable
-        The given initial condition ``u_0`` in (IVP).
-    T : float
-        The end time of the simulation.
-    h : float, optional
-        Mesh size used in the finite difference approximation. Must be positive.
-        Default: ``1e-6``.
-    u_1 : callable | float | bool
-        The numerical solution at the time ``t_1 = t_0 + h`` for Types 1, 2, and 3.
-        If a float or callable is provided, it is used as the exact value.
-        If False, the explicit Euler scheme is applied.
-        Default: ``False``.
-    tol : float | optional
-        Tolerance for fixed-point iteration
-        Used for Types 3, 4, 5, and 6.
-    zero_tol : float | np.floating
-        A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability.
-        Default: ``1e-6``.
-    max_iter : int | optional
-        Max iterations for fixed-point solver.
+    Parameters:
+        of_Type (int | str):
+            The type of the specular Euler scheme.
+            Options: ``1``, ``'1'``, ``2``, ``'2'``, ``3``, ``'3'``, ``4``, ``'4'``, ``5``, ``'5'``, ``6``, ``'6'``.
+        F (callable):
+            The given source function ``F`` in (IVP).
+            The calling signature should be ``F(t, u)`` where ``t`` and ``u`` are scalars.
+        t_0 (float):
+            The starting time of the simulation.
+        u_0 (callable):
+            The given initial condition ``u_0`` in (IVP).
+        T (float):
+            The end time of the simulation.
+        h (float, optional):
+            Mesh size used in the finite difference approximation. Must be positive.
+        u_1 (callable | float | bool):
+            The numerical solution at the time ``t_1 = t_0 + h`` for Types 1, 2, and 3.
+            If a float or callable is provided, it is used as the exact value.
+            If False, the explicit Euler scheme is applied.
+        tol (float | optional):
+            Tolerance for fixed-point iteration
+            Used for Types 3, 4, 5, and 6.
+        zero_tol (float | np.floating):
+            A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability.
+        max_iter (int | optional):
+            Max iterations for fixed-point solver.
 
-    Returns
-    -------
-    ODEResult
+    Returns:
         An object containing ``(t, u)`` data and the scheme name.
     """
     Type = str(of_Type)
@@ -418,29 +407,24 @@ def trigonometric_scheme(
     """
     Solves an initial value problem (IVP) using the specular trigonometric scheme.
 
-    Parameters
-    ----------
-    F : callable
-        The given source function ``F`` in (IVP).
-        The calling signature should be ``F(t, u)`` where ``t`` and ``u`` are scalars.
-    t_0 : float
-        The starting time of the simulation.
-    u_0 : callable
-        The given initial condition ``u_0`` in (IVP).
-    u_1 : callable | float | bool
-        The numerical solution at the time ``t_1 = t_0 + h`` for Types 1, 2, and 3.
-        If a float or callable is provided, it is used as the exact value.
-        If False, the explicit Euler scheme is applied.
-        Default: ``False``.
-    T : float
-        The end time of the simulation.
-    h : float, optional
-        Mesh size used in the finite difference approximation. Must be positive.
-        Default: ``1e-6``.
+    Parameters:
+        F (callable):
+            The given source function ``F`` in (IVP).
+            The calling signature should be ``F(t, u)`` where ``t`` and ``u`` are scalars.
+        t_0 (float):
+            The starting time of the simulation.
+        u_0 (callable):
+            The given initial condition ``u_0`` in (IVP).
+        u_1 (callable | float | bool):
+            The numerical solution at the time ``t_1 = t_0 + h`` for Types 1, 2, and 3.
+            If a float or callable is provided, it is used as the exact value.
+            If False, the explicit Euler scheme is applied.
+        T (float):
+            The end time of the simulation.
+        h (float, optional):
+            Mesh size used in the finite difference approximation. Must be positive.
 
-    Returns
-    -------
-    ODEResult
+    Returns:
         An object containing ``(t, u)`` data and the scheme name.
     """
     t_prev = t_0

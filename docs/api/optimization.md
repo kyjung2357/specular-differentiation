@@ -112,22 +112,21 @@ res_x, res_f, res_time = specular.gradient_method(f=f, x_0=x_0, step_size=step_s
 ## 2.3.4. API Reference
 
 ::: specular.optimization.step_size.StepSize
+    handler: python
     options:
-      show_root_heading: false
-      members:
-        - __init__
-        - __call__
+        show_root_heading: true
+        show_source: true
 
+---
 ::: specular.optimization.solver
+    handler: python
     options:
-      show_root_heading: false
-      members:
-        - __init__
-        - __call__
+      show_root_heading: true
+      show_source: true
 
+---
 ::: specular.optimization.result
+    handler: python
     options:
-      show_root_heading: false
-      members:
-        - __init__
-        - __call__
+      show_root_heading: true
+      show_source: true
