@@ -70,21 +70,20 @@ def _A_vector(
     zero_tol: float = 1e-8
 ) -> np.ndarray:
     """Vector implementation of ``A``."""
+    h_sq = h * h
+    
+    alpha = f_right - f_val
+    beta = f_val - f_left
+
+    numerator = (alpha * beta) - h_sq + (np.hypot(alpha, h) * np.hypot(beta, h))
+
     denominator = f_right - f_left
+    denominator *= h
 
     mask = np.abs(denominator) > zero_tol * h
     result = np.zeros_like(denominator)
 
-    alpha = f_right - f_val
-    beta = f_val - f_left
-
-    alpha_valid = alpha[mask]
-    beta_valid = beta[mask]
-    denominator_valid = denominator[mask] * h
-    
-    numerator_valid = alpha_valid * beta_valid - h**2 + np.sqrt(h**2 + alpha_valid**2) * np.sqrt(h**2 + beta_valid**2)
-
-    result[mask] = numerator_valid / denominator_valid
+    np.divide(numerator, denominator, out=result, where=mask)
 
     return result
 
@@ -332,7 +331,7 @@ def gradient(
     if h <= 0:
         raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
     
-    x = np.asarray(x, dtype=float)
+    x = np.asarray(x, dtype=float).copy()
     
     if x.ndim != 1:
         raise TypeError(
@@ -342,24 +341,32 @@ def gradient(
         )
     
     n = x.size
-    identity = np.eye(n)
 
-    f_val = f(x)
+    f_val_scalar = f(x)
 
-    if np.ndim(f_val) != 0:
+    if np.ndim(f_val_scalar) != 0:
         raise ValueError(
             "Function 'f' must return a scalar value. "
-            f"Got shape {np.shape(f_val)}."
+            f"Got shape {np.shape(f_val_scalar)}."
         )
 
-    x_right = x + h*identity
-    x_left = x - h*identity
+    f_right = np.empty(n, dtype=float)
+    f_left = np.empty(n, dtype=float)
 
-    f_right = np.array([f(row) for row in x_right], dtype=float)
-    f_val = np.asarray(f_val, dtype=float)
-    f_left = np.array([f(row) for row in x_left], dtype=float)
+    for i in range(n):
+        origin_val = x[i]
+        
+        x[i] = origin_val + h
+        f_right[i] = f(x)
+        
+        x[i] = origin_val - h
+        f_left[i] = f(x)
+        
+        x[i] = origin_val
+        
+    f_val_arr = np.full_like(f_right, f_val_scalar)
 
-    return _A_vector(f_right, f_val, f_left, h, zero_tol)
+    return _A_vector(f_right, f_val_arr, f_left, h, zero_tol)
 
 
 def jacobian(
