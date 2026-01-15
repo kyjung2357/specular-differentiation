@@ -14,19 +14,6 @@ def test_A_scalar():
     expected = math.sqrt(2) - 1
     assert specular.A(0.0, 1.0) == pytest.approx(expected)
 
-def test_A_vector():
-    """Test vector inputs for A (using numpy arrays)."""
-    alpha = np.array([1.0, 0.0])
-    beta = np.array([1.0, 1.0])
-    
-    result = specular.A(alpha, beta)
-    
-    expected_0 = 1.0
-    expected_1 = math.sqrt(2) - 1
-    
-    assert result[0] == pytest.approx(expected_0) # type: ignore
-    assert result[1] == pytest.approx(expected_1) # type: ignore
-
 # ==========================================
 # 2. Test Derivative (Scalar Input)
 # ==========================================

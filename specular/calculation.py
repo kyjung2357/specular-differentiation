@@ -29,17 +29,17 @@ import numpy as np
 
 
 def A(
-    alpha: float | np.number | int | list | np.ndarray,
-    beta: float | np.number | int | list | np.ndarray,
+    alpha: float | np.number | int,
+    beta: float | np.number | int,
     zero_tol: float = 1e-8
-) -> float | np.ndarray:
+) -> float:
     """
     Compute the function $\\mathcal{A}$ from one-sided directional derivatives.
 
     Parameters:
-        alpha (float | np.number | int | list | np.ndarray):
+        alpha (float | np.number | int):
             One-sided directional derivative.
-        beta (float | np.number | int | list | np.ndarray):
+        beta (float | np.number | int):
             One-sided directional derivative.
         zero_tol (float, optional):
             A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
@@ -47,29 +47,11 @@ def A(
     Returns:
         The function $\\mathcal{A}$.
 
-    Raises:
-        ValueError:
-            If ``alpha`` and ``beta`` have different shape.
-
     Examples:
         >>> import specular
         >>> specular.calculation.A(1.0, 2.0)
         1.3874258867227933
-        >>> specular.calculation.A([1.0, 2.4], [2.0, 4.1])
-        array([1.38742589, 3.04807583])
     """
-    if np.isscalar(alpha) and np.isscalar(beta):
-        return _A_scalar(alpha, beta, zero_tol=zero_tol) # type: ignore
-    
-    return _A_vector(alpha, beta, zero_tol=zero_tol) # type: ignore
-
-
-def _A_scalar(
-    alpha: float | np.number, 
-    beta: float | np.number, 
-    zero_tol: float = 1e-8
-) -> float:
-    """Scalar implementation of ``A``."""
     denominator = alpha + beta
 
     if abs(denominator) <= zero_tol:
@@ -77,34 +59,32 @@ def _A_scalar(
     
     numerator = alpha * beta - 1.0 + math.sqrt((1.0 + alpha**2) * (1.0 + beta**2))
 
-    return numerator / denominator # type: ignore
+    return numerator / denominator
 
 
 def _A_vector(
-    alpha: list | np.ndarray, 
-    beta: list | np.ndarray, 
+    f_right: np.ndarray, 
+    f_val: np.ndarray, 
+    f_left: np.ndarray, 
+    h: float = 1e-6, 
     zero_tol: float = 1e-8
 ) -> np.ndarray:
     """Vector implementation of ``A``."""
-    alpha = np.asanyarray(alpha, dtype=float)
-    beta = np.asanyarray(beta, dtype=float)
+    denominator = f_right - f_left
 
-    if alpha.shape != beta.shape:
-        raise ValueError(f"Shape mismatch: alpha {alpha.shape} vs beta {beta.shape}")
-
-    denominator = alpha + beta
-
-    mask = np.abs(denominator) > zero_tol
+    mask = np.abs(denominator) > zero_tol * h
     result = np.zeros_like(denominator)
+
+    alpha = f_right - f_val
+    beta = f_val - f_left
 
     alpha_valid = alpha[mask]
     beta_valid = beta[mask]
-    denominator_valid = denominator[mask]
+    denominator_valid = denominator[mask] * h
+    
+    numerator_valid = alpha_valid * beta_valid - h**2 + np.sqrt(h**2 + alpha_valid**2) * np.sqrt(h**2 + beta_valid**2)
 
-    if alpha_valid.size > 0:
-        numerator = alpha_valid * beta_valid - 1.0 + np.sqrt((1.0 + alpha_valid**2) * (1.0 + beta_valid**2))
-        
-        result[mask] = numerator / denominator_valid
+    result[mask] = numerator_valid / denominator_valid
 
     return result
 
@@ -170,18 +150,15 @@ def derivative(
         alpha = (f(x + h) - f_val) / h # type: ignore
         beta = (f_val - f(x - h)) / h # type: ignore
         
-        return _A_scalar(alpha, beta, zero_tol=zero_tol) # type: ignore
+        return A(alpha, beta, zero_tol=zero_tol) # type: ignore
 
     # f is vector-valued
     else:
-        f_val = np.asarray(f_val, dtype=float)
         f_right = np.asarray(f(x + h), dtype=float)
+        f_val = np.asarray(f_val, dtype=float)
         f_left = np.asarray(f(x - h), dtype=float)
-
-        alpha = (f_right - f_val) / h
-        beta = (f_val - f_left) / h
         
-        return _A_vector(alpha, beta, zero_tol=zero_tol)
+        return _A_vector(f_right, f_val, f_left, h, zero_tol)
 
 
 def directional_derivative(
@@ -256,7 +233,7 @@ def directional_derivative(
     alpha = (f(x + h * v) - f_val)/h
     beta = (f_val - f(x - h * v))/h
 
-    return _A_scalar(alpha, beta, zero_tol=zero_tol)
+    return A(alpha, beta, zero_tol=zero_tol)
 
 
 def partial_derivative(
@@ -379,12 +356,10 @@ def gradient(
     x_left = x - h*identity
 
     f_right = np.array([f(row) for row in x_right], dtype=float)
+    f_val = np.asarray(f_val, dtype=float)
     f_left = np.array([f(row) for row in x_left], dtype=float)
 
-    alpha = (f_right - f_val) / h 
-    beta = (f_val - f_left) / h 
-
-    return _A_vector(alpha, beta, zero_tol=zero_tol) # type: ignore
+    return _A_vector(f_right, f_val, f_left, h, zero_tol)
 
 
 def jacobian(
@@ -449,9 +424,8 @@ def jacobian(
     f_right = f_right.reshape(n, m)
     f_left = f_left.reshape(n, m)
 
-    alpha = (f_right - f_val) / h
-    beta = (f_val - f_left) / h
+    f_val = np.tile(f_val, (n, 1))
 
-    J_transposed = _A_vector(alpha, beta, zero_tol=zero_tol)
+    J_transposed = _A_vector(f_right, f_val, f_left, h, zero_tol)
 
     return J_transposed.T

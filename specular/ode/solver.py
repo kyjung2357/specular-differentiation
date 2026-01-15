@@ -15,7 +15,7 @@ import numpy as np
 from tqdm import tqdm 
 from typing import Optional, Callable, Tuple, List
 from .result import ODEResult
-from ..calculation import _A_scalar as A
+from ..calculation import A
 
 SUPPORTED_SCHEMES = ['explicit Euler', 'implicit Euler', 'Crank-Nicolson']
 
