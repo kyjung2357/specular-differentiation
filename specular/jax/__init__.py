@@ -1,5 +1,4 @@
 from .calculation import (
-    A,
     derivative,
     directional_derivative,
     partial_derivative,
@@ -10,7 +9,6 @@ from .calculation import (
 from .optimization import gradient_method
 
 __all__ = [
-    "A",
     "derivative",
     "directional_derivative",
     "partial_derivative",

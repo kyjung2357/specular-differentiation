@@ -7,30 +7,36 @@ It utilizes `jax.numpy` for GPU/TPU acceleration and `jax.vmap` for auto-vectori
 from typing import Callable
 import jax
 import jax.numpy as jnp
-from jax import Array
+from jax import Array, jit
 from jax.typing import ArrayLike
 
+jax.config.update("jax_enable_x64", True)
 
-def A(
-    alpha: ArrayLike,
-    beta: ArrayLike,
+@jit
+def _A_vector(
+    f_right: Array,
+    f_val: Array,
+    f_left: Array,
+    h: float,
     zero_tol: float = 1e-8
 ) -> Array:
     """
-    JAX version of ``specular.calculation.A``.
+    JAX version of ``specular.calculation._A_vector``.
     """
-    alpha = jnp.asarray(alpha, dtype=float)
-    beta = jnp.asarray(beta, dtype=float)
+    h_sq = h * h
 
-    denominator = alpha + beta
+    alpha = f_right - f_val
+    beta = f_val - f_left
 
-    mask = jnp.abs(denominator) > zero_tol
+    denominator = f_right - f_left
+
+    mask = jnp.abs(denominator) > zero_tol * h
+
+    denominator_safe = jnp.where(mask, denominator, 1.0) * h
+
+    numerator = (alpha * beta) - h_sq + (jnp.hypot(alpha, h) * jnp.hypot(beta, h))
     
-    safe_denominator = jnp.where(mask, denominator, 1.0)
-
-    numerator = alpha * beta - 1.0 + jnp.sqrt((1.0 + alpha**2) * (1.0 + beta**2))
-    
-    result = numerator / safe_denominator
+    result = numerator / denominator_safe
 
     return jnp.where(mask, result, 0.0)
 
@@ -52,14 +58,11 @@ def derivative(
     if x.ndim != 0:
          raise TypeError(f"Input 'x' must be a scalar. Got shape {x.shape}.")
     
-    f_val = jnp.asarray(f(x))
     f_right = jnp.asarray(f(x + h))
+    f_val = jnp.asarray(f(x))
     f_left = jnp.asarray(f(x - h))
     
-    alpha = (f_right - f_val) / h
-    beta = (f_val - f_left) / h
-
-    return A(alpha, beta, zero_tol=zero_tol)
+    return _A_vector(f_right, f_val, f_left, h, zero_tol)
 
 
 def directional_derivative(
@@ -89,10 +92,11 @@ def directional_derivative(
     if f_val.ndim != 0:
         raise ValueError(f"Function f must return a scalar. Got shape {f_val.shape}")
 
-    alpha = (f(x + h * v) - f_val) / h
-    beta = (f_val - f(x - h * v)) / h
+    f_right = jnp.asarray(f(x + h * v))
+    f_left = jnp.asarray(f(x - h * v))
+    
+    return _A_vector(f_right, f_val, f_left, h, zero_tol)
 
-    return A(alpha, beta, zero_tol=zero_tol)
 
 
 def partial_derivative(
@@ -145,13 +149,10 @@ def gradient(
     x_right_batch = x + h * identity
     x_left_batch = x - h * identity
     
-    f_right = jax.vmap(f)(x_right_batch)
-    f_left = jax.vmap(f)(x_left_batch)
+    f_right = jnp.asarray(jax.vmap(f)(x_right_batch))
+    f_left = jnp.asarray(jax.vmap(f)(x_left_batch))
 
-    alpha = (f_right - f_val) / h
-    beta = (f_val - f_left) / h
-
-    return A(alpha, beta, zero_tol=zero_tol)
+    return _A_vector(f_right, f_val, f_left, h, zero_tol)
 
 
 def jacobian(
@@ -173,12 +174,12 @@ def jacobian(
 
     n = x.size
     
-    f_center = jnp.asarray(f(x), dtype=float)
+    f_val = jnp.asarray(f(x), dtype=float)
     
-    if f_center.ndim == 0:
-        f_center = f_center.reshape(1)
+    if f_val.ndim == 0:
+        f_val = f_val.reshape(1)
         
-    m = f_center.size
+    m = f_val.size
     identity = jnp.eye(n)
     
     x_right_batch = x + h * identity
@@ -190,9 +191,6 @@ def jacobian(
     f_right = jnp.asarray(f_right, dtype=float).reshape(n, m)
     f_left = jnp.asarray(f_left, dtype=float).reshape(n, m)
     
-    alpha = (f_right - f_center) / h
-    beta = (f_center - f_left) / h
-    
-    J_transposed = A(alpha, beta, zero_tol=zero_tol)
+    J_transposed = _A_vector(f_right, f_val, f_left, h, zero_tol)
     
     return J_transposed.T
