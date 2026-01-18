@@ -62,7 +62,7 @@ The following simple example calculates the specular derivative of the [ReLU fun
 import specular
 
 ReLU = lambda x: max(x, 0)
-specular.derivative(ReLU, x=0)
+print(specular.derivative(ReLU, x=0))
 ```
 
 ```text
