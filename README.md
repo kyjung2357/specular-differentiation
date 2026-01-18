@@ -63,7 +63,10 @@ import specular
 
 ReLU = lambda x: max(x, 0)
 specular.derivative(ReLU, x=0)
-# Output: 0.41421356237309515
+```
+
+```text
+0.41421356237309515
 ```
 
 ## Applications
@@ -100,11 +103,11 @@ The following example compares the three proposed methods with the classical met
 
 ![optimization-example](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/optimization-example.png)
 
-## Documentation
+## [Documentation](https://kyjung2357.github.io/specular-differentiation/)
 
-### [Getting Started](docs/started.md)
-### [API Reference](docs/api/index.md)
-### [Examples](docs/examples/index.md)
+### [Getting Started](https://kyjung2357.github.io/specular-differentiation/started/)
+### [API Reference](https://kyjung2357.github.io/specular-differentiation/api/)
+### [Examples](https://kyjung2357.github.io/specular-differentiation/examples/)
 
 ## LaTeX macro
 

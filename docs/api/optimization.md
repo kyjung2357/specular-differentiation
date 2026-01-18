@@ -39,7 +39,10 @@ from specular.optimization.step_size import StepSize
 step = StepSize(name='square_summable_not_summable', parameters=[10.0, 2.0])
 h_1 = step(1)
 print(h_1)
-# Output: 3.3333333333333335
+```
+
+```text
+3.3333333333333335
 ```
 
 ## 2.3.2. The specular gradient method

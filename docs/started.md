@@ -16,7 +16,10 @@ Check the version:
 import specular
 
 print("version: ", specular.__version__)
-# Output: version:  1.0.0
+```
+
+```text
+version:  1.0.0
 ```
 
 **Advanced Installation (JAX backend)**
@@ -57,7 +60,10 @@ import specular
 
 ReLU = lambda x: max(x, 0)
 specular.derivative(ReLU, x=0)
-# Output: 0.41421356237309515
+```
+
+```text
+0.41421356237309515
 ```
 
 ## 1.3. JAX Backend Usage
@@ -69,7 +75,10 @@ import specular.jax as sjax
 
 ReLU = lambda x: jax.numpy.maximum(x, 0)
 sjax.derivative(ReLU, 0.0)
-# Output: Array(0.41421354, dtype=float32)
+```
+
+```text
+Array(0.41421354, dtype=float32)
 ```
 
 To enable 64-bit precision (double precision), update the **JAX** configuration as follows:
@@ -82,6 +91,8 @@ import specular.jax as sjax
 
 ReLU = lambda x: jax.numpy.maximum(x, 0)
 sjax.derivative(ReLU, 0.0)
-# Output: Array(0.41421356, dtype=float64)
 ```
 
+```text
+Array(0.41421356, dtype=float64)
+```

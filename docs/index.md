@@ -63,7 +63,10 @@ import specular
 
 ReLU = lambda x: max(x, 0)
 specular.derivative(ReLU, x=0)
-# Output: 0.41421356237309515
+```
+
+```text
+0.41421356237309515
 ```
 
 ## Applications
