@@ -1158,8 +1158,9 @@ Their difference is illustrated as in the following figure.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
 
 <span class="n">ReLU</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="n">specular</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">ReLU</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="c1"># Output: 0.41421356237309515</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">specular</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">ReLU</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>0.41421356237309515
 </code></pre></div>
 <h2 id="applications">Applications</h2>
 <p>Specular differentiation is defined in normed vector spaces, allowing for applications in higher-dimensional Euclidean spaces. 
@@ -1224,8 +1225,8 @@ The <code>specular</code> package includes the following applications.</p>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="references">References</h2>
-<p>[1] K. Jung. <em>Nonlinear numerical schemes using specular differentiation for initial value problems of first-order ordinary differential equations</em>. arXiv preprint arXiv:2601.09900, 2026.</p>
-<p>[2] K. Jung. <em>Specular differentiation in normed vector spaces and its applications to nonsmooth convex optimization</em>. arXiv preprint arXiv:????.?????, TBA. </p>
+<p>[1] K. Jung. <a href="https://arxiv.org/abs/2601.09900"><em>Nonlinear numerical schemes using specular differentiation for initial value problems of first-order ordinary differential equations</em></a>. arXiv preprint arXiv:2601.09900, 2026.</p>
+<p>[2] K. Jung. <a href="https://arxiv.org/abs/2601.10950"><em>Specular differentiation in normed vector spaces and its applications to nonsmooth convex optimization</em></a>. arXiv preprint arXiv:2601.10950, 2026. </p>
 <p>[3] K. Jung and J. Oh. <a href="https://arxiv.org/abs/2210.06062"><em>The specular derivative</em></a>. arXiv preprint arXiv:2210.06062, 2022.</p>
 <p>[4] K. Jung and J. Oh. <a href="https://arxiv.org/abs/2210.06933"><em>The wave equation with specular derivatives</em></a>. arXiv preprint arXiv:2210.06933, 2022.</p>
 <p>[5] K. Jung and J. Oh. <a href="https://arxiv.org/abs/2412.20747"><em>Nonsmooth convex optimization using the specular gradient method with root-linear convergence</em></a>. arXiv preprint arXiv:2210.06933, 2024.</p>
