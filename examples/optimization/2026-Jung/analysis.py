@@ -235,7 +235,7 @@ def run_experiment(methods, file_number, trials, iteration, m, n, lambda1, lambd
     print(summary_df)
 
     plt.xlabel(r"Iterations $k$", fontsize=10)
-    plt.ylabel(r"Objective function value $f(x_k)$", fontsize=10)
+    plt.ylabel(r"Objective function value $f(\mathbf{x}_k)$", fontsize=10)
     plt.grid(True)
     plt.xscale('log')
     plt.yscale('log')

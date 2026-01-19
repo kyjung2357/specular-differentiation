@@ -141,7 +141,7 @@ def run_experiment(file_number, trials, iteration, m, n, pdf=False):
         ax.set_xlabel(r"Iterations $k$", fontsize=10)
         
         if idx == 0:
-            ax.set_ylabel(r"Objective function value $f(x_k)$", fontsize=10)
+            ax.set_ylabel(r"Objective function value $f(\mathbf{x}_k)$", fontsize=10)
             
         ax.grid(True, alpha=0.3)
         ax.set_xscale('log')
