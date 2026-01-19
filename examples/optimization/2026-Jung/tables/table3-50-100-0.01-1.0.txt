@@ -1,0 +1,11 @@
+\begin{tabular}{llll}
+\toprule
+ & Mean & Median & Standard deviation \\
+\midrule
+SPEG-s & $2.4639 \times 10^{-1}$ & $2.3230 \times 10^{-1}$ & $4.6444 \times 10^{-2}$ \\
+SPEG-g & $7.9563 \times 10^{1}$ & $8.0895 \times 10^{1}$ & $1.5219 \times 10^{1}$ \\
+GD & $2.4639 \times 10^{-1}$ & $2.3230 \times 10^{-1}$ & $4.6445 \times 10^{-2}$ \\
+Adam & $2.4640 \times 10^{-1}$ & $2.3230 \times 10^{-1}$ & $4.6442 \times 10^{-2}$ \\
+BFGS & $2.4639 \times 10^{-1}$ & $2.3230 \times 10^{-1}$ & $4.6445 \times 10^{-2}$ \\
+\bottomrule
+\end{tabular}

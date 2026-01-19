@@ -155,7 +155,7 @@ To cite this repository:
 
 [1] K. Jung. [*Nonlinear numerical schemes using specular differentiation for initial value problems of first-order ordinary differential equations*](https://arxiv.org/abs/2601.09900). arXiv preprint arXiv:2601.09900, 2026.
 
-[2] K. Jung. *Specular differentiation in normed vector spaces and its applications to nonsmooth convex optimization*. arXiv preprint arXiv:????.?????, TBA. 
+[2] K. Jung. [*Specular differentiation in normed vector spaces and its applications to nonsmooth convex optimization*](https://arxiv.org/abs/2601.10950). arXiv preprint arXiv:2601.10950, 2026. 
 
 [3] K. Jung and J. Oh. [*The specular derivative*](https://arxiv.org/abs/2210.06062). arXiv preprint arXiv:2210.06062, 2022.
 
