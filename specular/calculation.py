@@ -231,8 +231,9 @@ def directional_derivative(
     
     alpha = (f(x + h * v) - f_val)/h
     beta = (f_val - f(x - h * v))/h
+    norm = float(np.linalg.norm(v))
 
-    return A(alpha, beta, zero_tol=zero_tol)
+    return norm * A(alpha / norm, beta / norm, zero_tol=zero_tol)
 
 
 def partial_derivative(
