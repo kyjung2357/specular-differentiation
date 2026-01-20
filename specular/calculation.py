@@ -70,22 +70,20 @@ def _A_vector(
     zero_tol: float = 1e-8
 ) -> np.ndarray:
     """Vector implementation of ``A``."""
-    h_sq = h * h
-    
     alpha = f_right - f_val
     beta = f_val - f_left
 
-    numerator = (alpha * beta) - h_sq + (np.hypot(alpha, h) * np.hypot(beta, h))
-
-    denominator = f_right - f_left
-    denominator *= h
+    numerator = alpha * beta - h * h
+    denominator = (f_right - f_left) * h
 
     mask = np.abs(denominator) > zero_tol * h
-    result = np.zeros_like(denominator)
 
-    np.divide(numerator, denominator, out=result, where=mask)
+    omega = np.zeros_like(denominator)
+    np.divide(numerator, denominator, out=omega, where=mask)
 
-    return result
+    result = omega + np.sign(denominator) * np.hypot(1, omega)
+    
+    return np.where(mask, result, 0.0)
 
 
 def derivative(

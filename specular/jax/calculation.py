@@ -23,22 +23,21 @@ def _A_vector(
     """
     JAX version of ``specular.calculation._A_vector``.
     """
-    h_sq = h * h
-
     alpha = f_right - f_val
     beta = f_val - f_left
 
-    denominator = f_right - f_left
-
-    mask = jnp.abs(denominator) > zero_tol * h
-
-    denominator_safe = jnp.where(mask, denominator, 1.0) * h
-
-    numerator = (alpha * beta) - h_sq + (jnp.hypot(alpha, h) * jnp.hypot(beta, h))
+    numerator = alpha * beta - h * h
+    denominator = (f_right - f_left) * h
     
-    result = numerator / denominator_safe
+    mask = jnp.abs(denominator) > (zero_tol * h)
+    
+    safe_denominator = jnp.where(mask, denominator, 1.0)
+    
+    omega = numerator / safe_denominator
+    
+    raw_result = omega + jnp.sign(denominator) * jnp.hypot(1.0, omega)
 
-    return jnp.where(mask, result, 0.0)
+    return jnp.where(mask, raw_result, 0.0)
 
 
 def derivative(
