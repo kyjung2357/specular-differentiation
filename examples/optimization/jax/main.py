@@ -127,7 +127,7 @@ def run_jax_experiment(methods, file_number,trials, iteration=100, m=500, n=100,
     print("\n[Analysis]")
     print(" Generating plots and tables")
 
-    colors = {'SPEG': 'red', 'SPEG-s': 'red', 'SPEG-g': 'brown', 'S-SPEG': 'blue', 'H-SPEG': 'purple', 'GD': 'orange', 'Adam': 'green', 'BFGS': 'black'}
+    colors = {'SPEG': 'red', 'S-SPEG': 'blue', 'H-SPEG': 'purple', 'GD': 'orange', 'Adam': 'green', 'BFGS': 'black'}
     
     plt.figure(figsize=(6, 3))
 

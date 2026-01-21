@@ -158,7 +158,7 @@ def gradient(
     f_vmap = vmap(f)
     
     f_right = f_vmap(x + h_identity)
-    f_left  = f_vmap(x - h_identity)
+    f_left = f_vmap(x - h_identity)
 
     return _A_vector(f_right, f_val, f_left, h, zero_tol)
 
@@ -190,7 +190,7 @@ def jacobian(
     f_vmap = vmap(f)
 
     f_right = jnp.asarray(f_vmap(x + h_idenitiy)).reshape(n, m)
-    f_left  = jnp.asarray(f_vmap(x - h_idenitiy)).reshape(n, m)
+    f_left = jnp.asarray(f_vmap(x - h_idenitiy)).reshape(n, m)
 
     J_transposed = _A_vector(f_right, f_val, f_left, h, zero_tol)
 
