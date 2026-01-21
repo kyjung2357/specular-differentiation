@@ -131,11 +131,11 @@ def run_jax_experiment(methods, file_number,trials, iteration=100, m=500, n=100,
     
     plt.figure(figsize=(6, 3))
 
-    for name, results_list in all_results.items():
-        if not results_list: continue
+    for name, results in all_results.items():
+        if not results: continue
 
-        df = pd.DataFrame(results_list).T
-        df.columns = [f'trial_{j+1}' for j in range(len(results_list))]
+        df = pd.DataFrame(results).T
+        df.columns = [f'trial_{j+1}' for j in range(len(results))]
         
         min_vals = df.min(axis=0)
         mean_curve = df.mean(axis=1)
