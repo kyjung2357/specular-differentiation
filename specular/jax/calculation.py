@@ -3,23 +3,25 @@ This module provides JAX-based implementations of the function $\\mathcal{A}$, s
 
 It utilizes `jax.numpy` for GPU/TPU acceleration and `jax.vmap` for auto-vectorization.
 """
-
-from typing import Callable
+from functools import partial
+from typing import Callable, Union, Tuple
 import jax
 import jax.numpy as jnp
-from jax import Array, jit
+from jax import Array, jit, vmap
 from jax.typing import ArrayLike
 
 jax.config.update("jax_enable_x64", True)
 
-@jit
+@partial(jit, static_argnames=['quasi_Fermat', 'monotonicity'])
 def _A_vector(
     f_right: Array,
     f_val: Array,
     f_left: Array,
     h: float,
-    zero_tol: float = 1e-8
-) -> Array:
+    zero_tol: float = 1e-8,
+    quasi_Fermat: bool = False, 
+    monotonicity: bool = False
+) -> Union[Array, Tuple[Array, ...]]:
     """
     JAX version of ``specular.calculation._A_vector``.
     """
@@ -35,9 +37,20 @@ def _A_vector(
     
     omega = numerator / safe_denominator
     
-    raw_result = omega + jnp.sign(denominator) * jnp.hypot(1.0, omega)
+    result = omega + jnp.sign(denominator) * jnp.hypot(1.0, omega)
 
-    return jnp.where(mask, raw_result, 0.0)
+    returns = [jnp.where(mask, result, 0.0)]
+    
+    if quasi_Fermat:
+        returns.append(jnp.where(mask, jnp.sign(numerator), 0.0))
+        
+    if monotonicity:
+        returns.append(jnp.where(mask, jnp.sign(denominator), 0.0))
+        
+    if len(returns) == 1:
+        return returns[0]
+    
+    return tuple(returns)
 
 
 def derivative(
@@ -136,20 +149,16 @@ def gradient(
     
     if x.ndim != 1:
         raise TypeError(f"Input 'x' must be a vector. Got shape {x.shape}.")
-
-    n = x.size
-    identity = jnp.eye(n)
-
-    f_val = jnp.asarray(f(x))
-
-    if f_val.ndim != 0:
-        raise ValueError(f"Function f must return a scalar. Got shape {f_val.shape}.")
-
-    x_right_batch = x + h * identity
-    x_left_batch = x - h * identity
     
-    f_right = jnp.asarray(jax.vmap(f)(x_right_batch))
-    f_left = jnp.asarray(jax.vmap(f)(x_left_batch))
+    f_val = jnp.asarray(f(x))
+    
+    n = x.size
+    h_identity = h * jnp.eye(n)
+
+    f_vmap = vmap(f)
+    
+    f_right = f_vmap(x + h_identity)
+    f_left  = f_vmap(x - h_identity)
 
     return _A_vector(f_right, f_val, f_left, h, zero_tol)
 
@@ -173,23 +182,16 @@ def jacobian(
 
     n = x.size
     
-    f_val = jnp.asarray(f(x), dtype=float)
-    
-    if f_val.ndim == 0:
-        f_val = f_val.reshape(1)
-        
+    f_val = jnp.atleast_1d(f(x))
     m = f_val.size
-    identity = jnp.eye(n)
     
-    x_right_batch = x + h * identity
-    x_left_batch = x - h * identity
+    h_idenitiy = h * jnp.eye(n)
+    
+    f_vmap = vmap(f)
 
-    f_right = jax.vmap(f)(x_right_batch)
-    f_left = jax.vmap(f)(x_left_batch)
-    
-    f_right = jnp.asarray(f_right, dtype=float).reshape(n, m)
-    f_left = jnp.asarray(f_left, dtype=float).reshape(n, m)
-    
+    f_right = jnp.asarray(f_vmap(x + h_idenitiy)).reshape(n, m)
+    f_left  = jnp.asarray(f_vmap(x - h_idenitiy)).reshape(n, m)
+
     J_transposed = _A_vector(f_right, f_val, f_left, h, zero_tol)
-    
+
     return J_transposed.T

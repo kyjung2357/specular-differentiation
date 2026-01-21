@@ -89,7 +89,7 @@ def run_single_trial(args):
         trial_results["SPEG-g"] = ensure_length(res, iteration)
         trial_times["SPEG-g"] = runtime
 
-    # SSPEG
+    # S-SPEG
     if "S-SPEG" in methods:
         _, res, runtime = specular.gradient_method(
             f=f, x_0=x_0, step_size=step_size_squ, form='stochastic', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m, print_bar=True # type: ignore
@@ -97,7 +97,7 @@ def run_single_trial(args):
         trial_results["S-SPEG"] = ensure_length(res, iteration)
         trial_times["S-SPEG"] = runtime
     
-    # HSPEG
+    # H-SPEG
     if "H-SPEG" in methods:
         _, res, runtime = specular.gradient_method(
             f=f, x_0=x_0, step_size=step_size_squ, form='hybrid', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m,switch_iter=10, print_bar=True # type: ignore

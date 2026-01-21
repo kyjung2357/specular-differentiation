@@ -238,11 +238,15 @@ def _vector(
             x_history.append(x)
             f_history.append(f(x))
 
-        specular_gradient = gradient(f=f, x=x, h=h, zero_tol=zero_tol)
+        computation = gradient(f=f, x=x, h=h, zero_tol=zero_tol, quasi_Fermat=True, monotonicity=False)
+        specular_gradient = computation[0]
         norm = np.linalg.norm(specular_gradient)
 
         if norm < tol:
-            break
+            if np.any(computation[1] > 1): 
+                pass
+            else:
+                break
 
         x -= step_size(k)*(specular_gradient / norm)
         k += 1
@@ -303,11 +307,16 @@ def _vector_stochastic(
 
             component_func = lambda x_val: f_j(x_val, j)
 
-        component_specular_gradient = gradient(f=component_func, x=x, h=h, zero_tol=zero_tol)
+        computation = gradient(f=component_func, x=x, h=h, zero_tol=zero_tol, quasi_Fermat=True, monotonicity=False)
+
+        component_specular_gradient = computation[0]
         norm = np.linalg.norm(component_specular_gradient)
 
         if norm < tol:
-            break
+            if np.any(computation[1] > 1): 
+                pass
+            else:
+                break
 
         x -= step_size(k)*(component_specular_gradient / norm)
         k += 1

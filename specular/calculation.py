@@ -23,7 +23,7 @@ $$
 where a function $f : \\mathbb{R}^n \\to \\mathbb{R}$, a real number $h > 0$, and vectors $x, v \\in \\mathbb{R}^n$.
 """
 
-from typing import Callable
+from typing import Callable, overload, Literal, List
 import math
 import numpy as np
 
@@ -62,18 +62,53 @@ def A(
     return numerator / denominator
 
 
+@overload
+def _A_vector(
+    f_right: np.ndarray,
+    f_val: np.ndarray,
+    f_left: np.ndarray,
+    h: float,
+    zero_tol: float,
+    quasi_Fermat: Literal[True],
+    monotonicity: bool
+) -> List[np.ndarray]: ...
+
+
+@overload
+def _A_vector(
+    f_right: np.ndarray,
+    f_val: np.ndarray,
+    f_left: np.ndarray,
+    h: float,
+    zero_tol: float,
+    quasi_Fermat: bool,
+    monotonicity: Literal[True]
+) -> List[np.ndarray]: ...
+
+
+@overload
+def _A_vector(
+    f_right: np.ndarray,
+    f_val: np.ndarray,
+    f_left: np.ndarray,
+    h: float,
+    zero_tol: float,
+    quasi_Fermat: Literal[False],
+    monotonicity: Literal[False]
+) -> np.ndarray: ...
+
+
 def _A_vector(
     f_right: np.ndarray, 
     f_val: np.ndarray, 
     f_left: np.ndarray, 
     h: float = 1e-6, 
-    zero_tol: float = 1e-8
-) -> np.ndarray:
+    zero_tol: float = 1e-8,
+    quasi_Fermat: bool = False,
+    monotonicity: bool = False
+) -> np.ndarray | List[np.ndarray]:
     """Vector implementation of ``A``."""
-    alpha = f_right - f_val
-    beta = f_val - f_left
-
-    numerator = alpha * beta - h * h
+    numerator = (f_right - f_val) * (f_val - f_left) - h * h
     denominator = (f_right - f_left) * h
 
     mask = np.abs(denominator) > zero_tol * h
@@ -83,15 +118,28 @@ def _A_vector(
 
     result = omega + np.sign(denominator) * np.hypot(1, omega)
     
-    return np.where(mask, result, 0.0)
+    returns = [np.where(mask, result, 0.0)]
+
+    if quasi_Fermat:
+        returns.append(np.where(mask, np.sign(numerator), 0.0))
+
+    if monotonicity:
+        returns.append(np.where(mask, np.sign(denominator), 0.0))
+
+    if len(returns) == 1:
+        return returns[0]
+    
+    return returns
 
 
 def derivative(
     f: Callable[[int | float | np.number], int | float | np.number | list | np.ndarray],
     x: float | np.number | int,
     h: float = 1e-6,
-    zero_tol: float = 1e-8
-) -> float | np.ndarray:
+    zero_tol: float = 1e-8,
+    quasi_Fermat: bool = False,
+    monotonicity: bool = False
+) -> float | np.ndarray | List[np.ndarray]:
     """
     Approximates the specular derivative of a function $f:\\mathbb{R} \\to \\mathbb{R}^m$ at a scalar point $x$.
     
@@ -108,6 +156,14 @@ def derivative(
             Mesh size used in the finite difference approximation. Must be positive.
         zero_tol (float, optional):
             A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
+        quasi_Fermat (bool, optional):
+            If True, additionally returns the sign of the quasi-Fermat condition indicator:
+            ``(f_right - f_val) * (f_val - f_left) - h**2``.
+            This corresponds to the sign of **(product of one-sided derivatives) - 1**.
+        monotonicity (bool, optional):
+            If True, returns the sign of the monotonicity indicator:
+            ``f_right - f_left``.
+            This corresponds to the sign of the **sum of one-sided derivatives**.
 
     Returns:
         The approximated specular derivative of ``f`` at ``x``.
@@ -155,7 +211,7 @@ def derivative(
         f_val = np.asarray(f_val, dtype=float)
         f_left = np.asarray(f(x - h), dtype=float)
         
-        return _A_vector(f_right, f_val, f_left, h, zero_tol)
+        return _A_vector(f_right, f_val, f_left, h, zero_tol, quasi_Fermat, monotonicity)
 
 
 def directional_derivative(
@@ -293,8 +349,10 @@ def gradient(
     f: Callable[[list | np.ndarray], int |float | np.number],
     x: list | np.ndarray,
     h: float = 1e-6,
-    zero_tol: float = 1e-8
-) -> np.ndarray:
+    zero_tol: float = 1e-8,
+    quasi_Fermat: bool = False,
+    monotonicity: bool = False
+) -> np.ndarray | List[np.ndarray]:
     """
     Approximates the specular gradient of a real-valued function $f:\\mathbb{R}^n \\to \\mathbb{R}$ at point $x$ for $n > 1$.
 
@@ -309,6 +367,14 @@ def gradient(
             Mesh size used in the finite difference approximation. Must be positive.
         zero_tol (float, optional):
             A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
+        quasi_Fermat (bool, optional):
+            If True, additionally returns the sign of the quasi-Fermat condition indicator:
+            ``(f_right - f_val) * (f_val - f_left) - h**2``.
+            This corresponds to the sign of **(product of one-sided derivatives) - 1**.
+        monotonicity (bool, optional):
+            If True, returns the sign of the monotonicity indicator:
+            ``f_right - f_left``.
+            This corresponds to the sign of the **sum of one-sided derivatives**.
 
     Returns:
         The approximated specular gradient of ``f`` at ``x`` as a vector.
@@ -353,27 +419,29 @@ def gradient(
     f_left = np.empty(n, dtype=float)
 
     for i in range(n):
-        origin_val = x[i]
+        x_i = x[i]
         
-        x[i] = origin_val + h
+        x[i] = x_i + h
         f_right[i] = f(x)
         
-        x[i] = origin_val - h
+        x[i] = x_i - h
         f_left[i] = f(x)
         
-        x[i] = origin_val
+        x[i] = x_i
         
     f_val_arr = np.full_like(f_right, f_val_scalar)
 
-    return _A_vector(f_right, f_val_arr, f_left, h, zero_tol)
+    return _A_vector(f_right, f_val_arr, f_left, h, zero_tol, quasi_Fermat, monotonicity)
 
 
 def jacobian(
     f: Callable[[list | np.ndarray], int | float | np.number | list | np.ndarray],
     x: list | np.ndarray,
     h: float = 1e-6,
-    zero_tol: float = 1e-8
-) -> np.ndarray:
+    zero_tol: float = 1e-8,
+    quasi_Fermat: bool = False,
+    monotonicity: bool = False
+) -> np.ndarray | List[np.ndarray]:
     """
     Approximates the specular Jacobian matrix of a vector-valued function $f:\\mathbb{R}^n \\to \\mathbb{R}^m$.
 
@@ -388,6 +456,14 @@ def jacobian(
             Mesh size used in the finite difference approximation. Must be positive.
         zero_tol (float, optional):
             A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
+        quasi_Fermat (bool, optional):
+            If True, additionally returns the sign of the quasi-Fermat condition indicator:
+            ``(f_right - f_val) * (f_val - f_left) - h**2``.
+            This corresponds to the sign of **(product of one-sided derivatives) - 1**.
+        monotonicity (bool, optional):
+            If True, returns the sign of the monotonicity indicator:
+            ``f_right - f_left``.
+            This corresponds to the sign of the **sum of one-sided derivatives**.
 
     Returns:
         The approximated specular Jacobian of ``f`` at ``x`` as a matrix.
@@ -419,19 +495,19 @@ def jacobian(
 
     m = f_val.size
 
-    identity = np.eye(n)
+    h_identity = h * np.eye(n)
     
-    x_right = x + h * identity
-    x_left = x - h * identity
+    x_right = x + h_identity
+    x_left = x - h_identity
 
-    f_right = np.array([f(row) for row in x_right], dtype=float)
-    f_left = np.array([f(row) for row in x_left], dtype=float)
-
-    f_right = f_right.reshape(n, m)
-    f_left = f_left.reshape(n, m)
+    f_right = np.array([f(row) for row in x_right], dtype=float).reshape(n, m)
+    f_left = np.array([f(row) for row in x_left], dtype=float).reshape(n, m)
 
     f_val = np.tile(f_val, (n, 1))
 
-    J_transposed = _A_vector(f_right, f_val, f_left, h, zero_tol)
+    results = _A_vector(f_right, f_val, f_left, h, zero_tol, quasi_Fermat, monotonicity)
 
-    return J_transposed.T
+    if isinstance(results, list):
+        return [result.T for result in results]
+    
+    return results.T
