@@ -1,18 +1,21 @@
-import specular
-from specular.optimization.classical_solver import Adam, BFGS, gradient_descent_method
-from tools import ensure_length, format_sci_latex, save_table_to_txt
-
 import numpy as np
 import pandas as pd
 import torch
 import matplotlib.pyplot as plt
+import sys
 import os
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-import matplotlib
-matplotlib.rcParams['mathtext.fontset'] = 'cm'
-plt.rcParams["font.family"] = "Times New Roman"
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
+import specular
+from specular.optimization.classical_solver import Adam, BFGS, gradient_descent_method
+from tools import *
+
+
 
 # ============================================================================--
 # 1. Single Trial Execution
@@ -143,7 +146,6 @@ def run_experiment(methods, file_number, trials, iteration, m, n, lambda1, lambd
 
     all_results = {method: [] for method in methods}
     running_times = {method: [] for method in methods}
-    summary_stats = {}
 
     tasks = [(i, m, n, lambda1, lambda2, iteration, methods) for i in range(trials)]
     
@@ -170,81 +172,5 @@ def run_experiment(methods, file_number, trials, iteration, m, n, lambda1, lambd
     # ==== Visualization & Analysis ====
     print("\n[Analysis]")
     print(" Generating plots and tables")
-
-    colors = {'SPEG': 'red', 'SPEG-s': 'red', 'SPEG-g': 'brown', 'S-SPEG': 'blue', 'H-SPEG': 'purple', 'GD': 'orange', 'Adam': 'green', 'BFGS': 'black'}
-    
-    plt.figure(figsize=(6, 3))
-
-    for name, results_list in all_results.items():
-        if not results_list: continue
-
-        df = pd.DataFrame(results_list).T
-        df.columns = [f'trial_{j+1}' for j in range(len(results_list))]
-        
-        min_vals = df.min(axis=0)
-        mean_curve = df.mean(axis=1)
-        median_curve = df.median(axis=1)
-        std_curve = df.std(axis=1)
-
-        summary_stats[name] = {
-            'Mean': min_vals.mean(),
-            'Median': min_vals.median(),
-            'Standard deviation': min_vals.std()
-        }
-
-        x_data = df.index + 1
-        
-        plt.plot(x_data, mean_curve, label=name, color=colors.get(name, 'black'), linewidth=1.5)
-        
-        plt.plot(x_data, median_curve, color=colors.get(name, 'black'), linestyle='--', alpha=0.5, linewidth=1)
-        
-        plt.fill_between(
-            x_data, 
-            (mean_curve - std_curve), 
-            (mean_curve + std_curve),
-            color=colors.get(name, 'black'), 
-            alpha=0.15
-        )
-
-    # ==== Summary & Save ====
-    print("\n[Running Time Summary]")
-    for name, times in running_times.items():
-        if times:
-            avg_time = sum(times) / len(times)
-            print(f"{name:5s} : {avg_time:.5f} sec")
-
-    print("\n[Final Performance Summary]")
-    summary_df = pd.DataFrame(summary_stats).T
-    display_df = summary_df.copy()
-
-    for col in display_df.columns:
-        display_df[col] = display_df[col].apply(format_sci_latex)
-        
-    pd.options.display.float_format = '{:.4e}'.format
-    
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    os.makedirs(os.path.join(base_dir, 'tables'), exist_ok=True)
-    os.makedirs(os.path.join(base_dir, 'figures'), exist_ok=True)
-    
-    path_txt = os.path.join(base_dir, f'tables/table{file_number}-{m}-{n}-{lambda1}-{lambda2}.txt')
-    path_fig = os.path.join(base_dir, f'figures/figure{file_number}-{m}-{n}-{lambda1}-{lambda2}.{"pdf" if pdf else "png"}')
-
-    with open(os.path.join(base_dir, path_txt), "w", encoding="utf-8") as table_file:
-        table_file.write(display_df.to_latex(escape=False))
-
-    print(summary_df)
-
-    plt.xlabel(r"Iterations $k$", fontsize=10)
-    plt.ylabel(r"Objective function value $f(\mathbf{x}_k)$", fontsize=10)
-    plt.grid(True)
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.xlim(1, iteration)
-
-    plt.legend(loc='center left', bbox_to_anchor=(1.02, 0.5), borderaxespad=0., fontsize=10)
-
-    plt.tight_layout() 
-    plt.savefig(path_fig, dpi=1000, bbox_inches='tight')
-
-    if show:
-        plt.show()
+ 
+    report_results(all_results, running_times, file_number, m, n, lambda1, lambda2, iteration, current_dir, pdf=pdf, show=show)
