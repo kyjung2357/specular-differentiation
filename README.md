@@ -46,6 +46,14 @@ Their difference is illustrated as in the following figure.
 pip install specular-differentiation
 ```
 
+**Advanced Installation (Numba backend)**
+
+```bash
+pip install "specular-differentiation[numba]"
+```
+
+If numba is installed, the package automatically uses parallel CPU computation.
+
 **Advanced Installation (JAX backend)**
 
 ```bash
@@ -53,6 +61,12 @@ pip install "specular-differentiation[jax]"
 ```
 
 See [the documentation](docs/api/jax.md) for advanced installation (JAX backend, Pytest).
+
+**Developer Installation**
+
+```bash
+pip install -e ".[dev]"
+```
 
 ### Quick start
 

@@ -1,5 +1,11 @@
+from . import backend
 from . import ode
 from . import optimization
+
+from .backend import(
+    backend_info,
+    change_backend
+)
 
 from .calculation import (
     A,
@@ -21,12 +27,14 @@ from .optimization import (
     gradient_method
 )
 
-__version__ = "1.0.8"
+__version__ = "1.0.9"
 __license__ = "MIT"
 __author__ = "Kiyuob Jung"
 __email__ = "kyjung@msu.edu"
 
 __all__ = [
+    "backend_info",
+    "change_backend",
     "A",
     "derivative",
     "directional_derivative",

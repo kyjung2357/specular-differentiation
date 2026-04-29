@@ -243,7 +243,7 @@ def _vector(
         norm = np.linalg.norm(specular_gradient)
 
         if norm < tol:
-            if np.any(computation[1] > 1): 
+            if np.any(computation[1] > 0): 
                 pass
             else:
                 break

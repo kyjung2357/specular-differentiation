@@ -7,6 +7,7 @@ if current_dir not in sys.path:
 
 from analysis import run_experiment
 
+
 if __name__ == '__main__':
     trials = 20
 

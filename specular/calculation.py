@@ -26,7 +26,8 @@ where a function $f : \\mathbb{R}^n \\to \\mathbb{R}$, a real number $h > 0$, an
 from typing import Callable, overload, Literal, List
 import math
 import numpy as np
-
+from concurrent.futures import ThreadPoolExecutor
+from . import backend
 
 def A(
     alpha: float | np.number | int,
@@ -98,6 +99,48 @@ def _A_vector(
 ) -> np.ndarray: ...
 
 
+def _A_vector_core_numpy(
+    f_right: np.ndarray,
+    f_val: np.ndarray,
+    f_left: np.ndarray,
+    h: float,
+    zero_tol: float,
+) -> tuple:
+    # Algebraically equivalent to A(alpha, beta) via (alpha+beta)^2 + (alpha*beta-1)^2 = (1+alpha^2)(1+beta^2).
+    # omega = (alpha*beta - 1) / (alpha+beta), then A = omega + sign(alpha+beta) * sqrt(1 + omega^2).
+    # This rearrangement avoids dividing by h twice, improving stability for small h.
+    numerator = (f_right - f_val) * (f_val - f_left) - h * h
+    denominator = (f_right - f_left) * h
+    mask = np.abs(denominator) > zero_tol * h
+    omega = np.zeros_like(denominator)
+    np.divide(numerator, denominator, out=omega, where=mask)
+    A_vals = np.where(mask, omega + np.sign(denominator) * np.sqrt(1.0 + omega**2), 0.0)
+    return A_vals, numerator, denominator, mask
+
+
+if backend._CURRENT_BACKEND == "cpu_numba":
+    from numba import njit, prange
+    @njit(parallel=True)
+    def _A_vector_core_parallel(
+        f_right: np.ndarray,
+        f_val: np.ndarray,
+        f_left: np.ndarray,
+        h: float,
+        zero_tol: float,
+    ):
+        n = f_right.shape[0]
+        numerator = (f_right - f_val) * (f_val - f_left) - h * h
+        denominator = (f_right - f_left) * h
+        mask = np.abs(denominator) > zero_tol * h
+        A_vals = np.zeros(n)
+        for i in prange(n):
+            if mask[i]:
+                omega_i = numerator[i] / denominator[i]
+                sign_d = 1.0 if denominator[i] > 0.0 else -1.0
+                A_vals[i] = omega_i + sign_d * math.sqrt(1.0 + omega_i * omega_i)
+        return A_vals, numerator, denominator, mask
+
+
 def _A_vector(
     f_right: np.ndarray, 
     f_val: np.ndarray, 
@@ -108,17 +151,12 @@ def _A_vector(
     monotonicity: bool = False
 ) -> np.ndarray | List[np.ndarray]:
     """Vector implementation of ``A``."""
-    numerator = (f_right - f_val) * (f_val - f_left) - h * h
-    denominator = (f_right - f_left) * h
+    if backend._CURRENT_BACKEND == "cpu_numba" and f_right.ndim == 1:
+        A_vals, numerator, denominator, mask = _A_vector_core_parallel(f_right, f_val, f_left, h, zero_tol)
+    else:
+        A_vals, numerator, denominator, mask = _A_vector_core_numpy(f_right, f_val, f_left, h, zero_tol)
 
-    mask = np.abs(denominator) > zero_tol * h
-
-    omega = np.zeros_like(denominator)
-    np.divide(numerator, denominator, out=omega, where=mask)
-
-    result = omega + np.sign(denominator) * np.hypot(1, omega)
-    
-    returns = [np.where(mask, result, 0.0)]
+    returns = [A_vals]
 
     if quasi_Fermat:
         returns.append(np.where(mask, np.sign(numerator), 0.0))
@@ -396,7 +434,7 @@ def gradient(
     if h <= 0:
         raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
     
-    x = np.asarray(x, dtype=float).copy()
+    x = np.asarray(x, dtype=float).copy()  # copy required: loop modifies x[i] in-place
     
     if x.ndim != 1:
         raise TypeError(
@@ -415,20 +453,21 @@ def gradient(
             f"Got shape {np.shape(f_val_scalar)}."
         )
 
-    f_right = np.empty(n, dtype=float)
-    f_left = np.empty(n, dtype=float)
+    if backend._CURRENT_BACKEND == "cpu_numba":
+        x_right_mat = x + h * np.eye(n)
+        x_left_mat  = x - h * np.eye(n)
+        with ThreadPoolExecutor() as executor:
+            f_right = np.fromiter(executor.map(f, x_right_mat), dtype=float, count=n)
+            f_left  = np.fromiter(executor.map(f, x_left_mat),  dtype=float, count=n)
+    else:
+        f_right = np.empty(n, dtype=float)
+        f_left  = np.empty(n, dtype=float)
+        for i in range(n):
+            x_i = x[i]
+            x[i] = x_i + h; f_right[i] = f(x)
+            x[i] = x_i - h; f_left[i]  = f(x)
+            x[i] = x_i
 
-    for i in range(n):
-        x_i = x[i]
-        
-        x[i] = x_i + h
-        f_right[i] = f(x)
-        
-        x[i] = x_i - h
-        f_left[i] = f(x)
-        
-        x[i] = x_i
-        
     f_val_arr = np.full_like(f_right, f_val_scalar)
 
     return _A_vector(f_right, f_val_arr, f_left, h, zero_tol, quasi_Fermat, monotonicity)
@@ -500,8 +539,13 @@ def jacobian(
     x_right = x + h_identity
     x_left = x - h_identity
 
-    f_right = np.array([f(row) for row in x_right], dtype=float).reshape(n, m)
-    f_left = np.array([f(row) for row in x_left], dtype=float).reshape(n, m)
+    if backend._CURRENT_BACKEND == "cpu_numba":
+        with ThreadPoolExecutor() as executor:
+            f_right = np.array(list(executor.map(f, x_right)), dtype=float).reshape(n, m)
+            f_left  = np.array(list(executor.map(f, x_left)),  dtype=float).reshape(n, m)
+    else:
+        f_right = np.array([f(row) for row in x_right], dtype=float).reshape(n, m)
+        f_left  = np.array([f(row) for row in x_left],  dtype=float).reshape(n, m)
 
     f_val = np.tile(f_val, (n, 1))
 
