@@ -455,17 +455,19 @@ def gradient(
 
     if backend._CURRENT_BACKEND == "cpu_numba":
         x_right_mat = x + h * np.eye(n)
-        x_left_mat  = x - h * np.eye(n)
+        x_left_mat = x - h * np.eye(n)
         with ThreadPoolExecutor() as executor:
             f_right = np.fromiter(executor.map(f, x_right_mat), dtype=float, count=n)
-            f_left  = np.fromiter(executor.map(f, x_left_mat),  dtype=float, count=n)
+            f_left = np.fromiter(executor.map(f, x_left_mat), dtype=float, count=n)
     else:
         f_right = np.empty(n, dtype=float)
-        f_left  = np.empty(n, dtype=float)
+        f_left = np.empty(n, dtype=float)
         for i in range(n):
             x_i = x[i]
-            x[i] = x_i + h; f_right[i] = f(x)
-            x[i] = x_i - h; f_left[i]  = f(x)
+            x[i] = x_i + h
+            f_right[i] = f(x)
+            x[i] = x_i - h
+            f_left[i] = f(x)
             x[i] = x_i
 
     f_val_arr = np.full_like(f_right, f_val_scalar)
@@ -542,10 +544,10 @@ def jacobian(
     if backend._CURRENT_BACKEND == "cpu_numba":
         with ThreadPoolExecutor() as executor:
             f_right = np.array(list(executor.map(f, x_right)), dtype=float).reshape(n, m)
-            f_left  = np.array(list(executor.map(f, x_left)),  dtype=float).reshape(n, m)
+            f_left = np.array(list(executor.map(f, x_left)), dtype=float).reshape(n, m)
     else:
         f_right = np.array([f(row) for row in x_right], dtype=float).reshape(n, m)
-        f_left  = np.array([f(row) for row in x_left],  dtype=float).reshape(n, m)
+        f_left = np.array([f(row) for row in x_left], dtype=float).reshape(n, m)
 
     f_val = np.tile(f_val, (n, 1))
 
