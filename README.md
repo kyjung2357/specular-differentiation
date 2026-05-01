@@ -109,10 +109,10 @@ NumPy is the default backend, while accelerated backends are optional and may re
 | Backend | Calculation | ODE | Optimization |
 |:---:|:---:|:---:|:---:|
 | NumPy | supported | supported  | supported |
-| Numba | supported | supported (recommended) | Not supported |
+| Numba | supported | supported (recommended) | not supported |
 | JAX | supported | supported | supported (recommended) |
-| TensorFlow | supported | supported | not supported |
-| PyTorch | supported | supported | not supported |
+| TensorFlow | experimental | experimental | not supported |
+| PyTorch | experimental | experimental | not supported |
 
 
 ## Applications
