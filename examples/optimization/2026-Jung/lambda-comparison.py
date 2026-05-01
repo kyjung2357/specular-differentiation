@@ -13,6 +13,8 @@ import matplotlib
 matplotlib.rcParams['mathtext.fontset'] = 'cm'
 plt.rcParams["font.family"] = "Times New Roman"
 
+specular.change_backend("cpu_numpy")
+
 # ------------------------------------------------------------------------------
 # 1. Single Trial Function 
 # ------------------------------------------------------------------------------

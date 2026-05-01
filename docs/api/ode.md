@@ -10,10 +10,11 @@ $$
 
 with the initial condition $u(t_0) = u_0(t_0)$.
 
-To solve the problem numerically, the subpackage [`specular.ode.solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/ode/solver.py) provides the following numerical schemes:
+To solve the problem numerically, the subpackage [`specular.ode`](https://github.com/kyjung2357/specular-differentiation/tree/main/specular/ode) provides the following numerical schemes:
 
 * the *specular Euler* scheme (Type 1 ~ 6)
 * the *specular trigonometric* scheme
+* the *specular Heun* scheme
 * the explicit Euler scheme
 * the implicit Euler scheme
 * the Crank-Nicolson scheme
@@ -108,7 +109,7 @@ Running the specular Euler scheme of Type 4: 100%|██████████
 Table saved: tables\specular-Euler-scheme-of-type-4.csv
 ```
 
-`.visualization()` and `.table()` are are chainable.
+`.visualization()` and `.table()` are chainable.
 
 ```python
 import specular
@@ -118,7 +119,7 @@ def F(t, u):
     return -2*u
 
 def exact_sol(t):
-return np.exp(-2*t)
+    return np.exp(-2*t)
     
 def u_0(t_0):
     return exact_sol(t_0)
@@ -166,9 +167,11 @@ def exact_sol(t):
 def u_0(t_0):
     return exact_sol(t_0)
 
+t_0 = 0.0
+h = 0.1
 u_1 = exact_sol(t_0 + h)
 
-specular.trigonometric_scheme(F=F, t_0=0.0, u_0=u_0, u_1=u_1, T=2.5, h=0.1).visualization(exact_sol=exact_sol, save_path="specular-trigonometric")
+specular.trigonometric_scheme(F=F, t_0=t_0, u_0=u_0, u_1=u_1, T=2.5, h=h).visualization(exact_sol=exact_sol, save_path="specular-trigonometric")
 ```
 
 ```text
@@ -197,9 +200,9 @@ t_0 = 0.0
 T = 0.9
 h = 0.05
 
-result_EE = specular.ode.solver.classical_scheme(F=F, t_0=t_0, u_0=u_0, T=T, h=h, scheme="explicit Euler").history()
-result_IE = specular.ode.solver.classical_scheme(F=F, t_0=t_0, u_0=u_0, T=T, h=h, scheme="implicit Euler").history()
-result_CN = specular.ode.solver.classical_scheme(F=F, t_0=t_0, u_0=u_0, T=T, h=h, scheme="Crank-Nicolson").history()
+result_EE = specular.classical_scheme(F=F, t_0=t_0, u_0=u_0, T=T, h=h, form="explicit Euler").history()
+result_IE = specular.classical_scheme(F=F, t_0=t_0, u_0=u_0, T=T, h=h, form="implicit Euler").history()
+result_CN = specular.classical_scheme(F=F, t_0=t_0, u_0=u_0, T=T, h=h, form="Crank-Nicolson").history()
 exact_values = np.array([exact_sol(t) for t in result_EE[0]])
 
 plt.figure(figsize=(5.5, 2.5))
@@ -228,6 +231,13 @@ Running Crank-Nicolson scheme: 100%|██████████| 18/18 [00:00
 ## 2.2.4. API Reference
 
 ::: specular.ode.solver
+    handler: python
+    options:
+      show_root_heading: true
+      show_source: true
+
+---
+::: specular.ode.classical_solver
     handler: python
     options:
       show_root_heading: true

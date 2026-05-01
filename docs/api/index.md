@@ -8,7 +8,9 @@ The specular package consists of the following modules and subpackages.
 
 ## [2.2. ODE](ode.md)
 
-* [`specular.ode.solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/ode/solver.py): the explicit Euler, implicit Euler, Crank-Nicolson, specular trigonometric, specular Euler schemes.
+* [`specular.ode.solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/ode/solver.py): the specular Euler, specular trigonometric, and specular Heun schemes.
+
+* [`specular.ode.classical_solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/ode/classical_solver.py): the explicit Euler, implicit Euler, and Crank-Nicolson schemes.
 
 * [`specular.ode.result`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/ode/result.py): the `ODEResult` class to store the results.
 
@@ -22,8 +24,10 @@ The specular package consists of the following modules and subpackages.
 
 * [`specular.optimization.result`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/result.py): the `OptimizationResult` class to store the results.
 
-## [2.4. JAX Backend](jax.md)
+## [2.4. Backend](backend.md)
 
-* [`specular.jax.calculation`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/jax/calculation.py): JAX implementations of the calculations in `specular.calculation`. **Lazy importing**.
+* [`specular.backend`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/backend.py): backend state management and backend selection through `specular.change_backend(...)`.
 
-* [`specular.jax.optimization.solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/jax/optimization/solver.py): JAX implementations of the numerical schemes in `specular.optimization.solver`. **Lazy importing**.
+* [`specular.calculation`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/calculation.py): routes calculation calls to the current backend.
+
+* [`specular.optimization.solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/solver.py): routes optimization calls to the current backend.

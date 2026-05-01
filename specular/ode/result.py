@@ -1,7 +1,5 @@
 import os
-import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from typing import Optional, Callable, Tuple
 
 class ODEResult:
@@ -33,6 +31,8 @@ class ODEResult:
         exact_sol: Optional[Callable[[float], float]] = None,
         save_path: Optional[str] = None
     ):
+        import matplotlib.pyplot as plt
+
         plt.figure(figsize=figure_size)
         
         if exact_sol is not None:
@@ -72,7 +72,8 @@ class ODEResult:
         exact_sol: Optional[Callable[[float], float]] = None,
         save_path: Optional[str] = None
     ):
-        
+        import pandas as pd
+
         result = pd.DataFrame(self.numerical_sol, index=self.time_grid, columns=["Numerical solution"])
         result.index.name = "Time"
 

@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 from .result import OptimizationResult
 from .step_size import StepSize
 import time
-import torch
 import numpy as np
-from scipy.optimize import minimize
-from typing import Callable, Union
+from typing import Callable, Union, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import torch
 
 def gradient_descent_method(
     f_torch: Callable[[torch.Tensor], torch.Tensor], 
@@ -18,6 +21,7 @@ def gradient_descent_method(
     Returns:
         The result of the optimization containing the solution, function value, number of iterations, runtime, and history.
     """
+    import torch
     start_time = time.time()
     
     x = torch.tensor(x_0, dtype=torch.float32, requires_grad=True)
@@ -65,6 +69,7 @@ def Adam(
     Returns:
         The result of the optimization containing the solution, function value, number of iterations, runtime, and history.
     """
+    import torch
     start_time = time.time()
     
     x = torch.tensor(x_0, dtype=torch.float32, requires_grad=True)
@@ -116,6 +121,8 @@ def BFGS(
     Returns:
         The result of the optimization containing the solution, function value, number of iterations, runtime, and history.
     """
+    from scipy.optimize import minimize
+
     start_time = time.time()
     
     x_history = [np.array(x_0).copy()]

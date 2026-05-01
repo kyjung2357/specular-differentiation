@@ -7,130 +7,31 @@ u'(t) = F(t, u(t))  \\qquad \\text{(IVP)}
 $$
 
 with the initial condition $u(t_0) = u_0(t_0)$.
-To solve (IVP) numerically, this module provides implementations of the specular Euler schemes, the Crank-Nicolson scheme, and the specular trigonometric scheme.
+To solve (IVP) numerically, this module provides implementations of the specular Euler schemes and the specular trigonometric scheme.
 """
 
 import math
+from typing import Callable
+
 import numpy as np
-from tqdm import tqdm 
-from typing import Optional, Callable, Tuple, List
+
+from ._num_steps import _num_steps
 from .result import ODEResult
 from ..calculation import A
 
-SUPPORTED_SCHEMES = ['explicit Euler', 'implicit Euler', 'Crank-Nicolson']
-
-def classical_scheme(
-    F: Callable[[float, float], float], 
-    t_0: float, 
-    u_0: Callable[[float], float] | float,
-    T: float, 
-    h: float = 1e-6,
-    form: str = 'explicit Euler',
-    tol: float = 1e-6, 
-    max_iter: int = 100
-) -> ODEResult:
-    """
-    Solves an initial value problem (IVP) using classical numerical schemes.
-    Supported forms: explicit Euler, implicit Euler, and Crank-Nicolson.
-
-    Parameters:
-        F (callable):
-            The given source function ``F`` in (IVP).
-            The calling signature should be ``F(t, u)`` where ``t`` and ``u`` are scalars.
-        t_0 (float):
-            The starting time of the simulation.
-        u_0 (callable):
-            The given initial condition ``u_0`` in (IVP).
-        T (float):
-            The end time of the simulation.
-        h (float, optional):
-            Mesh size used in the finite difference approximation. Must be positive.
-        form (str | optional):
-            The form of the numerical scheme. 
-            Options: ``'explicit_Euler'``, ``'implicit_Euler'``, ``'Crank-Nicolson'``.
-        tol (float | optional):
-            Tolerance for fixed-point iteration.
-            Used for implicit Euler and Crank-Nicolson schemes.
-        max_iter (int | optional):
-            Max iterations for fixed-point solver.
-
-    Returns:
-        An object containing ``(t, u)`` data and the scheme name.
-    """
-    t_curr = t_0
-    u_curr = u_0(t_0) if callable(u_0) else u_0 
-
-    all_history = {}
-    t_history = [t_curr]
-    u_history = [u_curr]
-
-    steps = int((T - t_0) / h)
+try:
+    from tqdm import tqdm
+except ImportError:
+    def tqdm(iterable, *args, **kwargs):
+        return iterable
     
-    if form == "explicit Euler":
-        for _ in tqdm(range(steps), desc="Running the explicit Euler scheme"):
-            t_curr, u_curr = t_curr + h, u_curr + h*F(t_curr, u_curr) # type: ignore
-
-            t_history.append(t_curr) 
-            u_history.append(u_curr) 
-
-    elif form == "implicit Euler":
-        for k in tqdm(range(steps), desc="Running the implicit Euler scheme"):
-            t_next = t_curr + h
-
-            # Initial guess: explicit Euler 
-            u_temp = u_curr + h*F(t_curr, u_curr) # type: ignore
-            u_guess = u_temp
-
-            # Fixed-point iteration
-            for _ in range(max_iter):
-                u_guess = u_curr + h*F(t_next, u_temp)
-                if np.linalg.norm(u_guess - u_temp) < tol:
-                    break
-                u_temp = u_guess
-            else:
-                print(f"Warning: step {k+1} did not converge.")
-
-            t_curr, u_curr = t_next, u_guess  
-            t_history.append(t_curr)
-            u_history.append(u_curr)
-    
-    elif form == "Crank-Nicolson":
-        for k in tqdm(range(steps), desc="Running Crank-Nicolson scheme"):
-            t_next = t_curr + h
-
-            F_curr = F(t_curr, u_curr)
-
-            # Initial guess: explicit Euler
-            u_temp = u_curr + h * F_curr
-            u_guess = u_temp
-
-            # Fixed-point iteration
-            for _ in range(max_iter):
-                f_guess = F(t_next, u_temp)
-                u_guess = u_curr + 0.5 * h * (F_curr + f_guess)
-
-                if np.linalg.norm(u_guess - u_temp) < tol:
-                    break
-
-                u_temp = u_guess
-            else:
-                print(f"Warning: step {k+1} did not converge.")
-
-            t_curr, u_curr = t_next, u_guess
-            t_history.append(t_curr)
-            u_history.append(u_curr)
-            
-    else:
-        raise ValueError(f"Unknown form '{form}'. Supported forms: {SUPPORTED_SCHEMES}")
-    
-    all_history["variables"] = np.array(t_history)
-    all_history["values"] = np.array(u_history)
-
-    return ODEResult(
-        scheme= form + " scheme",
-        h=h,
-        all_history=all_history
-    )
+def _safe_tan(angle: float, tol: float = 1e-12) -> float:
+    cos_angle = math.cos(angle)
+    if abs(cos_angle) <= tol:
+        raise OverflowError(
+            f"tan is singular or numerically unstable at angle={angle}."
+        )
+    return math.tan(angle)
 
 def Euler_scheme(
     of_Type: int | str,
@@ -139,8 +40,8 @@ def Euler_scheme(
     u_0: Callable[[float], float] | float,
     T: float, 
     h: float = 1e-6,
-    u_1: Callable[[float], float] | float | bool = False,
-    tol: float = 1e-6, 
+    u_1: Callable[[float], float] | float | None = None,
+    tol: float = 1e-12, 
     zero_tol: float = 1e-8,
     max_iter: int = 100
 ) -> ODEResult:
@@ -162,10 +63,9 @@ def Euler_scheme(
             The end time of the simulation.
         h (float, optional):
             Mesh size used in the finite difference approximation. Must be positive.
-        u_1 (callable | float | bool):
-            The numerical solution at the time ``t_1 = t_0 + h`` for Types 1, 2, and 3.
-            If a float or callable is provided, it is used as the exact value.
-            If False, the explicit Euler scheme is applied.
+        u_1 (callable | float | None):
+            The numerical solution at the time ``t_1 = t_0 + h``.
+            If a float or callable is provided, it is used as the first-step value.
         tol (float | optional):
             Tolerance for fixed-point iteration
             Used for Types 3, 4, 5, and 6.
@@ -180,7 +80,7 @@ def Euler_scheme(
     Type = str(of_Type)
 
     scheme = 'specular Euler scheme of Type ' + Type
-    steps = int((T - t_0) / h)
+    steps = _num_steps(t_0, T, h)
 
     all_history = {}
     t_history = []
@@ -195,9 +95,11 @@ def Euler_scheme(
 
         t_curr = t_prev + h
 
-        if u_1 == False:
+        if u_1 is None:
             # explicit Euler to get u_1
             u_curr = u_prev + h * F(t_prev, u_prev)
+        elif callable(u_1):
+            u_curr = u_1(t_curr)
         else:
             u_curr = u_1
         
@@ -397,7 +299,7 @@ def _of_Type_6(F, h, tol, zero_tol, max_iter, steps, t_curr, u_curr, t_history, 
         u_history.append(u_curr)
 
 def trigonometric_scheme(
-    F: Callable[[float], float],
+    F: Callable[[float, float], float],
     t_0: float, 
     u_0: Callable[[float], float] | float,
     u_1: Callable[[float], float] | float,
@@ -415,10 +317,9 @@ def trigonometric_scheme(
             The starting time of the simulation.
         u_0 (callable):
             The given initial condition ``u_0`` in (IVP).
-        u_1 (callable | float | bool):
-            The numerical solution at the time ``t_1 = t_0 + h`` for Types 1, 2, and 3.
-            If a float or callable is provided, it is used as the exact value.
-            If False, the explicit Euler scheme is applied.
+        u_1 (callable | float):
+            The numerical solution at the time ``t_1 = t_0 + h``.
+            If a float or callable is provided, it is used as the first-step value.
         T (float):
             The end time of the simulation.
         h (float, optional):
@@ -437,11 +338,11 @@ def trigonometric_scheme(
     t_history = [t_prev, t_curr]
     u_history = [u_prev, u_curr]
 
-    steps = int((T - t_0) / h)
+    steps = _num_steps(t_0, T, h)
 
-    for m in tqdm(range(steps - 1), desc="Running specular trigonometric scheme"):
+    for _ in tqdm(range(steps - 1), desc="Running specular trigonometric scheme"):
         t_next = t_curr + h
-        u_next = u_curr + h*math.tan(2*math.atan(F(t_curr, u_curr)) - math.atan((u_curr - u_prev) / h)) # type: ignore
+        u_next = u_curr + h * math.tan(2 * math.atan(F(t_curr, u_curr)) - math.atan((u_curr - u_prev) / h))
 
         t_history.append(t_next)
         u_history.append(u_next)
@@ -458,3 +359,47 @@ def trigonometric_scheme(
         all_history=all_history
     )
 
+def Heun_scheme(
+    F: Callable[[float, float], float],
+    t_0: float,
+    u_0: Callable[[float], float] | float,
+    T: float,
+    h: float = 1e-6,
+    zero_tol: float = 1e-8,
+) -> ODEResult:
+    """
+    Solves an initial value problem using the specular Heun scheme.
+
+    This is the one-step, two-stage scheme obtained from one fixed-point iteration of the specular Euler scheme of Type 6.
+    """
+    t_curr = t_0
+    u_curr = u_0(t_0) if callable(u_0) else u_0
+
+    all_history = {}
+    t_history = [t_curr]
+    u_history = [u_curr]
+
+    steps = _num_steps(t_0, T, h)
+
+    for _ in tqdm(range(steps), desc="Running the specular Heun scheme"):
+        t_next = t_curr + h
+
+        beta = F(t_curr, u_curr)
+        u_predictor = u_curr + h * beta
+        alpha = F(t_next, u_predictor)
+
+        u_next = u_curr + h * A(alpha, beta, zero_tol=zero_tol)
+
+        t_curr, u_curr = t_next, u_next
+
+        t_history.append(t_curr)
+        u_history.append(u_curr)
+
+    all_history["variables"] = np.array(t_history)
+    all_history["values"] = np.array(u_history)
+
+    return ODEResult(
+        scheme="specular Heun scheme",
+        h=h,
+        all_history=all_history,
+    )

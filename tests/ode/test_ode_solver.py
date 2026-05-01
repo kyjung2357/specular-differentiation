@@ -39,6 +39,18 @@ def test_Euler_scheme_Type1_simple():
     max_error = res.total_error(exact_sol, norm='max')
     assert max_error < 0.05
 
+def test_Euler_scheme_accepts_zero_u1():
+    F = lambda t, u: 1.0
+    res = specular.Euler_scheme("1", F, t_0=0.0, u_0=1.0, T=0.2, h=0.1, u_1=0.0)
+    _, values = res.history()
+    assert values[1] == 0.0
+
+def test_Euler_scheme_evaluates_callable_u1():
+    F = lambda t, u: 1.0
+    res = specular.Euler_scheme("1", F, t_0=0.0, u_0=1.0, T=0.2, h=0.1, u_1=lambda t: 2.0)
+    _, values = res.history()
+    assert values[1] == 2.0
+
 def test_ODEResult_methods():
     """
     Check if ODEResult helper methods (table, etc.) run without errors.

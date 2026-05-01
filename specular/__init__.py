@@ -1,10 +1,9 @@
-from . import backend
-from . import ode
-from . import optimization
+from importlib import import_module
+from typing import TYPE_CHECKING
 
-from .backend import(
+from .backend import (
     backend_info,
-    change_backend
+    change_backend,
 )
 
 from .calculation import (
@@ -13,24 +12,50 @@ from .calculation import (
     directional_derivative,
     partial_derivative,
     gradient,
-    jacobian
+    jacobian,
 )
 
-from .ode import (
-    classical_scheme,
-    Euler_scheme,
-    trigonometric_scheme
-)
-
-from .optimization import (
-    StepSize,
-    gradient_method
-)
-
-__version__ = "1.0.9"
+__version__ = "1.1.0"
 __license__ = "MIT"
 __author__ = "Kiyuob Jung"
 __email__ = "kyjung@msu.edu"
+
+if TYPE_CHECKING:
+    from . import ode as ode
+    from . import optimization as optimization
+    from .ode import (
+    classical_scheme,
+    Euler_scheme,
+    trigonometric_scheme,
+    Heun_scheme,
+    )
+    from .optimization import (
+        StepSize,
+        gradient_method,
+    )
+
+_LAZY_ATTRS = {
+    "ode": ("specular.ode", None),
+    "classical_scheme": ("specular.ode", "classical_scheme"),
+    "Euler_scheme": ("specular.ode", "Euler_scheme"),
+    "trigonometric_scheme": ("specular.ode", "trigonometric_scheme"),
+    "Heun_scheme": ("specular.ode", "Heun_scheme"),
+    "optimization": ("specular.optimization", None),
+    "StepSize": ("specular.optimization", "StepSize"),
+    "gradient_method": ("specular.optimization", "gradient_method"),
+}
+
+
+def __getattr__(name):
+    if name not in _LAZY_ATTRS:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+    module_name, attr_name = _LAZY_ATTRS[name]
+    module = import_module(module_name)
+    value = module if attr_name is None else getattr(module, attr_name)
+    globals()[name] = value
+    return value
+
 
 __all__ = [
     "backend_info",
@@ -45,8 +70,13 @@ __all__ = [
     "classical_scheme",
     "Euler_scheme",
     "trigonometric_scheme",
+    "Heun_scheme",
     "optimization",
     "StepSize",
     "gradient_method",
-    "__version__"
+    "__version__",
 ]
+
+
+def __dir__():
+    return sorted(__all__)

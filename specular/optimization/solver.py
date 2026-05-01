@@ -1,22 +1,34 @@
 import numpy as np
-from tqdm import tqdm
-import time
-import inspect
-from typing import Callable, TypeAlias, Sequence
+from typing import Any, Callable, Sequence, TypeAlias, cast
+
+from .. import backend
 from .result import OptimizationResult
 from .step_size import StepSize
-from ..calculation import derivative, gradient
 
-SUPPORTED_METHODS = ['specular gradient', 'implicit', 'stochastic', 'hybrid']
+ComponentFunc: TypeAlias = Callable[
+    [int | float | np.number | list | np.ndarray],
+    int | float | np.number,
+]
 
-ComponentFunc: TypeAlias = Callable[[int | float | np.number | list | np.ndarray], int | float | np.number]
+
+def _get_solver_module():
+    if backend._CURRENT_BACKEND in {"cpu_jax", "gpu_jax"}:
+        from . import _solver_jax as mod
+    else:
+        from . import _solver_numpy as mod
+
+    return mod
+
 
 def gradient_method(
-    f: Callable[[int | float | np.number | list | np.ndarray], int | float | np.number],
-    x_0: int | float | list | np.ndarray,
+    f: Callable[
+        [int | float | np.number | list | np.ndarray],
+        int | float | np.number,
+    ],
+    x_0: Any,
     step_size: StepSize,
     h: float = 1e-6,
-    form: str = 'specular gradient',
+    form: str = "specular gradient",
     tol: float = 1e-6,
     zero_tol: float = 1e-8,
     max_iter: int = 1000,
@@ -24,301 +36,25 @@ def gradient_method(
     m: int = 1,
     switch_iter: int | None = 2,
     record_history: bool = True,
-    print_bar: bool = True
+    print_bar: bool = True,
 ) -> OptimizationResult:
     """
-    The specular gradient method for minimizing a nonsmooth convex function.
-
-    Parameters:
-        f (callable):
-            The objective function to minimize.
-        x_0 (int | float | list | np.ndarray):
-            The starting point for the optimization.
-        step_size (StepSize):
-            The step size `h_k`.
-        h (float, optional):
-            Mesh size used in the finite difference approximation. Must be positive.
-        form (str, optional):
-            The form of the specular gradient method.
-            Supported forms: ``'specular gradient'``, ``'implicit'``, ``'stochastic'``, ``'hybrid'``.
-        tol (float, optional):
-            Tolerance for iterations.
-        zero_tol (float, optional):
-            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
-        max_iter (int, optional):
-            Maximum number of iterations.
-        f_j (sequence of callable | callable | None, optional):
-            The component function of ``f``.
-            Used for the stochastic and hybrid forms to compute a random component of the objective function.
-
-            * If a sequence of callables is provided, each callable should accept a single argument (the variable `x`).
-
-            * If a single callable is provided, it should accept two arguments: the variable `x` and an index `j`, and return the `j`-th component function value at `x`.
-        m (int, optional):
-            The number of component functions.
-            Used for the stochastic and hybrid forms.
-        switch_iter (int | None, optional):
-            The iteration to switch from a method to another for the hybrid form.
-            Used for the hybrid form only.
-        record_history (bool, optional):
-            Whether to record the history of variables and function values.
-        print_bar (bool, optional):
-            Whether to print the progress bar.
-
-    Returns:
-        The result of the optimization containing the solution, function value, number of iterations, runtime, and history.
-    
-    Raises:
-        ValueError:
-            If ``h`` is not positive.
-        TypeError:
-            If an unknown ``form`` is provided.
+    Minimize a nonsmooth convex function using the current backend.
     """
+    impl = cast(Any, _get_solver_module().gradient_method)
 
-    if h is None or h <= 0:
-        raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
-    
-    x = np.array(x_0, dtype=float).copy()
-    n = x.size
-    
-    all_history = {}
-    x_history = []
-    f_history = []
-
-    start_time = time.time()
-
-    # the n-dimensional case
-    if n > 1:
-        if form == 'specular gradient':
-            res_x, res_f, res_k = _vector(f, f_history, x, x_history, step_size, h, tol, zero_tol, max_iter, record_history, print_bar)
-
-        elif form == 'stochastic':
-            if f_j is None:
-                raise ValueError("Component functions 'f_j' must be provided for the stochastic form.")
-
-            form = 'stochastic specular gradient'
-            res_x, res_f, res_k = _vector_stochastic(f, f_history, x, x_history, step_size, h, tol, zero_tol, f_j, m, max_iter, record_history, print_bar) # type: ignore
-
-        elif form == 'hybrid':
-            if f_j is None:
-                raise ValueError("Component functions 'f_j' must be provided for the stochastic form.")
-            
-            # Phase 1: deterministic
-            form = 'hybrid specular gradient'
-            switch_iter = switch_iter if switch_iter is not None else max_iter
-            remaining_iter = max_iter - switch_iter
-
-            # Phase 2: stochastic
-            res_x, res_f, res_k = _vector(f, f_history, x, x_history, step_size, h, tol, zero_tol, switch_iter, record_history, print_bar)
-            res_x, res_f, res_k = _vector_stochastic(f, f_history, res_x, x_history, step_size, h, tol, zero_tol, f_j, m, remaining_iter, record_history, print_bar) # type: ignore
-
-        else:
-            raise TypeError(f"Unknown form '{form}'. Supported forms: {SUPPORTED_METHODS}")
-
-    # the one-dimensional case
-    elif n == 1:
-        x = x.item()
-
-        if form == 'specular gradient':
-            res_x, res_f, res_k = _scalar(f, f_history, x, x_history, step_size, h, tol, zero_tol, max_iter, record_history, print_bar)
-            
-        elif form == 'implicit':
-            form = 'implicit specular gradient'
-            res_x, res_f, res_k = _scalar_implicit(f, f_history, x, x_history, step_size, h, tol, max_iter, record_history, print_bar)
-            
-        else:
-            raise TypeError(f"Unknown form '{form}'. Supported forms: {SUPPORTED_METHODS}")
-    
-    else:
-        raise TypeError(f"Unknown form '{form}'. Supported forms: {SUPPORTED_METHODS}")
-    
-    runtime = time.time() - start_time
-
-    if record_history:
-        all_history["variables"] = x_history
-        all_history["values"] = f_history
-
-    return OptimizationResult(
-        method=form,
-        solution=res_x,
-        func_val=res_f,
-        iteration=res_k,
-        runtime=runtime,
-        all_history=all_history
-    ) 
-
-def _scalar(
-    f: Callable[[int | float | np.number], int | float | np.number | list | np.ndarray],
-    f_history: list,
-    x: int | float,
-    x_history: list,
-    step_size: StepSize,
-    h: float,
-    tol: float,
-    zero_tol: float,
-    max_iter: int,
-    record_history: bool,
-    print_bar: bool
-) -> tuple:
-    """
-    Scalar implementation of ``specular.gradient_method``.
-    The specular gradient method in the one-dimensional case.
-    """
-    k = 1
-
-    for _ in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method", disable=not print_bar, leave=False):
-        if record_history is True:
-            x_history.append(x)
-            f_history.append(f(x))
-
-        specular_derivative = derivative(f=f, x=x, h=h, zero_tol=zero_tol)
-        norm = np.linalg.norm(specular_derivative)
-        if norm < tol:
-            break
-        
-        x -= step_size(k)*(specular_derivative / norm) # type: ignore
-        k += 1
-    
-    return x, f(x), k
-
-def _scalar_implicit(
-    f: Callable[[int | float | np.number], int | float | np.number],
-    f_history: list,
-    x: int | float,
-    x_history: list,
-    step_size: StepSize,
-    h: float,
-    tol: float,
-    max_iter: int,
-    record_history: bool,
-    print_bar: bool
-) -> tuple:
-    """
-    Scalar implementation of ``specular.gradient_method``.
-    The implicit specular gradient method in the one-dimensional case.
-    """
-    k = 1
-
-    for _ in tqdm(range(1, max_iter + 1), desc="Running the implicit specular gradient method", disable=not print_bar, leave=False):
-        if record_history is True:
-            x_history.append(x)
-            f_history.append(f(x))
-
-        sum_of_one_sided_derivatives = (f(x + h) - f(x - h)) / h
-
-        if abs(sum_of_one_sided_derivatives) < tol:
-            break
-        
-        x -= step_size(k)*(sum_of_one_sided_derivatives / abs(sum_of_one_sided_derivatives))
-        k += 1
-    
-    return x, f(x), k
-
-def _vector(
-    f: Callable[[list | np.ndarray], int | float | np.number],
-    f_history: list,
-    x: list | np.ndarray,
-    x_history: list,
-    step_size: StepSize,
-    h: float,
-    tol: float,
-    zero_tol: float,
-    max_iter: int, 
-    record_history: bool,
-    print_bar: bool
-) -> tuple:
-    """
-    Vector implementation of ``specular.gradient_method``.
-    The specular gradient method in the n-dimensional case.
-    """
-    k = 1
-
-    for _ in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method", disable=not print_bar, leave=False):
-        if record_history is True:
-            x_history.append(x)
-            f_history.append(f(x))
-
-        computation = gradient(f=f, x=x, h=h, zero_tol=zero_tol, quasi_Fermat=True, monotonicity=False)
-        specular_gradient = computation[0]
-        norm = np.linalg.norm(specular_gradient)
-
-        if norm < tol:
-            if np.any(computation[1] > 0): 
-                pass
-            else:
-                break
-
-        x -= step_size(k)*(specular_gradient / norm)
-        k += 1
-    
-    return x, f(x), k
-
-def _vector_stochastic(
-    f: Callable[[list | np.ndarray], int | float | np.number],
-    f_history: list,
-    x: list | np.ndarray,
-    x_history: list,
-    step_size: StepSize,
-    h: float,
-    tol: float,
-    zero_tol: float,
-    f_j: Sequence[ComponentFunc],
-    m: int = 1,
-    max_iter: int = 1000, 
-    record_history: bool = True,
-    print_bar: bool = True
-) -> tuple:
-    """
-    Vector implementation of ``specular.gradient_method``.
-    The stochastic specular gradient method in the $n$-dimensional case.
-    """
-    k = 1
-
-    for _ in tqdm(range(1, max_iter + 1), desc="Running the stochastic specular gradient method", disable=not print_bar, leave=False):
-        if record_history is True:
-            x_history.append(x)
-            f_history.append(f(x)) 
-
-        if hasattr(f_j, '__len__'):
-            num_components = len(f_j)
-        else:
-            num_components = m
-        
-        # A random index j is selected at each iteration
-        j = np.random.randint(num_components)
-
-        try:
-            component_func = f_j[j]
-
-        except (TypeError, IndexError):
-            if not callable(f_j):
-                raise TypeError(f"f_j must be a list of functions or a callable. Got {type(f_j)} instead.")
-            
-            sig = inspect.signature(f_j)
-            params = list(sig.parameters.values())
-
-            has_varargs = any(p.kind in (p.VAR_POSITIONAL, p.VAR_KEYWORD) for p in params)
-
-            if len(params) < 2 and not has_varargs:
-                raise ValueError(
-                    f"The function f_j must accept at least 2 arguments (x and index). "
-                    f"Current signature is: {sig}"
-                )
-
-            component_func = lambda x_val: f_j(x_val, j)
-
-        computation = gradient(f=component_func, x=x, h=h, zero_tol=zero_tol, quasi_Fermat=True, monotonicity=False)
-
-        component_specular_gradient = computation[0]
-        norm = np.linalg.norm(component_specular_gradient)
-
-        if norm < tol:
-            if np.any(computation[1] > 1): 
-                pass
-            else:
-                break
-
-        x -= step_size(k)*(component_specular_gradient / norm)
-        k += 1
-
-    return x, f(x), k
+    return impl(
+        f=f,
+        x_0=x_0,
+        step_size=step_size,
+        h=h,
+        form=form,
+        tol=tol,
+        zero_tol=zero_tol,
+        max_iter=max_iter,
+        f_j=f_j,
+        m=m,
+        switch_iter=switch_iter,
+        record_history=record_history,
+        print_bar=print_bar,
+    )

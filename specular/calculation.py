@@ -1,428 +1,118 @@
 """
 This module provides implementations of specular directional derivatives, specular partial derivatives, specular derivatives, specular gradients, and specular Jacobians.
-
-The calculations are based on the function $\\mathcal{A}:\\mathbb{R}^2 \\to \\mathbb{R}$ defined by 
-
-$$
-\\mathcal{A}(\\alpha, \\beta) =
-\\begin{cases}
-    \\frac{\\alpha \\beta - 1 + \\sqrt{(1 + \\alpha^2)(1 + \\beta^2)}}{\\alpha + \\beta} & \\text{if } \\alpha + \\beta \\neq 0, \\\\
-    0 & \\text{otherwise.}
-\\end{cases}
-$$
-
-The parameters $\\alpha$ and $\\beta$ are intended to represent right and left derivatives.
-In the code, computations are based on the finite difference approximation of one-sided (directional) derivatives:
-
-$$
-\\alpha \\approx \\frac{f(x + hv) - f(x)}{h}
-\\qquad \\text{and} \\qquad
-\\beta \\approx \\frac{f(x) - f(x - hv)}{h},
-$$
-
-where a function $f : \\mathbb{R}^n \\to \\mathbb{R}$, a real number $h > 0$, and vectors $x, v \\in \\mathbb{R}^n$.
 """
-
-from typing import Callable, overload, Literal, List
-import math
 import numpy as np
-from concurrent.futures import ThreadPoolExecutor
+import numpy.typing as npt
+from types import ModuleType
+from typing import Callable, List
+
 from . import backend
 
+ArrayLike = npt.ArrayLike
+
+_loaded_backends: dict[str, ModuleType] = {}
+
+def _get_backend_module() -> ModuleType:
+    """Return the implementation module for the current backend."""
+    current = backend._CURRENT_BACKEND
+
+    if current not in _loaded_backends:
+        if current == "cpu_numpy":
+            from . import _calculation_numpy as mod
+        elif current == "cpu_numba":
+            from . import _calculation_numba as mod
+        elif current in {"cpu_jax", "gpu_jax"}:
+            from . import _calculation_jax as mod
+        elif current in {"cpu_tensorflow", "gpu_tensorflow"}:
+            from . import _calculation_tensorflow as mod
+        elif current in {"cpu_pytorch", "gpu_pytorch"}:
+            from . import _calculation_pytorch as mod
+        else:
+            raise ValueError(f"Unknown backend: {current}")
+
+        _loaded_backends[current] = mod
+
+    return _loaded_backends[current]
+
 def A(
-    alpha: float | np.number | int,
-    beta: float | np.number | int,
-    zero_tol: float = 1e-8
-) -> float:
-    """
-    Compute the function $\\mathcal{A}$ from one-sided directional derivatives.
-
-    Parameters:
-        alpha (float | np.number | int):
-            One-sided directional derivative.
-        beta (float | np.number | int):
-            One-sided directional derivative.
-        zero_tol (float, optional):
-            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
-
-    Returns:
-        The function $\\mathcal{A}$.
+    alpha: "float | np.number | int | np.ndarray",
+    beta: "float | np.number | int | np.ndarray",
+    zero_tol: float = 1e-8,
+    quasi_Fermat: bool = False,
+    monotonicity: bool = False,
+) -> "float | np.ndarray | list[float] | list[np.ndarray]":
+    """Compute the specular function A(alpha, beta).
 
     Examples:
         >>> import specular
-        >>> specular.calculation.A(1.0, 2.0)
+        >>> specular.A(1.0, 2.0)
         1.3874258867227933
     """
-    denominator = alpha + beta
-
-    if abs(denominator) <= zero_tol:
-        return 0.0
-    
-    numerator = alpha * beta - 1.0 + math.sqrt((1.0 + alpha**2) * (1.0 + beta**2))
-
-    return numerator / denominator
-
-
-@overload
-def _A_vector(
-    f_right: np.ndarray,
-    f_val: np.ndarray,
-    f_left: np.ndarray,
-    h: float,
-    zero_tol: float,
-    quasi_Fermat: Literal[True],
-    monotonicity: bool
-) -> List[np.ndarray]: ...
-
-
-@overload
-def _A_vector(
-    f_right: np.ndarray,
-    f_val: np.ndarray,
-    f_left: np.ndarray,
-    h: float,
-    zero_tol: float,
-    quasi_Fermat: bool,
-    monotonicity: Literal[True]
-) -> List[np.ndarray]: ...
-
-
-@overload
-def _A_vector(
-    f_right: np.ndarray,
-    f_val: np.ndarray,
-    f_left: np.ndarray,
-    h: float,
-    zero_tol: float,
-    quasi_Fermat: Literal[False],
-    monotonicity: Literal[False]
-) -> np.ndarray: ...
-
-
-def _A_vector_core_numpy(
-    f_right: np.ndarray,
-    f_val: np.ndarray,
-    f_left: np.ndarray,
-    h: float,
-    zero_tol: float,
-) -> tuple:
-    # Algebraically equivalent to A(alpha, beta) via (alpha+beta)^2 + (alpha*beta-1)^2 = (1+alpha^2)(1+beta^2).
-    # omega = (alpha*beta - 1) / (alpha+beta), then A = omega + sign(alpha+beta) * sqrt(1 + omega^2).
-    # This rearrangement avoids dividing by h twice, improving stability for small h.
-    numerator = (f_right - f_val) * (f_val - f_left) - h * h
-    denominator = (f_right - f_left) * h
-    mask = np.abs(denominator) > zero_tol * h
-    omega = np.zeros_like(denominator)
-    np.divide(numerator, denominator, out=omega, where=mask)
-    A_vals = np.where(mask, omega + np.sign(denominator) * np.sqrt(1.0 + omega**2), 0.0)
-    return A_vals, numerator, denominator, mask
-
-
-if backend._CURRENT_BACKEND == "cpu_numba":
-    from numba import njit, prange
-    @njit(parallel=True)
-    def _A_vector_core_parallel(
-        f_right: np.ndarray,
-        f_val: np.ndarray,
-        f_left: np.ndarray,
-        h: float,
-        zero_tol: float,
-    ):
-        n = f_right.shape[0]
-        numerator = (f_right - f_val) * (f_val - f_left) - h * h
-        denominator = (f_right - f_left) * h
-        mask = np.abs(denominator) > zero_tol * h
-        A_vals = np.zeros(n)
-        for i in prange(n):
-            if mask[i]:
-                omega_i = numerator[i] / denominator[i]
-                sign_d = 1.0 if denominator[i] > 0.0 else -1.0
-                A_vals[i] = omega_i + sign_d * math.sqrt(1.0 + omega_i * omega_i)
-        return A_vals, numerator, denominator, mask
-
-
-def _A_vector(
-    f_right: np.ndarray, 
-    f_val: np.ndarray, 
-    f_left: np.ndarray, 
-    h: float = 1e-6, 
-    zero_tol: float = 1e-8,
-    quasi_Fermat: bool = False,
-    monotonicity: bool = False
-) -> np.ndarray | List[np.ndarray]:
-    """Vector implementation of ``A``."""
-    if backend._CURRENT_BACKEND == "cpu_numba" and f_right.ndim == 1:
-        A_vals, numerator, denominator, mask = _A_vector_core_parallel(f_right, f_val, f_left, h, zero_tol)
-    else:
-        A_vals, numerator, denominator, mask = _A_vector_core_numpy(f_right, f_val, f_left, h, zero_tol)
-
-    returns = [A_vals]
-
-    if quasi_Fermat:
-        returns.append(np.where(mask, np.sign(numerator), 0.0))
-
-    if monotonicity:
-        returns.append(np.where(mask, np.sign(denominator), 0.0))
-
-    if len(returns) == 1:
-        return returns[0]
-    
-    return returns
-
+    return _get_backend_module().A(
+        alpha, beta, zero_tol, quasi_Fermat, monotonicity
+    )
 
 def derivative(
-    f: Callable[[int | float | np.number], int | float | np.number | list | np.ndarray],
-    x: float | np.number | int,
+    f: "Callable[[int | float | np.number], int | float | np.number | list | np.ndarray]",
+    x: ArrayLike,
     h: float = 1e-6,
     zero_tol: float = 1e-8,
     quasi_Fermat: bool = False,
     monotonicity: bool = False
-) -> float | np.ndarray | List[np.ndarray]:
-    """
-    Approximates the specular derivative of a function $f:\\mathbb{R} \\to \\mathbb{R}^m$ at a scalar point $x$.
-    
-    If ``f`` returns a scalar, the result is a float.
+) -> "float | np.ndarray | list[float] | list[np.ndarray]":
+    """Approximate the specular derivative of f at scalar x.
 
-    If ``f`` returns a vector, the result is a vector (component-wise derivative).
-
-    Parameters:
-        f (callable):
-            A function of a single real variable, returning a scalar or a vector.
-        x (float | np.number | int):
-            The point at which the derivative is evaluated.
-        h (float, optional):
-            Mesh size used in the finite difference approximation. Must be positive.
-        zero_tol (float, optional):
-            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
-        quasi_Fermat (bool, optional):
-            If True, additionally returns the sign of the quasi-Fermat condition indicator:
-            ``(f_right - f_val) * (f_val - f_left) - h**2``.
-            This corresponds to the sign of **(product of one-sided derivatives) - 1**.
-        monotonicity (bool, optional):
-            If True, returns the sign of the monotonicity indicator:
-            ``f_right - f_left``.
-            This corresponds to the sign of the **sum of one-sided derivatives**.
-
-    Returns:
-        The approximated specular derivative of ``f`` at ``x``.
-
-    Raises:
-        TypeError:
-            If the type of ``x`` is not a scalar.
-        ValueError:
-            If ``h`` is not positive.
-    
     Examples:
         >>> import specular
-        >>> f = lambda x: max(x, 0.0)
-        >>> specular.derivative(f, x=0.0)
-        0.41421356237309515
         >>> f = lambda x: abs(x)
         >>> specular.derivative(f, x=0.0)
         0.0
     """
     if h <= 0:
         raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
-    
-    try:
-        x = float(x)
 
-    except TypeError:
-        raise TypeError(
-            f"Input 'x' must be a scalar. "
-            f"Got {type(x).__name__}. "
-            "Use `specular.directional_derivative`, `specular.gradient`, or `specular.jacobian` for vectors inputs."
-        )
-
-    f_val = f(x)
-
-    # f is real-valued
-    if np.ndim(f_val) == 0:
-        alpha = (f(x + h) - f_val) / h # type: ignore
-        beta = (f_val - f(x - h)) / h # type: ignore
-        
-        return A(alpha, beta, zero_tol=zero_tol) # type: ignore
-
-    # f is vector-valued
-    else:
-        f_right = np.asarray(f(x + h), dtype=float)
-        f_val = np.asarray(f_val, dtype=float)
-        f_left = np.asarray(f(x - h), dtype=float)
-        
-        return _A_vector(f_right, f_val, f_left, h, zero_tol, quasi_Fermat, monotonicity)
+    return _get_backend_module().derivative(
+        f, x, h, zero_tol, quasi_Fermat, monotonicity
+    )
 
 
 def directional_derivative(
-    f: Callable[[list | np.ndarray], int | float | np.number],
-    x: list | np.ndarray,
-    v: list | np.ndarray,
+    f: "Callable[[list | np.ndarray], int | float | np.number]",
+    x: ArrayLike,
+    v: ArrayLike,
     h: float = 1e-6,
     zero_tol: float = 1e-8
 ) -> float:
-    """
-    Approximates the specular directional derivative of a function $f:\\mathbb{R}^n \\to \\mathbb{R}$ at a point $x$ in the direction $v$.
-
-    Parameters:
-        f (callable):
-            A function of a real vector variable, returning a scalar.
-        x (list | np.ndarray):
-            The point at which the derivative is evaluated.
-        v (list | np.ndarray):
-            The direction in which the derivative is taken.
-        h (float, optional):
-            Mesh size used in the finite difference approximation. Must be positive.
-        zero_tol (float, optional):
-            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
-
-    Returns:
-        The approximated specular directional derivative of ``f`` at ``x`` in the direction ``v`` as a scalar.
-
-    Raises:
-        TypeError:
-            If ``x`` or ``v`` are not of valid array-like types.
-        ValueError:
-            If ``x`` and ``v`` have different shape.
-            If ``h`` is not positive.
-
-    Examples:
-        >>> import specular
-        >>> import math
-        >>> f = lambda x: math.sqrt(x[0]**2 + x[1]**2 + x[2]**2)
-        >>> specular.directional_derivative(f, x=[0.0, 0.1, -0.1], v=[1.0, -1.0, 2.0])
-        -2.1213203434708223
-    """
+    """Approximate the specular directional derivative of f at x in direction v."""
     if h <= 0:
         raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
-    
-    x = np.asarray(x, dtype=float)
-    v = np.asarray(v, dtype=float)
 
-    if x.ndim == 0:
-        raise TypeError(
-            f"Input 'x' must be a vector. "
-            f"Got {type(x).__name__}. "
-            "Use `specular.derivative` for scalar inputs."
-        )
-    
-    if v.ndim == 0:
-        raise TypeError(
-            "Input 'v' must be a vector. "
-            f"Got {type(v).__name__}."
-        )
-    
-    if x.shape != v.shape:
-        raise ValueError(f"Shape mismatch: x {x.shape} vs v {v.shape}")
-    
-    f_val = f(x) 
-
-    if np.ndim(f_val) != 0:
-        raise ValueError(
-            "Function f must return a scalar value. "
-            f"Got shape {np.shape(f_val)}."
-        )
-    
-    alpha = (f(x + h * v) - f_val)/h
-    beta = (f_val - f(x - h * v))/h
-    norm = float(np.linalg.norm(v))
-
-    return norm * A(alpha / norm, beta / norm, zero_tol=zero_tol)
+    return _get_backend_module().directional_derivative(f, x, v, h, zero_tol)
 
 
 def partial_derivative(
-    f: Callable[[list | np.ndarray], int |float | np.number],
-    x: list | np.ndarray,
-    i: int | np.integer,
+    f: "Callable[[list | np.ndarray], int | float | np.number]",
+    x: ArrayLike,
+    i: "int | np.integer",
     h: float = 1e-6,
     zero_tol: float = 1e-8
 ) -> float:
-    """
-    Approximates the i-th specular partial derivative of a real-valued function $f:\\mathbb{R}^n \\to \\mathbb{R}$ at point $x$ for $n > 1$.
+    """Approximate the i-th specular partial derivative of f at x (1-indexed)."""
+    if h <= 0:
+        raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
 
-    This is computed using ``specular.directional_derivative`` with the direction of the $i$-th standard basis vector of $\\mathbb{R}^n$.
-
-    Parameters:
-        f (callable):
-            A function of a real vector variable, returning a scalar.
-        x (list | np.ndarray):
-            The point at which the derivative is evaluated.
-        i (int | np.integer):
-            The index of the specular partial derivative with respect to $x_i$ (``1 <= i <= n``).
-        h (float, optional):
-            Mesh size used in the finite difference approximation. Must be positive.
-        zero_tol (float, optional):
-            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
-
-    Returns:
-        The approximated ``i``-th partial specular derivative of ``f`` at ``x`` as a scalar.
-
-    Raises:
-        TypeError:
-            If ``i`` is not an integer.
-        ValueError:
-            If ``i`` is out of the valid range (``1 <= i <= n``).
-
-    Examples:
-        >>> import specular
-        >>> import math 
-        >>> f = lambda x: math.sqrt(x[0]**2 + x[1]**2 + x[2]**2)
-        >>> specular.partial_derivative(f, x=[0.1, 2.3, -1.2], i=2)
-        0.8859268982863702
-    """
-    x = np.asarray(x, dtype=float)
-
-    if not isinstance(i, (int, np.integer)):
-        raise TypeError(f"Index 'i' must be an integer. Got {type(i).__name__}")
-
-    n = x.size
-    if i < 1 or i > n:
-        raise ValueError(f"Index 'i' must be between 1 and {n} (dimension of x). Got {i}")
-
-    e_i = np.zeros_like(x)
-    e_i[i - 1] = 1.0
-
-    return directional_derivative(f, x, e_i, h, zero_tol)
+    return _get_backend_module().partial_derivative(f, x, i, h, zero_tol)
 
 
 def gradient(
-    f: Callable[[list | np.ndarray], int |float | np.number],
-    x: list | np.ndarray,
+    f: "Callable[[list | np.ndarray], int | float | np.number]",
+    x: ArrayLike,
     h: float = 1e-6,
     zero_tol: float = 1e-8,
     quasi_Fermat: bool = False,
     monotonicity: bool = False
-) -> np.ndarray | List[np.ndarray]:
-    """
-    Approximates the specular gradient of a real-valued function $f:\\mathbb{R}^n \\to \\mathbb{R}$ at point $x$ for $n > 1$.
-
-    The specular gradient is defined as the vector of all partial specular derivatives along the standard basis directions.
-
-    Parameters:
-        f (callable):
-            A function of a real vector variable, returning a scalar.
-        x (list | np.ndarray):
-            The point at which the specular gradient is evaluated.
-        h (float, optional):
-            Mesh size used in the finite difference approximation. Must be positive.
-        zero_tol (float, optional):
-            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
-        quasi_Fermat (bool, optional):
-            If True, additionally returns the sign of the quasi-Fermat condition indicator:
-            ``(f_right - f_val) * (f_val - f_left) - h**2``.
-            This corresponds to the sign of **(product of one-sided derivatives) - 1**.
-        monotonicity (bool, optional):
-            If True, returns the sign of the monotonicity indicator:
-            ``f_right - f_left``.
-            This corresponds to the sign of the **sum of one-sided derivatives**.
-
-    Returns:
-        The approximated specular gradient of ``f`` at ``x`` as a vector.
-
-    Raises:
-        TypeError:
-            If ``x`` is not of a valid array-like type.
-        ValueError:
-            If ``f`` does not return a scalar value.
-            If ``h`` is not positive.
+) -> "np.ndarray | List[np.ndarray]":
+    """Approximate the specular gradient of f at x.
 
     Examples:
         >>> import specular
@@ -433,127 +123,23 @@ def gradient(
     """
     if h <= 0:
         raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
-    
-    x = np.asarray(x, dtype=float).copy()  # copy required: loop modifies x[i] in-place
-    
-    if x.ndim != 1:
-        raise TypeError(
-            f"Input 'x' must be a vector. "
-            f"Got {type(x).__name__} with shape {x.shape}. "
-            "Use `specular.derivative` for scalar inputs."
-        )
-    
-    n = x.size
 
-    f_val_scalar = f(x)
-
-    if np.ndim(f_val_scalar) != 0:
-        raise ValueError(
-            "Function 'f' must return a scalar value. "
-            f"Got shape {np.shape(f_val_scalar)}."
-        )
-
-    if backend._CURRENT_BACKEND == "cpu_numba":
-        x_right_mat = x + h * np.eye(n)
-        x_left_mat = x - h * np.eye(n)
-        with ThreadPoolExecutor() as executor:
-            f_right = np.fromiter(executor.map(f, x_right_mat), dtype=float, count=n)
-            f_left = np.fromiter(executor.map(f, x_left_mat), dtype=float, count=n)
-    else:
-        f_right = np.empty(n, dtype=float)
-        f_left = np.empty(n, dtype=float)
-        for i in range(n):
-            x_i = x[i]
-            x[i] = x_i + h
-            f_right[i] = f(x)
-            x[i] = x_i - h
-            f_left[i] = f(x)
-            x[i] = x_i
-
-    f_val_arr = np.full_like(f_right, f_val_scalar)
-
-    return _A_vector(f_right, f_val_arr, f_left, h, zero_tol, quasi_Fermat, monotonicity)
-
+    return _get_backend_module().gradient(
+        f, x, h, zero_tol, quasi_Fermat, monotonicity
+    )
 
 def jacobian(
-    f: Callable[[list | np.ndarray], int | float | np.number | list | np.ndarray],
-    x: list | np.ndarray,
+    f: "Callable[[list | np.ndarray], int | float | np.number | list | np.ndarray]",
+    x: ArrayLike,
     h: float = 1e-6,
     zero_tol: float = 1e-8,
     quasi_Fermat: bool = False,
     monotonicity: bool = False
-) -> np.ndarray | List[np.ndarray]:
-    """
-    Approximates the specular Jacobian matrix of a vector-valued function $f:\\mathbb{R}^n \\to \\mathbb{R}^m$.
-
-    Returns a matrix of shape ($m$, $n$) where $J[j, i]$ is the partial derivative of a component function $f_j$ with respect to $x_i$ ($1 \\leq i \\leq n$, $1 \\leq j \\leq m$.
-
-    Parameters:
-        f (callable):
-            A function of a real vector variable, returning a vector.
-        x (list | np.ndarray):
-            The point at which the specular gradient is evaluated.
-        h (float, optional):
-            Mesh size used in the finite difference approximation. Must be positive.
-        zero_tol (float, optional):
-            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
-        quasi_Fermat (bool, optional):
-            If True, additionally returns the sign of the quasi-Fermat condition indicator:
-            ``(f_right - f_val) * (f_val - f_left) - h**2``.
-            This corresponds to the sign of **(product of one-sided derivatives) - 1**.
-        monotonicity (bool, optional):
-            If True, returns the sign of the monotonicity indicator:
-            ``f_right - f_left``.
-            This corresponds to the sign of the **sum of one-sided derivatives**.
-
-    Returns:
-        The approximated specular Jacobian of ``f`` at ``x`` as a matrix.
-
-    Raises:
-        TypeError:
-            If ``x`` is not of a valid array-like type.
-        ValueError:
-            If ``h`` is not positive.
-    """
+) -> "np.ndarray | List[np.ndarray]":
+    """Approximate the specular Jacobian of f at x, shape (m, n)."""
     if h <= 0:
         raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
 
-    x = np.asarray(x, dtype=float)
-
-    if x.ndim != 1:
-        raise TypeError(
-            f"Input 'x' must be a vector. "
-            f"Got {type(x).__name__} with shape {x.shape}. "
-            "Use `specular.derivative` for scalar inputs."
-        )
-
-    n = x.size
-
-    f_val = np.asarray(f(x), dtype=float)
-
-    if f_val.ndim == 0:
-        f_val = f_val.reshape(1)
-
-    m = f_val.size
-
-    h_identity = h * np.eye(n)
-    
-    x_right = x + h_identity
-    x_left = x - h_identity
-
-    if backend._CURRENT_BACKEND == "cpu_numba":
-        with ThreadPoolExecutor() as executor:
-            f_right = np.array(list(executor.map(f, x_right)), dtype=float).reshape(n, m)
-            f_left = np.array(list(executor.map(f, x_left)), dtype=float).reshape(n, m)
-    else:
-        f_right = np.array([f(row) for row in x_right], dtype=float).reshape(n, m)
-        f_left = np.array([f(row) for row in x_left], dtype=float).reshape(n, m)
-
-    f_val = np.tile(f_val, (n, 1))
-
-    results = _A_vector(f_right, f_val, f_left, h, zero_tol, quasi_Fermat, monotonicity)
-
-    if isinstance(results, list):
-        return [result.T for result in results]
-    
-    return results.T
+    return _get_backend_module().jacobian(
+        f, x, h, zero_tol, quasi_Fermat, monotonicity
+    )

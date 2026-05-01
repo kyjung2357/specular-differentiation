@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "specular-differentiation"
-version = "1.0.9"
+version = "1.1.0"
 description = "Specular differentiation in normed vector spaces and its applications"
 requires-python = ">=3.11"
 license = {text = "MIT License"}
@@ -18,14 +18,10 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Mathematics"
 ]
 dependencies = [
-    "numpy>=2.4.0",
-    "ipython>=8.12.3",
-    "matplotlib>=3.10.8",
-    "pandas>=2.3.3",
-    "tqdm>=4.67.1"
+    "numpy>=2.0"
 ]
 
-dynamic = ["readme"]
+readme = "README.md"
 
 [project.urls]
 "Homepage" = "https://github.com/kyjung2357/specular-differentiation"
@@ -41,12 +37,26 @@ numba = [
     "numba>=0.57"
 ]
 
+ode = [
+    "matplotlib",
+    "pandas",
+    "tqdm"
+]
+
+optimization = [
+    "matplotlib",
+    "tqdm",
+]
+
 dev = [
-    "specular-differentiation[jax]",
+    "specular-differentiation[ode]",
+    "specular-differentiation[optimization]",
     "specular-differentiation[numba]",
+    "specular-differentiation[jax]",
     "pytest>=7.0",
     "scipy>=1.10.0",
-    "torch>=2.0.0"
+    "torch>=2.0.0",
+    "ipython",
 ]
 
 [tool.setuptools.packages.find]

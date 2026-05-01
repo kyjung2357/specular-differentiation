@@ -32,11 +32,14 @@ Their difference is illustrated as in the following figure.
 `specular-differentiation` requires:
 
 * **Python** >= 3.11
-* `ipython` >= 8.12.3
-* `matplotlib` >= 3.10.8
-* `numpy` >= 2.4.0
-* `pandas` >= 2.3.3
-* `tqdm` >= 4.67.1
+* `numpy` >= 2.0
+
+Additional features are available through optional dependencies:
+
+* `ode`: `matplotlib`, `pandas`, `tqdm`
+* `optimization`: `matplotlib`, `tqdm`
+* `numba`: `numba`
+* `jax`: `jax`, `jaxlib`
 
 ### User installation
 
@@ -46,13 +49,36 @@ Their difference is illustrated as in the following figure.
 pip install specular-differentiation
 ```
 
-**Advanced Installation (JAX backend)**
+This installs the core specular differentiation API, including `A`, `derivative`,
+`directional_derivative`, `partial_derivative`, `gradient`, and `jacobian`.
+
+**ODE solvers**
+
+```bash
+pip install "specular-differentiation[ode]"
+```
+
+**Optimization routines**
+
+```bash
+pip install "specular-differentiation[optimization]"
+```
+
+**Numba backend**
+
+```bash
+pip install "specular-differentiation[numba]"
+```
+
+If Numba is installed and available, the package may use the Numba-accelerated CPU backend.
+
+**JAX backend**
 
 ```bash
 pip install "specular-differentiation[jax]"
 ```
 
-See [the documentation](api/jax.md) for advanced installation (JAX backend, Pytest).
+See [the backend documentation](api/backend.md) for JAX-specific usage.
 
 ### Quick start
 
@@ -68,6 +94,19 @@ print(specular.derivative(ReLU, x=0))
 ```text
 0.41421356237309515
 ```
+
+### Backend support
+
+The package is organized around a backend system. 
+NumPy is the default backend, while accelerated backends are optional and may require extra dependencies.
+
+| Backend | Calculation | ODE | Optimization |
+|:---:|:---:|:---:|:---:|
+| NumPy | supported | supported  | supported |
+| Numba | supported | supported (recommended) | not supported |
+| JAX | supported | supported | supported (recommended) |
+| TensorFlow | supported | supported | not supported |
+| PyTorch | supported | supported | not supported |
 
 ## Applications
 
@@ -86,7 +125,9 @@ In [[1]](#references), seven schemes are proposed for solving ODEs numerically:
 
 The following example shows that the specular Euler schemes of Type 5 and 6 yield more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
 
-![ODE-example](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/ODE-example.png)
+![ODE-example-1](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/ODE-example-1.png)
+
+![ODE-example-2](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/ODE-example-2.png)
 
 ### [Optimization](api/optimization.md)
 
@@ -146,7 +187,7 @@ To cite this repository:
   month = jan,
   title = {{specular-differentiation}},
   url = {https://github.com/kyjung2357/specular-differentiation},
-  version = {1.0.0},
+  version = {1.1.0},
   year = {2026},
 }
 ```

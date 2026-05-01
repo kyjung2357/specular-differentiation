@@ -38,6 +38,12 @@ def test_derivative_vector_output():
     
     np.testing.assert_allclose(result, [1.0, 4.0], rtol=1e-4)
 
+def test_derivative_scalar_diagnostics():
+    f = lambda x: x**2
+    result = specular.derivative(f, x=1.0, quasi_Fermat=True, monotonicity=True)
+    assert isinstance(result, list)
+    assert len(result) == 3
+
 # ==========================================
 # 3. Test Directional Derivative
 # ==========================================
@@ -48,6 +54,15 @@ def test_directional_derivative():
     x = [1.0, 1.0]
     
     assert specular.directional_derivative(f, x, v=[1.0, 0.0]) == pytest.approx(2.0, rel=1e-4)
+
+def test_directional_derivative_zero_direction():
+    f = lambda x: x[0] ** 2
+    assert specular.directional_derivative(f, x=[1.0], v=[0.0]) == 0.0
+
+def test_directional_derivative_rejects_matrix_input():
+    f = lambda x: x[0] ** 2
+    with pytest.raises(TypeError):
+        specular.directional_derivative(f, x=[[1.0]], v=[[1.0]])
 
 # ==========================================
 # 4. Test Partial Derivative
@@ -70,6 +85,11 @@ def test_partial_derivative_error():
     with pytest.raises(ValueError):
         specular.partial_derivative(f, x, i=3)
 
+def test_partial_derivative_rejects_scalar_input():
+    f = lambda x: x
+    with pytest.raises(TypeError):
+        specular.partial_derivative(f, x=1.0, i=1)
+
 # ==========================================
 # 5. Test Gradient
 # ==========================================
@@ -82,6 +102,10 @@ def test_gradient():
     grad = specular.gradient(f, x)
     
     np.testing.assert_allclose(grad, [2.0, 4.0, 6.0], rtol=1e-4)
+
+def test_gradient_small_linear_not_zero():
+    f = lambda x: 0.001 * x[0]
+    np.testing.assert_allclose(specular.gradient(f, [0.0]), [0.001], rtol=1e-8, atol=1e-12)
 
 # ==========================================
 # 6. Test Jacobian
@@ -194,6 +218,21 @@ def test_change_backend_invalid():
     with pytest.raises(ValueError):
         specular.change_backend("garbage_backend")
 
+def test_change_backend_cpu_jax_routes_calculation():
+    pytest.importorskip("jax")
+    jnp = pytest.importorskip("jax.numpy")
+
+    original = specular.backend._CURRENT_BACKEND
+    try:
+        specular.change_backend("cpu_jax")
+        result = specular.derivative(lambda x: x**2, x=2.0)
+        assert float(result) == pytest.approx(4.0)
+
+        relu = lambda x: jnp.maximum(x, 0)
+        assert float(specular.derivative(relu, x=0.0)) == pytest.approx(math.sqrt(2) - 1)
+    finally:
+        specular.change_backend(original)
+
 def test_backend_info_output(capsys):
     specular.backend_info()
     captured = capsys.readouterr()
@@ -207,7 +246,7 @@ def test_backend_info_output(capsys):
 # ==========================================
 # 12. Multi-backend tests
 # ==========================================
-BACKENDS = [b for b in ["cpu_numpy", "cpu_numpy_parallel", "cpu_jax"]
+BACKENDS = [b for b in ["cpu_numpy", "cpu_numba", "cpu_jax"]
             if b in specular.backend._AVAILABLE_BACKENDS]
 
 @pytest.fixture(autouse=True)

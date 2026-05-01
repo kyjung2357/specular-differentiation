@@ -50,7 +50,7 @@ nav:
     - 2.1. Calculation: api/calculation.md
     - 2.2. ODE: api/ode.md
     - 2.3. Optimization: api/optimization.md
-    - 2.4. JAX: api/jax.md
+    - 2.4. Backend: api/backend.md
   - 3. Examples: examples/index.md
 
 markdown_extensions:
