@@ -77,7 +77,7 @@ def error_analysis(example, norm, F, t_0, T, exact_sol):
         "S5": []
     }
 
-    for k in range(3, 18):
+    for k in range(3, 17):
         n = 2**k
         h = (T - t_0) / n
         
@@ -103,7 +103,7 @@ def error_analysis(example, norm, F, t_0, T, exact_sol):
     save_table_to_txt(df_EE, f"{example}-{norm}-Table-EE.txt", error_precision=1, ratio_precision=1)
     save_table_to_txt(df_IE, f"{example}-{norm}-Table-IE.txt", error_precision=1, ratio_precision=1)
     save_table_to_txt(df_CN, f"{example}-{norm}-Table-CN.txt", error_precision=1, ratio_precision=1)
-    save_table_to_txt(df_S5, f"{example}-{norm}-Table-S5.txt", error_precision=1, ratio_precision=1)
+    save_table_to_txt(df_S5, f"{example}-{norm}-Table-SE5.txt", error_precision=1, ratio_precision=1)
 
     plt.figure(figsize=(6.5, 2.5))
 
@@ -111,11 +111,16 @@ def error_analysis(example, norm, F, t_0, T, exact_sol):
     plt.plot(df_IE["n"], df_IE["Error"], color='blue', marker='x', markerfacecolor='none', markeredgecolor='blue', label='IE')
     plt.plot(df_CN["n"], df_CN["Error"], color='purple', marker='x', markerfacecolor='none', markeredgecolor='purple', label='CN')
     plt.plot(df_S5["n"], df_S5["Error"], color='green', marker='v', markerfacecolor='none', markeredgecolor='green', label="SE5")
-    plt.xlim(7, 2**17+2**14+2**13)
+    plt.xlim(7, 2**16 * 1.25)
     plt.xscale('log', base=2)
     plt.yscale('log')
     plt.xlabel(r"Number of time steps $N$", fontsize=10)
-    ylabel_str = fr"Error $\mathcal{{E}}(N, {norm_label_map[norm]})$"
+
+    if norm == 'max':
+        ylabel_str = fr"Error $\mathcal{{E}}(N)$"
+    else:   
+        ylabel_str = fr"Error $\mathcal{{E}}(N, {norm_label_map[norm]})$"
+        
     plt.ylabel(ylabel_str, fontsize=10)
     plt.legend(loc='center left', bbox_to_anchor=(1.02, 0.5), fontsize=9)
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)

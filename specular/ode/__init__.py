@@ -9,6 +9,7 @@ from .solver import (
     Euler_scheme,
     trigonometric_scheme,
     Heun_scheme,
+    ellipse_scheme,
 )
 
 __all__ = [
@@ -17,6 +18,7 @@ __all__ = [
     "implicit_Euler_scheme",
     "Crank_Nicolson_scheme",
     "Euler_scheme",
+    "ellipse_scheme",
     "trigonometric_scheme",
     "Heun_scheme",
     "ODEResult"

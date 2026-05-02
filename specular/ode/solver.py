@@ -24,14 +24,6 @@ try:
 except ImportError:
     def tqdm(iterable, *args, **kwargs):
         return iterable
-    
-def _safe_tan(angle: float, tol: float = 1e-12) -> float:
-    cos_angle = math.cos(angle)
-    if abs(cos_angle) <= tol:
-        raise OverflowError(
-            f"tan is singular or numerically unstable at angle={angle}."
-        )
-    return math.tan(angle)
 
 def Euler_scheme(
     of_Type: int | str,
@@ -297,6 +289,99 @@ def _of_Type_6(F, h, tol, zero_tol, max_iter, steps, t_curr, u_curr, t_history, 
 
         t_history.append(t_curr)
         u_history.append(u_curr)
+
+def ellipse_scheme(
+    F: Callable[[float, float], float],
+    t_0: float,
+    u_0: Callable[[float], float] | float,
+    T: float,
+    a: float,
+    b: float,
+    h: float = 1e-6,
+    tol: float = 1e-12,
+    zero_tol: float = 1e-8,
+    max_iter: int = 100,
+) -> ODEResult:
+    """
+    Solves an initial value problem (IVP) using the specular ellipse scheme.
+
+    Parameters:
+        F (callable):
+            The given source function ``F`` in (IVP).
+            The calling signature should be ``F(t, u)`` where ``t`` and ``u`` are scalars.
+        t_0 (float):
+            The starting time of the simulation.
+        u_0 (callable | float):
+            The given initial condition ``u_0`` in (IVP).
+            If a callable is provided, the initial value is determined by calling ``u_0(t_0)``.
+        T (float):
+            The end time of the simulation.
+        a (float):
+            The semi-axis length in the ``t`` direction. Must be positive.
+        b (float):
+            The semi-axis length in the ``u`` direction. Must be positive.
+        h (float, optional):
+            Mesh size used in the finite difference approximation. Must be positive.
+        tol (float, optional):
+            Tolerance for fixed-point iteration.
+        zero_tol (float | np.floating):
+            A small threshold used to determine if the denominator (alpha + beta) is close to zero for numerical stability.
+        max_iter (int, optional):
+            Max iterations for fixed-point solver.
+
+    Returns:
+        An object containing ``(t, u)`` data and the scheme name.
+    """
+    if a <= 0 or b <= 0:
+        raise ValueError(f"Semi-axes 'a' and 'b' must be positive. Got a={a}, b={b}")
+
+    t_curr = t_0
+    u_curr = u_0(t_0) if callable(u_0) else u_0
+
+    all_history = {}
+    t_history = [t_curr]
+    u_history = [u_curr]
+
+    steps = _num_steps(t_0, T, h)
+
+    scale = b / a
+    inv_scale = a / b
+
+    for k in tqdm(range(steps), desc="Running the specular ellipse scheme"):
+        beta = inv_scale * F(t_curr, u_curr)
+        t_next = t_curr + h
+
+        # Initial guess: explicit Euler
+        u_temp = u_curr + h * F(t_curr, u_curr)
+        u_guess = u_temp
+
+        # Fixed-point iteration
+        for _ in range(max_iter):
+            alpha = inv_scale * F(t_next, u_temp)
+            A_val = float(A(alpha, beta, zero_tol=zero_tol))
+            u_guess = u_curr + h * scale * A_val
+
+            if abs(u_guess - u_temp) < tol:
+                break
+
+            u_temp = u_guess
+        else:
+            print(f"Warning: fixed-point iteration did not converge at step {k+1}")
+
+        t_curr, u_curr = t_next, u_guess
+
+        t_history.append(t_curr)
+        u_history.append(u_curr)
+
+    all_history["variables"] = np.array(t_history)
+    all_history["values"] = np.array(u_history)
+
+    return ODEResult(
+        scheme="specular ellipse scheme",
+        h=h,
+        all_history=all_history,
+    )
+
 
 def trigonometric_scheme(
     F: Callable[[float, float], float],
