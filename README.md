@@ -192,7 +192,7 @@ To cite this repository:
   author = {Jung, Kiyuob},
   doi = {10.5281/zenodo.18246734},
   license = {MIT},
-  month = jan,
+  month = may,
   title = {{specular-differentiation}},
   url = {https://github.com/kyjung2357/specular-differentiation},
   version = {1.2.0},
