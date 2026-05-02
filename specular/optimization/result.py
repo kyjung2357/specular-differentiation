@@ -1,7 +1,5 @@
-import os
 import numpy as np
 from typing import Tuple
-import matplotlib.pyplot as plt
 
 class OptimizationResult:
     def __init__(

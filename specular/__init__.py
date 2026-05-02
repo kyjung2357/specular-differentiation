@@ -15,7 +15,7 @@ from .calculation import (
     jacobian,
 )
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 __license__ = "MIT"
 __author__ = "Kiyuob Jung"
 __email__ = "kyjung@msu.edu"
