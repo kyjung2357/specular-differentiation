@@ -21,6 +21,7 @@ if _CURRENT_BACKEND not in _SUPPORTED_BACKENDS:
     raise ValueError(f"Invalid SPECULAR_BACKEND={_CURRENT_BACKEND!r}. Choose from: {', '.join(_BACKEND_ORDER)}")
 
 def _has_numba():
+    """Return True if Numba is installed and register the CPU Numba backend when usable."""
     try:
         import numba
         if (os.cpu_count() or 1) > 1:
@@ -30,6 +31,7 @@ def _has_numba():
         return False
 
 def _has_nvidia_gpu():
+    """Return True if an NVIDIA GPU is accessible via nvidia-smi."""
     try:
         result = subprocess.run(
             ["nvidia-smi", "--query-gpu=name", "--format=csv,noheader"],
@@ -42,6 +44,7 @@ def _has_nvidia_gpu():
         return False
 
 def _has_jax():
+    """Return True if JAX is installed and register available JAX backends."""
     try:
         import jax
         _AVAILABLE_BACKENDS.add("cpu_jax")
@@ -52,6 +55,7 @@ def _has_jax():
         return False
 
 def _has_tensorflow():
+    """Return True if TensorFlow is installed and register available TensorFlow backends."""
     try:
         import tensorflow as tf
         gpus = tf.config.list_physical_devices("GPU")
@@ -63,6 +67,7 @@ def _has_tensorflow():
         return False
 
 def _has_pytorch():
+    """Return True if PyTorch is installed and register available PyTorch backends."""
     try:
         import torch
         _AVAILABLE_BACKENDS.add("cpu_pytorch")
@@ -71,6 +76,20 @@ def _has_pytorch():
         return True
     except ImportError:
         return False
+
+def _probe_backend(name):
+    """Probe a backend lazily and register it if its dependency is available."""
+    if name == "cpu_numpy":
+        return True
+    if name == "cpu_numba":
+        return _has_numba()
+    if name in {"cpu_jax", "gpu_jax"}:
+        return _has_jax()
+    if name in {"cpu_tensorflow", "gpu_tensorflow"}:
+        return _has_tensorflow()
+    if name in {"cpu_pytorch", "gpu_pytorch"}:
+        return _has_pytorch()
+    return False
 
 def _choose_default_backend():
     """Choose the fastest available backend when SPECULAR_BACKEND is unset."""
@@ -85,7 +104,11 @@ def _choose_default_backend():
             return
 
 _has_numba()
-_choose_default_backend()
+
+if _REQUESTED_BACKEND is None:
+    _choose_default_backend()
+else:
+    _probe_backend(_CURRENT_BACKEND)
 
 if _CURRENT_BACKEND not in _AVAILABLE_BACKENDS:
     raise ValueError(f"SPECULAR_BACKEND={_CURRENT_BACKEND!r} is not available on this machine. Available: {', '.join(b for b in _BACKEND_ORDER if b in _AVAILABLE_BACKENDS)}")
@@ -101,27 +124,17 @@ def backend_info():
         available backends: cpu_numpy, cpu_numba
         current backend   : cpu_numpy
     """
+    _has_numba()
+    _has_tensorflow()
+    _has_pytorch()
+    _has_jax()
+
     print(f"supported backends: {', '.join(_BACKEND_ORDER)}")
     print(f"available backends: {', '.join(b for b in _BACKEND_ORDER if b in _AVAILABLE_BACKENDS)}")
     print(f"current backend   : {_CURRENT_BACKEND}")
 
 def _ensure_backend_available(new_backend):
-    if new_backend in _AVAILABLE_BACKENDS:
-        return True
-
-    if new_backend == "cpu_numba":
-        return _has_numba()
-
-    if new_backend in {"cpu_jax", "gpu_jax"}:
-        return _has_jax()
-
-    if new_backend in {"cpu_tensorflow", "gpu_tensorflow"}:
-        return _has_tensorflow()
-
-    if new_backend in {"cpu_pytorch", "gpu_pytorch"}:
-        return _has_pytorch()
-
-    return False
+    return new_backend in _AVAILABLE_BACKENDS or _probe_backend(new_backend)
 
 def change_backend(new_backend):
     """Change the active backend for the current session.

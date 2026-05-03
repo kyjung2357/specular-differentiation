@@ -1,0 +1,9 @@
+\begin{tabular}{lrrllll}
+\toprule
+ & Success & Failure & Mean & Median & Standard deviation & Average runtime \\
+\midrule
+S-BFGS-A & 20.000000 & 0.000000 & $5.3277 \times 10^{-1}$ & $5.2617 \times 10^{-1}$ & $9.9838 \times 10^{-2}$ & $8.4429 \times 10^{-1}$ \\
+S-BFGS-W & 20.000000 & 0.000000 & $5.3179 \times 10^{-1}$ & $5.2033 \times 10^{-1}$ & $1.0009 \times 10^{-1}$ & $1.4538 \times 10^{0}$ \\
+S-BFGS-S & 0.000000 & 20.000000 & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}

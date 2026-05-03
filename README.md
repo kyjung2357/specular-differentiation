@@ -78,7 +78,10 @@ If Numba is installed and available, the package may use the Numba-accelerated C
 pip install "specular-differentiation[jax]"
 ```
 
-See [the documentation](docs/api/jax.md) for JAX-specific usage.
+Note: the JAX backend intentionally uses automatic differentiation when computing specular derivatives and gradients. 
+NumPy/Numba use one-sided finite differences, so results may differ across backends.
+
+See [the documentation](docs/api/backend.md) for JAX-specific usage.
 
 **Developer Installation**
 
@@ -210,4 +213,4 @@ To cite this repository:
 
 [4] K. Jung and J. Oh. [*The wave equation with specular derivatives*](https://arxiv.org/abs/2210.06933). arXiv preprint arXiv:2210.06933, 2022.
 
-[5] K. Jung and J. Oh. [*Nonsmooth convex optimization using the specular gradient method with root-linear convergence*](https://arxiv.org/abs/2412.20747). arXiv preprint arXiv:2210.06933, 2024.
+[5] K. Jung and J. Oh. [*Nonsmooth convex optimization using the specular gradient method with root-linear convergence*](https://arxiv.org/abs/2412.20747). arXiv preprint arXiv:2412.20747, 2024.

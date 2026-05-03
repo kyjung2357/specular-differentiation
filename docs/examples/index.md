@@ -30,4 +30,4 @@ Each subdirectory is based on a paper.
 
   * **Directory**: `examples/optimization/2024-Jung-Oh/`
   * **Keywords**: nonsmooth convex optimization, subgradient methods, non-differentiable convex functions, generalization of derivatives, convergence rate
-  * **Reference**: K. Jung and J. Oh. [*Nonsmooth convex optimization using the specular gradient method with root-linear convergence*](https://arxiv.org/abs/2412.20747). arXiv preprint arXiv:2210.06933, 2024
+  * **Reference**: K. Jung and J. Oh. [*Nonsmooth convex optimization using the specular gradient method with root-linear convergence*](https://arxiv.org/abs/2412.20747). arXiv preprint arXiv:2412.20747, 2024

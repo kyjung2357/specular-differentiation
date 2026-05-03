@@ -5,6 +5,7 @@ import inspect
 from typing import Callable, TypeAlias, Sequence
 from collections.abc import Sequence as SequenceABC
 from .result import OptimizationResult
+from .line_search import LineSearch
 from .step_size import StepSize
 from ..calculation import derivative, gradient
 
@@ -210,6 +211,7 @@ def _scalar_implicit(
             x_history.append(x)
             f_history.append(f(x))
 
+        # This is the sum of the right and left one-sided slopes, not a central difference.
         sum_of_one_sided_derivatives = (f(x + h) - f(x - h)) / h
 
         if abs(sum_of_one_sided_derivatives) < tol:
@@ -248,11 +250,11 @@ def _vector(
         specular_gradient = computation[0]
         norm = np.linalg.norm(specular_gradient)
 
+        if not np.isfinite(norm):
+            raise FloatingPointError("Specular gradient norm is not finite.")
+
         if norm < tol:
-            if np.any(computation[1] > 0): 
-                pass
-            else:
-                break
+            break
 
         x -= step_size(k)*(specular_gradient / norm)
         k += 1
@@ -317,13 +319,180 @@ def _vector_stochastic(
         component_specular_gradient = computation[0]
         norm = np.linalg.norm(component_specular_gradient)
 
+        if not np.isfinite(norm):
+            raise FloatingPointError("Component specular gradient norm is not finite.")
+
         if norm < tol:
-            if np.any(computation[1] > 0):
-                pass
-            else:
-                break
+            break
 
         x -= step_size(k)*(component_specular_gradient / norm)
         k += 1
 
     return x, f(x), k
+
+
+def BFGS_method(
+    f: Callable[[int | float | np.number | list | np.ndarray], int | float | np.number],
+    x_0: int | float | list | np.ndarray,
+    h: float = 1e-6,
+    tol: float = 1e-6,
+    zero_tol: float = 1e-8,
+    max_iter: int = 1000,
+    line_search: str | LineSearch = "armijo",
+    alpha_0: float = 1.0,
+    c_1: float = 1e-4,
+    c_2: float = 0.9,
+    rho: float = 0.5,
+    max_line_iter: int = 20,
+    max_alpha: float = 1e8,
+    raise_on_fail: bool = False,
+    H_0: np.ndarray | list | None = None,
+    safeguard: float = 1e-10,
+    record_history: bool = True,
+    print_bar: bool = True,
+) -> OptimizationResult:
+    """
+    The specular BFGS method for minimizing a nonsmooth convex function.
+    """
+    if h is None or h <= 0:
+        raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
+
+    if safeguard < 0:
+        raise ValueError(f"safeguard must be nonnegative. Got {safeguard}")
+
+    x = np.asarray(x_0, dtype=float).reshape(-1).copy()
+    n = x.size
+
+    if n <= 1:
+        raise ValueError(
+            "BFGS requires n > 1. For 1D, use the standard specular gradient method."
+        )
+
+    if isinstance(line_search, LineSearch):
+        line_search_rule = line_search
+    else:
+        line_search_rule = LineSearch(
+            name=line_search,
+            alpha_0=alpha_0,
+            c_1=c_1,
+            c_2=c_2,
+            rho=rho,
+            max_iter=max_line_iter,
+            max_alpha=max_alpha,
+            raise_on_fail=raise_on_fail,
+        )
+
+    all_history = {}
+    x_history = []
+    f_history = []
+
+    start_time = time.time()
+
+    I = np.eye(n)
+
+    if H_0 is None:
+        H = I.copy()
+    else:
+        H = np.asarray(H_0, dtype=float)
+
+        if H.shape != (n, n):
+            raise ValueError(f"H_0 must have shape {(n, n)}. Got {H.shape}")
+
+        H = H.copy()
+
+    computation = gradient(
+        f=f,
+        x=x,
+        h=h,
+        zero_tol=zero_tol,
+        quasi_Fermat=True,
+        monotonicity=False,
+    )
+    spec_grad = np.asarray(computation[0], dtype=float).reshape(-1)
+    iteration = 0
+
+    for iteration in tqdm(
+        range(1, max_iter + 1),
+        desc="Running the specular BFGS method",
+        disable=not print_bar,
+        leave=False,
+    ):
+        f_current = float(f(x))
+
+        if record_history:
+            x_history.append(x.copy())
+            f_history.append(f_current)
+
+        norm_g = np.linalg.norm(spec_grad)
+
+        if not np.isfinite(norm_g):
+            raise FloatingPointError("Specular gradient norm is not finite.")
+
+        if norm_g < tol:
+            break
+
+        direction = -H.dot(spec_grad)
+        initial_slope = float(np.dot(spec_grad, direction))
+
+        if initial_slope >= 0.0:
+            H = I.copy()
+            direction = -spec_grad
+
+        alpha = line_search_rule(
+            f=f,
+            x=x,
+            direction=direction,
+            gradient_current=spec_grad,
+            f_current=f_current,
+            gradient_func=lambda z: np.asarray(
+                gradient(
+                    f=f,
+                    x=z,
+                    h=h,
+                    zero_tol=zero_tol,
+                    quasi_Fermat=True,
+                    monotonicity=False,
+                )[0],
+                dtype=float,
+            ).reshape(-1),
+        )
+
+        s = alpha * direction
+        x_new = x + s
+
+        computation_new = gradient(
+            f=f,
+            x=x_new,
+            h=h,
+            zero_tol=zero_tol,
+            quasi_Fermat=True,
+            monotonicity=False,
+        )
+        spec_grad_new = np.asarray(computation_new[0], dtype=float).reshape(-1)
+
+        y = spec_grad_new - spec_grad
+        ys = float(np.dot(y, s))
+
+        if ys > safeguard:
+            bfgs_rho = 1.0 / ys
+            V = I - bfgs_rho * np.outer(s, y)
+            H = V.dot(H).dot(V.T) + bfgs_rho * np.outer(s, s)
+
+        x = x_new
+        spec_grad = spec_grad_new
+        computation = computation_new
+
+    runtime = time.time() - start_time
+
+    if record_history:
+        all_history["variables"] = x_history
+        all_history["values"] = f_history
+
+    return OptimizationResult(
+        method=f"specular BFGS ({line_search_rule.name})",
+        solution=x,
+        func_val=float(f(x)),
+        iteration=iteration,
+        runtime=runtime,
+        all_history=all_history,
+    )

@@ -1,7 +1,19 @@
+"""JAX implementation of specular calculation routines.
+
+Unlike the NumPy and Numba backends, this module intentionally computes the
+right and left inputs to A by automatic differentiation at shifted points.
+This is a backend-specific numerical semantics, not a finite-difference clone
+of the NumPy implementation.
+"""
+import os
 from numbers import Integral
 from typing import Callable
+
 import jax
-jax.config.update("jax_enable_x64", True)
+
+# Set SPECULAR_JAX_ENABLE_X64=0 before importing specular to keep JAX's default precision.
+if os.environ.get("SPECULAR_JAX_ENABLE_X64", "1") != "0":
+    jax.config.update("jax_enable_x64", True)
 
 import jax.numpy as jnp
 from jax import Array
@@ -15,6 +27,10 @@ def A(
     quasi_Fermat: bool = False,
     monotonicity: bool = False,
 ) -> Array | list[Array]:
+    """
+    JAX implementation of A from right and left derivative data.
+    Broadcasts over scalars, vectors, and matrices.
+    """
     alpha_arr = jnp.asarray(alpha, dtype=float)
     beta_arr = jnp.asarray(beta, dtype=float)
 
@@ -91,6 +107,7 @@ def derivative(
 
     f_val = jnp.asarray(f(x_arr), dtype=float)
 
+    # f is real-valued
     if f_val.ndim == 0:
         def f_scalar(t):
             return jnp.asarray(f(t), dtype=float)
@@ -99,10 +116,11 @@ def derivative(
         alpha = grad_f(x_arr + h)
         beta = grad_f(x_arr - h)
         return A(alpha, beta, zero_tol, quasi_Fermat, monotonicity)
-
+    
     def f_vector(t):
         return jnp.asarray(f(t), dtype=float)
 
+    # f is vector-valued
     jac_f = jax.jacrev(f_vector)
     alpha = jac_f(x_arr + h)
     beta = jac_f(x_arr - h)
@@ -222,7 +240,6 @@ def jacobian(
     if x_arr.ndim != 1:
         raise TypeError(f"Input 'x' must be a vector. Got shape {x_arr.shape}.")
 
-    jnp.atleast_1d(jnp.asarray(f(x_arr), dtype=float))
     n = x_arr.size
     h_identity = h * jnp.eye(n, dtype=x_arr.dtype)
     x_right = x_arr + h_identity
@@ -239,8 +256,5 @@ def jacobian(
     beta = jnp.diagonal(jac_left, axis1=0, axis2=2)
 
     results = _A_vector(alpha, beta, zero_tol, quasi_Fermat, monotonicity)
-
-    if isinstance(results, list):
-        return results
 
     return results

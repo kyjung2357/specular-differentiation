@@ -24,12 +24,15 @@ if TYPE_CHECKING:
     from . import ode as ode
     from . import optimization as optimization
     from .ode import (
-    classical_scheme,
-    Euler_scheme,
-    trigonometric_scheme,
-    Heun_scheme,
+        classical_scheme,
+        Euler_scheme,
+        trigonometric_scheme,
+        Heun_scheme,
+        ellipse_scheme,
     )
     from .optimization import (
+        BFGS_method,
+        LineSearch,
         StepSize,
         gradient_method,
     )
@@ -40,7 +43,10 @@ _LAZY_ATTRS = {
     "Euler_scheme": ("specular.ode", "Euler_scheme"),
     "trigonometric_scheme": ("specular.ode", "trigonometric_scheme"),
     "Heun_scheme": ("specular.ode", "Heun_scheme"),
+    "ellipse_scheme": ("specular.ode", "ellipse_scheme"),
     "optimization": ("specular.optimization", None),
+    "BFGS_method": ("specular.optimization", "BFGS_method"),
+    "LineSearch": ("specular.optimization", "LineSearch"),
     "StepSize": ("specular.optimization", "StepSize"),
     "gradient_method": ("specular.optimization", "gradient_method"),
 }
@@ -71,7 +77,10 @@ __all__ = [
     "Euler_scheme",
     "trigonometric_scheme",
     "Heun_scheme",
+    "ellipse_scheme",
     "optimization",
+    "BFGS_method",
+    "LineSearch",
     "StepSize",
     "gradient_method",
     "__version__",

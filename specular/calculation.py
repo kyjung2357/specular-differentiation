@@ -1,5 +1,7 @@
 """
 This module provides implementations of specular directional derivatives, specular partial derivatives, specular derivatives, specular gradients, and specular Jacobians.
+
+The calculations are based on the function A(alpha, beta), where alpha and beta represent right and left derivative data. NumPy and Numba approximate this data from function values using one-sided finite differences, while JAX computes it using automatic differentiation at shifted points.
 """
 import numpy as np
 import numpy.typing as npt

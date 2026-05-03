@@ -120,7 +120,7 @@ def test_vector_stochastic():
     assert res.method == 'stochastic specular gradient'
     assert res.func_val < 0.5 
 
-def test_stochastic_quasi_fermat_positive_branch_continues(monkeypatch):
+def test_stochastic_small_norm_stops_even_with_positive_quasi_fermat(monkeypatch):
     def fake_gradient(*args, **kwargs):
         return [np.array([1e-12, 0.0]), np.array([1.0, 0.0])]
 
@@ -144,7 +144,7 @@ def test_stochastic_quasi_fermat_positive_branch_continues(monkeypatch):
         print_bar=False,
     )
 
-    assert k == 2
+    assert k == 1
 
 def test_vector_hybrid():
     """Test hybrid form (switch from standard to stochastic)."""

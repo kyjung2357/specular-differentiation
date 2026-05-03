@@ -1,0 +1,13 @@
+\begin{tabular}{llll}
+\toprule
+ & Mean & Median & Standard deviation \\
+\midrule
+SPEG & $1.3003 \times 10^{1}$ & $1.3003 \times 10^{1}$ & $1.8225 \times 10^{-15}$ \\
+S-SPEG & $2.5000 \times 10^{1}$ & $2.5000 \times 10^{1}$ & 0 \\
+H-SPEG & $1.3670 \times 10^{1}$ & $1.3670 \times 10^{1}$ & 0 \\
+GD & $1.3017 \times 10^{1}$ & $1.3017 \times 10^{1}$ & 0 \\
+Adam & $1.3005 \times 10^{1}$ & $1.3005 \times 10^{1}$ & 0 \\
+BFGS & $1.3332 \times 10^{1}$ & $1.3332 \times 10^{1}$ & 0 \\
+S-BFGS & $1.3000 \times 10^{1}$ & $1.3000 \times 10^{1}$ & $1.8225 \times 10^{-15}$ \\
+\bottomrule
+\end{tabular}

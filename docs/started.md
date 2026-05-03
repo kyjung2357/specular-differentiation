@@ -122,3 +122,7 @@ specular.derivative(ReLU, 0.0)
 ```text
 Array(0.41421356, dtype=float64)
 ```
+
+The JAX backend is not a bitwise-equivalent implementation of the NumPy backend:
+it uses automatic differentiation at shifted points, while NumPy/Numba use
+one-sided finite differences. This distinction is intentional.

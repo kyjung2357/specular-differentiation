@@ -31,12 +31,11 @@ explicitly selects the corresponding backend.
 
 See the [official homepage](https://docs.jax.dev/en/latest/index.html) of JAX.
 
-The JAX backend is currently experimental and undergoing verification.
-JAX calculation and optimization are available through the normal public API
-after selecting the JAX backend.
+Requirement: objective functions should use `jax.numpy` instead of standard `numpy`.
 
-Requirement: objective functions should use `jax.numpy` instead of standard
-`numpy`.
+The difference between numpy backend and JAX backend is in that how they calculate differentiation. 
+The difference between the NumPy backend and the JAX backend lies in how they compute the one-sided derivatives. The NumPy backend approximates them from function values using finite differences, whereas the JAX backend computes them by applying automatic differentiation at shifted points.
+Then, they use the function `A` to complete the calculation of specular differentiation.
 
 ```python
 import jax.numpy as jnp
@@ -48,8 +47,7 @@ ReLU = lambda x: jnp.maximum(x, 0)
 specular.derivative(ReLU, 0.0)
 ```
 
-To enable 64-bit precision, update the JAX configuration before defining the
-functions that will be evaluated:
+To enable 64-bit precision, update the JAX configuration before defining the functions that will be evaluated:
 
 ```python
 import jax

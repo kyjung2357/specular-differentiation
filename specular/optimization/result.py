@@ -41,8 +41,8 @@ class OptimizationResult:
         self
     ) -> Tuple[np.ndarray, np.ndarray, float]:
         """
-        Returns the time grid and the numerical solution as a tuple.
-        
+        Returns the recorded iterates, objective values, and runtime.
+
         Returns:
             (x_history, f_history, runtime)
         """
