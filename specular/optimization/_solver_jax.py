@@ -4,15 +4,15 @@ import jax
 import jax.numpy as jnp
 from typing import Callable, Any
 from specular.optimization.result import OptimizationResult
-from specular.optimization.step_size import StepSize
+from specular.optimization.step_schedule import StepSchedule
 from specular._calculation_jax import gradient as jax_gradient
 
 SUPPORTED_METHODS = ['specular gradient', 'stochastic', 'hybrid']
 
 
-def _create_step_fn(step_size: StepSize) -> Callable[[Any], Any]:
+def _create_step_fn(step_size: StepSchedule) -> Callable[[Any], Any]:
     """
-    Creates a JAX-compatible step size function based on the StepSize object.
+    Creates a JAX-compatible step size function based on the StepSchedule object.
     """
     rule_name = step_size.step_size
     params = step_size.parameters
@@ -53,7 +53,7 @@ def _create_step_fn(step_size: StepSize) -> Callable[[Any], Any]:
 def gradient_method(
     f: Callable[[Any], Any],
     x_0: Any,
-    step_size: StepSize,
+    step_size: StepSchedule,
     h: float = 1e-6,
     form: str = 'specular gradient',
     tol: float = 1e-6,

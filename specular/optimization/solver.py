@@ -2,9 +2,9 @@ import numpy as np
 from typing import Any, Callable, Sequence, TypeAlias, cast
 
 from .. import backend
+from .step_schedule import StepSchedule
 from .line_search import LineSearch
 from .result import OptimizationResult
-from .step_size import StepSize
 
 ComponentFunc: TypeAlias = Callable[
     [int | float | np.number | list | np.ndarray],
@@ -27,7 +27,7 @@ def gradient_method(
         int | float | np.number,
     ],
     x_0: Any,
-    step_size: StepSize,
+    step_size: StepSchedule | LineSearch,
     h: float = 1e-6,
     form: str = "specular gradient",
     tol: float = 1e-6,
@@ -40,7 +40,53 @@ def gradient_method(
     print_bar: bool = True,
 ) -> OptimizationResult:
     """
-    Minimize a nonsmooth convex function using the current backend.
+    The specular gradient method for minimizing a nonsmooth convex function.
+
+    Parameters:
+        f (callable):
+            The objective function to minimize.
+        x_0 (int | float | list | np.ndarray):
+            The starting point for the optimization.
+        step_size (StepSchedule | LineSearch):
+            Step-length rule. If a StepSchedule is provided, the method uses h_k = step_size(k).
+            If a LineSearch is provided, the method chooses h_k by applying the line-search rule along the current descent direction.
+        h (float, optional):
+            Mesh size used in the finite difference approximation. Must be positive.
+        form (str, optional):
+            The form of the specular gradient method.
+            Supported forms: ``'specular gradient'``, ``'implicit'``, ``'stochastic'``, ``'hybrid'``.
+        tol (float, optional):
+            Tolerance for iterations.
+        zero_tol (float, optional):
+            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
+        max_iter (int, optional):
+            Maximum number of iterations.
+        f_j (sequence of callable | callable | None, optional):
+            The component function of ``f``.
+            Used for the stochastic and hybrid forms to compute a random component of the objective function.
+
+            * If a sequence of callables is provided, each callable should accept a single argument (the variable `x`).
+
+            * If a single callable is provided, it should accept two arguments: the variable `x` and an index `j`, and return the `j`-th component function value at `x`.
+        m (int, optional):
+            The number of component functions.
+            Used for the stochastic and hybrid forms.
+        switch_iter (int | None, optional):
+            The iteration to switch from a method to another for the hybrid form.
+            Used for the hybrid form only.
+        record_history (bool, optional):
+            Whether to record the history of variables and function values.
+        print_bar (bool, optional):
+            Whether to print the progress bar.
+
+    Returns:
+        The result of the optimization containing the solution, function value, number of iterations, runtime, and history.
+    
+    Raises:
+        ValueError:
+            If ``h`` is not positive.
+        TypeError:
+            If an unknown ``form`` is provided.
     """
     impl = cast(Any, _get_solver_module().gradient_method)
 
@@ -80,7 +126,6 @@ def BFGS_method(
     max_alpha: float = 1e8,
     raise_on_fail: bool = False,
     H_0: np.ndarray | list | None = None,
-    safeguard: float = 1e-10,
     record_history: bool = True,
     print_bar: bool = True,
 ) -> OptimizationResult:
@@ -117,7 +162,6 @@ def BFGS_method(
         max_alpha=max_alpha,
         raise_on_fail=raise_on_fail,
         H_0=H_0,
-        safeguard=safeguard,
         record_history=record_history,
         print_bar=print_bar,
     )

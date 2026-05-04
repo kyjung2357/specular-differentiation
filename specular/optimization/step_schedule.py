@@ -2,7 +2,7 @@ import math
 import numpy as np
 from typing import Callable, Tuple
 
-class StepSize:
+class StepSchedule:
     """
     Step size rules for optimization methods.
     """
@@ -172,3 +172,4 @@ class StepSize:
         h_k = a * r**k
         """
         return self.a * (self.r ** k)
+

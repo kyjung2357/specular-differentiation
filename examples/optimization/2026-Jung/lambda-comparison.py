@@ -13,6 +13,7 @@ import matplotlib
 matplotlib.rcParams['mathtext.fontset'] = 'cm'
 plt.rcParams["font.family"] = "Times New Roman"
 
+print("version of specular-differentiation: ", specular.__version__)
 specular.change_backend("cpu_numpy")
 
 # ------------------------------------------------------------------------------

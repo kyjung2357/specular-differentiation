@@ -31,7 +31,7 @@ def f_comp_2(x):
 
 def test_scalar_specular_gradient():
     """Test standard specular gradient method on 1D function."""
-    step_size = specular.StepSize('constant', 0.1)
+    step_size = specular.optimization.StepSchedule('constant', 0.1)
     
     res = gradient_method(
         f=f_abs_scalar,
@@ -42,11 +42,11 @@ def test_scalar_specular_gradient():
     )
     
     assert res.method == 'specular gradient'
-    assert abs(res.solution) < 0.2
+    assert abs(float(np.asarray(res.solution).reshape(-1)[0])) < 0.2
 
 def test_scalar_implicit():
     """Test implicit specular gradient method on 1D function."""
-    step_size = specular.StepSize('constant', 0.1)
+    step_size = specular.optimization.StepSchedule('constant', 0.1)
     
     res = gradient_method(
         f=f_abs_scalar,
@@ -57,7 +57,7 @@ def test_scalar_implicit():
     )
     
     assert res.method == 'implicit specular gradient'
-    assert abs(res.solution) < 0.2
+    assert abs(float(np.asarray(res.solution).reshape(-1)[0])) < 0.2
 
 # ==========================================
 # 3. Vector Tests (n > 1)
@@ -65,7 +65,7 @@ def test_scalar_implicit():
 
 def test_vector_specular_gradient():
     """Test specular gradient on 2D vector."""
-    step_size = specular.StepSize('constant', 0.1)
+    step_size = specular.optimization.StepSchedule('constant', 0.1)
     x_0 = [1.0, 1.0]
     
     res = gradient_method(
@@ -80,7 +80,7 @@ def test_vector_specular_gradient():
     np.testing.assert_allclose(res.solution, [0.0, 0.0], atol=0.1)
 
 def test_vector_history_records_independent_snapshots():
-    step_size = specular.StepSize('constant', 0.1)
+    step_size = specular.optimization.StepSchedule('constant', 0.1)
     x_0 = np.array([1.0, 1.0])
 
     res = gradient_method(
@@ -104,7 +104,7 @@ def test_vector_history_records_independent_snapshots():
 
 def test_vector_stochastic():
     """Test stochastic form with component functions list."""
-    step_size = specular.StepSize('square_summable_not_summable', [0.5, 1.0])
+    step_size = specular.optimization.StepSchedule('square_summable_not_summable', [0.5, 1.0])
     x_0 = [1.0, 1.0]
     f_components = [f_comp_1, f_comp_2]
     
@@ -126,10 +126,10 @@ def test_stochastic_small_norm_stops_even_with_positive_quasi_fermat(monkeypatch
 
     monkeypatch.setattr(_solver_numpy, "gradient", fake_gradient)
 
-    step_size = specular.StepSize('constant', 0.1)
+    step_size = specular.optimization.StepSchedule('constant', 0.1)
     x_0 = [0.0, 0.0]
 
-    _, _, k = _solver_numpy._vector_stochastic(
+    _, _, k, stop_reason = _solver_numpy._vector_stochastic(
         f=f_quad_vector,
         f_history=[],
         x=np.array(x_0, dtype=float),
@@ -141,14 +141,15 @@ def test_stochastic_small_norm_stops_even_with_positive_quasi_fermat(monkeypatch
         f_j=[f_comp_1],
         max_iter=1,
         record_history=False,
-        print_bar=False,
+        print_bar=False
     )
 
     assert k == 1
+    assert stop_reason == "gradient norm below tolerance"
 
 def test_vector_hybrid():
     """Test hybrid form (switch from standard to stochastic)."""
-    step_size = specular.StepSize('constant', 0.05)
+    step_size = specular.optimization.StepSchedule('constant', 0.05)
     x_0 = [1.0, 1.0]
     f_components = [f_comp_1, f_comp_2]
     
@@ -172,7 +173,7 @@ def test_hybrid_step_size_counter_continues_after_switch():
         calls.append(k)
         return 0.01
 
-    step_size = specular.StepSize('user_defined', step_rule)
+    step_size = specular.optimization.StepSchedule('user_defined', step_rule)
     x_0 = [1.0, 1.0]
     f_components = [f_comp_1, f_comp_2]
 
@@ -196,32 +197,33 @@ def test_hybrid_step_size_counter_continues_after_switch():
 
 def test_invalid_h():
     """Check error when h <= 0."""
-    step = specular.StepSize('constant', 0.1)
+    step = specular.optimization.StepSchedule('constant', 0.1)
     with pytest.raises(ValueError, match="Mesh size 'h' must be positive"):
         gradient_method(f_abs_scalar, 1.0, step, h=-1.0)
 
 def test_unknown_form():
     """Check error for invalid form string."""
-    step = specular.StepSize('constant', 0.1)
+    step = specular.optimization.StepSchedule('constant', 0.1)
     with pytest.raises(TypeError, match="Unknown form"):
         gradient_method(f_abs_scalar, 1.0, step, form='magic method')
 
 def test_stochastic_missing_fj():
     """Check error when f_j is missing in stochastic mode."""
-    step = specular.StepSize('constant', 0.1)
+    step = specular.optimization.StepSchedule('constant', 0.1)
     with pytest.raises(ValueError, match="must be provided"):
         gradient_method(f_quad_vector, [1, 1], step, form='stochastic', f_j=None)
 
 def test_f_j_callable_signature_error():
-    """Check error if f_j callable has wrong signature."""
-    step = specular.StepSize('constant', 0.1)
-    
-    bad_fj = lambda x: x 
-    
+    step = specular.optimization.StepSchedule('constant', 0.1)
+
     with pytest.raises(ValueError, match="must accept at least 2 arguments"):
         gradient_method(
-            f_quad_vector, [1, 1], step, 
-            form='stochastic', 
-            f_j=bad_fj, 
-            m=2
+            f=f_quad_vector,
+            x_0=[1.0, 1.0],
+            step_size=step,
+            form='stochastic',
+            f_j=lambda x: f_quad_vector(x),
+            m=2,
+            max_iter=1,
+            print_bar=False,
         )

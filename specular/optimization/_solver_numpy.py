@@ -2,22 +2,21 @@ import numpy as np
 from tqdm import tqdm
 import time
 import inspect
-from typing import Callable, TypeAlias, Sequence
 from collections.abc import Sequence as SequenceABC
+from typing import Callable, cast
+
 from .result import OptimizationResult
-from .line_search import LineSearch
-from .step_size import StepSize
+from .line_search import LineSearch, LineSearchError
+from .step_schedule import StepSchedule
 from ..calculation import derivative, gradient
+from .._typing import Scalar, Vector, ScalarToScalarFunc, VectorToScalarFunc, ComponentFuncs
 
 SUPPORTED_METHODS = ['specular gradient', 'implicit', 'stochastic', 'hybrid']
 
-ComponentFunc: TypeAlias = Callable[[int | float | np.number | list | np.ndarray], int | float | np.number]
-ComponentFuncs: TypeAlias = Sequence[ComponentFunc] | Callable
-
 def gradient_method(
-    f: Callable[[int | float | np.number | list | np.ndarray], int | float | np.number],
-    x_0: int | float | list | np.ndarray,
-    step_size: StepSize,
+    f: ScalarToScalarFunc | VectorToScalarFunc,
+    x_0: Scalar | Vector,
+    step_size: StepSchedule | LineSearch,
     h: float = 1e-6,
     form: str = 'specular gradient',
     tol: float = 1e-6,
@@ -37,7 +36,7 @@ def gradient_method(
             The objective function to minimize.
         x_0 (int | float | list | np.ndarray):
             The starting point for the optimization.
-        step_size (StepSize):
+        step_size (StepSchedule):
             The step size `h_k`.
         h (float, optional):
             Mesh size used in the finite difference approximation. Must be positive.
@@ -57,9 +56,6 @@ def gradient_method(
             * If a sequence of callables is provided, each callable should accept a single argument (the variable `x`).
 
             * If a single callable is provided, it should accept two arguments: the variable `x` and an index `j`, and return the `j`-th component function value at `x`.
-        m (int, optional):
-            The number of component functions.
-            Used for the stochastic and hybrid forms.
         switch_iter (int | None, optional):
             The iteration to switch from a method to another for the hybrid form.
             Used for the hybrid form only.
@@ -83,7 +79,8 @@ def gradient_method(
     
     x = np.array(x_0, dtype=float).copy()
     n = x.size
-    
+    stop_reason = "max_iter reached"
+
     all_history = {}
     x_history = []
     f_history = []
@@ -92,15 +89,21 @@ def gradient_method(
 
     # the n-dimensional case
     if n > 1:
+        f = cast(VectorToScalarFunc, f)
+
         if form == 'specular gradient':
-            res_x, res_f, res_k = _vector(f, f_history, x, x_history, step_size, h, tol, zero_tol, max_iter, record_history, print_bar)
+            res_x, res_f, res_k, stop_reason = _vector(
+                f, f_history, x, x_history, step_size, h, tol, zero_tol, max_iter, record_history, print_bar
+            )
 
         elif form == 'stochastic':
             if f_j is None:
                 raise ValueError("Component functions 'f_j' must be provided for the stochastic form.")
 
             form = 'stochastic specular gradient'
-            res_x, res_f, res_k = _vector_stochastic(f, f_history, x, x_history, step_size, h, tol, zero_tol, f_j, m, max_iter, record_history, print_bar) # type: ignore
+            res_x, res_f, res_k, stop_reason = _vector_stochastic(
+                f, f_history, x, x_history, step_size, h, tol, zero_tol, f_j, m, max_iter, record_history, print_bar
+            ) # type: ignore
 
         elif form == 'hybrid':
             if f_j is None:
@@ -112,26 +115,44 @@ def gradient_method(
             remaining_iter = max_iter - switch_iter
 
             # Phase 2: stochastic
-            res_x, res_f, res_k = _vector(
+            res_x, res_f, res_k, stop_reason = _vector(
                 f, f_history, x, x_history, step_size, h, tol, zero_tol, switch_iter, record_history, print_bar
             )
-            res_x, res_f, res_k = _vector_stochastic(
-                f, f_history, res_x, x_history, step_size, h, tol, zero_tol, f_j, m, remaining_iter, record_history, print_bar, k_start=res_k
-            ) # type: ignore
+            res_x, res_f, res_k, stop_reason = _vector_stochastic(
+                f=f,
+                f_history=f_history,
+                x=res_x,
+                x_history=x_history,
+                step_size=step_size,
+                h=h,
+                tol=tol,
+                zero_tol=zero_tol,
+                f_j=f_j,
+                m=m,
+                max_iter=remaining_iter,
+                record_history=record_history,
+                print_bar=print_bar,
+                k_start=res_k + 1
+            )
 
         else:
             raise TypeError(f"Unknown form '{form}'. Supported forms: {SUPPORTED_METHODS}")
 
     # the one-dimensional case
     elif n == 1:
+        f = cast(ScalarToScalarFunc, f)
         x = x.item()
 
         if form == 'specular gradient':
-            res_x, res_f, res_k = _scalar(f, f_history, x, x_history, step_size, h, tol, zero_tol, max_iter, record_history, print_bar)
+            res_x, res_f, res_k, stop_reason = _scalar(
+                f, f_history, x, x_history, step_size, h, tol, zero_tol, max_iter, record_history, print_bar
+            )
             
         elif form == 'implicit':
             form = 'implicit specular gradient'
-            res_x, res_f, res_k = _scalar_implicit(f, f_history, x, x_history, step_size, h, tol, max_iter, record_history, print_bar)
+            res_x, res_f, res_k, stop_reason = _scalar_implicit(
+                f, f_history, x, x_history, step_size, h, tol, max_iter, record_history, print_bar
+            )
             
         else:
             raise TypeError(f"Unknown form '{form}'. Supported forms: {SUPPORTED_METHODS}")
@@ -151,15 +172,16 @@ def gradient_method(
         func_val=res_f,
         iteration=res_k,
         runtime=runtime,
-        all_history=all_history
+        all_history=all_history,
+        stop_reason=stop_reason
     ) 
 
 def _scalar(
-    f: Callable[[int | float | np.number], int | float | np.number | list | np.ndarray],
+    f: ScalarToScalarFunc,
     f_history: list,
-    x: int | float,
+    x: Scalar,
     x_history: list,
-    step_size: StepSize,
+    step_size: StepSchedule | LineSearch,
     h: float,
     tol: float,
     zero_tol: float,
@@ -171,29 +193,47 @@ def _scalar(
     Scalar implementation of ``specular.gradient_method``.
     The specular gradient method in the one-dimensional case.
     """
-    k = 1
+    x = float(x)
+    k = 0
+    stop_reason = "max_iter reached"
 
-    for _ in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method", disable=not print_bar, leave=False):
+    for k in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method", disable=not print_bar, leave=False):
         if record_history is True:
             x_history.append(x)
             f_history.append(f(x))
 
-        specular_derivative = derivative(f=f, x=x, h=h, zero_tol=zero_tol)
-        norm = np.linalg.norm(specular_derivative)
+        specular_derivative = float(np.asarray(derivative(f=f, x=x, h=h, zero_tol=zero_tol), dtype=float).reshape(-1)[0])
+        norm = abs(specular_derivative)
+
+        if not np.isfinite(norm):
+            raise FloatingPointError("Specular derivative norm is not finite.")
+
         if norm < tol:
+            stop_reason = "gradient norm below tolerance"
             break
-        
-        x -= step_size(k)*(specular_derivative / norm) # type: ignore
-        k += 1
+
+        d_k = float(specular_derivative / norm)
+
+        if isinstance(step_size, LineSearch):
+            t_k = float(step_size(
+                f=f,
+                x=x,
+                direction=-d_k,
+                gradient_current=specular_derivative
+            ))
+        else:
+            t_k = float(step_size(k))
+
+        x -= t_k * d_k
     
-    return x, f(x), k
+    return x, f(x), k, stop_reason
 
 def _scalar_implicit(
-    f: Callable[[int | float | np.number], int | float | np.number],
+    f: ScalarToScalarFunc,
     f_history: list,
-    x: int | float,
+    x: Scalar,
     x_history: list,
-    step_size: StepSize,
+    step_size: StepSchedule | LineSearch,
     h: float,
     tol: float,
     max_iter: int,
@@ -204,30 +244,44 @@ def _scalar_implicit(
     Scalar implementation of ``specular.gradient_method``.
     The implicit specular gradient method in the one-dimensional case.
     """
-    k = 1
+    k = 0
+    x = float(x)
+    stop_reason = "max_iter reached"
 
-    for _ in tqdm(range(1, max_iter + 1), desc="Running the implicit specular gradient method", disable=not print_bar, leave=False):
+    for k in tqdm(range(1, max_iter + 1), desc="Running the implicit specular gradient method", disable=not print_bar, leave=False):
         if record_history is True:
             x_history.append(x)
             f_history.append(f(x))
 
         # This is the sum of the right and left one-sided slopes, not a central difference.
-        sum_of_one_sided_derivatives = (f(x + h) - f(x - h)) / h
+        sum_of_one_sided_derivatives = float((f(x + h) - f(x - h)) / h)
 
         if abs(sum_of_one_sided_derivatives) < tol:
+            stop_reason = "gradient norm below tolerance"
             break
-        
-        x -= step_size(k)*(sum_of_one_sided_derivatives / abs(sum_of_one_sided_derivatives))
-        k += 1
-    
-    return x, f(x), k
+
+        d_k = float(sum_of_one_sided_derivatives / abs(sum_of_one_sided_derivatives))
+
+        if isinstance(step_size, LineSearch):
+            t_k = float(step_size(
+                f=f,
+                x=x,
+                direction=-d_k,
+                gradient_current=sum_of_one_sided_derivatives
+            ))
+        else:
+            t_k = float(step_size(k))
+
+        x -= t_k * d_k
+
+    return x, f(x), k, stop_reason
 
 def _vector(
-    f: Callable[[list | np.ndarray], int | float | np.number],
+    f: VectorToScalarFunc,
     f_history: list,
-    x: list | np.ndarray,
+    x: Vector,
     x_history: list,
-    step_size: StepSize,
+    step_size: StepSchedule | LineSearch,
     h: float,
     tol: float,
     zero_tol: float,
@@ -239,9 +293,10 @@ def _vector(
     Vector implementation of ``specular.gradient_method``.
     The specular gradient method in the n-dimensional case.
     """
-    k = 1
+    k = 0
+    stop_reason = "max_iter reached"
 
-    for _ in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method", disable=not print_bar, leave=False):
+    for k in tqdm(range(1, max_iter + 1), desc="Running the specular gradient method", disable=not print_bar, leave=False):
         if record_history is True:
             x_history.append(x.copy())
             f_history.append(f(x))
@@ -254,19 +309,32 @@ def _vector(
             raise FloatingPointError("Specular gradient norm is not finite.")
 
         if norm < tol:
+            stop_reason = "gradient norm below tolerance"
             break
+        
+        d_k = specular_gradient / norm
 
-        x -= step_size(k)*(specular_gradient / norm)
-        k += 1
+        if isinstance(step_size, LineSearch):
+            t_k = step_size(
+                f=f,
+                x=x,
+                direction=-d_k,
+                gradient_current=specular_gradient,
+                gradient_f=lambda z: np.asarray(gradient(f=f, x=z, h=h, zero_tol=zero_tol, quasi_Fermat=True, monotonicity=False,)[0], dtype=float,),
+            )
+        else:
+            t_k = step_size(k)
+
+        x -= t_k*d_k
     
-    return x, f(x), k
+    return x, f(x), k, stop_reason
 
 def _vector_stochastic(
-    f: Callable[[list | np.ndarray], int | float | np.number],
+    f: VectorToScalarFunc,
     f_history: list,
-    x: list | np.ndarray,
+    x: Vector,
     x_history: list,
-    step_size: StepSize,
+    step_size: StepSchedule | LineSearch,
     h: float,
     tol: float,
     zero_tol: float,
@@ -281,59 +349,105 @@ def _vector_stochastic(
     Vector implementation of ``specular.gradient_method``.
     The stochastic specular gradient method in the $n$-dimensional case.
     """
-    k = k_start
+    k = k_start - 1
+    stop_reason = "max_iter reached" 
 
-    for _ in tqdm(range(1, max_iter + 1), desc="Running the stochastic specular gradient method", disable=not print_bar, leave=False):
+    if isinstance(f_j, SequenceABC) and not isinstance(f_j, (str, bytes)):
+        if len(f_j) == 0:
+            raise ValueError("f_j must contain at least one component function.")
+
+        for component in f_j:
+            if not callable(component):
+                raise TypeError("Each element of f_j must be callable.")
+
+        num_components = len(f_j)
+    else:
+        if not callable(f_j):
+            raise TypeError(
+                f"f_j must be a sequence of component functions or a callable. Got {type(f_j)} instead."
+            )
+
+        sig = inspect.signature(f_j)
+        params = list(sig.parameters.values())
+        has_varargs = any(
+            p.kind in (p.VAR_POSITIONAL, p.VAR_KEYWORD)
+            for p in params
+        )
+
+        if len(params) < 2 and not has_varargs:
+            raise ValueError(
+                f"The function f_j must accept at least 2 arguments (x and index). "
+                f"Current signature is: {sig}"
+            )
+        
+        if m <= 0:
+            raise ValueError(f"m must be positive when f_j is callable. Got {m}")
+
+        num_components = m
+
+    for k in tqdm(range(k_start, k_start + max_iter), desc="Running the stochastic specular gradient method", disable=not print_bar, leave=False):
         if record_history is True:
             x_history.append(x.copy())
             f_history.append(f(x)) 
 
-        if isinstance(f_j, SequenceABC):
-            num_components = len(f_j)
-        else:
-            num_components = m
-        
-        # A random index j is selected at each iteration
+        # A random index j is selected at each iteration.
         j = np.random.randint(num_components)
 
-        if isinstance(f_j, SequenceABC):
-            component_func = f_j[j]
+        component_func: VectorToScalarFunc
+
+        if isinstance(f_j, SequenceABC) and not isinstance(f_j, (str, bytes)):
+            component_func = cast(VectorToScalarFunc, f_j[j])
         else:
-            if not callable(f_j):
-                raise TypeError(f"f_j must be a list of functions or a callable. Got {type(f_j)} instead.")
+            component_provider = cast(Callable[[Vector, int], Scalar], f_j)
 
-            sig = inspect.signature(f_j)
-            params = list(sig.parameters.values())
-            has_varargs = any(p.kind in (p.VAR_POSITIONAL, p.VAR_KEYWORD) for p in params)
+            def indexed_component(x_val: Vector) -> Scalar:
+                return component_provider(x_val, j)
 
-            if len(params) < 2 and not has_varargs:
-                raise ValueError(
-                    f"The function f_j must accept at least 2 arguments (x and index). "
-                    f"Current signature is: {sig}"
-                )
-
-            component_func = lambda x_val: f_j(x_val, j)
+            component_func = indexed_component
 
         computation = gradient(f=component_func, x=x, h=h, zero_tol=zero_tol, quasi_Fermat=True, monotonicity=False)
 
-        component_specular_gradient = computation[0]
+        component_specular_gradient = np.asarray(computation[0], dtype=float)
         norm = np.linalg.norm(component_specular_gradient)
 
         if not np.isfinite(norm):
             raise FloatingPointError("Component specular gradient norm is not finite.")
 
         if norm < tol:
+            stop_reason = "gradient norm below tolerance"
             break
 
-        x -= step_size(k)*(component_specular_gradient / norm)
-        k += 1
+        d_k = component_specular_gradient / norm
 
-    return x, f(x), k
+        if isinstance(step_size, LineSearch):
+            t_k = step_size(
+                f=component_func,
+                x=x,
+                direction=-d_k,
+                gradient_current=component_specular_gradient,
+                gradient_f=lambda z: np.asarray(
+                    gradient(
+                        f=component_func,
+                        x=z,
+                        h=h,
+                        zero_tol=zero_tol,
+                        quasi_Fermat=True,
+                        monotonicity=False,
+                    )[0],
+                    dtype=float,
+                )
+            )
+        else:
+            t_k = step_size(k)
+
+        x -= t_k * d_k
+
+    return x, f(x), k, stop_reason
 
 
 def BFGS_method(
-    f: Callable[[int | float | np.number | list | np.ndarray], int | float | np.number],
-    x_0: int | float | list | np.ndarray,
+    f: ScalarToScalarFunc | VectorToScalarFunc,
+    x_0: Scalar | Vector,
     h: float = 1e-6,
     tol: float = 1e-6,
     zero_tol: float = 1e-8,
@@ -347,7 +461,6 @@ def BFGS_method(
     max_alpha: float = 1e8,
     raise_on_fail: bool = False,
     H_0: np.ndarray | list | None = None,
-    safeguard: float = 1e-10,
     record_history: bool = True,
     print_bar: bool = True,
 ) -> OptimizationResult:
@@ -357,9 +470,6 @@ def BFGS_method(
     if h is None or h <= 0:
         raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
 
-    if safeguard < 0:
-        raise ValueError(f"safeguard must be nonnegative. Got {safeguard}")
-
     x = np.asarray(x_0, dtype=float).reshape(-1).copy()
     n = x.size
 
@@ -368,8 +478,27 @@ def BFGS_method(
             "BFGS requires n > 1. For 1D, use the standard specular gradient method."
         )
 
+    f = cast(VectorToScalarFunc, f)
+
+    def gradient_f(z: Vector) -> Vector:
+        return np.asarray(
+            gradient(
+                f=f,
+                x=np.asarray(z, dtype=float).reshape(-1),
+                h=h,
+                zero_tol=zero_tol,
+                quasi_Fermat=True,
+                monotonicity=False,
+            )[0],
+            dtype=float,
+        ).reshape(-1)
+    
     if isinstance(line_search, LineSearch):
         line_search_rule = line_search
+        if line_search_rule.f is None:
+            line_search_rule.f = f
+        if line_search_rule.gradient_f is None:
+            line_search_rule.gradient_f = gradient_f
     else:
         line_search_rule = LineSearch(
             name=line_search,
@@ -380,6 +509,8 @@ def BFGS_method(
             max_iter=max_line_iter,
             max_alpha=max_alpha,
             raise_on_fail=raise_on_fail,
+            f=f,
+            gradient_f=gradient_f,
         )
 
     all_history = {}
@@ -409,9 +540,12 @@ def BFGS_method(
         monotonicity=False,
     )
     spec_grad = np.asarray(computation[0], dtype=float).reshape(-1)
-    iteration = 0
+    k = 0
 
-    for iteration in tqdm(
+    stop_reason = "max_iter reached"
+    completed_iteration = 0
+
+    for k in tqdm(
         range(1, max_iter + 1),
         desc="Running the specular BFGS method",
         disable=not print_bar,
@@ -429,35 +563,27 @@ def BFGS_method(
             raise FloatingPointError("Specular gradient norm is not finite.")
 
         if norm_g < tol:
+            stop_reason = "gradient norm below tolerance"
             break
 
-        direction = -H.dot(spec_grad)
-        initial_slope = float(np.dot(spec_grad, direction))
+        d_k = -H.dot(spec_grad)
+        initial_slope = float(np.dot(spec_grad, d_k))
 
         if initial_slope >= 0.0:
             H = I.copy()
-            direction = -spec_grad
+            d_k = -spec_grad
 
-        alpha = line_search_rule(
-            f=f,
-            x=x,
-            direction=direction,
-            gradient_current=spec_grad,
-            f_current=f_current,
-            gradient_func=lambda z: np.asarray(
-                gradient(
-                    f=f,
-                    x=z,
-                    h=h,
-                    zero_tol=zero_tol,
-                    quasi_Fermat=True,
-                    monotonicity=False,
-                )[0],
-                dtype=float,
-            ).reshape(-1),
-        )
+        try:
+            t_k = line_search_rule(
+                x=x,
+                direction=d_k,
+                gradient_current=spec_grad,
+            )
+        except LineSearchError as exc:
+            stop_reason = str(exc)
+            break
 
-        s = alpha * direction
+        s = t_k * d_k
         x_new = x + s
 
         computation_new = gradient(
@@ -473,14 +599,14 @@ def BFGS_method(
         y = spec_grad_new - spec_grad
         ys = float(np.dot(y, s))
 
-        if ys > safeguard:
-            bfgs_rho = 1.0 / ys
-            V = I - bfgs_rho * np.outer(s, y)
-            H = V.dot(H).dot(V.T) + bfgs_rho * np.outer(s, s)
+        bfgs_rho = 1.0 / ys
+        V = I - bfgs_rho * np.outer(s, y)
+        H = V.dot(H).dot(V.T) + bfgs_rho * np.outer(s, s)
 
         x = x_new
         spec_grad = spec_grad_new
         computation = computation_new
+        completed_iteration = k
 
     runtime = time.time() - start_time
 
@@ -492,7 +618,8 @@ def BFGS_method(
         method=f"specular BFGS ({line_search_rule.name})",
         solution=x,
         func_val=float(f(x)),
-        iteration=iteration,
+        iteration=completed_iteration,
         runtime=runtime,
         all_history=all_history,
+        stop_reason=stop_reason
     )

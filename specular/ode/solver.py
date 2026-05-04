@@ -15,8 +15,7 @@ from typing import Callable
 
 import numpy as np
 
-from ._num_steps import _num_steps
-from .result import ODEResult
+from .result import ODEResult, _num_steps
 from ..calculation import A
 
 try:

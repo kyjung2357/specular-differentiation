@@ -26,7 +26,7 @@ x_0 = [1.0, 1.0]
 # ==========================================
 def test_gradient_descent_convergence():
     """Test if GD converges using 'square_summable_not_summable' step size."""
-    step_size = specular.StepSize(
+    step_size = specular.optimization.StepSchedule(
         name='square_summable_not_summable', 
         parameters=[0.5, 0.0] 
     )
@@ -47,7 +47,7 @@ def test_gradient_descent_convergence():
 
 def test_gradient_descent_constant():
     """Test GD with 'constant' step size."""
-    step_size = specular.StepSize(name='constant', parameters=0.1)
+    step_size = specular.optimization.StepSchedule(name='constant', parameters=0.1)
     
     res = gradient_descent_method(
         f_torch=quadratic_torch,
@@ -63,7 +63,7 @@ def test_gradient_descent_constant():
 # ==========================================
 def test_adam_convergence():
     """Test Adam with 'constant' step size."""
-    step_size = specular.StepSize(name='constant', parameters=0.1)
+    step_size = specular.optimization.StepSchedule(name='constant', parameters=0.1)
     
     res = Adam(
         f_torch=quadratic_torch,
@@ -77,7 +77,7 @@ def test_adam_convergence():
 
 def test_adam_geometric_decay():
     """Test Adam with 'geometric_series' step size."""
-    step_size = specular.StepSize(
+    step_size = specular.optimization.StepSchedule(
         name='geometric_series', 
         parameters=[0.1, 0.99]
     )
@@ -184,7 +184,7 @@ def test_high_dimension():
     def f_torch_large(x):
         return torch.sum(x**2)
     
-    step_size = specular.StepSize(name='constant', parameters=0.1)
+    step_size = specular.optimization.StepSchedule(name='constant', parameters=0.1)
     
     res = gradient_descent_method(f_torch_large, x_large, step_size, max_iter=10)
     
@@ -196,7 +196,7 @@ def test_high_dimension():
 # ==========================================
 def test_result_methods():
     """Check last_record and history methods."""
-    step_size = specular.StepSize(name='constant', parameters=0.1)
+    step_size = specular.optimization.StepSchedule(name='constant', parameters=0.1)
     res = gradient_descent_method(quadratic_torch, x_0, step_size, max_iter=5)
 
     x, f, runtime = res.last_record()

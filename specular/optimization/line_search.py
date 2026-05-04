@@ -1,14 +1,15 @@
 from __future__ import annotations
 
+from typing import cast
 from typing import Callable, Literal, TypeAlias
+from specular._typing import Vector, ScalarToScalarFunc, VectorToScalarFunc, ScalarToVectorFunc, VectorToVectorFunc
 
 import numpy as np
 
-
 LineSearchName: TypeAlias = Literal["exact", "armijo", "wolfe", "strong_wolfe"]
-ObjectiveFunc: TypeAlias = Callable[[np.ndarray], int | float | np.number]
-GradientFunc: TypeAlias = Callable[[np.ndarray], np.ndarray | list | int | float | np.number]
 
+class LineSearchError(RuntimeError):
+    """Raised when a line search fails to satisfy its condition."""
 
 class LineSearch:
     """
@@ -32,12 +33,13 @@ class LineSearch:
         max_iter: int = 20,
         max_alpha: float = 1e8,
         raise_on_fail: bool = False,
+        f: ScalarToScalarFunc | VectorToScalarFunc | None = None,
+        gradient_f: ScalarToVectorFunc | VectorToVectorFunc | None = None,
     ):
         """
         Parameters:
             name (str):
-                Required line search rule. Options: ``'armijo'``, ``'wolfe'``, and
-                ``'strong_wolfe'``.
+                Required line search rule. Options: ``'armijo'``, ``'wolfe'``, and ``'strong_wolfe'``.
             alpha_0 (float, optional):
                 Initial trial step length.
             c_1 (float, optional):
@@ -76,7 +78,10 @@ class LineSearch:
             raise ValueError(f"c_2 must satisfy 0 < c_2 < 1. Got {c_2}")
 
         if name in ("wolfe", "strong_wolfe") and not (c_1 < c_2):
-            raise ValueError(f"Wolfe line search requires c_1 < c_2. Got c_1={c_1}, c_2={c_2}")
+            raise ValueError(
+                f"Wolfe line search requires 0 < c_1 < c_2 < 1. "
+                f"Got c_1={c_1}, c_2={c_2}"
+            )
 
         if not (0.0 < rho < 1.0):
             raise ValueError(f"rho must satisfy 0 < rho < 1. Got {rho}")
@@ -95,54 +100,114 @@ class LineSearch:
         self.max_iter = int(max_iter)
         self.max_alpha = float(max_alpha)
         self.raise_on_fail = raise_on_fail
+        self.f = f
+        self.gradient_f = gradient_f
 
+    @staticmethod
+    def _is_scalar_input(x) -> bool:
+        return np.isscalar(x) or np.asarray(x).ndim == 0
+
+    @staticmethod
+    def _as_vector(value) -> np.ndarray:
+        return np.asarray(value, dtype=float).reshape(-1)
+
+    @staticmethod
+    def _restore_input_type(
+        x: np.ndarray,
+        scalar_input: bool
+    ) -> float | np.ndarray:
+        if scalar_input:
+            return float(np.asarray(x, dtype=float).reshape(-1)[0])
+
+        return np.asarray(x, dtype=float)
+    
     def __call__(
         self,
-        f: ObjectiveFunc,
-        x: np.ndarray | list,
-        direction: np.ndarray | list,
-        gradient_current: np.ndarray | list,
-        f_current: int | float | np.number | None = None,
-        gradient_func: GradientFunc | None = None,
+        x,
+        direction,
+        gradient_current,
+        f: ScalarToScalarFunc | VectorToScalarFunc | None = None,
+        gradient_f: ScalarToVectorFunc | VectorToVectorFunc | None = None
     ) -> float:
-        """
-        Returns a step length ``alpha`` for ``x + alpha * direction``.
+        objective = f if f is not None else self.f
 
-        Wolfe and strong Wolfe line searches require ``gradient_func`` because
-        they must evaluate the gradient at trial points.
-        """
-        x_arr = np.asarray(x, dtype=float)
-        p = np.asarray(direction, dtype=float)
-        g = np.asarray(gradient_current, dtype=float)
+        if objective is None:
+            raise ValueError("LineSearch requires an objective function.")
 
-        if x_arr.shape != p.shape:
-            raise ValueError(f"Shape mismatch: x has shape {x_arr.shape}, direction has shape {p.shape}")
+        gradient_provider = gradient_f if gradient_f is not None else self.gradient_f
 
-        if x_arr.shape != g.shape:
-            raise ValueError(f"Shape mismatch: x has shape {x_arr.shape}, gradient has shape {g.shape}")
+        scalar_input = self._is_scalar_input(x)
+        x_vec = self._as_vector(x)
+        direction_vec = self._as_vector(direction)
+        gradient_current_vec = self._as_vector(gradient_current)
 
-        f0 = float(f(x_arr)) if f_current is None else float(f_current)
-        initial_slope = self._directional_derivative(g, p)
+        def objective_vec(z: Vector) -> float:
+            z_vec = self._as_vector(z)
+
+            if scalar_input:
+                objective_scalar = cast(ScalarToScalarFunc, objective)
+                return float(objective_scalar(float(z_vec[0])))
+
+            objective_vector = cast(VectorToScalarFunc, objective)
+            return float(objective_vector(z_vec))
+
+        def gradient_vec(z: Vector) -> np.ndarray:
+            if gradient_provider is None:
+                raise ValueError(f"{self.name} line search requires gradient_f.")
+
+            z_vec = self._as_vector(z)
+
+            if scalar_input:
+                gradient_scalar = cast(ScalarToVectorFunc, gradient_provider)
+                return self._as_vector(gradient_scalar(float(z_vec[0])))
+
+            gradient_vector = cast(VectorToVectorFunc, gradient_provider)
+            return self._as_vector(gradient_vector(z_vec))
+
+        f_current = objective_vec(x_vec)
+        initial_slope = self._directional_derivative(gradient_current_vec, direction_vec)
 
         if initial_slope >= 0.0:
             raise ValueError(
-                "Line search requires a descent direction: "
-                f"dot(gradient_current, direction) = {initial_slope}"
+                f"{self.name} line search requires a descent direction. "
+                f"Got initial directional derivative {initial_slope}"
             )
 
         if self.name == "exact":
-            return self._exact(f, x_arr, p)
+            return self._exact(objective_vec, x_vec, direction_vec)
 
         if self.name == "armijo":
-            return self._armijo(f, x_arr, p, f0, initial_slope)
-
-        if gradient_func is None:
-            raise ValueError(f"Line search '{self.name}' requires gradient_func.")
+            return self._armijo(
+                objective_vec,
+                x_vec,
+                direction_vec,
+                f_current,
+                initial_slope
+            )
 
         if self.name == "wolfe":
-            return self._wolfe(f, gradient_func, x_arr, p, f0, initial_slope, strong=False)
+            return self._wolfe(
+                objective_vec,
+                gradient_vec,
+                x_vec,
+                direction_vec,
+                f_current,
+                initial_slope,
+                strong=False
+            )
 
-        return self._wolfe(f, gradient_func, x_arr, p, f0, initial_slope, strong=True)
+        if self.name == "strong_wolfe":
+            return self._wolfe(
+                objective_vec,
+                gradient_vec,
+                x_vec,
+                direction_vec,
+                f_current,
+                initial_slope,
+                strong=True
+            )
+
+        raise ValueError(f"Unknown line search rule: {self.name}")
 
     def satisfies_armijo(
         self,
@@ -188,7 +253,7 @@ class LineSearch:
 
     def _exact(
         self,
-        f: ObjectiveFunc,
+        f: VectorToScalarFunc,
         x: np.ndarray,
         direction: np.ndarray,
     ) -> float:
@@ -308,7 +373,7 @@ class LineSearch:
 
     def _armijo(
         self,
-        f: ObjectiveFunc,
+        f: VectorToScalarFunc,
         x: np.ndarray,
         direction: np.ndarray,
         f_current: float,
@@ -333,13 +398,13 @@ class LineSearch:
 
     def _wolfe(
         self,
-        f: ObjectiveFunc,
-        gradient_func: GradientFunc,
+        f: VectorToScalarFunc,
+        gradient_f: VectorToVectorFunc,
         x: np.ndarray,
         direction: np.ndarray,
         f_current: float,
         initial_slope: float,
-        strong: bool,
+        strong: bool
     ) -> float:
         alpha = self.alpha_0
         alpha_low = 0.0
@@ -354,7 +419,7 @@ class LineSearch:
                 alpha = self._next_smaller_alpha(alpha_low, alpha_high, alpha)
                 continue
 
-            gradient_trial = np.asarray(gradient_func(x_trial), dtype=float)
+            gradient_trial = np.asarray(gradient_f(x_trial), dtype=float)
             trial_slope = self._directional_derivative(gradient_trial, direction)
 
             if strong:
@@ -399,7 +464,9 @@ class LineSearch:
 
     def _failed(self, alpha: float) -> float:
         if self.raise_on_fail:
-            raise RuntimeError(f"Line search '{self.name}' failed to satisfy its condition.")
+            raise LineSearchError(
+                f"Line search '{self.name}' failed to satisfy its condition."
+            )
 
         return alpha
 

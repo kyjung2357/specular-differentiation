@@ -2,14 +2,25 @@ import numpy as np
 import pandas as pd
 import torch
 import matplotlib.pyplot as plt
-import sys
 import os
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
-sys.path.append(parent_dir)
+from pathlib import Path
+import sys
+
+CURRENT_DIR = Path(__file__).resolve().parent
+OPTIMIZATION_DIR = CURRENT_DIR.parents[0]
+PACKAGE_ROOT = CURRENT_DIR.parents[2]
+
+for path in (PACKAGE_ROOT, OPTIMIZATION_DIR, CURRENT_DIR):
+    path_str = str(path)
+    if path_str in sys.path:
+        sys.path.remove(path_str)
+
+sys.path.insert(0, str(CURRENT_DIR))
+sys.path.insert(0, str(OPTIMIZATION_DIR))
+sys.path.insert(0, str(PACKAGE_ROOT))
 
 import specular
 from specular.optimization.classical_solver import Adam, BFGS, gradient_descent_method
@@ -60,11 +71,18 @@ def run_single_trial(args):
 
         return 0.5 * term_data + (lambda2/2) * term_reg2 + lambda1 * term_reg1
 
+    def make_component(j):
+        def f_component(x):
+            return f_stochastic(x, j)
+        return f_component
+
+    f_components = [make_component(j) for j in range(m)]
+
     trial_results = {}
     trial_times = {}
 
-    step_size_squ = specular.StepSize(name='square_summable_not_summable', parameters=[4.0, 0.0])
-    step_size_geo = specular.StepSize(name='geometric_series', parameters=[1.0, 0.5])
+    step_size_squ = specular.StepSchedule(name='square_summable_not_summable', parameters=[4.0, 0.0])
+    step_size_geo = specular.StepSchedule(name='geometric_series', parameters=[1.0, 0.5])
 
     # ==== Specular gradient methods ====
     
@@ -95,7 +113,7 @@ def run_single_trial(args):
     # S-SPEG
     if "S-SPEG" in methods:
         _, res, runtime = specular.gradient_method(
-            f=f, x_0=x_0, step_size=step_size_squ, form='stochastic', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m, print_bar=True # type: ignore
+            f=f, x_0=x_0, step_size=step_size_squ, form='stochastic', tol=1e-10, max_iter=iteration, f_j=f_components, print_bar=True # type: ignore
         ).history()
         trial_results["S-SPEG"] = ensure_length(res, iteration)
         trial_times["S-SPEG"] = runtime
@@ -103,7 +121,7 @@ def run_single_trial(args):
     # H-SPEG
     if "H-SPEG" in methods:
         _, res, runtime = specular.gradient_method(
-            f=f, x_0=x_0, step_size=step_size_squ, form='hybrid', tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m,switch_iter=10, print_bar=True # type: ignore
+            f=f, x_0=x_0, step_size=step_size_squ, form='hybrid', tol=1e-10, max_iter=iteration, f_j=f_components, switch_iter=10, print_bar=True # type: ignore
         ).history()
         trial_results["H-SPEG"] = ensure_length(res, iteration)
         trial_times["H-SPEG"] = runtime
@@ -112,7 +130,7 @@ def run_single_trial(args):
 
     # Gradient Descent
     if "GD" in methods:
-        constant_step_size = specular.StepSize(name='constant', parameters=0.001)
+        constant_step_size = specular.StepSchedule(name='constant', parameters=0.001)
         _, res, runtime = gradient_descent_method(
             f_torch=f_torch, x_0=x_0, step_size=constant_step_size, max_iter=iteration
         ).history()
@@ -173,4 +191,4 @@ def run_experiment(methods, file_number, trials, iteration, m, n, lambda1, lambd
     print("\n[Analysis]")
     print(" Generating plots and tables")
  
-    report_results(all_results, running_times, file_number, m, n, lambda1, lambda2, iteration, current_dir, pdf=pdf, show=show)
+    report_results(all_results, running_times, file_number, m, n, lambda1, lambda2, iteration, CURRENT_DIR, pdf=pdf, show=show)

@@ -6,8 +6,7 @@ from typing import Callable
 
 import numpy as np
 
-from ._num_steps import _num_steps
-from .result import ODEResult
+from .result import ODEResult, _num_steps
 
 try:
     from tqdm import tqdm
@@ -26,6 +25,9 @@ def explicit_Euler_scheme(
     T: float,
     h: float = 1e-6,
 ) -> ODEResult:
+    """
+    Explicit Euler scheme.
+    """
     t_curr = t_0
     u_curr = u_0(t_0) if callable(u_0) else u_0
 
@@ -57,6 +59,9 @@ def implicit_Euler_scheme(
     tol: float = 1e-12,
     max_iter: int = 100,
 ) -> ODEResult:
+    """
+    Implicit Euler scheme.
+    """
     t_curr = t_0
     u_curr = u_0(t_0) if callable(u_0) else u_0
 
@@ -101,6 +106,9 @@ def Crank_Nicolson_scheme(
     tol: float = 1e-12,
     max_iter: int = 100,
 ) -> ODEResult:
+    """
+    Crank Nicolson scheme
+    """
     t_curr = t_0
     u_curr = u_0(t_0) if callable(u_0) else u_0
 
@@ -150,6 +158,34 @@ def classical_scheme(
     tol: float = 1e-12,
     max_iter: int = 100,
 ) -> ODEResult:
+    """
+    Solves an initial value problem (IVP) using classical numerical schemes.
+    Supported forms: explicit Euler, implicit Euler, and Crank-Nicolson.
+
+    Parameters:
+        F (callable):
+            The given source function ``F`` in (IVP).
+            The calling signature should be ``F(t, u)`` where ``t`` and ``u`` are scalars.
+        t_0 (float):
+            The starting time of the simulation.
+        u_0 (callable):
+            The given initial condition ``u_0`` in (IVP).
+        T (float):
+            The end time of the simulation.
+        h (float, optional):
+            Mesh size used in the finite difference approximation. Must be positive.
+        form (str | optional):
+            The form of the numerical scheme. 
+            Options: ``'explicit_Euler'``, ``'implicit_Euler'``, ``'Crank-Nicolson'``.
+        tol (float | optional):
+            Tolerance for fixed-point iteration.
+            Used for implicit Euler and Crank-Nicolson schemes.
+        max_iter (int | optional):
+            Max iterations for fixed-point solver.
+
+    Returns:
+        An object containing ``(t, u)`` data and the scheme name.
+    """
     if form == "explicit Euler":
         return explicit_Euler_scheme(F, t_0, u_0, T, h)
 

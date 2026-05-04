@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from .line_search import LineSearch
 from .result import OptimizationResult
-from .step_size import StepSize
+from .step_schedule import StepSchedule
 import time
 import numpy as np
 from typing import Callable, Union, TYPE_CHECKING
+from .._typing import Vector, VectorToScalarFunc
 
 if TYPE_CHECKING:
     import torch
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
 def gradient_descent_method(
     f_torch: Callable[[torch.Tensor], torch.Tensor], 
     x_0: Union[np.ndarray, list], 
-    step_size: StepSize, 
+    step_size: StepSchedule, 
     max_iter: int = 100
 ) -> OptimizationResult:
     """
@@ -26,6 +27,7 @@ def gradient_descent_method(
     start_time = time.time()
     
     x = torch.tensor(x_0, dtype=torch.float32, requires_grad=True)
+    stop_reason = "max_iter reached"
 
     x_history = [x.detach().cpu().numpy().copy()]
     f_history = [f_torch(x.detach()).item()]
@@ -55,13 +57,14 @@ def gradient_descent_method(
         all_history={
             "variables": np.array(x_history),
             "values": np.array(f_history)
-        }
+        },
+        stop_reason=stop_reason
     )
 
 def Adam(
     f_torch: Callable[[torch.Tensor], torch.Tensor],
     x_0: Union[np.ndarray, list],
-    step_size: StepSize | float,
+    step_size: StepSchedule | float,
     max_iter: int = 100
 ) -> OptimizationResult:
     """
@@ -74,6 +77,7 @@ def Adam(
     start_time = time.time()
     
     x = torch.tensor(x_0, dtype=torch.float32, requires_grad=True)
+    stop_reason = "max_iter reached"
     
     initial_lr = step_size(1) if callable(step_size) else step_size
     optimizer = torch.optim.Adam([x], lr=initial_lr)
@@ -107,7 +111,8 @@ def Adam(
         all_history={
             "variables": np.array(x_history),
             "values": np.array(f_history)
-        }
+        },
+        stop_reason=stop_reason
     )
 
 def _normalize_line_search_name(line_search: str) -> str:
@@ -120,7 +125,7 @@ def _normalize_line_search_name(line_search: str) -> str:
 
 
 def _finite_difference_gradient(
-    f_np: Callable[[np.ndarray], float],
+    f_np: VectorToScalarFunc,
     x: np.ndarray,
     eps: float,
 ) -> np.ndarray:
@@ -138,7 +143,7 @@ def _finite_difference_gradient(
 
 
 def _native_BFGS(
-    f_np: Callable[[np.ndarray], float],
+    f_np: VectorToScalarFunc,
     x_0: Union[np.ndarray, list],
     max_iter: int,
     tol: float,
@@ -152,19 +157,41 @@ def _native_BFGS(
     max_line_iter: int,
     max_alpha: float,
     raise_on_fail: bool,
-    H_0: np.ndarray | list | None,
-    safeguard: float,
+    H_0: np.ndarray | list | None
 ) -> OptimizationResult:
-    if safeguard < 0:
-        raise ValueError(f"safeguard must be nonnegative. Got {safeguard}")
-
     x = np.asarray(x_0, dtype=float).reshape(-1).copy()
+    stop_reason = "max_iter reached"
 
     if x.size == 0:
         raise ValueError("x_0 must contain at least one variable.")
 
+    def gradient_f(z: Vector) -> np.ndarray:
+        z_vec = np.asarray(z, dtype=float).reshape(-1)
+
+        if grad_np is None:
+            grad = _finite_difference_gradient(
+                f_np,
+                z_vec,
+                1e-8 if eps is None else eps,
+            )
+        else:
+            grad = np.asarray(grad_np(z_vec), dtype=float).reshape(-1)
+
+        if grad.shape != z_vec.shape:
+            raise ValueError(
+                f"Gradient shape mismatch: expected {z_vec.shape}, got {grad.shape}"
+            )
+
+        return grad
+    
     if isinstance(line_search, LineSearch):
         line_search_rule = line_search
+
+        if line_search_rule.f is None:
+            line_search_rule.f = f_np
+
+        if line_search_rule.gradient_f is None:
+            line_search_rule.gradient_f = gradient_f
     else:
         line_search_rule = LineSearch(
             name=line_search,
@@ -175,24 +202,9 @@ def _native_BFGS(
             max_iter=max_line_iter,
             max_alpha=max_alpha,
             raise_on_fail=raise_on_fail,
+            f=f_np,
+            gradient_f=gradient_f,
         )
-
-    def gradient_func(z: np.ndarray) -> np.ndarray:
-        if grad_np is None:
-            grad = _finite_difference_gradient(
-                f_np,
-                z,
-                1e-8 if eps is None else eps,
-            )
-        else:
-            grad = np.asarray(grad_np(z), dtype=float).reshape(-1)
-
-        if grad.shape != z.shape:
-            raise ValueError(
-                f"Gradient shape mismatch: expected {z.shape}, got {grad.shape}"
-            )
-
-        return grad
 
     start_time = time.time()
 
@@ -209,7 +221,7 @@ def _native_BFGS(
 
         H = H.copy()
 
-    g = gradient_func(x)
+    g = gradient_f(x)
     iteration = 0
 
     x_history = [x.copy()]
@@ -217,6 +229,7 @@ def _native_BFGS(
 
     for k in range(1, max_iter + 1):
         if np.linalg.norm(g) < tol:
+            stop_reason = "gradient norm below tolerance"
             break
 
         direction = -H.dot(g)
@@ -225,26 +238,18 @@ def _native_BFGS(
             H = I.copy()
             direction = -g
 
-        alpha = line_search_rule(
-            f=f_np,
-            x=x,
-            direction=direction,
-            gradient_current=g,
-            f_current=f_history[-1],
-            gradient_func=gradient_func,
-        )
+        t_k = line_search_rule(x=x, direction=direction, gradient_current=g)
 
-        s = alpha * direction
+        s = t_k * direction
         x_new = x + s
-        g_new = gradient_func(x_new)
+        g_new = gradient_f(x_new)
 
         y = g_new - g
         ys = float(np.dot(y, s))
 
-        if ys > safeguard:
-            bfgs_rho = 1.0 / ys
-            V = I - bfgs_rho * np.outer(s, y)
-            H = V.dot(H).dot(V.T) + bfgs_rho * np.outer(s, s)
+        bfgs_rho = 1.0 / ys
+        V = I - bfgs_rho * np.outer(s, y)
+        H = V.dot(H).dot(V.T) + bfgs_rho * np.outer(s, s)
 
         x = x_new
         g = g_new
@@ -263,12 +268,13 @@ def _native_BFGS(
         all_history={
             "variables": np.array(x_history),
             "values": np.array(f_history),
-        }
+        },
+        stop_reason=stop_reason
     )
 
 
 def _BFGS_scipy(
-    f_np: Callable[[np.ndarray], float],
+    f_np: VectorToScalarFunc,
     x_0: Union[np.ndarray, list],
     max_iter: int,
     tol: float,
@@ -287,7 +293,7 @@ def _BFGS_scipy(
 
     def bfgs_callback(x_k):
         x_val = np.array(x_k).copy()
-        f_val = f_np(x_k)
+        f_val = float(f_np(x_k))
 
         x_history.append(x_val)
         f_history.append(f_val)
@@ -320,12 +326,13 @@ def _BFGS_scipy(
         all_history={
             "variables": np.array(x_history),
             "values": np.array(f_history)
-        }
+        },
+        stop_reason=str(getattr(result, "message", "scipy minimize finished"))
     )
 
 
 def BFGS(
-    f_np: Callable[[np.ndarray], float],
+    f_np: VectorToScalarFunc,
     x_0: Union[np.ndarray, list],
     max_iter: int = 100,
     tol: float = 1e-6,
@@ -339,8 +346,7 @@ def BFGS(
     max_line_iter: int = 20,
     max_alpha: float = 1e8,
     raise_on_fail: bool = False,
-    H_0: np.ndarray | list | None = None,
-    safeguard: float = 1e-10,
+    H_0: np.ndarray | list | None = None
 ) -> OptimizationResult:
     """
     Performs optimization using the BFGS algorithm.
@@ -382,6 +388,5 @@ def BFGS(
         max_line_iter=max_line_iter,
         max_alpha=max_alpha,
         raise_on_fail=raise_on_fail,
-        H_0=H_0,
-        safeguard=safeguard,
+        H_0=H_0
     )

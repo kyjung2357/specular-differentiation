@@ -50,7 +50,7 @@ def test_line_search_validates_parameters():
     with pytest.raises(ValueError, match="c_2 must satisfy"):
         LineSearch("armijo", c_2=1.0)
 
-    with pytest.raises(ValueError, match="requires c_1 < c_2"):
+    with pytest.raises(ValueError, match=r"requires 0 < c_1 < c_2 < 1"):
         LineSearch("wolfe", c_1=0.9, c_2=0.1)
 
     with pytest.raises(ValueError, match="rho must satisfy"):
@@ -100,7 +100,7 @@ def test_wolfe_requires_gradient_function():
     x = np.array([1.0])
     gradient = quadratic_gradient(x)
 
-    with pytest.raises(ValueError, match="requires gradient_func"):
+    with pytest.raises(ValueError, match="requires gradient_f"):
         rule(
             f=quadratic,
             x=x,
@@ -120,7 +120,7 @@ def test_wolfe_accepts_step_satisfying_conditions():
         x=x,
         direction=direction,
         gradient_current=gradient,
-        gradient_func=quadratic_gradient,
+        gradient_f=quadratic_gradient,
     )
 
     f_current = quadratic(x)
@@ -142,7 +142,7 @@ def test_strong_wolfe_accepts_step_satisfying_conditions():
         x=x,
         direction=direction,
         gradient_current=gradient,
-        gradient_func=quadratic_gradient,
+        gradient_f=quadratic_gradient,
     )
 
     f_current = quadratic(x)

@@ -111,9 +111,9 @@ NumPy is the default backend, while accelerated backends are optional and may re
 
 | Backend | Calculation | ODE | Optimization |
 |:---:|:---:|:---:|:---:|
-| NumPy | supported | supported  | supported |
+| NumPy | supported | supported  | supported (recommended) |
 | Numba | supported | supported (recommended) | not supported |
-| JAX | supported | supported | supported (recommended) |
+| JAX | supported | supported | experimental  |
 | TensorFlow | experimental | experimental | not supported |
 | PyTorch | experimental | experimental | not supported |
 
@@ -198,7 +198,7 @@ To cite this repository:
   month = may,
   title = {{specular-differentiation}},
   url = {https://github.com/kyjung2357/specular-differentiation},
-  version = {1.2.1},
+  version = {1.3.0},
   year = {2026},
 }
 ```

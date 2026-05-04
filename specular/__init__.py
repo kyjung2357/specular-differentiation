@@ -15,7 +15,7 @@ from .calculation import (
     jacobian,
 )
 
-__version__ = "1.2.1"
+__version__ = "1.3.0"
 __license__ = "MIT"
 __author__ = "Kiyuob Jung"
 __email__ = "kyjung@msu.edu"
@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from .optimization import (
         BFGS_method,
         LineSearch,
-        StepSize,
+        StepSchedule,
         gradient_method,
     )
 
@@ -47,7 +47,7 @@ _LAZY_ATTRS = {
     "optimization": ("specular.optimization", None),
     "BFGS_method": ("specular.optimization", "BFGS_method"),
     "LineSearch": ("specular.optimization", "LineSearch"),
-    "StepSize": ("specular.optimization", "StepSize"),
+    "StepSchedule": ("specular.optimization", "StepSchedule"),
     "gradient_method": ("specular.optimization", "gradient_method"),
 }
 
@@ -81,7 +81,7 @@ __all__ = [
     "optimization",
     "BFGS_method",
     "LineSearch",
-    "StepSize",
+    "StepSchedule",
     "gradient_method",
     "__version__",
 ]
