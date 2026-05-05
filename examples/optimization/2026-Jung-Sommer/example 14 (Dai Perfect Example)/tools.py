@@ -92,6 +92,27 @@ def plot_comparison(results, base_dir, filename, title, pdf=False, show=False):
 
     plot_items = sorted(results.items(), key=lambda item: plot_order.get(item[0], 100))
 
+    if "Dai sequence" in results:
+        reference_values = np.asarray(results["Dai sequence"]["values"], dtype=float)
+        finite_reference = reference_values[np.isfinite(reference_values)]
+    else:
+        finite_reference = np.array([], dtype=float)
+
+    if finite_reference.size:
+        objective_limit = 1.2 * np.max(np.abs(finite_reference))
+    else:
+        finite_values = [
+            np.asarray(data["values"], dtype=float)
+            for _, data in plot_items
+            if np.asarray(data["values"], dtype=float).size
+        ]
+        finite_values = np.concatenate(finite_values) if finite_values else np.array([], dtype=float)
+        finite_values = finite_values[np.isfinite(finite_values)]
+        objective_limit = np.nanpercentile(np.abs(finite_values), 95) if finite_values.size else 1.0
+
+    objective_limit = max(float(objective_limit), 1e-3)
+    linthresh = max(objective_limit * 1e-3, 1e-8)
+
     fig_obj = plt.figure(figsize=(6.0, 3.0))
     ax_obj = fig_obj.add_axes([0.15, 0.2, 0.58, 0.68])
 
@@ -101,9 +122,16 @@ def plot_comparison(results, base_dir, filename, title, pdf=False, show=False):
         if values.size == 0:
             continue
 
+        values_to_plot = values.copy()
+        values_to_plot[~np.isfinite(values_to_plot)] = np.nan
+        values_to_plot[np.abs(values_to_plot) > objective_limit] = np.nan
+
+        if np.all(np.isnan(values_to_plot)):
+            continue
+
         ax_obj.plot(
             np.arange(values.size),
-            values,
+            values_to_plot,
             label=name,
             color=colors.get(name, "black"),
             linestyle=linestyles.get(name, "-"),
@@ -116,7 +144,8 @@ def plot_comparison(results, base_dir, filename, title, pdf=False, show=False):
     ax_obj.set_xlabel(r"Iteration $k$", fontsize=10)
     ax_obj.set_ylabel(r"$f(\mathbf{x}_k)$", fontsize=10)
     ax_obj.set_title("Objective Function Value", fontsize=10)
-    ax_obj.set_yscale("symlog", linthresh=1e-4, linscale=0.7)
+    ax_obj.set_yscale("symlog", linthresh=linthresh, linscale=0.7)
+    ax_obj.set_ylim(-objective_limit, objective_limit)
     ax_obj.xaxis.set_major_locator(MaxNLocator(nbins=6, integer=True))
     ax_obj.tick_params(axis="both", which="major", labelsize=9)
     ax_obj.grid(True, linewidth=0.5)

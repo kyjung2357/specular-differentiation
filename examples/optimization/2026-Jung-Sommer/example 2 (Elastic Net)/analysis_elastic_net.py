@@ -117,6 +117,7 @@ def run_single_trial(args):
             step_size=step_size_squ,
             tol=1e-12,
             max_iter=iteration,
+            fill_iteration=True,
             print_bar=False,
         ).history()
         trial_results["SPEG"] = ensure_length(res, iteration)
@@ -129,6 +130,7 @@ def run_single_trial(args):
             step_size=step_size_squ,
             tol=1e-12,
             max_iter=iteration,
+            fill_iteration=True,
             print_bar=False,
         ).history()
         trial_results["SPEG-s"] = ensure_length(res, iteration)
@@ -141,6 +143,7 @@ def run_single_trial(args):
             step_size=step_size_geo,
             tol=1e-12,
             max_iter=iteration,
+            fill_iteration=True,
             print_bar=False,
         ).history()
         trial_results["SPEG-g"] = ensure_length(res, iteration)
@@ -156,6 +159,7 @@ def run_single_trial(args):
             max_iter=iteration,
             f_j=f_stochastic,
             m=m,
+            fill_iteration=True,
             print_bar=False,
         ).history()
         trial_results["S-SPEG"] = ensure_length(res, iteration)
@@ -172,6 +176,7 @@ def run_single_trial(args):
             f_j=f_stochastic,
             m=m,
             switch_iter=10,
+            fill_iteration=True,
             print_bar=False,
         ).history()
         trial_results["H-SPEG"] = ensure_length(res, iteration)
@@ -186,6 +191,7 @@ def run_single_trial(args):
                     max_iter=iteration,
                     tol=1e-12,
                     line_search=rule,
+                    fill_iteration=True,
                 ).history()
             except Exception as e:
                 print(f"[Trial {trial_label}] {method} failed: {e}", flush=True)
@@ -203,6 +209,7 @@ def run_single_trial(args):
                     tol=1e-12,
                     max_iter=iteration,
                     line_search=rule,
+                    fill_iteration=True,
                     print_bar=False,
                 ).history()
             except Exception as e:

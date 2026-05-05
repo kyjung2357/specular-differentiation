@@ -121,6 +121,7 @@ def run_single_trial(args):
             step_size=step_size_squ,
             tol=1e-12,
             max_iter=iteration,
+            fill_iteration=True,
             print_bar=False,
         ).history()
         trial_results["SPEG"] = ensure_length(res, iteration)
@@ -134,6 +135,7 @@ def run_single_trial(args):
             form="stochastic",
             tol=1e-12,
             max_iter=iteration,
+            fill_iteration=True,
             f_j=f_stochastic,
             m=component_count,
             print_bar=False,
@@ -149,6 +151,7 @@ def run_single_trial(args):
             form="hybrid",
             tol=1e-12,
             max_iter=iteration,
+            fill_iteration=True,
             f_j=f_stochastic,
             m=component_count,
             switch_iter=min(10, iteration),
@@ -164,6 +167,7 @@ def run_single_trial(args):
                     f_np=f,
                     x_0=x_0,
                     max_iter=iteration,
+                    fill_iteration=True,
                     tol=1e-12,
                     line_search=rule,
                 ).history()
@@ -182,6 +186,7 @@ def run_single_trial(args):
                     x_0=x_0,
                     tol=1e-12,
                     max_iter=iteration,
+                    fill_iteration=True,
                     line_search=rule,
                     print_bar=False,
                 ).history()

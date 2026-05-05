@@ -484,25 +484,10 @@ def BFGS_method(
 
     f = cast(VectorToScalarFunc, f)
 
-    def gradient_f(z: Vector) -> Vector:
-        return np.asarray(
-            gradient(
-                f=f,
-                x=np.asarray(z, dtype=float).reshape(-1),
-                h=h,
-                zero_tol=zero_tol,
-                quasi_Fermat=True,
-                monotonicity=False,
-            )[0],
-            dtype=float,
-        ).reshape(-1)
-    
     if isinstance(line_search, LineSearch):
         line_search_rule = line_search
         if line_search_rule.f is None:
             line_search_rule.f = f
-        if line_search_rule.gradient_f is None:
-            line_search_rule.gradient_f = gradient_f
     else:
         line_search_rule = LineSearch(
             name=line_search,
@@ -514,7 +499,6 @@ def BFGS_method(
             max_alpha=max_alpha,
             raise_on_fail=raise_on_fail,
             f=f,
-            gradient_f=gradient_f,
         )
 
     all_history = {}
@@ -579,10 +563,21 @@ def BFGS_method(
 
         try:
             t_k = line_search_rule(
-                x=x,
-                direction=d_k,
-                gradient_current=spec_grad,
-            )
+                    x=x,
+                    direction=d_k,
+                    gradient_current=spec_grad,
+                    gradient_f=lambda z: np.asarray(
+                        gradient(
+                            f=f,
+                            x=np.asarray(z, dtype=float).reshape(-1),
+                            h=h,
+                            zero_tol=zero_tol,
+                            quasi_Fermat=True,
+                            monotonicity=False,
+                        )[0],
+                        dtype=float,
+                    ).reshape(-1),
+                )
         except (LineSearchError, ZeroDivisionError, FloatingPointError) as exc:
             stop_reason = f"line search failed: {exc}"
             break

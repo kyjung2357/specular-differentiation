@@ -1,0 +1,17 @@
+\begin{tabular}{lllll}
+\toprule
+ & Mean & Median & Standard deviation & Failure probability (\%) \\
+\midrule
+SPEG & -- & -- & -- & 100.0 \\
+GD & -- & -- & -- & 100.0 \\
+Adam & -- & -- & -- & 100.0 \\
+BFGS-E & -- & -- & -- & 100.0 \\
+BFGS-S & -- & -- & -- & 100.0 \\
+BFGS-W & -- & -- & -- & 100.0 \\
+BFGS-A & -- & -- & -- & 100.0 \\
+S-BFGS-E & -- & -- & -- & 100.0 \\
+S-BFGS-S & -- & -- & -- & 100.0 \\
+S-BFGS-W & -- & -- & -- & 100.0 \\
+S-BFGS-A & -- & -- & -- & 100.0 \\
+\bottomrule
+\end{tabular}

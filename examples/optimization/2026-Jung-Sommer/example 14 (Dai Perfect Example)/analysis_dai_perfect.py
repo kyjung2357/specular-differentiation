@@ -247,6 +247,7 @@ def run_bfgs_method(method, rule, max_iter, tol):
         f_np=f_dai,
         x_0=initial_point(),
         max_iter=max_iter,
+        fill_iteration=True,
         tol=tol,
         line_search=rule,
         grad_np=grad_dai,
@@ -268,6 +269,7 @@ def run_s_bfgs_method(method, rule, max_iter, tol):
         x_0=initial_point(),
         tol=tol,
         max_iter=max_iter,
+        fill_iteration=True,
         line_search=rule,
         H_0=initial_inverse_hessian(),
         print_bar=False,
@@ -293,6 +295,7 @@ def run_speg(max_iter, tol):
         step_size=step_size,
         tol=tol,
         max_iter=max_iter,
+        fill_iteration=True,
         print_bar=False,
     )
     variables, values, runtime = result.history()

@@ -111,6 +111,7 @@ def run_single_trial(args):
                 x_0=x_0,
                 tol=1e-12,
                 max_iter=iteration,
+                fill_iteration=True,
                 line_search=line_search,
                 print_bar=False,
             ).history()
