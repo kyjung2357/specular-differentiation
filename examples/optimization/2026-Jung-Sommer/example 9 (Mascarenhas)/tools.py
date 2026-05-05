@@ -16,14 +16,22 @@ def symlog_major_ticks(y_min, y_max):
     max_negative_power = int(np.ceil(np.log10(abs(y_min)))) if y_min < -1 else 0
     max_positive_power = int(np.ceil(np.log10(y_max))) if y_max > 1 else 0
 
-    negative_powers = sparse_powers(max_negative_power, max_count=7)
-    positive_powers = sorted(sparse_powers(max_positive_power, max_count=4))
+    negative_powers = even_powers(max_negative_power, min_power=2)
+    positive_powers = even_powers(max_positive_power, min_power=0)
 
     ticks = [-(10.0**p) for p in negative_powers]
     ticks.append(0.0)
     ticks.extend(10.0**p for p in sorted(set(positive_powers)))
 
     return [tick for tick in ticks if y_min <= tick <= y_max]
+
+
+def even_powers(max_power, min_power):
+    if max_power < min_power:
+        return []
+
+    first_power = max_power if max_power % 2 == 0 else max_power - 1
+    return list(range(first_power, min_power - 1, -2))
 
 
 def sparse_powers(max_power, max_count):
@@ -75,12 +83,12 @@ def plot_comparison(results, base_dir, filename, title, xlim, ylim, pdf=False, s
     colors = {
         "BFGS-E": "#08306b",
         "BFGS-S": "#08519c",
-        "BFGS-W": "#6baed6",
-        "BFGS-A": "#3182bd",
+        "BFGS-W": "#2171b5",
+        "BFGS-A": "#6baed6",
         "S-BFGS-E": "#67000d",
         "S-BFGS-S": "#a50f15",
-        "S-BFGS-W": "#fb6a4a",
-        "S-BFGS-A": "#de2d26",
+        "S-BFGS-W": "#de2d26",
+        "S-BFGS-A": "#fb6a4a",
     }
     markers = {
         "BFGS-E": "o",
@@ -96,7 +104,7 @@ def plot_comparison(results, base_dir, filename, title, xlim, ylim, pdf=False, s
     ext = "pdf" if pdf else "png"
     objective_values = []
     max_iteration = 0
-    fig_obj, ax1 = plt.subplots(figsize=(4.4, 2.7))
+    fig_obj, ax1 = plt.subplots(figsize=(4.4, 2.2))
 
     for name, data in results.items():
         values = data["values"]
@@ -111,8 +119,7 @@ def plot_comparison(results, base_dir, filename, title, xlim, ylim, pdf=False, s
     ax1.set_xlabel(r"Iteration $k$", fontsize=8)
     ax1.set_ylabel(r"$f(\mathbf{x}_k)$", fontsize=8)
     ax1.set_yscale("symlog", linthresh=1.0)
-    y_min, y_max = symlog_limits(objective_values)
-    ax1.set_ylim(y_min, y_max)
+    y_min, y_max = ax1.get_ylim()
     ax1.yaxis.set_major_locator(FixedLocator(symlog_major_ticks(y_min, y_max)))
     ax1.yaxis.set_major_formatter(FuncFormatter(format_symlog_tick))
     ax1.yaxis.set_minor_locator(NullLocator())
@@ -123,7 +130,7 @@ def plot_comparison(results, base_dir, filename, title, xlim, ylim, pdf=False, s
     ax1.xaxis.set_minor_locator(NullLocator())
     ax1.set_xlim([-2, max_iteration + 2])
     ax1.grid(True, linewidth=0.5)
-    ax1.set_box_aspect(1)
+    ax1.set_box_aspect(0.72)
     ax1.legend(loc="center left", bbox_to_anchor=(1.05, 0.5), borderaxespad=0.0, fontsize=7, labelspacing=0.7)
     fig_obj.tight_layout(pad=0.2)
 

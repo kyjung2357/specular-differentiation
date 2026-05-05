@@ -20,11 +20,19 @@ def ensure_length(data, length):
 def format_sci_latex(x):
     if isinstance(x, str):
         return x
+    if pd.isna(x):
+        return "--"
     if x == 0:
         return "0"
     s = "{:.4e}".format(x)
     base, exponent = s.split("e")
     return fr"${base} \times 10^{{{int(exponent)}}}$"
+
+
+def format_percent_latex(x):
+    if pd.isna(x):
+        return "--"
+    return f"{x:.1f}"
 
 
 def report_results(
@@ -35,21 +43,29 @@ def report_results(
     n,
     lambda1,
     lambda2,
+    trials,
     iteration,
     base_dir,
     pdf=False,
     show=False,
 ):
     colors = {
-        "SPEG": "red",
+        "SPEG": "black",
         "SPEG-s": "red",
         "SPEG-g": "brown",
         "S-SPEG": "blue",
         "H-SPEG": "purple",
         "S-BFGS": "darkorange",
+        "BFGS-E": "#08306b",
+        "BFGS-S": "#08519c",
+        "BFGS-W": "#2171b5",
+        "BFGS-A": "#6baed6",
+        "S-BFGS-E": "#67000d",
+        "S-BFGS-S": "#a50f15",
+        "S-BFGS-W": "#de2d26",
+        "S-BFGS-A": "#fb6a4a",
         "GD": "orange",
-        "Adam": "green",
-        "BFGS": "black",
+        "Adam": "green"
     }
 
     summary_stats = {}
@@ -57,7 +73,16 @@ def report_results(
     plt.figure(figsize=(6, 3))
 
     for name, results_list in all_results.items():
+        failed_trials = trials - len(results_list)
+        failure_probability = 100.0 * failed_trials / trials if trials > 0 else pd.NA
+
         if not results_list:
+            summary_stats[name] = {
+                "Mean": pd.NA,
+                "Median": pd.NA,
+                "Standard deviation": pd.NA,
+                "Failure probability (%)": failure_probability,
+            }
             continue
 
         df = pd.DataFrame(results_list).T
@@ -71,13 +96,14 @@ def report_results(
             "Mean": min_vals.mean(),
             "Median": min_vals.median(),
             "Standard deviation": min_vals.std(),
+            "Failure probability (%)": failure_probability,
         }
 
         x_data = df.index + 1
         color = colors.get(name, "black")
 
         plt.plot(x_data, mean_curve, label=name, color=color, linewidth=1.5)
-        plt.plot(x_data, median_curve, color=color, linestyle="--", alpha=0.5, linewidth=1)
+        # plt.plot(x_data, median_curve, color=color, linestyle="--", alpha=0.5, linewidth=1)
 
     print("\n[Running Time Summary]")
     for name, times in running_times.items():
@@ -85,12 +111,28 @@ def report_results(
             avg_time = sum(times) / len(times)
             print(f"{name:7s} : {avg_time:.5f} sec")
 
+    print("\n[Failure Summary]")
+    for name, results_list in all_results.items():
+        failed_trials = trials - len(results_list)
+        failure_probability = 100.0 * failed_trials / trials if trials > 0 else pd.NA
+        failure_text = "--" if pd.isna(failure_probability) else f"{failure_probability:.1f}"
+        print(f"{name:9s}: {failed_trials}/{trials} failed ({failure_text}%)")
+
     print("\n[Final Performance Summary]")
     summary_df = pd.DataFrame(summary_stats).T
     display_df = summary_df.copy()
+    console_df = summary_df.copy()
 
     for col in display_df.columns:
-        display_df[col] = display_df[col].apply(format_sci_latex)
+        if col == "Failure probability (%)":
+            display_df[col] = display_df[col].apply(format_percent_latex)
+            console_df[col] = console_df[col].apply(
+                lambda x: "--" if pd.isna(x) else f"{x:.1f}"
+            )
+        else:
+            display_df[col] = display_df[col].apply(format_sci_latex)
+
+    display_df = display_df.rename(columns={"Failure probability (%)": r"Failure probability (\%)"})
 
     pd.options.display.float_format = "{:.4e}".format
 
@@ -104,7 +146,7 @@ def report_results(
     with open(path_txt, "w", encoding="utf-8") as table_file:
         table_file.write(display_df.to_latex(escape=False))
 
-    print(summary_df)
+    print(console_df)
 
     plt.xlabel(r"Iterations $k$", fontsize=10)
     plt.ylabel(r"Objective function value $f(\mathbf{x}_k)$", fontsize=10)

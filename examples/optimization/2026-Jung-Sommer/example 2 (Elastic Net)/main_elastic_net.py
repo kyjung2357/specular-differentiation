@@ -12,11 +12,21 @@ from analysis_elastic_net import run_experiment
 if __name__ == "__main__":
     trials = 20
     iteration = 10000
-    line_search = "armijo"
-    safeguard = 1e-10
 
     # Figure 5
-    methods = ["SPEG", "S-SPEG", "H-SPEG", "GD", "Adam", "BFGS", "S-BFGS"]
+    methods = [
+        "SPEG",
+        "GD",
+        "Adam",
+        "BFGS-E",
+        "BFGS-S",
+        "BFGS-W",
+        "BFGS-A",
+        "S-BFGS-E",
+        "S-BFGS-S",
+        "S-BFGS-W",
+        "S-BFGS-A",
+    ]
 
     run_experiment(
         methods=methods,
@@ -27,8 +37,6 @@ if __name__ == "__main__":
         n=100,
         lambda1=100.0,
         lambda2=1.0,
-        line_search=line_search,
-        safeguard=safeguard,
         pdf=False,
         show=False,
     )

@@ -157,7 +157,8 @@ def _native_BFGS(
     max_line_iter: int,
     max_alpha: float,
     raise_on_fail: bool,
-    H_0: np.ndarray | list | None
+    H_0: np.ndarray | list | None,
+    fill_iteration: bool = False
 ) -> OptimizationResult:
     x = np.asarray(x_0, dtype=float).reshape(-1).copy()
     stop_reason = "max_iter reached"
@@ -269,7 +270,9 @@ def _native_BFGS(
             "variables": np.array(x_history),
             "values": np.array(f_history),
         },
-        stop_reason=stop_reason
+        stop_reason=stop_reason,
+        fill_iteration=fill_iteration,
+        max_iter=max_iter,
     )
 
 
@@ -282,6 +285,7 @@ def _BFGS_scipy(
     eps: float | None,
     c_1: float,
     c_2: float,
+    fill_iteration: bool = False,
 ) -> OptimizationResult:
     from scipy.optimize import minimize
 
@@ -327,9 +331,10 @@ def _BFGS_scipy(
             "variables": np.array(x_history),
             "values": np.array(f_history)
         },
+        fill_iteration=fill_iteration,
+        max_iter=max_iter,
         stop_reason=str(getattr(result, "message", "scipy minimize finished"))
     )
-
 
 def BFGS(
     f_np: VectorToScalarFunc,
@@ -346,7 +351,8 @@ def BFGS(
     max_line_iter: int = 20,
     max_alpha: float = 1e8,
     raise_on_fail: bool = False,
-    H_0: np.ndarray | list | None = None
+    H_0: np.ndarray | list | None = None,
+    fill_iteration: bool = False,
 ) -> OptimizationResult:
     """
     Performs optimization using the BFGS algorithm.
@@ -371,6 +377,7 @@ def BFGS(
             eps=eps,
             c_1=c_1,
             c_2=c_2,
+            fill_iteration=fill_iteration,
         )
 
     return _native_BFGS(
@@ -388,5 +395,6 @@ def BFGS(
         max_line_iter=max_line_iter,
         max_alpha=max_alpha,
         raise_on_fail=raise_on_fail,
-        H_0=H_0
+        H_0=H_0,
+        fill_iteration=fill_iteration,
     )

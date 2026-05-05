@@ -10,7 +10,18 @@ from analysis_cable_robot import run_experiment
 
 
 if __name__ == "__main__":
-    methods = ["SPEG", "S-SPEG", "H-SPEG", "GD", "Adam", "BFGS", "S-BFGS"]
+    methods = [
+        "SPEG",
+        "Adam",
+        "BFGS-E",
+        "BFGS-S",
+        "BFGS-W",
+        "BFGS-A",
+        "S-BFGS-E",
+        "S-BFGS-S",
+        "S-BFGS-W",
+        "S-BFGS-A",
+    ]
 
     for lam in [100.0, 10000.0]:
         run_experiment(
@@ -21,7 +32,6 @@ if __name__ == "__main__":
             m=8,
             lam=lam,
             line_search="armijo",
-            safeguard=1e-10,
             pdf=False,
             show=False,
         )

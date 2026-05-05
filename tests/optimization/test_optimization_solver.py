@@ -3,6 +3,7 @@ import numpy as np
 import specular
 from specular.optimization import _solver_numpy
 from specular.optimization.solver import gradient_method
+from specular.optimization.result import OptimizationResult
 
 # ==========================================
 # 1. Test Setup: Common Functions
@@ -227,3 +228,37 @@ def test_f_j_callable_signature_error():
             max_iter=1,
             print_bar=False,
         )
+
+def test_fill_iteration_requires_max_iter():
+    with pytest.raises(ValueError, match="max_iter must be provided"):
+        OptimizationResult(
+            method="test",
+            solution=np.array([0.0]),
+            func_val=0.0,
+            iteration=1,
+            runtime=0.0,
+            all_history={"variables": np.array([[1.0]]), "values": np.array([1.0])},
+            fill_iteration=True,
+        )
+
+def test_fill_iteration_repeats_last_record():
+    result = OptimizationResult(
+        method="test",
+        solution=np.array([0.0]),
+        func_val=0.0,
+        iteration=2,
+        runtime=0.0,
+        all_history={
+            "variables": np.array([[1.0], [0.5]]),
+            "values": np.array([1.0, 0.25]),
+        },
+        fill_iteration=True,
+        max_iter=5,
+    )
+
+    x_hist, f_hist, _ = result.history()
+
+    assert len(x_hist) == 5
+    assert len(f_hist) == 5
+    assert np.allclose(x_hist[-1], x_hist[-2])
+    assert f_hist[-1] == f_hist[-2]

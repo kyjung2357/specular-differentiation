@@ -64,6 +64,7 @@ def gradient_method(
     seed: int = 0,
     switch_iter: int | None = 2,
     record_history: bool = True,
+    fill_iteration: bool = False,
     print_bar: bool = True,
 ) -> OptimizationResult:
     """
@@ -151,7 +152,9 @@ def gradient_method(
         func_val=float(res_f),
         iteration=int(res_k),
         runtime=runtime,
-        all_history=all_history
+        all_history=all_history,
+        fill_iteration=fill_iteration,
+        max_iter=max_iter,
     )
 
 

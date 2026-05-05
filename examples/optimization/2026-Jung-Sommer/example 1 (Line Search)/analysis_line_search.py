@@ -22,15 +22,17 @@ specular.change_backend("cpu_numpy")
 
 
 LINE_SEARCH_RULES = {
-    "S-BFGS-A": "armijo",
-    "S-BFGS-W": "wolfe",
+    "S-BFGS-E": "exact",
     "S-BFGS-S": "strong_wolfe",
+    "S-BFGS-W": "wolfe",
+    "S-BFGS-A": "armijo",
 }
 
 
 def run_single_trial(args):
     (
         trial_idx,
+        objective_name,
         m,
         n,
         lambda1,
@@ -42,22 +44,50 @@ def run_single_trial(args):
         c_2,
         rho,
         max_line_iter,
-        safeguard,
     ) = args
 
     np.random.seed(trial_idx)
 
-    A_np = np.random.randn(m, n)
-    b_np = np.random.randn(m)
-    x_0 = np.random.randn(n)
+    rng = np.random.default_rng(trial_idx)
+    x_0 = rng.normal(size=n)
 
-    def f(x):
-        x = np.atleast_1d(x)
-        residual = A_np @ x - b_np
-        loss_term = (1 / (2 * m)) * np.sum(residual**2)
-        l2_regularization = (lambda2 / 2) * np.sum(x**2)
-        l1_regularization = lambda1 * np.sum(np.abs(x))
-        return loss_term + l2_regularization + l1_regularization
+    if objective_name == "elastic_net":
+        A_np = rng.normal(size=(m, n))
+        b_np = rng.normal(size=m)
+
+        def f(x):
+            x = np.atleast_1d(x)
+            residual = A_np @ x - b_np
+            loss_term = (1 / (2 * m)) * np.sum(residual**2)
+            l2_regularization = (lambda2 / 2) * np.sum(x**2)
+            l1_regularization = lambda1 * np.sum(np.abs(x))
+            return float(1e-8 + loss_term + l2_regularization + l1_regularization)
+
+    elif objective_name == "polyhedral_max":
+        A_np = rng.normal(size=(m, n))
+        A_np /= np.maximum(np.linalg.norm(A_np, axis=1, keepdims=True), 1e-12)
+        b_np = rng.uniform(-0.5, 0.5, size=m)
+
+        def f(x):
+            x = np.atleast_1d(x)
+            return float(
+                1e-8
+                + 0.05 * np.sum(x**2)
+                + np.maximum(0.0, np.max(A_np @ x - b_np))
+            )
+
+    elif objective_name == "hinge_quadratic":
+        A_np = rng.normal(size=(m, n))
+        A_np /= np.maximum(np.linalg.norm(A_np, axis=1, keepdims=True), 1e-12)
+        b_np = rng.uniform(-0.5, 0.5, size=m)
+
+        def f(x):
+            x = np.atleast_1d(x)
+            hinge = np.maximum(0.0, A_np @ x - b_np)
+            return float(1e-8 + (lambda2 / 2) * np.sum(x**2) + lambda1 * np.mean(hinge))
+
+    else:
+        raise ValueError(f"Unknown objective_name: {objective_name}")
 
     trial_results = {}
     trial_times = {}
@@ -79,10 +109,9 @@ def run_single_trial(args):
             _, res, runtime = specular.BFGS_method(
                 f=f,
                 x_0=x_0,
-                tol=1e-10,
+                tol=1e-12,
                 max_iter=iteration,
                 line_search=line_search,
-                safeguard=safeguard,
                 print_bar=False,
             ).history()
             trial_results[method] = ensure_length(res, iteration)
@@ -94,6 +123,7 @@ def run_single_trial(args):
 
 
 def run_experiment(
+    objective_name,
     methods,
     file_number,
     trials,
@@ -107,16 +137,16 @@ def run_experiment(
     c_2=0.9,
     rho=0.5,
     max_line_iter=20,
-    safeguard=1e-10,
     pdf=False,
     show=False,
 ):
     print(f"\n[Experiment Start] Number: {file_number}")
+    print(f"Objective: {objective_name}")
     print(f"Settings: m={m}, n={n}, lambda_1={lambda1}, lambda_2={lambda2}")
     print(
         "Line search settings: "
         f"alpha_0={alpha_0}, c_1={c_1}, c_2={c_2}, rho={rho}, "
-        f"max_line_iter={max_line_iter}, safeguard={safeguard}"
+        f"max_line_iter={max_line_iter}"
     )
 
     all_results = {method: [] for method in methods}
@@ -127,6 +157,7 @@ def run_experiment(
     tasks = [
         (
             i,
+            objective_name,
             m,
             n,
             lambda1,
@@ -138,7 +169,6 @@ def run_experiment(
             c_2,
             rho,
             max_line_iter,
-            safeguard,
         )
         for i in range(trials)
     ]

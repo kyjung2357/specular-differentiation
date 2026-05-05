@@ -19,6 +19,7 @@ from specular.optimization.classical_solver import BFGS
 from specular.optimization import BFGS_method as S_BFGS
 from tools import plot_comparison, plot_reference_iterates
 
+print("version of specular-differentiation: ", specular.__version__)
 specular.change_backend("cpu_numpy")
 
 LINE_SEARCH_RULES = {
@@ -181,7 +182,7 @@ def initial_inverse_hessian():
     return np.linalg.inv(B0_part1 - B0_part2)
 
 
-def run_experiment(methods, max_iter=50, tol=1e-6, pdf=False, show=False):
+def run_experiment(methods, max_iter=50, tol=1e-12, pdf=False, show=False):
     print("\n[Experiment 9] Mascarenhas BFGS counterexample")
 
     x_0 = initial_point()

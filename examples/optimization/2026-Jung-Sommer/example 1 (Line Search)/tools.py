@@ -45,14 +45,16 @@ def report_results(
     show=False,
 ):
     colors = {
-        "S-BFGS-A": "#de2d26",
-        "S-BFGS-W": "#fb6a4a",
+        "S-BFGS-E": "#67000d",
         "S-BFGS-S": "#a50f15",
+        "S-BFGS-W": "#de2d26",
+        "S-BFGS-A": "#fb6a4a",
     }
     linestyles = {
-        "S-BFGS-A": "-",
-        "S-BFGS-W": "--",
-        "S-BFGS-S": ":",
+        "S-BFGS-E": ":",
+        "S-BFGS-S": "--",
+        "S-BFGS-W": "-.",
+        "S-BFGS-A": ":",
     }
 
     summary_stats = {}
@@ -77,15 +79,17 @@ def report_results(
                 color=color,
                 linewidth=1.5,
                 linestyle=linestyles.get(name, "-"),
+                markersize=3,
+                markevery=max(1, len(x_data) // 12),
             )
-            plt.plot(
-                x_data,
-                median_curve,
-                color=color,
-                linestyle="--",
-                alpha=0.45,
-                linewidth=1,
-            )
+            # plt.plot(
+            #     x_data,
+            #     median_curve,
+            #     color=color,
+            #     linestyle=linestyles.get(name, "-"),
+            #     alpha=0.35,
+            #     linewidth=1,
+            # )
 
             mean_best = min_vals.mean()
             median_best = min_vals.median()

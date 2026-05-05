@@ -26,6 +26,7 @@ def gradient_method(
     m: int = 1,
     switch_iter: int | None = 2,
     record_history: bool = True,
+    fill_iteration: bool = False,
     print_bar: bool = True
 ) -> OptimizationResult:
     """
@@ -173,6 +174,8 @@ def gradient_method(
         iteration=res_k,
         runtime=runtime,
         all_history=all_history,
+        fill_iteration=fill_iteration,
+        max_iter=max_iter,
         stop_reason=stop_reason
     ) 
 
@@ -462,6 +465,7 @@ def BFGS_method(
     raise_on_fail: bool = False,
     H_0: np.ndarray | list | None = None,
     record_history: bool = True,
+    fill_iteration: bool = False,
     print_bar: bool = True,
 ) -> OptimizationResult:
     """
@@ -621,5 +625,7 @@ def BFGS_method(
         iteration=completed_iteration,
         runtime=runtime,
         all_history=all_history,
+        fill_iteration=fill_iteration,
+        max_iter=max_iter,
         stop_reason=stop_reason
     )

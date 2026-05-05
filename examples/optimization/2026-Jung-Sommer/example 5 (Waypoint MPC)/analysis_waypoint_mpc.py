@@ -2,7 +2,7 @@ import os
 import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
-
+import torch
 import numpy as np
 
 try:
@@ -26,21 +26,39 @@ from tools import ensure_length, report_results
 specular.change_backend("cpu_numpy")
 
 
+BFGS_LINE_SEARCH_RULES = {
+    "BFGS-E": "exact",
+    "BFGS-S": "strong_wolfe",
+    "BFGS-W": "wolfe",
+    "BFGS-A": "armijo",
+}
+
+S_BFGS_LINE_SEARCH_RULES = {
+    "S-BFGS-E": "exact",
+    "S-BFGS-S": "strong_wolfe",
+    "S-BFGS-W": "wolfe",
+    "S-BFGS-A": "armijo",
+}
+
+LINE_SEARCH_RULES = {
+    **BFGS_LINE_SEARCH_RULES,
+    **S_BFGS_LINE_SEARCH_RULES,
+}
+
+
 def run_single_trial(args):
-    trial_idx, lam, iteration, methods, line_search, safeguard = args
+    trial_idx, lam, iteration, methods, trials = args
 
     np.random.seed(trial_idx)
     needs_torch = any(method in methods for method in ("GD", "Adam"))
     if needs_torch:
-        import torch
-
         torch.manual_seed(trial_idx)
         torch.set_num_threads(1)
 
     x_goal = np.array([3.0, 4.0])
     A = np.array([[1, 0], [-1, 0], [0, 1], [0, -1]], dtype=float)
     b = np.array([1.0, 1.0, 1.0, 1.0])
-    x_0 = np.array([0.0, 0.0])
+    x_0 = np.random.uniform(low=-2.0, high=2.0, size=2)
 
     if needs_torch:
         x_goal_torch = torch.tensor(x_goal, dtype=torch.float32)
@@ -72,8 +90,9 @@ def run_single_trial(args):
     trial_results = {}
     trial_times = {}
     component_count = 1 + len(b)
+    trial_label = f"{trial_idx + 1:0{len(str(trials))}d}"
 
-    step_size_squ = specular.StepSize(
+    step_size_squ = specular.StepSchedule(
         name="square_summable_not_summable",
         parameters=[4.0, 0.0],
     )
@@ -83,7 +102,7 @@ def run_single_trial(args):
             f=f,
             x_0=x_0,
             step_size=step_size_squ,
-            tol=1e-10,
+            tol=1e-12,
             max_iter=iteration,
             print_bar=False,
         ).history()
@@ -96,7 +115,7 @@ def run_single_trial(args):
             x_0=x_0,
             step_size=step_size_squ,
             form="stochastic",
-            tol=1e-10,
+            tol=1e-12,
             max_iter=iteration,
             f_j=f_stochastic,
             m=component_count,
@@ -111,7 +130,7 @@ def run_single_trial(args):
             x_0=x_0,
             step_size=step_size_squ,
             form="hybrid",
-            tol=1e-10,
+            tol=1e-12,
             max_iter=iteration,
             f_j=f_stochastic,
             m=component_count,
@@ -121,21 +140,43 @@ def run_single_trial(args):
         trial_results["H-SPEG"] = ensure_length(res, iteration)
         trial_times["H-SPEG"] = runtime
 
-    if "S-BFGS" in methods:
-        _, res, runtime = specular.BFGS_method(
-            f=f,
-            x_0=x_0,
-            tol=1e-10,
-            max_iter=iteration,
-            line_search=line_search,
-            safeguard=safeguard,
-            print_bar=False,
-        ).history()
-        trial_results["S-BFGS"] = ensure_length(res, iteration)
-        trial_times["S-BFGS"] = runtime
+    for method, rule in BFGS_LINE_SEARCH_RULES.items():
+        if method in methods:
+            try:
+                _, res, runtime = BFGS(
+                    f_np=f,
+                    x_0=x_0,
+                    max_iter=iteration,
+                    tol=1e-12,
+                    line_search=rule,
+                ).history()
+            except Exception as e:
+                print(f"[Trial {trial_label}] {method} failed: {e}", flush=True)
+                continue
+
+            trial_results[method] = ensure_length(res, iteration)
+            trial_times[method] = runtime
+
+    for method, rule in S_BFGS_LINE_SEARCH_RULES.items():
+        if method in methods:
+            try:
+                _, res, runtime = specular.BFGS_method(
+                    f=f,
+                    x_0=x_0,
+                    tol=1e-12,
+                    max_iter=iteration,
+                    line_search=rule,
+                    print_bar=False,
+                ).history()
+            except Exception as e:
+                print(f"[Trial {trial_label}] {method} failed: {e}", flush=True)
+                continue
+
+            trial_results[method] = ensure_length(res, iteration)
+            trial_times[method] = runtime
 
     if "GD" in methods:
-        constant_step_size = specular.StepSize(name="constant", parameters=0.001)
+        constant_step_size = specular.StepSchedule(name="constant", parameters=0.001)
         _, res, runtime = gradient_descent_method(
             f_torch=f_torch,
             x_0=x_0,
@@ -155,16 +196,6 @@ def run_single_trial(args):
         trial_results["Adam"] = ensure_length(res, iteration)
         trial_times["Adam"] = runtime
 
-    if "BFGS" in methods:
-        _, res, runtime = BFGS(
-            f_np=f,
-            x_0=x_0,
-            max_iter=iteration,
-            tol=1e-6,
-        ).history()
-        trial_results["BFGS"] = ensure_length(res, iteration)
-        trial_times["BFGS"] = runtime
-
     return trial_results, trial_times
 
 
@@ -173,19 +204,28 @@ def run_experiment(
     trials=20,
     iteration=1000,
     lam=10000.0,
-    line_search="armijo",
-    safeguard=1e-10,
     pdf=False,
     show=False,
 ):
     print(f"\n[Experiment 5] Waypoint MPC: lambda={lam}")
-    print(f"S-BFGS settings: line_search={line_search}, safeguard={safeguard}")
+    active_bfgs_rules = {
+        method: LINE_SEARCH_RULES[method]
+        for method in methods
+        if method in BFGS_LINE_SEARCH_RULES
+    }
+    active_s_bfgs_rules = {
+        method: LINE_SEARCH_RULES[method]
+        for method in methods
+        if method in S_BFGS_LINE_SEARCH_RULES
+    }
+    print(f"BFGS settings: line_search={active_bfgs_rules}")
+    print(f"S-BFGS settings: line_search={active_s_bfgs_rules}")
 
     all_results = {method: [] for method in methods}
     running_times = {method: [] for method in methods}
 
     tasks = [
-        (i, lam, iteration, methods, line_search, safeguard)
+        (i, lam, iteration, methods, trials)
         for i in range(trials)
     ]
 
@@ -215,6 +255,7 @@ def run_experiment(
         4,
         lam,
         "NA",
+        trials,
         iteration,
         CURRENT_DIR,
         pdf=pdf,

@@ -24,7 +24,7 @@ if __name__ == "__main__":
     run_experiment(
         methods=methods,
         max_iter=30,
-        tol=1e-6,
+        tol=1e-12,
         pdf=False,
         show=False,
     )

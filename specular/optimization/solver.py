@@ -37,6 +37,7 @@ def gradient_method(
     m: int = 1,
     switch_iter: int | None = 2,
     record_history: bool = True,
+    fill_iteration: bool = False,
     print_bar: bool = True,
 ) -> OptimizationResult:
     """
@@ -103,6 +104,7 @@ def gradient_method(
         m=m,
         switch_iter=switch_iter,
         record_history=record_history,
+        fill_iteration=fill_iteration,
         print_bar=print_bar,
     )
 
@@ -127,7 +129,8 @@ def BFGS_method(
     raise_on_fail: bool = False,
     H_0: np.ndarray | list | None = None,
     record_history: bool = True,
-    print_bar: bool = True,
+    fill_iteration: bool = False,
+    print_bar: bool = True
 ) -> OptimizationResult:
     """
     Minimize a nonsmooth convex function using the specular BFGS method.
@@ -164,4 +167,5 @@ def BFGS_method(
         H_0=H_0,
         record_history=record_history,
         print_bar=print_bar,
+        fill_iteration=fill_iteration,
     )

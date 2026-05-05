@@ -10,12 +10,21 @@ from analysis_nesterov import run_experiment
 
 
 if __name__ == "__main__":
-    trials = 20
+    trials = 100
     iteration = 10000
-    line_search = "armijo"
-    safeguard = 1e-10
 
-    methods = ["SPEG", "S-SPEG", "H-SPEG", "GD", "Adam", "BFGS", "S-BFGS"]
+    methods = [
+        "SPEG",
+        "Adam",
+        "BFGS-E",
+        "BFGS-S",
+        "BFGS-W",
+        "BFGS-A",
+        "S-BFGS-E",
+        "S-BFGS-S",
+        "S-BFGS-W",
+        "S-BFGS-A",
+    ]
 
     experiments = [
         (1, 2.0, 2.0, "smooth"),
@@ -24,7 +33,7 @@ if __name__ == "__main__":
     ]
 
     for file_number, p, q, label in experiments:
-        for n in [2, 5, 10, 50, 100]:
+        for n in [2, 3, 4, 5, 10, 50, 100]:
             run_experiment(
                 methods=methods,
                 file_number=file_number,
@@ -34,8 +43,6 @@ if __name__ == "__main__":
                 p=p,
                 q=q,
                 label=label,
-                line_search=line_search,
-                safeguard=safeguard,
                 pdf=False,
                 show=False,
             )

@@ -62,7 +62,10 @@ class OptimizationResult:
         variables = self.all_history["variables"]
         values = self.all_history["values"]
 
-        if self.fill_iteration and self.max_iter is not None:
+        if self.fill_iteration:
+            if self.max_iter is None:
+                raise ValueError("max_iter must be provided when fill_iteration=True.")
+
             variables = self._fill_history(variables, self.max_iter)
             values = self._fill_history(values, self.max_iter)
 

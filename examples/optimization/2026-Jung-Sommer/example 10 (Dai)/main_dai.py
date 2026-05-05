@@ -12,8 +12,8 @@ from analysis_dai import DEFAULT_METHODS, run_experiment, save_theoretical_seque
 if __name__ == "__main__":
     run_experiment(
         methods=DEFAULT_METHODS,
-        max_iter=25,
-        tol=1e-6,
+        max_iter=80,
+        tol=1e-12,
         pdf=False,
         show=False,
     )
