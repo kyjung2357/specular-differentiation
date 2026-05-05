@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .line_search import LineSearch
+from .line_search import LineSearch, LineSearchError
 from .result import OptimizationResult
 from .step_schedule import StepSchedule
 import time
@@ -239,7 +239,11 @@ def _native_BFGS(
             H = I.copy()
             direction = -g
 
-        t_k = line_search_rule(x=x, direction=direction, gradient_current=g)
+        try:
+            t_k = line_search_rule(x=x, direction=direction, gradient_current=g)
+        except (LineSearchError, ZeroDivisionError, FloatingPointError) as exc:
+            stop_reason = f"line search failed: {exc}"
+            break
 
         s = t_k * direction
         x_new = x + s
@@ -247,6 +251,10 @@ def _native_BFGS(
 
         y = g_new - g
         ys = float(np.dot(y, s))
+
+        if not np.isfinite(ys) or ys == 0.0:
+            stop_reason = "curvature denominator is zero or non-finite"
+            break
 
         bfgs_rho = 1.0 / ys
         V = I - bfgs_rho * np.outer(s, y)

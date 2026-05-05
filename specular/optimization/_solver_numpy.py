@@ -583,8 +583,8 @@ def BFGS_method(
                 direction=d_k,
                 gradient_current=spec_grad,
             )
-        except LineSearchError as exc:
-            stop_reason = str(exc)
+        except (LineSearchError, ZeroDivisionError, FloatingPointError) as exc:
+            stop_reason = f"line search failed: {exc}"
             break
 
         s = t_k * d_k
@@ -602,6 +602,10 @@ def BFGS_method(
 
         y = spec_grad_new - spec_grad
         ys = float(np.dot(y, s))
+
+        if not np.isfinite(ys) or ys == 0.0:
+            stop_reason = "curvature denominator is zero or non-finite"
+            break
 
         bfgs_rho = 1.0 / ys
         V = I - bfgs_rho * np.outer(s, y)
