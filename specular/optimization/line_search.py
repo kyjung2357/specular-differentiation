@@ -26,7 +26,7 @@ class LineSearch:
     def __init__(
         self,
         name: str | None = None,
-        alpha_0: float = 1.0,
+        t_0: float = 1.0,
         c_1: float = 1e-4,
         c_2: float = 0.9,
         rho: float = 0.5,
@@ -68,8 +68,8 @@ class LineSearch:
         if name not in self.__options__:
             raise ValueError(f"Invalid line search '{name}'. Options: {self.__options__}")
 
-        if alpha_0 <= 0:
-            raise ValueError(f"alpha_0 must be positive. Got {alpha_0}")
+        if t_0 <= 0:
+            raise ValueError(f"t_0 must be positive. Got {t_0}")
 
         if not (0.0 < c_1 < 1.0):
             raise ValueError(f"c_1 must satisfy 0 < c_1 < 1. Got {c_1}")
@@ -93,7 +93,7 @@ class LineSearch:
             raise ValueError(f"max_alpha must be positive. Got {max_alpha}")
 
         self.name = name
-        self.alpha_0 = float(alpha_0)
+        self.t_0 = float(t_0)
         self.c_1 = float(c_1)
         self.c_2 = float(c_2)
         self.rho = float(rho)
@@ -275,12 +275,12 @@ class LineSearch:
 
         alphas: set[float] = {0.0}
 
-        alpha = min(self.alpha_0, self.max_alpha)
+        alpha = min(self.t_0, self.max_alpha)
         for _ in range(self.max_iter + 1):
             add_alpha(alphas, alpha)
             alpha *= self.rho
 
-        alpha = min(self.alpha_0, self.max_alpha)
+        alpha = min(self.t_0, self.max_alpha)
         for _ in range(self.max_iter):
             next_alpha = min(alpha / self.rho, self.max_alpha)
 
@@ -384,17 +384,17 @@ class LineSearch:
 
         The trial step starts at ``alpha_0`` and is multiplied by ``rho`` until ``f(x + alpha * direction)`` satisfies the Armijo sufficient decrease condition, or the maximum number of line-search iterations is reached.
         """
-        alpha = self.alpha_0
+        t = self.t_0
 
         for _ in range(self.max_iter):
-            f_trial = float(f(x + alpha * direction))
+            f_trial = float(f(x + t * direction))
 
-            if self.satisfies_armijo(f_trial, f_current, alpha, initial_slope):
-                return alpha
+            if self.satisfies_armijo(f_trial, f_current, t, initial_slope):
+                return t
 
-            alpha *= self.rho
+            t *= self.rho
 
-        return self._failed(alpha)
+        return self._failed(t)
 
     def _wolfe(
         self,
@@ -406,17 +406,17 @@ class LineSearch:
         initial_slope: float,
         strong: bool
     ) -> float:
-        alpha = self.alpha_0
-        alpha_low = 0.0
-        alpha_high: float | None = None
+        t = self.t_0
+        t_low = 0.0
+        t_high: float | None = None
 
         for _ in range(self.max_iter):
-            x_trial = x + alpha * direction
+            x_trial = x + t * direction
             f_trial = float(f(x_trial))
 
-            if not self.satisfies_armijo(f_trial, f_current, alpha, initial_slope):
-                alpha_high = alpha
-                alpha = self._next_smaller_alpha(alpha_low, alpha_high, alpha)
+            if not self.satisfies_armijo(f_trial, f_current, t, initial_slope):
+                t_high = t
+                t = self._next_smaller_alpha(t_low, t_high, t)
                 continue
 
             gradient_trial = np.asarray(gradient_f(x_trial), dtype=float)
@@ -424,22 +424,22 @@ class LineSearch:
 
             if strong:
                 if self.satisfies_strong_wolfe(
-                    f_trial, f_current, alpha, initial_slope, trial_slope
+                    f_trial, f_current, t, initial_slope, trial_slope
                 ):
-                    return alpha
+                    return t
             elif self.satisfies_wolfe(
-                f_trial, f_current, alpha, initial_slope, trial_slope
+                f_trial, f_current, t, initial_slope, trial_slope
             ):
-                return alpha
+                return t
 
             if trial_slope < 0.0:
-                alpha_low = alpha
-                alpha = self._next_larger_alpha(alpha_low, alpha_high)
+                t_low = t
+                t = self._next_larger_alpha(t_low, t_high)
             else:
-                alpha_high = alpha
-                alpha = self._next_smaller_alpha(alpha_low, alpha_high, alpha)
+                t_high = t
+                t = self._next_smaller_alpha(t_low, t_high, t)
 
-        return self._failed(alpha)
+        return self._failed(t)
 
     def _next_smaller_alpha(
         self,

@@ -41,8 +41,8 @@ def test_line_search_normalizes_strong_wolfe_aliases():
 
 
 def test_line_search_validates_parameters():
-    with pytest.raises(ValueError, match="alpha_0 must be positive"):
-        LineSearch("armijo", alpha_0=0.0)
+    with pytest.raises(ValueError, match="t_0 must be positive"):
+        LineSearch("armijo", t_0=0.0)
 
     with pytest.raises(ValueError, match="c_1 must satisfy"):
         LineSearch("armijo", c_1=0.0)
@@ -80,7 +80,7 @@ def test_armijo_accepts_full_step_for_quadratic():
 
 
 def test_armijo_backtracks_until_condition_holds():
-    rule = LineSearch("armijo", alpha_0=4.0, rho=0.5)
+    rule = LineSearch("armijo", t_0=4.0, rho=0.5)
     x = np.array([1.0])
     gradient = quadratic_gradient(x)
     direction = -gradient
@@ -186,7 +186,7 @@ def test_line_search_rejects_shape_mismatch():
 
 
 def test_line_search_raises_when_failure_is_strict():
-    rule = LineSearch("armijo", alpha_0=1.0, rho=0.5, max_iter=1, raise_on_fail=True)
+    rule = LineSearch("armijo", t_0=1.0, rho=0.5, max_iter=1, raise_on_fail=True)
     x = np.array([1.0])
     gradient = quadratic_gradient(x)
     direction = -10.0 * gradient

@@ -6,6 +6,7 @@ import numpy as np
 import specular
 from specular.optimization.classical_solver import gradient_descent_method, Adam, BFGS
 from specular.optimization.line_search import LineSearch
+from specular._typing import Vector
 
 # ==========================================
 # 1. Test Setup: Objective Functions
@@ -15,8 +16,9 @@ from specular.optimization.line_search import LineSearch
 def quadratic_torch(x: torch.Tensor) -> torch.Tensor:
     return torch.sum(x**2)
 
-def quadratic_np(x: np.ndarray) -> float:
-    return float(np.sum(x**2))
+def quadratic_np(x: Vector) -> float:
+    x_arr = np.asarray(x, dtype=float)
+    return float(np.sum(x_arr**2))
 
 # Initial point
 x_0 = [1.0, 1.0]
@@ -122,6 +124,7 @@ def test_bfgs_native_armijo_fallback():
 def test_bfgs_strong_wolfe_uses_scipy(monkeypatch):
     """Test that strong Wolfe delegates directly to SciPy BFGS."""
     calls = {}
+    H_0 = np.eye(2)
 
     def fake_minimize(fun, x0, method, jac, callback, options):
         calls["method"] = method
@@ -144,11 +147,13 @@ def test_bfgs_strong_wolfe_uses_scipy(monkeypatch):
         grad_np=lambda x: 2.0 * x,
         c_1=1e-3,
         c_2=0.8,
+        H_0=H_0,
     )
 
     assert calls["method"] == "BFGS"
     assert calls["options"]["c1"] == 1e-3
     assert calls["options"]["c2"] == 0.8
+    np.testing.assert_allclose(calls["options"]["hess_inv0"], H_0)
     assert res.method == "BFGS"
     np.testing.assert_allclose(res.solution, [0.0, 0.0], atol=1e-6)
 
@@ -188,7 +193,8 @@ def test_high_dimension():
     
     res = gradient_descent_method(f_torch_large, x_large, step_size, max_iter=10)
     
-    assert res.solution.shape == (dim,)
+    solution = np.asarray(res.solution)
+    assert solution.shape == (dim,)
     assert res.func_val < 5.0
 
 # ==========================================

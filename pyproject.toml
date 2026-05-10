@@ -54,7 +54,7 @@ dev = [
     "specular-differentiation[numba]",
     "specular-differentiation[jax]",
     "pytest>=7.0",
-    "scipy>=1.10.0",
+    "scipy>=1.12.0",
     "torch>=2.0.0",
     "ipython",
 ]

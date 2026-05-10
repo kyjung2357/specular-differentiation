@@ -39,7 +39,7 @@ def run_single_trial(args):
         lambda2,
         iteration,
         methods,
-        alpha_0,
+        t_0,
         c_1,
         c_2,
         rho,
@@ -97,7 +97,7 @@ def run_single_trial(args):
         line_search_name = LINE_SEARCH_RULES[method]
         line_search = specular.LineSearch(
             name=line_search_name,
-            alpha_0=alpha_0,
+            t_0=t_0,
             c_1=c_1,
             c_2=c_2,
             rho=rho,
@@ -133,7 +133,7 @@ def run_experiment(
     n,
     lambda1,
     lambda2,
-    alpha_0=1.0,
+    t_0=1.0,
     c_1=1e-4,
     c_2=0.9,
     rho=0.5,
@@ -146,7 +146,7 @@ def run_experiment(
     print(f"Settings: m={m}, n={n}, lambda_1={lambda1}, lambda_2={lambda2}")
     print(
         "Line search settings: "
-        f"alpha_0={alpha_0}, c_1={c_1}, c_2={c_2}, rho={rho}, "
+        f"t_0={t_0}, c_1={c_1}, c_2={c_2}, rho={rho}, "
         f"max_line_iter={max_line_iter}"
     )
 
@@ -165,7 +165,7 @@ def run_experiment(
             lambda2,
             iteration,
             methods,
-            alpha_0,
+            t_0,
             c_1,
             c_2,
             rho,

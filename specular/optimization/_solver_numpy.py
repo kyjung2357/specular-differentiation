@@ -456,7 +456,7 @@ def BFGS_method(
     zero_tol: float = 1e-8,
     max_iter: int = 1000,
     line_search: str | LineSearch = "armijo",
-    alpha_0: float = 1.0,
+    t_0: float = 1.0,
     c_1: float = 1e-4,
     c_2: float = 0.9,
     rho: float = 0.5,
@@ -491,7 +491,7 @@ def BFGS_method(
     else:
         line_search_rule = LineSearch(
             name=line_search,
-            alpha_0=alpha_0,
+            t_0=t_0,
             c_1=c_1,
             c_2=c_2,
             rho=rho,

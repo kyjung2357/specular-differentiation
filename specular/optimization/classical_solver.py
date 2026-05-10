@@ -150,7 +150,7 @@ def _native_BFGS(
     line_search: str | LineSearch,
     grad_np: Callable[[np.ndarray], np.ndarray | list | int | float | np.number] | None,
     eps: float | None,
-    alpha_0: float,
+    t_0: float,
     c_1: float,
     c_2: float,
     rho: float,
@@ -196,7 +196,7 @@ def _native_BFGS(
     else:
         line_search_rule = LineSearch(
             name=line_search,
-            alpha_0=alpha_0,
+            t_0=t_0,
             c_1=c_1,
             c_2=c_2,
             rho=rho,
@@ -293,6 +293,7 @@ def _BFGS_scipy(
     eps: float | None,
     c_1: float,
     c_2: float,
+    H_0: np.ndarray | list | None = None,
     fill_iteration: bool = False,
 ) -> OptimizationResult:
     from scipy.optimize import minimize
@@ -310,13 +311,10 @@ def _BFGS_scipy(
         x_history.append(x_val)
         f_history.append(f_val)
 
-    scipy_options = {'maxiter': max_iter, 'gtol': tol}
+    scipy_options = {'maxiter': max_iter, 'gtol': tol, 'c1': c_1, 'c2': c_2, 'hess_inv0': H_0}
 
     if eps is not None:
         scipy_options['eps'] = eps
-
-    scipy_options['c1'] = c_1
-    scipy_options['c2'] = c_2
 
     result = minimize(
         f_np,
@@ -372,8 +370,7 @@ def BFGS(
         The result of the optimization containing the solution, function value, number of iterations, runtime, and history.
     """
     if (
-        H_0 is None
-        and isinstance(line_search, str)
+        isinstance(line_search, str)
         and _normalize_line_search_name(line_search) == "strong_wolfe"
     ):
         return _BFGS_scipy(
@@ -385,6 +382,7 @@ def BFGS(
             eps=eps,
             c_1=c_1,
             c_2=c_2,
+            H_0=H_0,
             fill_iteration=fill_iteration,
         )
 
@@ -396,7 +394,7 @@ def BFGS(
         line_search=line_search,
         grad_np=grad_np,
         eps=eps,
-        alpha_0=alpha_0,
+        t_0=alpha_0,
         c_1=c_1,
         c_2=c_2,
         rho=rho,
