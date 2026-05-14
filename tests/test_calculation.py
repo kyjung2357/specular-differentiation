@@ -1,5 +1,7 @@
 import pytest
 import math
+import importlib.util
+import os
 import numpy as np
 import specular
 
@@ -246,8 +248,11 @@ def test_backend_info_output(capsys):
 # ==========================================
 # 12. Multi-backend tests
 # ==========================================
-BACKENDS = [b for b in ["cpu_numpy", "cpu_numba", "cpu_jax"]
-            if b in specular.backend._AVAILABLE_BACKENDS]
+BACKENDS = ["cpu_numpy"]
+if (os.cpu_count() or 1) > 1 and importlib.util.find_spec("numba") is not None:
+    BACKENDS.append("cpu_numba")
+if importlib.util.find_spec("jax") is not None:
+    BACKENDS.append("cpu_jax")
 
 @pytest.fixture(autouse=True)
 def reset_backend():
@@ -264,13 +269,21 @@ def test_derivative_backends(backend_name):
 @pytest.mark.parametrize("backend_name", BACKENDS)
 def test_gradient_backends(backend_name):
     specular.change_backend(backend_name)
-    f = lambda x: np.sum(np.square(x))
+    if backend_name == "cpu_jax":
+        jnp = pytest.importorskip("jax.numpy")
+        f = lambda x: jnp.sum(jnp.square(x))
+    else:
+        f = lambda x: np.sum(np.square(x))
     grad = specular.gradient(f, [1.0, 2.0, 3.0])
     np.testing.assert_allclose(grad, [2.0, 4.0, 6.0], rtol=1e-4)
 
 @pytest.mark.parametrize("backend_name", BACKENDS)
 def test_jacobian_backends(backend_name):
     specular.change_backend(backend_name)
-    f = lambda x: [x[0]**2, x[0] + x[1]]
+    if backend_name == "cpu_jax":
+        jnp = pytest.importorskip("jax.numpy")
+        f = lambda x: jnp.array([x[0]**2, x[0] + x[1]])
+    else:
+        f = lambda x: [x[0]**2, x[0] + x[1]]
     J = specular.jacobian(f, [2.0, 1.0])
     np.testing.assert_allclose(J, [[4.0, 0.0], [1.0, 1.0]], rtol=1e-4)

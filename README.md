@@ -63,10 +63,6 @@ pip install "specular-differentiation[jax]"             # JAX backend
 pip install "specular-differentiation[torch]"           # PyTorch backend
 ```
 
-The Numba backend accelerates the NumPy-style finite-difference implementation when available.
-
-The JAX backend uses automatic differentiation at shifted points, so its results may differ from the NumPy and Numba finite-difference backends.
-
 See [the backend documentation](docs/api/backend.md) for backend-specific usage.
 
 **Developer installation**

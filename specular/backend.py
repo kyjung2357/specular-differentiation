@@ -6,13 +6,12 @@ _AVAILABLE_BACKENDS = {"cpu_numpy"}
 _REQUESTED_BACKEND = os.environ.get("SPECULAR_BACKEND")
 _CURRENT_BACKEND = _REQUESTED_BACKEND or "cpu_numpy"
 _BACKEND_ORDER = ["cpu_numpy", "cpu_numba", "cpu_pytorch", "gpu_pytorch", "cpu_jax", "gpu_jax"]
-_DEFAULT_BACKEND_ORDER = ["cpu_numba", "cpu_numpy"]
 _INSTALL_HINTS = {
     "cpu_numba":      "pip install 'specular-differentiation[numba]'",
     "cpu_jax":        "pip install 'specular-differentiation[jax]'",
     "gpu_jax":        "pip install 'specular-differentiation[jax]' (requires CUDA-compatible GPU)",
-    "cpu_pytorch":    "pip install torch",
-    "gpu_pytorch":    "pip install torch (requires CUDA-compatible GPU)",
+    "cpu_pytorch":    "pip install 'specular-differentiation[torch]'",
+    "gpu_pytorch":    "pip install 'specular-differentiation[torch]' (requires CUDA-compatible GPU)",
 }
 
 if _CURRENT_BACKEND not in _SUPPORTED_BACKENDS:
@@ -75,23 +74,7 @@ def _probe_backend(name):
         return _has_pytorch()
     return False
 
-def _choose_default_backend():
-    """Choose the fastest available backend when SPECULAR_BACKEND is unset."""
-    global _CURRENT_BACKEND
-
-    if _REQUESTED_BACKEND is not None:
-        return
-
-    for candidate in _DEFAULT_BACKEND_ORDER:
-        if candidate in _AVAILABLE_BACKENDS:
-            _CURRENT_BACKEND = candidate
-            return
-
-_has_numba()
-
-if _REQUESTED_BACKEND is None:
-    _choose_default_backend()
-else:
+if _REQUESTED_BACKEND is not None:
     _probe_backend(_CURRENT_BACKEND)
 
 if _CURRENT_BACKEND not in _AVAILABLE_BACKENDS:
@@ -105,7 +88,7 @@ def backend_info():
         >>> import specular
         >>> specular.backend_info()
         supported backends: cpu_numpy, cpu_numba, cpu_pytorch, gpu_pytorch, cpu_jax, gpu_jax
-        available backends: cpu_numpy, cpu_numba
+        available backends: cpu_numpy
         current backend   : cpu_numpy
     """
     _has_numba()

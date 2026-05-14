@@ -13,7 +13,7 @@ specular.backend_info()
 specular.change_backend("cpu_jax")
 ```
 
-Heavy machine-learning frameworks such as JAX, Numba, and PyTorch are not imported when `import specular` is executed. They are checked only when the user explicitly selects the corresponding backend.
+Optional backend dependencies such as JAX, Numba, and PyTorch are not imported when `import specular` is executed. They are checked when the user explicitly selects the corresponding backend or calls `specular.backend_info()`.
 
 ## 2.4.2. Backend support
 
@@ -26,14 +26,24 @@ Heavy machine-learning frameworks such as JAX, Numba, and PyTorch are not import
 
 TensorFlow is not supported for the Python 3.14 target.
 
-## 2.4.3. JAX backend
+## 2.4.3. Numba backend
+
+The Numba backend is loaded only after `specular.change_backend("cpu_numba")` and accelerates the NumPy-style finite-difference implementation when available.
+
+```python
+import specular
+
+specular.change_backend("cpu_numba")
+```
+
+## 2.4.4. JAX backend
 
 See the [official homepage](https://docs.jax.dev/en/latest/index.html) of JAX.
 
 Requirement: objective functions should use `jax.numpy` instead of standard `numpy`.
 
-The difference between numpy backend and JAX backend is in that how they calculate differentiation. 
-The difference between the NumPy backend and the JAX backend lies in how they compute the one-sided derivatives. The NumPy backend approximates them from function values using finite differences, whereas the JAX backend computes them by applying automatic differentiation at shifted points.
+The difference between the NumPy backend and the JAX backend lies in how they compute the one-sided derivatives.
+The NumPy and Numba backends approximate them from function values using finite differences, whereas the JAX backend computes them by applying automatic differentiation at shifted points.
 Then, they use the function `A` to complete the calculation of specular differentiation.
 
 ```python
@@ -66,7 +76,7 @@ For a detailed comparison of the algorithms, see:
 * [`examples/optimization/jax/main.py`](https://github.com/kyjung2357/specular-differentiation/blob/main/examples/optimization/jax/main.py): A basic implementation using the JAX backend.
 * [`examples/optimization/2026-Jung/main_jax.py`](https://github.com/kyjung2357/specular-differentiation/blob/main/examples/optimization/2026-Jung/main_jax.py): The JAX version of the optimization experiment.
 
-## 2.4.4. API Reference
+## 2.4.5. API Reference
 
 ::: specular.backend
     handler: python

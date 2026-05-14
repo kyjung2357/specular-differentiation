@@ -41,6 +41,7 @@ pip install "specular-differentiation[numba]"
 ```
 
 If Numba is installed and available, the package may use the Numba-accelerated CPU backend.
+Enable it explicitly with `specular.change_backend("cpu_numba")`.
 
 **JAX backend**
 
