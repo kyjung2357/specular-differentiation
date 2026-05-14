@@ -1,18 +1,16 @@
 import os
 import subprocess
 
-_SUPPORTED_BACKENDS = {"cpu_numpy", "cpu_numba", "cpu_jax", "gpu_jax", "cpu_tensorflow", "gpu_tensorflow", "cpu_pytorch", "gpu_pytorch"}
+_SUPPORTED_BACKENDS = {"cpu_numpy", "cpu_numba", "cpu_jax", "gpu_jax", "cpu_pytorch", "gpu_pytorch"}
 _AVAILABLE_BACKENDS = {"cpu_numpy"}
 _REQUESTED_BACKEND = os.environ.get("SPECULAR_BACKEND")
 _CURRENT_BACKEND = _REQUESTED_BACKEND or "cpu_numpy"
-_BACKEND_ORDER = ["cpu_numpy", "cpu_numba", "cpu_tensorflow", "gpu_tensorflow", "cpu_pytorch", "gpu_pytorch", "cpu_jax", "gpu_jax"]
+_BACKEND_ORDER = ["cpu_numpy", "cpu_numba", "cpu_pytorch", "gpu_pytorch", "cpu_jax", "gpu_jax"]
 _DEFAULT_BACKEND_ORDER = ["cpu_numba", "cpu_numpy"]
 _INSTALL_HINTS = {
     "cpu_numba":      "pip install 'specular-differentiation[numba]'",
     "cpu_jax":        "pip install 'specular-differentiation[jax]'",
     "gpu_jax":        "pip install 'specular-differentiation[jax]' (requires CUDA-compatible GPU)",
-    "cpu_tensorflow": "pip install tensorflow",
-    "gpu_tensorflow": "pip install tensorflow (requires CUDA-compatible GPU)",
     "cpu_pytorch":    "pip install torch",
     "gpu_pytorch":    "pip install torch (requires CUDA-compatible GPU)",
 }
@@ -54,18 +52,6 @@ def _has_jax():
     except ImportError:
         return False
 
-def _has_tensorflow():
-    """Return True if TensorFlow is installed and register available TensorFlow backends."""
-    try:
-        import tensorflow as tf
-        gpus = tf.config.list_physical_devices("GPU")
-        _AVAILABLE_BACKENDS.add("cpu_tensorflow")
-        if gpus:
-            _AVAILABLE_BACKENDS.add("gpu_tensorflow")
-        return True
-    except ImportError:
-        return False
-
 def _has_pytorch():
     """Return True if PyTorch is installed and register available PyTorch backends."""
     try:
@@ -85,8 +71,6 @@ def _probe_backend(name):
         return _has_numba()
     if name in {"cpu_jax", "gpu_jax"}:
         return _has_jax()
-    if name in {"cpu_tensorflow", "gpu_tensorflow"}:
-        return _has_tensorflow()
     if name in {"cpu_pytorch", "gpu_pytorch"}:
         return _has_pytorch()
     return False
@@ -120,12 +104,11 @@ def backend_info():
 
         >>> import specular
         >>> specular.backend_info()
-        supported backends: cpu_numpy, cpu_numba, cpu_tensorflow, gpu_tensorflow, cpu_pytorch, gpu_pytorch, cpu_jax, gpu_jax
+        supported backends: cpu_numpy, cpu_numba, cpu_pytorch, gpu_pytorch, cpu_jax, gpu_jax
         available backends: cpu_numpy, cpu_numba
         current backend   : cpu_numpy
     """
     _has_numba()
-    _has_tensorflow()
     _has_pytorch()
     _has_jax()
 

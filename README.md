@@ -1,7 +1,7 @@
 # Specular Differentiation
 
 [![PyPI version](https://badge.fury.io/py/specular-differentiation.svg)](https://badge.fury.io/py/specular-differentiation)
-![Python 3.11](https://img.shields.io/badge/python-3.11-3776AB.svg?style=flat&logo=python&logoColor=white)
+![Python 3.14](https://img.shields.io/badge/python-3.14-3776AB.svg?style=flat&logo=python&logoColor=white)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18246734.svg)](https://doi.org/10.5281/zenodo.18246734)
 [![License](https://img.shields.io/pypi/l/specular-differentiation.svg)](https://pypi.org/project/specular-differentiation/)
 [![CodeFactor](https://www.codefactor.io/repository/github/kyjung2357/specular-differentiation/badge)](https://www.codefactor.io/repository/github/kyjung2357/specular-differentiation)
@@ -31,8 +31,8 @@ Their difference is illustrated as in the following figure.
 
 `specular-differentiation` requires:
 
-* **Python** >= 3.11
-* `numpy` >= 2.0
+* **Python** >= 3.14
+* `numpy` >= 2.4
 
 Additional features are available through optional dependencies:
 
@@ -43,7 +43,7 @@ Additional features are available through optional dependencies:
 
 ### User installation
 
-**Standard Installation (NumPy backend)**
+**Standard Installation**
 
 ```bash
 pip install specular-differentiation
@@ -52,38 +52,23 @@ pip install specular-differentiation
 This installs the core specular differentiation API, including `A`, `derivative`,
 `directional_derivative`, `partial_derivative`, `gradient`, and `jacobian`.
 
-**ODE solvers**
+**Optional features**
 
 ```bash
-pip install "specular-differentiation[ode]"
+pip install "specular-differentiation[ode]"             # ODE solvers
+pip install "specular-differentiation[optimization]"    # optimization routines
+pip install "specular-differentiation[numba]"           # Numba backend
+pip install "specular-differentiation[jax]"             # JAX backend
+pip install "specular-differentiation[torch]"           # PyTorch backend
 ```
 
-**Optimization routines**
+The Numba backend accelerates the NumPy-style finite-difference implementation when available.
 
-```bash
-pip install "specular-differentiation[optimization]"
-```
+The JAX backend uses automatic differentiation at shifted points, so its results may differ from the NumPy and Numba finite-difference backends.
 
-**Numba backend**
+See [the backend documentation](docs/api/backend.md) for backend-specific usage.
 
-```bash
-pip install "specular-differentiation[numba]"
-```
-
-If Numba is installed and available, the package may use the Numba-accelerated CPU backend.
-
-**JAX backend**
-
-```bash
-pip install "specular-differentiation[jax]"
-```
-
-Note: the JAX backend intentionally uses automatic differentiation when computing specular derivatives and gradients. 
-NumPy/Numba use one-sided finite differences, so results may differ across backends.
-
-See [the documentation](docs/api/backend.md) for JAX-specific usage.
-
-**Developer Installation**
+**Developer installation**
 
 ```bash
 pip install -e ".[dev]"
@@ -114,9 +99,7 @@ NumPy is the default backend, while accelerated backends are optional and may re
 | NumPy | supported | supported  | supported (recommended) |
 | Numba | supported | supported (recommended) | not supported |
 | JAX | supported | supported | experimental  |
-| TensorFlow | experimental | experimental | not supported |
 | PyTorch | experimental | experimental | not supported |
-
 
 ## Applications
 
@@ -161,7 +144,7 @@ The following example compares the three proposed methods with the classical met
 ### [API Reference](https://kyjung2357.github.io/specular-differentiation/api/)
 ### [Examples](https://kyjung2357.github.io/specular-differentiation/examples/)
 
-## LaTeX macro
+## LaTeX macros
 
 To use the specular differentiation symbol in your LaTeX document, add the following code to your preamble (before `\begin{document}`):
 
@@ -170,8 +153,11 @@ To use the specular differentiation symbol in your LaTeX document, add the follo
 \usepackage{graphicx}
 \usepackage{bm}
 
-% Definition of Specular Differentiation symbol
+% Specular differentiation symbol
 \newcommand\sd[1][.5]{\mathbin{\vcenter{\hbox{\scalebox{#1}{\,$\bm{\wedge}$}}}}}
+
+% Specular gradients symbol
+\newcommand{\sg}{\mathord{\raisebox{-0.05ex}{\rule{0pt}{1.3ex}\smash{\scalebox{1.37}[1.22]{\ensuremath{\blacktriangledown}}}}\mkern-1.2mu}}
 ```
 
 ### Usage examples 

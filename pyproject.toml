@@ -6,19 +6,19 @@ build-backend = "setuptools.build_meta"
 name = "specular-differentiation"
 version = "1.3.0"
 description = "Specular differentiation in normed vector spaces and its applications"
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 license = {text = "MIT License"}
 authors = [{name = "Kiyuob Jung", email = "kyjung@msu.edu"}]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.14",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Mathematics"
 ]
 dependencies = [
-    "numpy>=2.0"
+    "numpy>=2.4"
 ]
 
 readme = "README.md"
@@ -29,23 +29,27 @@ readme = "README.md"
 
 [project.optional-dependencies]
 jax = [
-    "jax>=0.4",
-    "jaxlib>=0.4"
+    "jax>=0.10",
+    "jaxlib>=0.10"
 ]
 
 numba = [
-    "numba>=0.57"
+    "numba>=0.65"
+]
+
+torch = [
+    "torch>=2.12"
 ]
 
 ode = [
-    "matplotlib",
-    "pandas",
-    "tqdm"
+    "matplotlib>=3.10",
+    "pandas>=3.0",
+    "tqdm>=4.67"
 ]
 
 optimization = [
-    "matplotlib",
-    "tqdm",
+    "matplotlib>=3.10",
+    "tqdm>=4.67",
 ]
 
 dev = [
@@ -53,10 +57,10 @@ dev = [
     "specular-differentiation[optimization]",
     "specular-differentiation[numba]",
     "specular-differentiation[jax]",
-    "pytest>=7.0",
-    "scipy>=1.12.0",
-    "torch>=2.0.0",
-    "ipython",
+    "pytest>=9.0",
+    "scipy>=1.17",
+    "torch>=2.12",
+    "ipython>=9.13",
 ]
 
 [tool.setuptools.packages.find]

@@ -13,19 +13,18 @@ specular.backend_info()
 specular.change_backend("cpu_jax")
 ```
 
-Heavy machine-learning frameworks such as JAX, TensorFlow, and PyTorch are not
-imported when `import specular` is executed. They are checked only when the user
-explicitly selects the corresponding backend.
+Heavy machine-learning frameworks such as JAX, Numba, and PyTorch are not imported when `import specular` is executed. They are checked only when the user explicitly selects the corresponding backend.
 
 ## 2.4.2. Backend support
 
 | Backend | Calculation | ODE | Optimization |
 |:---:|:---:|:---:|:---:|
-| NumPy | supported | supported  | supported |
+| NumPy | supported | supported  | supported (recommended) |
 | Numba | supported | supported (recommended) | not supported |
-| JAX | supported | supported | supported (recommended) |
-| TensorFlow | supported | supported | not supported |
-| PyTorch | supported | supported | not supported |
+| JAX | supported | supported | experimental  |
+| PyTorch | experimental | experimental | not supported |
+
+TensorFlow is not supported for the Python 3.14 target.
 
 ## 2.4.3. JAX backend
 

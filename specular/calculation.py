@@ -48,8 +48,6 @@ def _get_backend_module() -> ModuleType:
             from . import _calculation_numba as mod
         elif current in {"cpu_jax", "gpu_jax"}:
             from . import _calculation_jax as mod
-        elif current in {"cpu_tensorflow", "gpu_tensorflow"}:
-            from . import _calculation_tensorflow as mod
         elif current in {"cpu_pytorch", "gpu_pytorch"}:
             from . import _calculation_pytorch as mod
         else:
