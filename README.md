@@ -21,7 +21,7 @@ Their difference is illustrated as in the following figure.
 * [Introduction](#installation)
 * [Applications](#applications)
 * [Documentation](#documentation)
-* [LaTeX macro](#latex-macro)
+* [LaTeX macros](#latex-macros)
 * [Citing specular-differentiation](#citing-specular-differentiation)
 * [References](#references)
 
@@ -40,6 +40,7 @@ Additional features are available through optional dependencies:
 * `optimization`: `matplotlib`, `tqdm`
 * `numba`: `numba`
 * `jax`: `jax`, `jaxlib`
+* `torch`: `torch`
 
 ### User installation
 
@@ -156,7 +157,7 @@ To use the specular differentiation symbol in your LaTeX document, add the follo
 % Specular differentiation symbol
 \newcommand\sd[1][.5]{\mathbin{\vcenter{\hbox{\scalebox{#1}{\,$\bm{\wedge}$}}}}}
 
-% Specular gradients symbol
+% Specular gradient symbol
 \newcommand{\sg}{\mathord{\raisebox{-0.05ex}{\rule{0pt}{1.3ex}\smash{\scalebox{1.37}[1.22]{\ensuremath{\blacktriangledown}}}}\mkern-1.2mu}}
 ```
 

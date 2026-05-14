@@ -48,10 +48,19 @@ By default, the package uses the NumPy backend (CPU).
 To enable hardware acceleration, you can install the package with the JAX backend (GPU/TPU). 
 This adds the following dependencies:
 
-* **[JAX](https://docs.jax.dev/en/latest/index.html)** (`jax`, `jaxlib` >= 0.4):
+* **[JAX](https://docs.jax.dev/en/latest/index.html)** (`jax`, `jaxlib` >= 0.10):
 
 ```bash
 pip install "specular-differentiation[jax]"
+```
+
+> [!NOTE]
+> This feature is experimental for now. See [2.4 Backend](api/backend.md).
+
+**PyTorch backend**
+
+```bash
+pip install "specular-differentiation[torch]"
 ```
 
 > [!NOTE]
@@ -62,10 +71,10 @@ pip install "specular-differentiation[jax]"
 To install all dependencies including tests, docs, and examples.
 This adds the following dependencies:
 
-* optional extras: `ode`, `optimization`, `numba`, and `jax`
-* **[SciPy](https://scipy.org/)** (`scipy` >= 1.10.0)
-* **[PyTorch](https://pytorch.org/)** (`torch` >= 2.0.0)
-* **[Pytest](https://docs.pytest.org/en/stable/)** (`pytest` >= 7.0)
+* optional extras: `ode`, `optimization`, `numba`, `jax`, and `torch`
+* **[SciPy](https://scipy.org/)** (`scipy` >= 1.17)
+* **[PyTorch](https://pytorch.org/)** (`torch` >= 2.12)
+* **[Pytest](https://docs.pytest.org/en/stable/)** (`pytest` >= 9.0)
 
 ```bash
 pip install -e ".[dev]"

@@ -17,8 +17,8 @@ Each subdirectory is based on a paper.
 
 * **Directory**: `examples/optimization/`
 * **Requirements**: 
-  * `scipy` >= 1.10.0
-  * `torch` >= 2.0.0
+  * `scipy` >= 1.17
+  * `torch` >= 2.12
 
 ### [2026-Jung](https://github.com/kyjung2357/specular-differentiation/blob/main/examples/optimization/2026-Jung/)
 
