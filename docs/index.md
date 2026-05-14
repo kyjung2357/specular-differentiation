@@ -1,7 +1,6 @@
 # Specular Differentiation
 
-`specular-differentiation` is a Python package for computing specular derivatives,
-directional derivatives, gradients, Jacobians, ODE solvers, and optimization methods.
+`specular-differentiation` is a Python package for computing specular derivatives, directional derivatives, gradients, Jacobians, ODE solvers, and optimization methods.
 
 ## Installation
 

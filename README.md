@@ -50,8 +50,7 @@ Additional features are available through optional dependencies:
 pip install specular-differentiation
 ```
 
-This installs the core specular differentiation API, including `A`, `derivative`,
-`directional_derivative`, `partial_derivative`, `gradient`, and `jacobian`.
+This installs the core specular differentiation API, including `A`, `derivative`, `directional_derivative`, `partial_derivative`, `gradient`, and `jacobian`.
 
 **Optional features**
 
@@ -63,13 +62,23 @@ pip install "specular-differentiation[jax]"             # JAX backend
 pip install "specular-differentiation[torch]"           # PyTorch backend
 ```
 
-See [the backend documentation](docs/api/backend.md) for backend-specific usage.
-
 **Developer installation**
 
 ```bash
 pip install -e ".[dev]"
 ```
+
+### [Backend support](docs/api/backend.md)
+
+The package is organized around a backend system. 
+NumPy is the default backend, while accelerated backends are optional and may require extra dependencies.
+
+| Backend | Calculation | ODE | Optimization |
+|:---:|:---:|:---:|:---:|
+| NumPy | supported | supported  | supported (recommended) |
+| Numba | supported | supported (recommended) | not supported |
+| JAX | supported | supported | experimental  |
+| PyTorch | experimental | experimental | not supported |
 
 ### Quick start
 
@@ -85,18 +94,6 @@ print(specular.derivative(ReLU, x=0))
 ```text
 0.41421356237309515
 ```
-
-### Backend support
-
-The package is organized around a backend system. 
-NumPy is the default backend, while accelerated backends are optional and may require extra dependencies.
-
-| Backend | Calculation | ODE | Optimization |
-|:---:|:---:|:---:|:---:|
-| NumPy | supported | supported  | supported (recommended) |
-| Numba | supported | supported (recommended) | not supported |
-| JAX | supported | supported | experimental  |
-| PyTorch | experimental | experimental | not supported |
 
 ## Applications
 
