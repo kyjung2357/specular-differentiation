@@ -1,8 +1,8 @@
 # Calculation
 
-Directory: `specular/calculation/`
+Source code in [`specular.calculation.py`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/calculation.py)
 
-The [`specular.calculation`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/calculation.py) module provides five primary functions to calculate specular differentiation, depending on the dimension of input.
+This module provides five primary functions to calculate specular differentiation, depending on the dimension of input.
 
 | Function | Space | Description |Input Type | Output Type |
 | :--- | :--- | :--- | :--- | :--- |
@@ -113,4 +113,9 @@ print(specular.partial_derivative(f, x=[0.1, 2.3, -1.2], i=3))
 
 ## API Reference
 
-- [`specular.calculation`](calculation/specular-calculation.md)
+- [`specular.calculation.A`](calculation/A.md) <span class="api-kind">module</span>
+- [`specular.calculation.derivative`](calculation/derivative.md) <span class="api-kind">module</span>
+- [`specular.calculation.directional_derivative`](calculation/directional_derivative.md) <span class="api-kind">module</span>
+- [`specular.calculation.partial_derivative`](calculation/partial_derivative.md) <span class="api-kind">module</span>
+- [`specular.calculation.gradient`](calculation/gradient.md) <span class="api-kind">module</span>
+- [`specular.calculation.jacobian`](calculation/jacobian.md) <span class="api-kind">module</span>

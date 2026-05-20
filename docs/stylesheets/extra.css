@@ -79,11 +79,23 @@
 }
 
 .md-sidebar--primary .md-sidebar__scrollwrap {
-  scrollbar-width: none;
+  max-height: calc(100vh - 2.4rem);
+  overflow-y: auto;
+  scrollbar-color: rgba(0, 0, 0, 0.24) transparent;
+  scrollbar-width: thin;
 }
 
 .md-sidebar--primary .md-sidebar__scrollwrap::-webkit-scrollbar {
-  display: none;
+  width: 0.25rem;
+}
+
+.md-sidebar--primary .md-sidebar__scrollwrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.md-sidebar--primary .md-sidebar__scrollwrap::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.24);
+  border-radius: 999px;
 }
 
 @media screen and (max-width: 799px) {
@@ -103,8 +115,8 @@
     background: transparent;
     box-shadow: none;
     flex-shrink: 0;
-    height: 0;
-    padding: 1.2rem 0;
+    height: calc(100vh - 2.4rem);
+    padding: 1.2rem 0 0;
     position: sticky;
     top: 2.4rem;
     transform: none !important;
@@ -123,8 +135,10 @@
 
   .md-sidebar--primary .md-sidebar__scrollwrap {
     bottom: auto;
+    height: 100%;
     left: auto;
     margin: 0 0.2rem;
+    max-height: none;
     overflow-y: auto;
     position: static;
     right: auto;
@@ -253,8 +267,8 @@
 }
 
 .api-module-list ul {
-  list-style: none;
-  margin-left: 0;
+  list-style: disc;
+  margin-left: 1.25em;
 }
 
 .api-module-list li {
@@ -533,7 +547,8 @@
 .md-typeset div.highlight .k,
 .md-typeset div.highlight .kc,
 .md-typeset div.highlight .kn,
-.md-typeset div.highlight .nb {
+.md-typeset div.highlight .nb,
+.md-typeset div.highlight .ow {
   color: #b58cff;
 }
 
@@ -546,7 +561,10 @@
 
 .md-typeset div.highlight .s,
 .md-typeset div.highlight .s1,
-.md-typeset div.highlight .s2 {
+.md-typeset div.highlight .s2,
+.md-typeset div.highlight .sa,
+.md-typeset div.highlight .sd,
+.md-typeset div.highlight .si {
   color: #83c7ff;
 }
 

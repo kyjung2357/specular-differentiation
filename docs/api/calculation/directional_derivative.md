@@ -1,4 +1,4 @@
-::: specular.calculation
+::: specular.calculation.directional_derivative
     handler: python
     options:
       heading_level: 1

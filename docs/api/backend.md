@@ -1,8 +1,10 @@
 # Backend
 
+Source code in [`specular.backend.py`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/backend.py)
+
 The package is organized around a backend system.
 The standard installation uses the NumPy implementation, while accelerated
-backends are optional and selected through `specular.change_backend(...)`.
+backends are optional and selected through [`specular.backend.change_backend`](backend/change_backend.md).
 
 ## Backend selection
 
@@ -117,4 +119,5 @@ For a detailed comparison of the algorithms, see:
 
 ## API Reference
 
-- [`specular.backend`](backend/specular-backend.md)
+- [`specular.backend.backend_info`](backend/backend_info.md)
+- [`specular.backend.change_backend`](backend/change_backend.md)

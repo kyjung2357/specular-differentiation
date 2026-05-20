@@ -61,22 +61,23 @@ nav:
     - Simple examples: started/simple-examples.md
   - API Reference:
     - api/index.md
-    - Calculation:
+    - specular.calculation:
       - Overview: api/calculation.md
       - specular.calculation: api/calculation/specular-calculation.md
-    - ODE:
+    - specular.backend:
+      - Overview: api/backend.md
+      - specular.backend.backend_info: api/backend/backend_info.md
+      - specular.backend.change_backend: api/backend/change_backend.md
+    - specular.ode:
       - Overview: api/ode.md
       - specular.ode.solver: api/ode/solver.md
       - specular.ode.classical_solver: api/ode/classical-solver.md
       - specular.ode.result: api/ode/result.md
-    - Optimization:
+    - specular.optimization:
       - Overview: api/optimization.md
       - specular.optimization.step_schedule: api/optimization/step-schedule.md
       - specular.optimization.solver: api/optimization/solver.md
       - specular.optimization.result: api/optimization/result.md
-    - Backend:
-      - Overview: api/backend.md
-      - specular.backend: api/backend/specular-backend.md
   - Examples:
     - examples/index.md
     - Ordinary differential equation:
