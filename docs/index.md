@@ -26,10 +26,10 @@ hide:
 [API Reference](api/index.md)
 </div>
 
-* [Calculation](api/calculation.md)
-* [ODE](api/ode.md)
-* [Optimization](api/optimization.md)
-* [Backend](api/backend.md)
+* [`specular.calculation`](api/calculation.md)
+* [`specular.backend`](api/backend.md)
+* [`specular.ode`](api/ode.md)
+* [`specular.optimization`](api/optimization.md)
 
 </section>
 

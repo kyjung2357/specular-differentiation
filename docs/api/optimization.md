@@ -1,4 +1,4 @@
-# 2.3. Optimization
+# `specular.optimization`
 
 Consider the optimization problem:
 
@@ -45,7 +45,7 @@ print(h_1)
 3.3333333333333335
 ```
 
-## 2.3.2. The specular gradient method
+## The specular gradient method
 
 ### The one dimensional case
 ```python
@@ -94,7 +94,7 @@ res2 = specular.gradient_method(f=f, x_0=x_0, step_size=step_size, form='stochas
 res3 = specular.gradient_method(f=f_quad_vector, x_0=x_0, step_size=step_size, form='hybrid', f_j=f_components, switch_iter=5, max_iter=20)
 ```
 
-## 2.3.3. `OptimizationResult`
+## `OptimizationResult`
 
 The class `OptimizationResult` collects the optimization results.
 To get history of optimization, call `history()`.
@@ -112,7 +112,7 @@ step_size = specular.StepSchedule('square_summable_not_summable', [0.5, 1.0])
 # Specular gradient method
 res_x, res_f, res_time = specular.gradient_method(f=f, x_0=x_0, step_size=step_size, form='specular gradient', max_iter=50).history()
 ```
-## 2.3.4. API Reference
+## API Reference
 
 ::: specular.optimization.step_schedule
     handler: python

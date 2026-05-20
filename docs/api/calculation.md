@@ -1,4 +1,4 @@
-# 2.1. Calculation
+# `specular.calculation`
 
 Directory: `specular/calculation/`
 
@@ -13,7 +13,7 @@ The [`specular.calculation`](https://github.com/kyjung2357/specular-differentiat
 | `jacobian` | $\mathbb{R}^n \to \mathbb{R}^m$ | specular jacobian matrix | `np.ndarray` | `np.ndarray` |
 
 
-## 2.1.1. One-dimensional Euclidean Space ($n=1$)
+## One-dimensional Euclidean Space ($n=1$)
 
 In $ℝ$, the *specular derivative* can be calculated using the function `derivative`.
 
@@ -30,7 +30,7 @@ print(specular.derivative(f, x=0.0))
 0.41421356237309515
 ```
 
-## 2.1.2. the $n$-dimensional Euclidean space ($n>1$)
+## The $n$-dimensional Euclidean space ($n>1$)
 
 In $ℝ^n$, the *specular directional derivative* of a function $f: ℝ^n \to ℝ$ at a point $x \in ℝ^n$ in the direction $v \in ℝ^n$ can be calculated using the function `directional_derivative`.
 
@@ -87,7 +87,7 @@ print(specular.partial_derivative(f, x=[0.1, 2.3, -1.2], i=3))
 -0.4622227292028128
 ```
 
-## 2.1.3. API Reference
+## API Reference
 
 ::: specular.calculation
     handler: python
