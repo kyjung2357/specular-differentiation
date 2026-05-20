@@ -2,7 +2,7 @@
 
 The API reference is generated from the Python docstrings in the `specular` package.
 
-## Core
+## Calculation
 
 <div class="api-module-list" markdown="1">
 

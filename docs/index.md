@@ -1,46 +1,50 @@
+---
+hide:
+  - toc
+---
+
 # Specular Differentiation
 
-`specular-differentiation` is a Python package for computing specular derivatives, directional derivatives, gradients, Jacobians, ODE solvers, and optimization methods.
+<div class="home-card-grid" markdown="1">
 
-## Installation
+<section class="home-card" markdown="1">
 
-```bash
-pip install specular-differentiation
-```
+<div class="home-card-title" markdown="1">
+[Getting Started](started/index.md)
+</div>
 
-Requirements:
+* [User installation](started/installation.md)
+* [Quick start](started/quick-start.md)
+* [Mathematical background](started/mathematical-background.md)
+* [Simple examples](started/simple-examples.md)
 
-* **Python** >= 3.14
-* `numpy` >= 2.4
+</section>
 
-Optional features:
+<section class="home-card" markdown="1">
 
-```bash
-pip install "specular-differentiation[ode]"             # ODE solvers
-pip install "specular-differentiation[optimization]"    # optimization routines
-pip install "specular-differentiation[numba]"           # Numba backend
-pip install "specular-differentiation[jax]"             # JAX backend
-pip install "specular-differentiation[torch]"           # PyTorch backend
-```
+<div class="home-card-title" markdown="1">
+[API Reference](api/index.md)
+</div>
 
-## Documentation
+* [Calculation](api/calculation.md)
+* [ODE](api/ode.md)
+* [Optimization](api/optimization.md)
+* [Backend](api/backend.md)
 
-* [Getting started](started/index.md)
-* [API reference](api/index.md)
-* [Examples](examples/index.md)
+</section>
 
-## Backend support
+<section class="home-card" markdown="1">
 
-| Backend | Calculation | ODE | Optimization |
-|:---:|:---:|:---:|:---:|
-| NumPy | supported | supported | supported |
-| Numba | supported | supported | not supported |
-| JAX | supported | supported | experimental |
-| PyTorch | experimental | experimental | not supported |
+<div class="home-card-title" markdown="1">
+[Examples](examples/index.md)
+</div>
 
-TensorFlow is not supported for the Python 3.14 target.
+* [Ordinary differential equation](examples/ode/index.md)
+    * [2026 Jung](examples/ode-2026-jung.md)
+* [Optimization](examples/optimization/index.md)
+    * [2026 Jung](examples/optimization-2026-jung.md)
+    * [2024 Jung-Oh](examples/optimization-2024-jung-oh.md)
 
-## Project Information
+</section>
 
-For the full project overview, citation information, figures, and references, see the
-[GitHub README](https://github.com/kyjung2357/specular-differentiation#readme).
+</div>

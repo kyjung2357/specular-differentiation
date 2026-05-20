@@ -1,4 +1,4 @@
-# 2026-Jung
+# 2026 Jung
 
 * **Directory**: [`examples/optimization/2026-Jung/`](https://github.com/kyjung2357/specular-differentiation/blob/main/examples/optimization/2026-Jung/)
 * **Keywords**: generalized differentiation, Mean Value Theorem, Fermat's Theorem, subgradient method, stochastic subgradient method

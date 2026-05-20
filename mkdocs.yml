@@ -21,7 +21,6 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
-    - content.code.copy
     - navigation.indexes
     - navigation.footer
     - toc.integrate
@@ -40,34 +39,40 @@ plugins:
             heading_level: 1
   - include-markdown:
       rewrite_relative_urls: true
+
+hooks:
+  - docs/hooks/code_copy_buttons.py
   
 
 nav:
   - Home: index.md
-  - 1. Getting Started:
-    - overview: started/index.md
-    - 1.1. User installation: started/installation.md
-    - 1.2. Quick start: started/quick-start.md
-    - 1.3. Backend Usage: started/backend-usage.md
-  - 2. API Reference:
-    - overview: api/index.md
-    - 2.1. Calculation: api/calculation.md
-    - 2.2. ODE: api/ode.md
-    - 2.3. Optimization: api/optimization.md
-    - 2.4. Backend: api/backend.md
-  - 3. Examples:
-    - overview: examples/index.md
-    - 3.1. Ordinary differential equation:
-      - overview: examples/ode.md
-      - 2026-Jung: examples/ode-2026-jung.md
-    - 3.2. Optimization:
-      - overview: examples/optimization.md
-      - 2026-Jung: examples/optimization-2026-jung.md
-      - 2024-Jung-Oh: examples/optimization-2024-jung-oh.md
+  - Getting Started:
+    - started/index.md
+    - User installation: started/installation.md
+    - Quick start: started/quick-start.md
+    - Mathematical background: started/mathematical-background.md
+    - Simple examples: started/simple-examples.md
+  - API Reference:
+    - api/index.md
+    - Calculation: api/calculation.md
+    - ODE: api/ode.md
+    - Optimization: api/optimization.md
+    - Backend: api/backend.md
+  - Examples:
+    - examples/index.md
+    - Ordinary differential equation:
+      - examples/ode/index.md
+      - 2026 Jung: examples/ode-2026-jung.md
+    - Optimization:
+      - examples/optimization/index.md
+      - 2026 Jung: examples/optimization-2026-jung.md
+      - 2024 Jung-Oh: examples/optimization-2024-jung-oh.md
 
 markdown_extensions:
   - admonition
   - pymdownx.details
+  - pymdownx.highlight:
+      pygments_lang_class: true
   - pymdownx.superfences
   - md_in_html
   - pymdownx.arithmatex:
@@ -75,6 +80,7 @@ markdown_extensions:
 
 extra_javascript:
   - javascripts/header-home-link.js
+  - javascripts/code-copy-buttons.js
   - javascripts/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

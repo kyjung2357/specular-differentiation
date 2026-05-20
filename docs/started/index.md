@@ -1,7 +1,8 @@
-# 1. Getting Started
+# Getting Started
 
 Start with the core package and then install optional extras only when a backend or application needs them.
 
-* [1.1. User installation](installation.md)
-* [1.2. Quick start](quick-start.md)
-* [1.3. Backend Usage](backend-usage.md)
+* [User installation](installation.md)
+* [Quick start](quick-start.md)
+* [Mathematical background](mathematical-background.md)
+* [Simple examples](simple-examples.md)

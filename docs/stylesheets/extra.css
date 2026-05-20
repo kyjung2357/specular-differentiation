@@ -17,27 +17,26 @@
 }
 
 .md-nav--primary > .md-nav__title {
+  align-items: center;
   background: transparent;
   box-shadow: none;
   color: transparent;
-  display: block;
+  display: flex;
   font-size: 0;
-  height: auto;
+  height: 9.75rem;
+  justify-content: center;
   line-height: 0;
   margin: 0 0 1rem;
-  min-height: 8.75rem;
   overflow: visible;
-  padding: 0.4rem 0.6rem 1rem;
-  position: sticky;
-  top: 0;
-  z-index: 2;
+  padding: 0;
 }
 
 .md-nav--primary > .md-nav__title .md-logo {
   display: block;
   height: 7.35rem;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
+  transform: translateY(0.1rem);
   width: 7.35rem;
 }
 
@@ -48,47 +47,10 @@
   width: 100%;
 }
 
-@media screen and (min-width: 60em) and (max-width: 76.234375em) {
-  .md-header__button[for="__drawer"] {
-    display: none;
-  }
-
-  [dir="ltr"] .md-sidebar--primary {
-    left: auto;
-  }
-
-  [dir="rtl"] .md-sidebar--primary {
-    right: auto;
-  }
-
-  .md-sidebar--primary {
-    background-color: transparent;
-    box-shadow: none;
-    display: block;
-    height: calc(100vh - 2.4rem);
-    position: sticky;
-    top: 2.4rem;
-    transform: none;
-    transition: none;
-    z-index: 1;
-  }
-
-  .md-sidebar--primary .md-sidebar__scrollwrap {
-    bottom: auto;
-    height: 100%;
-    left: auto;
-    margin: 0 0.2rem;
-    overflow-y: auto;
-    position: relative;
-    right: auto;
-    scroll-snap-type: none;
-    top: auto;
-    touch-action: pan-y;
-  }
-
-  [data-md-toggle="drawer"]:checked ~ .md-container .md-sidebar--primary {
-    box-shadow: none;
-    transform: none;
+@media screen and (max-width: 76.234375em) {
+  html .md-nav--primary > .md-nav__title,
+  html .md-nav--primary .md-nav__title[for="__drawer"] {
+    background-color: #fff;
   }
 }
 
@@ -118,4 +80,160 @@
 .api-kind {
   color: var(--md-typeset-a-color);
   margin-left: 0.2rem;
+}
+
+.md-typeset h1 {
+  color: #555;
+  font-weight: 500;
+}
+
+.home-card-grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  margin-top: 1.4rem;
+}
+
+.home-card {
+  border: 0.05rem solid var(--md-default-fg-color--lightest);
+  border-radius: 0.3rem;
+  padding: 0.8rem 0.9rem;
+}
+
+.home-card-title,
+.home-card-title p {
+  font-size: 1.1rem;
+  font-weight: 530;
+  margin: 0 0 0.75rem;
+}
+
+.home-card-title a {
+  font-weight: inherit;
+}
+
+.home-card ul {
+  margin-bottom: 0;
+}
+
+.md-typeset div.highlight {
+  background: #22282e;
+  border-radius: 0.7rem;
+  margin: 1em 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.md-typeset div.highlight > pre {
+  background: transparent;
+  color: #d7e7ff;
+  margin: 0;
+  padding: 2.2rem 1rem 1rem;
+}
+
+.md-typeset div.highlight .highlighttable {
+  background: transparent;
+  border-spacing: 0;
+  margin: 0;
+  padding-top: 1.75rem;
+}
+
+.md-typeset div.highlight .highlighttable td {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.md-typeset div.highlight .highlighttable pre {
+  background: transparent;
+  color: #d7e7ff;
+  margin: 0;
+  padding: 0.45rem 1rem 1rem;
+}
+
+.md-typeset div.highlight .linenodiv pre {
+  color: #8ea1b3;
+  padding-left: 0.7rem;
+  padding-right: 0.45rem;
+}
+
+.md-typeset div.highlight code {
+  background: transparent;
+  color: inherit;
+}
+
+.md-typeset div.highlight[class*="language-"]::before {
+  background: #30363d;
+  border: 0.05rem solid #59636f;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 700;
+  left: 0.6rem;
+  line-height: 1;
+  padding: 0.2rem 0.45rem;
+  position: absolute;
+  top: 0.55rem;
+  z-index: 2;
+}
+
+.md-typeset div.language-bash.highlight::before {
+  content: "bash";
+}
+
+.md-typeset div.language-python.highlight::before {
+  content: "python";
+}
+
+.md-typeset div.language-text.highlight::before {
+  content: "output";
+}
+
+.md-typeset div.highlight .code-copy-button {
+  background: #30363d;
+  border: 0.05rem solid #59636f;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  font-family: var(--md-code-font-family);
+  font-size: 0.55rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0.2rem 0.45rem;
+  position: absolute;
+  right: 0.75rem;
+  top: 0.55rem;
+  z-index: 3;
+}
+
+.md-typeset div.highlight .code-copy-button:hover,
+.md-typeset div.highlight .code-copy-button:focus-visible {
+  background: #3a4149;
+}
+
+.md-typeset div.highlight .c,
+.md-typeset div.highlight .c1 {
+  color: #8ea1b3;
+}
+
+.md-typeset div.highlight .k,
+.md-typeset div.highlight .kn,
+.md-typeset div.highlight .nb {
+  color: #b58cff;
+}
+
+.md-typeset div.highlight .n,
+.md-typeset div.highlight .nn,
+.md-typeset div.highlight .o,
+.md-typeset div.highlight .p {
+  color: #d7e7ff;
+}
+
+.md-typeset div.highlight .s,
+.md-typeset div.highlight .s1,
+.md-typeset div.highlight .s2 {
+  color: #83c7ff;
+}
+
+.md-typeset div.highlight .w {
+  color: inherit;
 }
