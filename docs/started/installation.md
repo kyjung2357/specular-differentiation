@@ -1,6 +1,6 @@
 # User installation
 
-## Standard Installation (NumPy backend)
+## Standard Installation
 
 The package is available on PyPI:
 
@@ -13,7 +13,7 @@ Requirements:
 * **Python** >= 3.14
 * `numpy` >= 2.4
 
-
+The package is distributed on PyPI as `specular-differentiation` and imported in Python as `specular`.
 Check the version:
 
 ```python
@@ -54,7 +54,6 @@ pip install -e ".[dev]"
 
 This adds the following dependencies:
 
-* optional extras: `ode`, `optimization`, `numba`, `jax`, and `torch`
 * **[SciPy](https://scipy.org/)** (`scipy` >= 1.17)
 * **[Pytest](https://docs.pytest.org/en/stable/)** (`pytest` >= 9.0)
 
