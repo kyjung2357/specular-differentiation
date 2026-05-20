@@ -1,0 +1,121 @@
+:root {
+  --md-primary-fg-color: #009fdf;
+  --md-primary-fg-color--light: #33b7e8;
+  --md-primary-fg-color--dark: #0079aa;
+}
+
+.md-header {
+  background-color: var(--md-primary-fg-color);
+}
+
+.md-header .md-logo {
+  display: none;
+}
+
+.md-header__title {
+  cursor: pointer;
+}
+
+.md-nav--primary > .md-nav__title {
+  background: transparent;
+  box-shadow: none;
+  color: transparent;
+  display: block;
+  font-size: 0;
+  height: auto;
+  line-height: 0;
+  margin: 0 0 1rem;
+  min-height: 8.75rem;
+  overflow: visible;
+  padding: 0.4rem 0.6rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.md-nav--primary > .md-nav__title .md-logo {
+  display: block;
+  height: 7.35rem;
+  margin: 0;
+  padding: 0;
+  width: 7.35rem;
+}
+
+.md-nav--primary > .md-nav__title .md-logo img {
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+@media screen and (min-width: 60em) and (max-width: 76.234375em) {
+  .md-header__button[for="__drawer"] {
+    display: none;
+  }
+
+  [dir="ltr"] .md-sidebar--primary {
+    left: auto;
+  }
+
+  [dir="rtl"] .md-sidebar--primary {
+    right: auto;
+  }
+
+  .md-sidebar--primary {
+    background-color: transparent;
+    box-shadow: none;
+    display: block;
+    height: calc(100vh - 2.4rem);
+    position: sticky;
+    top: 2.4rem;
+    transform: none;
+    transition: none;
+    z-index: 1;
+  }
+
+  .md-sidebar--primary .md-sidebar__scrollwrap {
+    bottom: auto;
+    height: 100%;
+    left: auto;
+    margin: 0 0.2rem;
+    overflow-y: auto;
+    position: relative;
+    right: auto;
+    scroll-snap-type: none;
+    top: auto;
+    touch-action: pan-y;
+  }
+
+  [data-md-toggle="drawer"]:checked ~ .md-container .md-sidebar--primary {
+    box-shadow: none;
+    transform: none;
+  }
+}
+
+.api-module-list ul {
+  list-style: none;
+  margin-left: 0;
+}
+
+.api-module-list li {
+  margin: 0.45rem 0;
+}
+
+.api-module-list a code {
+  background-color: var(--md-code-bg-color);
+  border: 0.05rem solid var(--md-default-fg-color--lightest);
+  border-radius: 0.15rem;
+  color: var(--md-code-fg-color);
+  font-weight: 700;
+  padding: 0.05rem 0.25rem;
+}
+
+.api-module-list a:hover code {
+  background-color: var(--md-accent-fg-color--transparent);
+  color: var(--md-accent-fg-color);
+}
+
+.api-kind {
+  color: var(--md-typeset-a-color);
+  margin-left: 0.2rem;
+}

@@ -1,33 +1,43 @@
-# 2. API Reference
+# API Reference
 
-The specular package consists of the following modules and subpackages.
+The API reference is generated from the Python docstrings in the `specular` package.
 
-## [2.1. Calculation](calculation.md)
+## Core
 
-* [`specular.calculation`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/calculation.py): five primary functions to calculate specular differentiation, depending on the dimension of input.
+<div class="api-module-list" markdown="1">
 
-## [2.2. ODE](ode.md)
+- [`specular.calculation`](calculation.md#specular.calculation) <span class="api-kind">module</span>
+- [`specular.backend`](backend.md#specular.backend) <span class="api-kind">module</span>
 
-* [`specular.ode.solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/ode/solver.py): the specular Euler, specular trigonometric, and specular Heun schemes.
+</div>
 
-* [`specular.ode.classical_solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/ode/classical_solver.py): the explicit Euler, implicit Euler, and Crank-Nicolson schemes.
+## ODE
 
-* [`specular.ode.result`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/ode/result.py): the `ODEResult` class to store the results.
+<div class="api-module-list" markdown="1">
 
-## [2.3. Optimization](optimization.md)
+- [`specular.ode.solver`](ode.md#specular.ode.solver) <span class="api-kind">module</span>
+- [`specular.ode.classical_solver`](ode.md#specular.ode.classical_solver) <span class="api-kind">module</span>
+- [`specular.ode.result`](ode.md#specular.ode.result) <span class="api-kind">module</span>
 
-* [`specular.optimization.step_size`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/step_size.py): the `StepSize` class to define step size $h_k$.
+</div>
 
-* [`specular.optimization.solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/solver.py): the specular gradient method.
+## Optimization
 
-* [`specular.optimization.classical_solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/classical_solver.py): the gradient descent method, Adam, and BFGS. **Lazy importing**.
+<div class="api-module-list" markdown="1">
 
-* [`specular.optimization.result`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/result.py): the `OptimizationResult` class to store the results.
+- [`specular.optimization.step_schedule`](optimization.md#specular.optimization.step_schedule) <span class="api-kind">module</span>
+- [`specular.optimization.solver`](optimization.md#specular.optimization.solver) <span class="api-kind">module</span>
+- [`specular.optimization.result`](optimization.md#specular.optimization.result) <span class="api-kind">module</span>
 
-## [2.4. Backend](backend.md)
+</div>
 
-* [`specular.backend`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/backend.py): backend state management and backend selection through `specular.change_backend(...)`.
+## Guides
 
-* [`specular.calculation`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/calculation.py): routes calculation calls to the current backend.
+<div class="api-module-list" markdown="1">
 
-* [`specular.optimization.solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/solver.py): routes optimization calls to the current backend.
+- [`Calculation`](calculation.md) <span class="api-kind">guide</span>
+- [`ODE`](ode.md) <span class="api-kind">guide</span>
+- [`Optimization`](optimization.md) <span class="api-kind">guide</span>
+- [`Backend`](backend.md) <span class="api-kind">guide</span>
+
+</div>

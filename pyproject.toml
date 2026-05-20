@@ -24,8 +24,9 @@ dependencies = [
 readme = "README.md"
 
 [project.urls]
-"Homepage" = "https://github.com/kyjung2357/specular-differentiation"
-"Bug Tracker" = "https://github.com/kyjung2357/specular-differentiation/issues"
+"Documentation" = "https://kyjung2357.github.io/specular-differentiation"
+"Repository" = "https://github.com/kyjung2357/specular-differentiation"
+"Issues" = "https://github.com/kyjung2357/specular-differentiation/issues"
 
 [project.optional-dependencies]
 jax = [
@@ -61,6 +62,13 @@ dev = [
     "scipy>=1.17",
     "torch>=2.12",
     "ipython>=9.13",
+]
+
+docs = [
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "mkdocs-callouts",
+    "mkdocs-include-markdown-plugin",
 ]
 
 [tool.setuptools.packages.find]

@@ -25,7 +25,7 @@ pip install "specular-differentiation[torch]"           # PyTorch backend
 
 ## Documentation
 
-* [Getting started](started.md)
+* [Getting started](started/index.md)
 * [API reference](api/index.md)
 * [Examples](examples/index.md)
 

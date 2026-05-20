@@ -68,7 +68,7 @@ pip install "specular-differentiation[torch]"           # PyTorch backend
 pip install -e ".[dev]"
 ```
 
-### [Backend support](docs/api/backend.md)
+### [Backend support](https://kyjung2357.github.io/specular-differentiation/api/backend/)
 
 The package is organized around a backend system. 
 NumPy is the default backend, while accelerated backends are optional and may require extra dependencies.
@@ -100,7 +100,7 @@ print(specular.derivative(ReLU, x=0))
 Specular differentiation is defined in normed vector spaces, allowing for applications in higher-dimensional Euclidean spaces. 
 The `specular` package includes the following applications.
 
-### [Ordinary differential equation](docs/api/ode.md)
+### [Ordinary differential equation](https://kyjung2357.github.io/specular-differentiation/api/ode/)
 
 * **Directory**: `examples/ode/`
 * **References**: [[1]](#references), [[3]](#references), [[4]](#references)
@@ -117,7 +117,7 @@ The following example shows that the specular Euler schemes of Type 5 and 6 yiel
 
 ![ODE-example-2](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/ODE-example-2.png)
 
-### [Optimization](docs/api/optimization.md)
+### [Optimization](https://kyjung2357.github.io/specular-differentiation/api/optimization/)
 
 * **Directory**: `examples/optimization/`
 * **References**: [[2]](#references), [[5]](#references)
