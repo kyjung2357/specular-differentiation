@@ -1,4 +1,4 @@
-# `specular.backend`
+# Backend
 
 The package is organized around a backend system.
 The standard installation uses the NumPy implementation, while accelerated
@@ -117,8 +117,4 @@ For a detailed comparison of the algorithms, see:
 
 ## API Reference
 
-::: specular.backend
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: true
+- [`specular.backend`](backend/specular-backend.md)

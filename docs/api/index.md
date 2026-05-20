@@ -2,38 +2,38 @@
 
 The API reference is generated from the Python docstrings in the `specular` package.
 
-## Backend
+## `specular.calculation`
 
 <div class="api-module-list" markdown="1">
 
-- [`specular.backend`](backend.md#specular.backend) <span class="api-kind">module</span>
+- [`specular.calculation`](calculation/specular-calculation.md) <span class="api-kind">module</span>
 
 </div>
 
-## Calculation
+## `specular.backend`
 
 <div class="api-module-list" markdown="1">
 
-- [`specular.calculation`](calculation.md#specular.calculation) <span class="api-kind">module</span>
+- [`specular.backend`](backend/specular-backend.md) <span class="api-kind">module</span>
 
 </div>
 
-## ODE
+## `specular.ode`
 
 <div class="api-module-list" markdown="1">
 
-- [`specular.ode.solver`](ode.md#specular.ode.solver) <span class="api-kind">module</span>
-- [`specular.ode.classical_solver`](ode.md#specular.ode.classical_solver) <span class="api-kind">module</span>
-- [`specular.ode.result`](ode.md#specular.ode.result) <span class="api-kind">module</span>
+- [`specular.ode.solver`](ode/solver.md) <span class="api-kind">module</span>
+- [`specular.ode.classical_solver`](ode/classical-solver.md) <span class="api-kind">module</span>
+- [`specular.ode.result`](ode/result.md) <span class="api-kind">module</span>
 
 </div>
 
-## Optimization
+## `specular.optimization`
 
 <div class="api-module-list" markdown="1">
 
-- [`specular.optimization.step_schedule`](optimization.md#specular.optimization.step_schedule) <span class="api-kind">module</span>
-- [`specular.optimization.solver`](optimization.md#specular.optimization.solver) <span class="api-kind">module</span>
-- [`specular.optimization.result`](optimization.md#specular.optimization.result) <span class="api-kind">module</span>
+- [`specular.optimization.step_schedule`](optimization/step-schedule.md) <span class="api-kind">module</span>
+- [`specular.optimization.solver`](optimization/solver.md) <span class="api-kind">module</span>
+- [`specular.optimization.result`](optimization/result.md) <span class="api-kind">module</span>
 
 </div>

@@ -1,4 +1,4 @@
-# `specular.optimization`
+# Optimization
 
 Consider the optimization problem:
 
@@ -114,22 +114,6 @@ res_x, res_f, res_time = specular.gradient_method(f=f, x_0=x_0, step_size=step_s
 ```
 ## API Reference
 
-::: specular.optimization.step_schedule
-    handler: python
-    options:
-        show_root_heading: true
-        show_source: true
-
----
-::: specular.optimization.solver
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: true
-
----
-::: specular.optimization.result
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: true
+- [`specular.optimization.step_schedule`](optimization/step-schedule.md)
+- [`specular.optimization.solver`](optimization/solver.md)
+- [`specular.optimization.result`](optimization/result.md)

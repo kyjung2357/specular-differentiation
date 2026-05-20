@@ -1,31 +1,3 @@
-"""
-This module provides implementations of specular directional derivatives, specular partial derivatives, specular derivatives, specular gradients, and specular Jacobians.
-
-The calculations are based on the function $\\mathcal{A}:\\mathbb{R}^2 \\to \\mathbb{R}$ defined by 
-
-$$
-\\mathcal{A}(\\alpha, \\beta) =
-\\begin{cases}
-    \\frac{\\alpha \\beta - 1 + \\sqrt{(1 + \\alpha^2)(1 + \\beta^2)}}{\\alpha + \\beta} & \\text{if } \\alpha + \\beta \\neq 0, \\\\
-    0 & \\text{otherwise.}
-\\end{cases}
-$$
-
-The parameters $\\alpha$ and $\\beta$ are intended to represent right and left derivatives.
-In the code, computations are based on the finite difference approximation of one-sided (directional) derivatives:
-
-$$
-\\alpha \\approx \\frac{f(x + hv) - f(x)}{h}
-\\qquad \\text{and} \\qquad
-\\beta \\approx \\frac{f(x) - f(x - hv)}{h},
-$$
-
-where a function $f : \\mathbb{R}^n \\to \\mathbb{R}$, a real number $h > 0$, and vectors $x, v \\in \\mathbb{R}^n$.
-
-NumPy and Numba approximate this data from function values using one-sided finite differences, while JAX computes it using automatic differentiation at shifted points.
-"""
-
-
 import numpy as np
 import numpy.typing as npt
 from types import ModuleType

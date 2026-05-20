@@ -7,6 +7,7 @@ theme:
   name: material
   logo: figures/specular-differentiation-logo.png
   favicon: figures/specular-differentiation-logo.png
+  custom_dir: docs/overrides
   palette:
     - scheme: default
       primary: custom
@@ -23,7 +24,6 @@ theme:
   features:
     - navigation.indexes
     - navigation.footer
-    - toc.integrate
 
 plugins:
   - search
@@ -34,9 +34,16 @@ plugins:
         python:
           paths: [.]
           options:
+            heading_level: 3
+            line_length: 88
+            members_order: source
+            separate_signature: true
             show_source: true
-            show_root_heading: true
-            heading_level: 1
+            show_root_heading: false
+            show_root_toc_entry: false
+            show_root_full_path: false
+            show_object_full_path: false
+            show_root_members_full_path: false
   - include-markdown:
       rewrite_relative_urls: true
 
@@ -54,10 +61,22 @@ nav:
     - Simple examples: started/simple-examples.md
   - API Reference:
     - api/index.md
-    - Calculation: api/calculation.md
-    - ODE: api/ode.md
-    - Optimization: api/optimization.md
-    - Backend: api/backend.md
+    - Calculation:
+      - Overview: api/calculation.md
+      - specular.calculation: api/calculation/specular-calculation.md
+    - ODE:
+      - Overview: api/ode.md
+      - specular.ode.solver: api/ode/solver.md
+      - specular.ode.classical_solver: api/ode/classical-solver.md
+      - specular.ode.result: api/ode/result.md
+    - Optimization:
+      - Overview: api/optimization.md
+      - specular.optimization.step_schedule: api/optimization/step-schedule.md
+      - specular.optimization.solver: api/optimization/solver.md
+      - specular.optimization.result: api/optimization/result.md
+    - Backend:
+      - Overview: api/backend.md
+      - specular.backend: api/backend/specular-backend.md
   - Examples:
     - examples/index.md
     - Ordinary differential equation:

@@ -1,4 +1,4 @@
-# `specular.calculation`
+# Calculation
 
 Directory: `specular/calculation/`
 
@@ -12,6 +12,30 @@ The [`specular.calculation`](https://github.com/kyjung2357/specular-differentiat
 | `gradient` | $\mathbb{R}^n \to \mathbb{R}$ | specular gradient vector | `np.ndarray` | `np.ndarray` |
 | `jacobian` | $\mathbb{R}^n \to \mathbb{R}^m$ | specular jacobian matrix | `np.ndarray` | `np.ndarray` |
 
+This module provides implementations of specular directional derivatives, specular partial derivatives, specular derivatives, specular gradients, and specular Jacobians.
+
+The calculations are based on the function $\mathcal{A}:\mathbb{R}^2 \to \mathbb{R}$ defined by 
+
+$$
+\mathcal{A}(\alpha, \beta) =
+\begin{cases}
+    \frac{\alpha \beta - 1 + \sqrt{(1 + \alpha^2)(1 + \beta^2)}}{\alpha + \beta} & \text{if } \alpha + \beta \neq 0, \\
+    0 & \text{otherwise.}
+\end{cases}
+$$
+
+The parameters $\alpha$ and $\beta$ are intended to represent right and left derivatives.
+In the code, computations are based on the finite difference approximation of one-sided (directional) derivatives:
+
+$$
+\alpha \approx \frac{f(x + hv) - f(x)}{h}
+\qquad \text{and} \qquad
+\beta \approx \frac{f(x) - f(x - hv)}{h},
+$$
+
+where $f : \mathbb{R}^n \to \mathbb{R}$ is a function, $h > 0$ is a real number, and $x, v \in \mathbb{R}^n$ are vectors.
+
+NumPy and Numba approximate this data from function values using one-sided finite differences, while JAX computes it using automatic differentiation at shifted points.
 
 ## One-dimensional Euclidean Space ($n=1$)
 
@@ -89,8 +113,4 @@ print(specular.partial_derivative(f, x=[0.1, 2.3, -1.2], i=3))
 
 ## API Reference
 
-::: specular.calculation
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: true
+- [`specular.calculation`](calculation/specular-calculation.md)

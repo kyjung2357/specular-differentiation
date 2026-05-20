@@ -1,5 +1,5 @@
 
-# `specular.ode`
+# ODE
 
 Let the source function $F:[t_0, T] \times ℝ \to ℝ$ be given, and the initial data $u_0:ℝ \to ℝ$ be given. 
 Consider the initial value problem:
@@ -230,22 +230,6 @@ Running Crank-Nicolson scheme: 100%|██████████| 18/18 [00:00
 
 ## API Reference
 
-::: specular.ode.solver
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: true
-
----
-::: specular.ode.classical_solver
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: true
-
----
-::: specular.ode.result
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: true
+- [`specular.ode.solver`](ode/solver.md)
+- [`specular.ode.classical_solver`](ode/classical-solver.md)
+- [`specular.ode.result`](ode/result.md)
