@@ -84,7 +84,7 @@ def run_experiment(file_number, trials, iteration, m, n, pdf=False):
         (10.0, 10.0)  
     ]
     
-    fig, axes = plt.subplots(1, 3, figsize=(6, 3)) 
+    fig, axes = plt.subplots(1, 3, figsize=(6, 2.5)) 
     plt.subplots_adjust(wspace=0.3)
     
     colors = {'SPEG': 'red', 'S-SPEG': 'blue', 'H-SPEG': 'purple'}
@@ -158,7 +158,7 @@ def run_experiment(file_number, trials, iteration, m, n, pdf=False):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     os.makedirs(os.path.join(base_dir, 'figures'), exist_ok=True)
     path_fig = os.path.join(base_dir, f'figures/lambda-comparison-figure{file_number}-{m}-{n}.{"pdf" if pdf else "png"}')
-    plt.savefig(path_fig, dpi=1000, bbox_inches='tight')
+    plt.savefig(path_fig, dpi=600, bbox_inches='tight')
     plt.show()
 
 if __name__ == '__main__':

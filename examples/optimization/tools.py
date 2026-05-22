@@ -39,7 +39,7 @@ def report_results(all_results, running_times, file_number, m, n, lambda1, lambd
 
     summary_stats = {}
     
-    plt.figure(figsize=(6, 3))
+    plt.figure(figsize=(6, 2.5))
 
     for name, results_list in all_results.items():
         if not results_list: continue
@@ -101,7 +101,7 @@ def report_results(all_results, running_times, file_number, m, n, lambda1, lambd
     plt.legend(loc='center left', bbox_to_anchor=(1.02, 0.5), borderaxespad=0., fontsize=10)
     plt.tight_layout() 
     
-    plt.savefig(path_fig, dpi=1000, bbox_inches='tight')
+    plt.savefig(path_fig, dpi=600, bbox_inches='tight')
     print(f"Saved figure to: {path_fig}")
 
     if show:
