@@ -23,7 +23,7 @@ if __name__ == '__main__':
         n=100,
         lambda1=0.01,
         lambda2=1.0,
-        pdf=False,
+        pdf=True,
         show=False
     )
     
@@ -39,7 +39,7 @@ if __name__ == '__main__':
         n=100,
         lambda1=100.0,
         lambda2=1.0,
-        pdf=False,
+        pdf=True,
         show=False
     )
     
@@ -55,7 +55,7 @@ if __name__ == '__main__':
         n=100,
         lambda1=0.0,
         lambda2=0.0,
-        pdf=False,
+        pdf=True,
         show=False
     )
 
