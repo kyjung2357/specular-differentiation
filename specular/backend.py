@@ -83,7 +83,7 @@ if _CURRENT_BACKEND not in _AVAILABLE_BACKENDS:
 def backend_info():
     """Print the supported, available, and current backends.
 
-    Example::
+    Examples:
 
         >>> import specular
         >>> specular.backend_info()
@@ -105,18 +105,17 @@ def _ensure_backend_available(new_backend):
 def change_backend(new_backend):
     """Change the active backend for the current session.
 
-    Parameters
-    ----------
-    new_backend : str
-        Name of the backend to switch to. Must be one of the available
-        backends on this machine (see ``backend_info()``).
+    Parameters:
+        new_backend (str):
+            Name of the backend to switch to.
+            It must be one of the available backends on this machine.
+            See ``backend_info()``.
 
-    Raises
-    ------
-    ValueError
-        If ``new_backend`` is not in ``_AVAILABLE_BACKENDS``.
+    Raises:
+        ValueError:
+            If ``new_backend`` is not in ``_AVAILABLE_BACKENDS``.
 
-    Example::
+    Examples:
 
         >>> import specular
         >>> specular.change_backend("cpu_pytorch")

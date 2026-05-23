@@ -62,11 +62,63 @@
     });
   }
 
-  if (typeof document$ !== "undefined") {
-    document$.subscribe(setupCopyButtons);
-  } else if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", setupCopyButtons);
-  } else {
+  const sourceBaseUrl =
+    "https://github.com/kyjung2357/specular-differentiation/blob/main/";
+
+  const sourcePathMap = [
+    { page: "/api/calculation/", source: "specular/calculation.py" },
+    { page: "/api/backend/", source: "specular/backend.py" },
+    { page: "/api/ode/solver/", source: "specular/ode/solver.py" },
+    { page: "/api/ode/result/", source: "specular/ode/result.py" },
+    { page: "/api/ode/classical-solver/", source: "specular/ode/classical_solver.py" },
+    { page: "/api/optimization/solver/", source: "specular/optimization/solver.py" },
+    { page: "/api/optimization/result/", source: "specular/optimization/result.py" },
+    {
+      page: "/api/optimization/step-schedule/",
+      source: "specular/optimization/step_schedule.py",
+    },
+  ];
+
+  function sourceUrlForCurrentPage() {
+    const path = window.location.pathname.replace(/\/+$/, "/");
+    const match = sourcePathMap.find((item) => path.includes(item.page));
+    return match ? sourceBaseUrl + match.source : "";
+  }
+
+  function setupFullSourceLinks() {
+    const sourceUrl = sourceUrlForCurrentPage();
+
+    if (!sourceUrl) {
+      return;
+    }
+
+    document.querySelectorAll(".md-typeset div.doc-signature.highlight").forEach((block) => {
+      if (block.dataset.fullSourceReady === "true") {
+        return;
+      }
+
+      block.dataset.fullSourceReady = "true";
+
+      const link = document.createElement("a");
+      link.className = "full-source-button";
+      link.href = sourceUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "Full source";
+      block.appendChild(link);
+    });
+  }
+
+  function setupCodeActions() {
     setupCopyButtons();
+    setupFullSourceLinks();
+  }
+
+  if (typeof document$ !== "undefined") {
+    document$.subscribe(setupCodeActions);
+  } else if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupCodeActions);
+  } else {
+    setupCodeActions();
   }
 })();

@@ -351,7 +351,7 @@
 }
 
 .md-typeset div.doc-signature.highlight {
-  background: #f4d39b;
+  background: #f9e054;
   border-radius: 0.05rem;
   box-shadow: inset 0 -0.05rem 0 rgba(36, 49, 61, 0.08);
   margin: 0.35rem 0 0.8rem;
@@ -368,11 +368,35 @@
   font-size: 0.72rem;
   font-weight: 650;
   line-height: 1.55;
-  padding: 0.35rem 0.5rem;
+  padding: 0.35rem 7.4rem 0.35rem 0.5rem;
 }
 
 .md-typeset div.doc-signature.highlight code {
   color: inherit;
+}
+
+.md-typeset div.doc-signature.highlight .full-source-button {
+  background: #ffffff;
+  border: 0.05rem solid rgba(31, 41, 51, 0.28);
+  border-radius: 999px;
+  color: #1f2933;
+  font-family: var(--md-code-font-family);
+  font-size: 0.55rem;
+  font-weight: 800;
+  line-height: 1;
+  padding: 0.22rem 0.48rem;
+  position: absolute;
+  right: 0.65rem;
+  text-decoration: none;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+}
+
+.md-typeset div.doc-signature.highlight .full-source-button:hover,
+.md-typeset div.doc-signature.highlight .full-source-button:focus-visible {
+  background: #fff8e6;
+  color: #0f1720;
 }
 
 .md-typeset div.doc-signature.highlight .nf {
