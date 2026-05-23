@@ -138,7 +138,7 @@ The following example compares the three proposed methods with the classical met
 ### [API Reference](https://kyjung2357.github.io/specular-differentiation/api/)
 ### [Examples](https://kyjung2357.github.io/specular-differentiation/examples/)
 
-## LaTeX macros
+## [LaTeX Macro](https://kyjung2357.github.io/specular-differentiation/started/latex-macro/)
 
 To use the specular differentiation symbol in your LaTeX document, add the following code to your preamble (before `\begin{document}`):
 
@@ -146,24 +146,16 @@ To use the specular differentiation symbol in your LaTeX document, add the follo
 % Required packages
 \usepackage{graphicx}
 \usepackage{bm}
+\usepackage{amssymb}
 
-% Specular differentiation symbol
+% specular derivative symbol
 \newcommand\sd[1][.5]{\mathbin{\vcenter{\hbox{\scalebox{#1}{\,$\bm{\wedge}$}}}}}
 
-% Specular gradient symbol
+% specular Gateaux derivative symbol
+\newcommand{\sGd}{\widehat{\mkern-2mu d}\mkern1mu}
+
+% specular gradient symbol
 \newcommand{\sg}{\mathord{\raisebox{-0.05ex}{\rule{0pt}{1.3ex}\smash{\scalebox{1.37}[1.22]{\ensuremath{\blacktriangledown}}}}\mkern-1.2mu}}
-```
-
-### Usage examples 
-
-Use the symbol in your document (after `\begin{document}`):
-
-```latex
-% A specular derivative in the one-dimensional Euclidean space
-$f^{\sd}(x)$
-
-% A specular directional derivative in normed vector spaces
-$\partial^{\sd}_v f(x)$
 ```
 
 ## Citing specular-differentiation

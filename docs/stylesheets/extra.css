@@ -486,6 +486,10 @@
   color: inherit;
 }
 
+.md-typeset div.highlight code span {
+  color: #d7e7ff;
+}
+
 .md-typeset div.highlight[class*="language-"]::before {
   background: #30363d;
   border: 0.05rem solid #59636f;
@@ -511,6 +515,11 @@
 
 .md-typeset div.language-pycon.highlight::before {
   content: "python";
+}
+
+.md-typeset div.language-tex.highlight::before,
+.md-typeset div.language-latex.highlight::before {
+  content: "tex";
 }
 
 .md-typeset div.language-text.highlight::before {

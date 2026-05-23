@@ -15,6 +15,7 @@ hide:
 
 * [User installation](started/installation.md)
 * [Quick start](started/quick-start.md)
+* [LaTeX Macro](started/latex-macro.md)
 * [Mathematical background](started/mathematical-background.md)
 * [Simple examples](started/simple-examples.md)
 
