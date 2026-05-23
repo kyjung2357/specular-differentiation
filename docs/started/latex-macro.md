@@ -9,13 +9,7 @@ To use the specular differentiation symbols in your LaTeX document, add the foll
 \usepackage{amssymb}
 
 % specular derivative symbol
-\newcommand{\sd}{%
-  \mathchoice
-    {\mathbin{\vcenter{\hbox{\scalebox{.50}{\,$\displaystyle\bm{\wedge}$}}}}}
-    {\mathbin{\vcenter{\hbox{\scalebox{.50}{\,$\textstyle\bm{\wedge}$}}}}}
-    {\mathbin{\vcenter{\hbox{\scalebox{.42}{\,$\scriptstyle\bm{\wedge}$}}}}}
-    {\mathbin{\vcenter{\hbox{\scalebox{.36}{\,$\scriptscriptstyle\bm{\wedge}$}}}}}
-}
+\newcommand\sd[1][.5]{\mathbin{\vcenter{\hbox{\scalebox{#1}{\,$\bm{\wedge}$}}}}}
 
 % specular Gateaux derivative symbol
 \newcommand{\sGd}{\widehat{\mkern-2mu d}\mkern1mu}
