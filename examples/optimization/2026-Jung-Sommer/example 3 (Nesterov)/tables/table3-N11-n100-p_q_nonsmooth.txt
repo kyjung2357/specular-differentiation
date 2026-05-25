@@ -1,0 +1,16 @@
+\begin{tabular}{lllll}
+\toprule
+ & Mean & Median & Standard deviation & Failure probability (\%) \\
+\midrule
+SPEG & $2.5690 \times 10^{-1}$ & $2.4645 \times 10^{-1}$ & $1.5174 \times 10^{-1}$ & 0.0 \\
+Adam & $4.4631 \times 10^{-1}$ & $4.4532 \times 10^{-1}$ & $1.5466 \times 10^{-1}$ & 0.0 \\
+BFGS-E & -- & -- & -- & 100.0 \\
+BFGS-S & $2.4619 \times 10^{-1}$ & $2.3770 \times 10^{-1}$ & $1.6275 \times 10^{-1}$ & 0.0 \\
+BFGS-W & $2.2032 \times 10^{-1}$ & $1.7708 \times 10^{-1}$ & $1.6573 \times 10^{-1}$ & 0.0 \\
+BFGS-A & $2.2032 \times 10^{-1}$ & $1.7708 \times 10^{-1}$ & $1.6573 \times 10^{-1}$ & 0.0 \\
+S-BFGS-E & -- & -- & -- & 100.0 \\
+S-BFGS-S & $2.2127 \times 10^{-1}$ & $1.7813 \times 10^{-1}$ & $1.6608 \times 10^{-1}$ & 0.0 \\
+S-BFGS-W & $2.2044 \times 10^{-1}$ & $1.7710 \times 10^{-1}$ & $1.6569 \times 10^{-1}$ & 0.0 \\
+S-BFGS-A & $2.2044 \times 10^{-1}$ & $1.7710 \times 10^{-1}$ & $1.6568 \times 10^{-1}$ & 0.0 \\
+\bottomrule
+\end{tabular}

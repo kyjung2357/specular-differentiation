@@ -12,7 +12,7 @@ if __name__ == '__main__':
     trials = 20
 
     # Figure 3
-    methods = ["SPEG-s", "SPEG-g", "GD", "Adam", "BFGS"]
+    methods = ["SPEG", "S-SPEG", "H-SPEG", "GD", "Adam", "BFGS"]
 
     run_experiment(
         methods=methods,
