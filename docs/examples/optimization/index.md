@@ -8,4 +8,3 @@
 ## Papers
 
 * [2026 Jung](../optimization-2026-jung.md)
-* [2024 Jung-Oh](../optimization-2024-jung-oh.md)

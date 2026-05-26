@@ -44,7 +44,6 @@ hide:
     * [2026 Jung](examples/ode-2026-jung.md)
 * [Optimization](examples/optimization/index.md)
     * [2026 Jung](examples/optimization-2026-jung.md)
-    * [2024 Jung-Oh](examples/optimization-2024-jung-oh.md)
 
 </section>
 
