@@ -116,12 +116,13 @@ The `specular` package includes the following applications.
 ### [Ordinary differential equation](api/ode.md)
 
 * **Directory**: `examples/ode/`
-* **References**: [[1]](#references), [[3]](#references), [[4]](#references)
+* **References**: [[1]](#references)
 
-In [[1]](#references), seven schemes are proposed for solving ODEs numerically:
+In [[1]](#references), several schemes are proposed for solving ODEs numerically:
 
 * the *specular Euler* scheme of Type 1~6
 * the *specular trigonometric* scheme
+* the *specular ellipse* scheme
 
 The following example shows that the specular Euler schemes of Type 5 and 6 yield more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
 
@@ -132,9 +133,9 @@ The following example shows that the specular Euler schemes of Type 5 and 6 yiel
 ### [Optimization](api/optimization.md)
 
 * **Directory**: `examples/optimization/`
-* **References**: [[2]](#references), [[5]](#references)
+* **References**: [[3]](#references)
 
-In [[2]](#references), three methods are proposed for optimizing nonsmooth convex objective functions:
+In [[3]](#references), three methods are proposed for optimizing nonsmooth convex objective functions:
 
 * the *specular gradient (SPEG)* method
 * the *stochastic specular gradient (S-SPEG)* method
@@ -196,10 +197,6 @@ To cite this repository:
 
 [1] K. Jung. [*Nonlinear numerical schemes using specular differentiation for initial value problems of first-order ordinary differential equations*](https://arxiv.org/abs/2601.09900). arXiv preprint arXiv:2601.09900, 2026.
 
-[2] K. Jung. [*Specular differentiation in normed vector spaces and its applications to nonsmooth convex optimization*](https://arxiv.org/abs/2601.10950). arXiv preprint arXiv:2601.10950, 2026. 
+[2] K. Jung. [*Specular differentiation in normed vector spaces: Quasi-Mean Value and Quasi-Fermat Theorems*](https://arxiv.org/abs/2601.10950). arXiv preprint arXiv:2601.10950, 2026. 
 
-[3] K. Jung and J. Oh. [*The specular derivative*](https://arxiv.org/abs/2210.06062). arXiv preprint arXiv:2210.06062, 2022.
-
-[4] K. Jung and J. Oh. [*The wave equation with specular derivatives*](https://arxiv.org/abs/2210.06933). arXiv preprint arXiv:2210.06933, 2022.
-
-[5] K. Jung and J. Oh. [*Nonsmooth convex optimization using the specular gradient method with root-linear convergence*](https://arxiv.org/abs/2412.20747). arXiv preprint arXiv:2210.06933, 2024.
+[3] K. Jung. [*Specular gradient methods for nonsmooth convex optimization in Euclidean spaces: a subgradient selection strategy*](https://arxiv.org/abs/2605.25490). arXiv preprint 	arXiv:2605.25490, 2026.
