@@ -39,7 +39,7 @@ def report_results(all_results, running_times, file_number, m, n, lambda1, lambd
 
     summary_stats = {}
     
-    plt.figure(figsize=(6, 2.5))
+    plt.figure(figsize=(6, 2.1))
 
     for name, results_list in all_results.items():
         if not results_list: continue
@@ -63,7 +63,7 @@ def report_results(all_results, running_times, file_number, m, n, lambda1, lambd
         
         plt.plot(x_data, mean_curve, label=name, color=color, linewidth=1.5)
         plt.plot(x_data, median_curve, color=color, linestyle='--', alpha=0.5, linewidth=1)
-        plt.fill_between(x_data, mean_curve - std_curve, mean_curve + std_curve, color=color, alpha=0.15)
+        # plt.fill_between(x_data, mean_curve - std_curve, mean_curve + std_curve, color=color, alpha=0.15)
 
     print("\n[Running Time Summary]")
     for name, times in running_times.items():
@@ -91,8 +91,8 @@ def report_results(all_results, running_times, file_number, m, n, lambda1, lambd
 
     print(summary_df)
 
-    plt.xlabel(r"Iterations $k$", fontsize=10)
-    plt.ylabel(r"Objective function value $f(\mathbf{x}_k)$", fontsize=10)
+    plt.xlabel(r"$k$", fontsize=10)
+    plt.ylabel(r"$f(\mathbf{x}_k)$", fontsize=10)
     plt.grid(True)
     plt.xscale('log')
     plt.yscale('log')

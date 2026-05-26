@@ -84,7 +84,7 @@ def run_experiment(file_number, trials, iteration, m, n, pdf=False):
         (10.0, 10.0)  
     ]
     
-    fig, axes = plt.subplots(1, 3, figsize=(6, 2.5)) 
+    fig, axes = plt.subplots(1, 3, figsize=(6, 2.1)) 
     plt.subplots_adjust(wspace=0.3)
     
     colors = {'SPEG': 'red', 'S-SPEG': 'blue', 'H-SPEG': 'purple'}
@@ -141,10 +141,10 @@ def run_experiment(file_number, trials, iteration, m, n, pdf=False):
             )
 
         ax.set_title(r"$\lambda_1=%.1f, \lambda_2=%.1f$" % (lambda1, lambda2), fontsize=11)
-        ax.set_xlabel(r"Iterations $k$", fontsize=10)
+        ax.set_xlabel(r"$k$", fontsize=10)
         
         if idx == 0:
-            ax.set_ylabel(r"Objective function value $f(\mathbf{x}_k)$", fontsize=10)
+            ax.set_ylabel(r"$f(\mathbf{x}_k)$", fontsize=10)
             
         ax.grid(True, alpha=0.3)
         ax.set_xscale('log')
