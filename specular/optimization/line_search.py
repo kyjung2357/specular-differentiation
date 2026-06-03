@@ -174,7 +174,11 @@ class LineSearch:
             )
 
         if self.name == "exact":
-            return self._exact(objective_vec, x_vec, direction_vec)
+            return self._exact(
+                objective_vec,
+                x_vec,
+                direction_vec
+            )
 
         if self.name == "armijo":
             return self._armijo(

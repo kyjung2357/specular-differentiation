@@ -1,10 +1,10 @@
 import numpy as np
-from typing import Any, Callable, Sequence, TypeAlias, cast
+from typing import Any, Callable, Sequence, TypeAlias
 
-from .. import backend
 from .step_schedule import StepSchedule
 from .line_search import LineSearch
 from .result import OptimizationResult
+from . import _solver_numpy as _impl
 
 ComponentFunc: TypeAlias = Callable[
     [int | float | np.number | list | np.ndarray],
@@ -12,13 +12,7 @@ ComponentFunc: TypeAlias = Callable[
 ]
 
 
-def _get_solver_module():
-    if backend._CURRENT_BACKEND in {"cpu_jax", "gpu_jax"}:
-        from . import _solver_jax as mod
-    else:
-        from . import _solver_numpy as mod
 
-    return mod
 
 
 def gradient_method(
@@ -89,9 +83,7 @@ def gradient_method(
         TypeError:
             If an unknown ``form`` is provided.
     """
-    impl = cast(Any, _get_solver_module().gradient_method)
-
-    return impl(
+    return _impl.gradient_method(
         f=f,
         x_0=x_0,
         step_size=step_size,
@@ -135,21 +127,7 @@ def BFGS_method(
     """
     Minimize a nonsmooth convex function using the specular BFGS method.
     """
-    if backend._CURRENT_BACKEND in {"cpu_jax", "gpu_jax"}:
-        raise NotImplementedError(
-            "BFGS_method is currently implemented for the NumPy backend only."
-        )
-
-    module = _get_solver_module()
-
-    if not hasattr(module, "BFGS_method"):
-        raise NotImplementedError(
-            "BFGS_method is currently implemented for the NumPy optimization backend only."
-        )
-
-    impl = cast(Any, getattr(module, "BFGS_method"))
-
-    return impl(
+    return _impl.BFGS_method(
         f=f,
         x_0=x_0,
         h=h,

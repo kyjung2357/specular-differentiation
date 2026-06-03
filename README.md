@@ -109,6 +109,7 @@ In [[1]](#references), seven schemes are proposed for solving ODEs numerically:
 
 * the *specular Euler* scheme of Type 1~6
 * the *specular trigonometric* scheme
+* the *specular ellipse* scheme
 * the *specular Huen* scheme
 
 The following example shows that the specular Euler schemes of Type 5 and 6 yield more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
@@ -120,7 +121,7 @@ The following example shows that the specular Euler schemes of Type 5 and 6 yiel
 ### [Optimization](https://kyjung2357.github.io/specular-differentiation/api/optimization/)
 
 * **Directory**: `examples/optimization/`
-* **References**: [[3]](#references), [[4]](#references)
+* **References**: [[3]](#references)
 
 In [[3]](#references), three methods are proposed for optimizing nonsmooth convex objective functions:
 
@@ -182,5 +183,3 @@ To cite this repository:
 [2] K. Jung. [*Specular differentiation in normed vector spaces: Quasi-Mean Value and Quasi-Fermat Theorems*](https://arxiv.org/abs/2601.10950). arXiv preprint arXiv:2601.10950, 2026. 
 
 [3] K. Jung. [*Specular gradient methods for nonsmooth convex optimization in Euclidean spaces: a subgradient selection strategy*](https://arxiv.org/abs/2605.25490). arXiv preprint 	arXiv:2605.25490, 2026.
-
-[5] K. Jung and J. Oh. [*Nonsmooth convex optimization using the specular gradient method with root-linear convergence*](https://arxiv.org/abs/2412.20747). arXiv preprint arXiv:2412.20747, 2024.
