@@ -16,6 +16,8 @@ plt.rcParams["font.family"] = "Times New Roman"
 print("version of specular-differentiation: ", specular.__version__)
 specular.change_backend("cpu_numpy")
 
+from specular.optimization.solver import specular_gradient, stochastic_specular_gradient, hybrid_specular_gradient
+
 # ------------------------------------------------------------------------------
 # 1. Single Trial Function 
 # ------------------------------------------------------------------------------
@@ -48,28 +50,36 @@ def run_single_trial_lambda(args):
 
         return 0.5 * term_data + (lambda2/2) * term_reg2 + lambda1 * term_reg1
 
-    step_size_squ = specular.StepSize(name='square_summable_not_summable', parameters=[4.0, 0.0])
-    
+    def make_component(j):
+        def f_component(x):
+            return f_stochastic(x, j)
+        return f_component
+
+    f_components = [make_component(j) for j in range(m)]
+
     trial_results = {}
 
     # 1. SPEG
-    _, res, _ = specular.gradient_method(
-        f=f, x_0=x_0, step_size=step_size_squ, tol=1e-10, max_iter=iteration, print_bar=False
-    ).history()
+    res_obj = specular_gradient(
+        objective_function=f, initial_point=x_0, step_size='square_summable_not_summable', a=4.0, b=0.0, tol=1e-10, max_iter=iteration, print_bar=False
+    )
+    _, res, _ = res_obj.get_history()
     trial_results["SPEG"] = res
 
     # 2. S-SPEG
-    _, res, _ = specular.gradient_method(
-        f=f, x_0=x_0, step_size=step_size_squ, form='stochastic', 
-        tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m, print_bar=False
-    ).history()
+    res_obj = stochastic_specular_gradient(
+        objective_function=f, initial_point=x_0, step_size='square_summable_not_summable', a=4.0, b=0.0, 
+        tol=1e-10, max_iter=iteration, f_j=f_components, print_bar=False
+    )
+    _, res, _ = res_obj.get_history()
     trial_results["S-SPEG"] = res
 
     # 3. H-SPEG
-    _, res, _ = specular.gradient_method(
-        f=f, x_0=x_0, step_size=step_size_squ, form='hybrid', 
-        tol=1e-10, max_iter=iteration, f_j=f_stochastic, m=m, switch_iter=10, print_bar=False
-    ).history()
+    res_obj = hybrid_specular_gradient(
+        objective_function=f, initial_point=x_0, step_size='square_summable_not_summable', a=4.0, b=0.0, 
+        tol=1e-10, max_iter=iteration, f_j=f_components, switch_iter=10, print_bar=False
+    )
+    _, res, _ = res_obj.get_history()
     trial_results["H-SPEG"] = res
 
     return trial_results

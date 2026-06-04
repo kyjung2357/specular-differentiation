@@ -18,7 +18,7 @@ for path in (repo_root, tools_dir):
         sys.path.insert(0, path)
 
 import specular
-from specular.optimization.classical_solver import Adam, BFGS, gradient_descent_method
+from specular.optimization.solver import adam, bfgs, gradient_descent, specular_gradient, stochastic_specular_gradient, hybrid_specular_gradient
 from tools import ensure_length, report_results
 
 specular.change_backend("cpu_jax")
@@ -41,15 +41,6 @@ def run_experiment(
 
     all_results = {method: [] for method in methods}
     running_times = {method: [] for method in methods}
-
-    step_size_squ = specular.StepSize(
-        name="square_summable_not_summable",
-        parameters=[4.0, 0.0],
-    )
-    step_size_geo = specular.StepSize(
-        name="geometric_series",
-        parameters=[1.0, 0.5],
-    )
 
     for trial in tqdm(range(trials), desc="Trials"):
         np.random.seed(trial)
@@ -99,107 +90,74 @@ def run_experiment(
                 + lambda1 * torch.sum(torch.abs(x_tensor))
             )
 
+        def make_component(j):
+            def f_component(x):
+                return f_j(x, j)
+            return f_component
+
+        f_components = [make_component(j) for j in range(m)]
+
         if "SPEG" in methods:
-            _, res, runtime = specular.gradient_method(
-                f=f,
-                x_0=x_0,
-                step_size=step_size_squ,
-                form="specular gradient",
-                tol=1e-10,
-                max_iter=iteration,
-                print_bar=False,
-            ).history()
+            res_obj = specular_gradient(
+                f, x_0, step_size='square_summable_not_summable', a=4.0, b=0.0, tol=1e-10, max_iter=iteration, print_bar=False
+            )
+            _, res, runtime = res_obj.get_history()
             all_results["SPEG"].append(ensure_length(res, iteration))
             running_times["SPEG"].append(runtime)
 
         if "SPEG-s" in methods:
-            _, res, runtime = specular.gradient_method(
-                f=f,
-                x_0=x_0,
-                step_size=step_size_squ,
-                form="specular gradient",
-                tol=1e-10,
-                max_iter=iteration,
-                print_bar=False,
-            ).history()
+            res_obj = specular_gradient(
+                f, x_0, step_size='square_summable_not_summable', a=4.0, b=0.0, tol=1e-10, max_iter=iteration, print_bar=False
+            )
+            _, res, runtime = res_obj.get_history()
             all_results["SPEG-s"].append(ensure_length(res, iteration))
             running_times["SPEG-s"].append(runtime)
 
         if "SPEG-g" in methods:
-            _, res, runtime = specular.gradient_method(
-                f=f,
-                x_0=x_0,
-                step_size=step_size_geo,
-                form="specular gradient",
-                tol=1e-10,
-                max_iter=iteration,
-                print_bar=False,
-            ).history()
+            res_obj = specular_gradient(
+                f, x_0, step_size='geometric_series', a=1.0, r=0.5, tol=1e-10, max_iter=iteration, print_bar=False
+            )
+            _, res, runtime = res_obj.get_history()
             all_results["SPEG-g"].append(ensure_length(res, iteration))
             running_times["SPEG-g"].append(runtime)
 
         if "S-SPEG" in methods:
-            _, res, runtime = specular.gradient_method(
-                f=f,
-                x_0=x_0,
-                step_size=step_size_squ,
-                form="stochastic",
-                tol=1e-10,
-                max_iter=iteration,
-                f_j=f_j,
-                m=m,
-                print_bar=False,
-            ).history()
+            res_obj = stochastic_specular_gradient(
+                f, x_0, step_size='square_summable_not_summable', a=4.0, b=0.0, f_j=f_components, tol=1e-10, max_iter=iteration, print_bar=False
+            )
+            _, res, runtime = res_obj.get_history()
             all_results["S-SPEG"].append(ensure_length(res, iteration))
             running_times["S-SPEG"].append(runtime)
 
         if "H-SPEG" in methods:
-            _, res, runtime = specular.gradient_method(
-                f=f,
-                x_0=x_0,
-                step_size=step_size_squ,
-                form="hybrid",
-                tol=1e-10,
-                max_iter=iteration,
-                f_j=f_j,
-                m=m,
-                switch_iter=10,
-                print_bar=False,
-            ).history()
+            res_obj = hybrid_specular_gradient(
+                f, x_0, step_size='square_summable_not_summable', a=4.0, b=0.0, f_j=f_components, switch_iter=10, tol=1e-10, max_iter=iteration, print_bar=False
+            )
+            _, res, runtime = res_obj.get_history()
             all_results["H-SPEG"].append(ensure_length(res, iteration))
             running_times["H-SPEG"].append(runtime)
 
         if "GD" in methods:
-            constant_step_size = specular.StepSize(
-                name="constant",
-                parameters=0.001,
+            res_obj = gradient_descent(
+                f, x_0, step_size='constant', a=0.001, max_iter=iteration, print_bar=False
             )
-            _, res, runtime = gradient_descent_method(
-                f_torch=f_torch,
-                x_0=x_0_np,
-                step_size=constant_step_size,
-                max_iter=iteration,
-            ).history()
+            _, res, runtime = res_obj.get_history()
             all_results["GD"].append(ensure_length(res, iteration))
             running_times["GD"].append(runtime)
 
         if "Adam" in methods:
-            _, res, runtime = Adam(
-                f_torch=f_torch,
-                x_0=x_0_np,
-                step_size=0.01,
-                max_iter=iteration,
-            ).history()
+            res_obj = adam(
+                f, x_0, step_size='constant', a=0.01, max_iter=iteration, print_bar=False
+            )
+            _, res, runtime = res_obj.get_history()
             all_results["Adam"].append(ensure_length(res, iteration))
             running_times["Adam"].append(runtime)
 
         if "BFGS" in methods:
-            _, res, runtime = BFGS(
-                f_np=f_np,
-                x_0=x_0_np,
-                max_iter=iteration,
-                tol=1e-6,
-            ).history()
+            res_obj = bfgs(
+                f_np, x_0_np, max_iter=iteration, tol=1e-6, print_bar=False, skip_on_fail=True
+            )
+            _, res, runtime = res_obj.get_history()
             all_results["BFGS"].append(ensure_length(res, iteration))
             running_times["BFGS"].append(runtime)
 

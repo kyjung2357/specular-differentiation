@@ -1,149 +1,48 @@
-import numpy as np
-from typing import Any, Callable, Sequence, TypeAlias
+from ._wrapper import _wrapper
 
-from .step_schedule import StepSchedule
-from .line_search import LineSearch
-from .result import OptimizationResult
-from . import _solver_numpy as _impl
+def gradient_descent(objective_function, initial_point, step_size="constant", max_iter=1000, tol=1e-6, print_bar=True, **kwargs):
+    """Classical Gradient Descent."""
+    return _wrapper(objective_function, initial_point, method="gradient_descent", step_size=step_size, max_iter=max_iter, tol=tol, print_bar=print_bar, options=kwargs)
 
-ComponentFunc: TypeAlias = Callable[
-    [int | float | np.number | list | np.ndarray],
-    int | float | np.number,
-]
+def specular_gradient(objective_function, initial_point, step_size="constant", max_iter=1000, tol=1e-6, print_bar=True, **kwargs):
+    """Specular Gradient Descent."""
+    return _wrapper(objective_function, initial_point, method="specular_gradient", step_size=step_size, max_iter=max_iter, tol=tol, print_bar=print_bar, options=kwargs)
 
+def adam(objective_function, initial_point, step_size="constant", max_iter=1000, tol=1e-6, print_bar=True, **kwargs):
+    """Adam optimization."""
+    return _wrapper(objective_function, initial_point, method="Adam", step_size=step_size, max_iter=max_iter, tol=tol, print_bar=print_bar, options=kwargs)
 
+def bfgs(objective_function, initial_point, step_size="Wolfe", max_iter=1000, tol=1e-6, print_bar=True, **kwargs):
+    """Classical BFGS optimization."""
+    return _wrapper(objective_function, initial_point, method="BFGS", step_size=step_size, max_iter=max_iter, tol=tol, print_bar=print_bar, options=kwargs)
 
+def specular_bfgs(objective_function, initial_point, step_size="Wolfe", max_iter=1000, tol=1e-6, print_bar=True, **kwargs):
+    """BFGS optimization using Specular gradients."""
+    return _wrapper(objective_function, initial_point, method="specular_BFGS", step_size=step_size, max_iter=max_iter, tol=tol, print_bar=print_bar, options=kwargs)
 
+def specular_modified_bfgs(objective_function, initial_point, step_size="Wolfe", max_iter=1000, tol=1e-6, print_bar=True, **kwargs):
+    """Specular Modified BFGS optimization (with custom y_k logic)."""
+    return _wrapper(objective_function, initial_point, method="specular_modified_BFGS", step_size=step_size, max_iter=max_iter, tol=tol, print_bar=print_bar, options=kwargs)
 
-def gradient_method(
-    f: Callable[
-        [int | float | np.number | list | np.ndarray],
-        int | float | np.number,
-    ],
-    x_0: Any,
-    step_size: StepSchedule | LineSearch,
-    h: float = 1e-6,
-    form: str = "specular gradient",
-    tol: float = 1e-6,
-    zero_tol: float = 1e-8,
-    max_iter: int = 1000,
-    f_j: Sequence[ComponentFunc] | Callable | None = None,
-    m: int = 1,
-    switch_iter: int | None = 2,
-    record_history: bool = True,
-    fill_iteration: bool = False,
-    print_bar: bool = True,
-) -> OptimizationResult:
-    """
-    The specular gradient method for minimizing a nonsmooth convex function.
+def stochastic_specular_gradient(objective_function, initial_point, step_size="constant", f_j=None, m=1, max_iter=1000, tol=1e-6, print_bar=True, **kwargs):
+    """Stochastic Specular Gradient Descent."""
+    kwargs['f_j'] = f_j
+    kwargs['m'] = m
+    return _wrapper(objective_function, initial_point, method="stochastic_specular_gradient", step_size=step_size, max_iter=max_iter, tol=tol, print_bar=print_bar, options=kwargs)
 
-    Parameters:
-        f (callable):
-            The objective function to minimize.
-        x_0 (int | float | list | np.ndarray):
-            The starting point for the optimization.
-        step_size (StepSchedule | LineSearch):
-            Step-length rule. If a StepSchedule is provided, the method uses h_k = step_size(k).
-            If a LineSearch is provided, the method chooses h_k by applying the line-search rule along the current descent direction.
-        h (float, optional):
-            Mesh size used in the finite difference approximation. Must be positive.
-        form (str, optional):
-            The form of the specular gradient method.
-            Supported forms: ``'specular gradient'``, ``'implicit'``, ``'stochastic'``, ``'hybrid'``.
-        tol (float, optional):
-            Tolerance for iterations.
-        zero_tol (float, optional):
-            A small threshold used to determine if the denominator ``alpha + beta`` is close to zero for numerical stability.
-        max_iter (int, optional):
-            Maximum number of iterations.
-        f_j (sequence of callable | callable | None, optional):
-            The component function of ``f``.
-            Used for the stochastic and hybrid forms to compute a random component of the objective function.
+def hybrid_specular_gradient(objective_function, initial_point, step_size="constant", f_j=None, m=1, switch_iter=10, max_iter=1000, tol=1e-6, print_bar=True, **kwargs):
+    """Hybrid Specular Gradient Descent."""
+    kwargs['f_j'] = f_j
+    kwargs['m'] = m
+    kwargs['switch_iter'] = switch_iter
+    return _wrapper(objective_function, initial_point, method="hybrid_specular_gradient", step_size=step_size, max_iter=max_iter, tol=tol, print_bar=print_bar, options=kwargs)
+# ---------------------------------------------------------
+# Aliases for backwards compatibility with old `optimization`
+# ---------------------------------------------------------
+def gradient_method(*args, **kwargs):
+    """Alias for gradient_descent for backward compatibility."""
+    return gradient_descent(*args, **kwargs)
 
-            * If a sequence of callables is provided, each callable should accept a single argument (the variable `x`).
-
-            * If a single callable is provided, it should accept two arguments: the variable `x` and an index `j`, and return the `j`-th component function value at `x`.
-        m (int, optional):
-            The number of component functions.
-            Used for the stochastic and hybrid forms.
-        switch_iter (int | None, optional):
-            The iteration to switch from a method to another for the hybrid form.
-            Used for the hybrid form only.
-        record_history (bool, optional):
-            Whether to record the history of variables and function values.
-        print_bar (bool, optional):
-            Whether to print the progress bar.
-
-    Returns:
-        The result of the optimization containing the solution, function value, number of iterations, runtime, and history.
-    
-    Raises:
-        ValueError:
-            If ``h`` is not positive.
-        TypeError:
-            If an unknown ``form`` is provided.
-    """
-    return _impl.gradient_method(
-        f=f,
-        x_0=x_0,
-        step_size=step_size,
-        h=h,
-        form=form,
-        tol=tol,
-        zero_tol=zero_tol,
-        max_iter=max_iter,
-        f_j=f_j,
-        m=m,
-        switch_iter=switch_iter,
-        record_history=record_history,
-        fill_iteration=fill_iteration,
-        print_bar=print_bar,
-    )
-
-
-def BFGS_method(
-    f: Callable[
-        [int | float | np.number | list | np.ndarray],
-        int | float | np.number,
-    ],
-    x_0: Any,
-    h: float = 1e-6,
-    tol: float = 1e-6,
-    zero_tol: float = 1e-8,
-    max_iter: int = 1000,
-    line_search: str | LineSearch = "armijo",
-    t_0: float = 1.0,
-    c_1: float = 1e-4,
-    c_2: float = 0.9,
-    rho: float = 0.5,
-    max_line_iter: int = 20,
-    max_alpha: float = 1e8,
-    raise_on_fail: bool = False,
-    H_0: np.ndarray | list | None = None,
-    record_history: bool = True,
-    fill_iteration: bool = False,
-    print_bar: bool = True
-) -> OptimizationResult:
-    """
-    Minimize a nonsmooth convex function using the specular BFGS method.
-    """
-    return _impl.BFGS_method(
-        f=f,
-        x_0=x_0,
-        h=h,
-        tol=tol,
-        zero_tol=zero_tol,
-        max_iter=max_iter,
-        line_search=line_search,
-        t_0=t_0,
-        c_1=c_1,
-        c_2=c_2,
-        rho=rho,
-        max_line_iter=max_line_iter,
-        max_alpha=max_alpha,
-        raise_on_fail=raise_on_fail,
-        H_0=H_0,
-        record_history=record_history,
-        print_bar=print_bar,
-        fill_iteration=fill_iteration,
-    )
+def BFGS_method(*args, **kwargs):
+    """Alias for bfgs for backward compatibility."""
+    return bfgs(*args, **kwargs)

@@ -1,7 +1,11 @@
-import numpy as np
-
 from .._typing import Scalar, Vector
 
+from typing import TypedDict
+import numpy as np
+
+class OptimizationHistory(TypedDict):
+    variables: list | np.ndarray
+    values: list | np.ndarray
 
 class OptimizationResult:
     def __init__(
@@ -11,22 +15,15 @@ class OptimizationResult:
         func_val: Scalar,
         iteration: int,
         runtime: float,
-        all_history: dict,
-        fill_iteration: bool = False,
-        max_iter: int | None = None,
+        history: OptimizationHistory,
         stop_reason: str | None = None
     ):  
-        if fill_iteration and max_iter is None:
-            raise ValueError("max_iter must be provided when fill_iteration=True.")
-        
         self.method = method
         self.solution = solution
         self.func_val = func_val
         self.iteration = iteration
         self.runtime = runtime
-        self.all_history = all_history
-        self.fill_iteration = fill_iteration
-        self.max_iter = max_iter
+        self.history = history
         self.stop_reason = stop_reason
 
     def __repr__(self):
@@ -52,31 +49,32 @@ class OptimizationResult:
         """
         return self.solution, self.func_val, self.runtime
 
-    def history(self) -> tuple[np.ndarray, np.ndarray, float]:
+    def get_history(
+            self,
+            fill_to: int | None = None
+    ) -> tuple[np.ndarray, np.ndarray, float]:
         """
         Returns the recorded iterates, objective values, and runtime.
 
         Returns:
             (x_history, f_history, runtime)
         """
-        variables = self.all_history["variables"]
-        values = self.all_history["values"]
+        variables = np.asarray(self.history["variables"])
+        values = np.asarray(self.history["values"])
 
-        if self.fill_iteration:
-            if self.max_iter is None:
-                raise ValueError("max_iter must be provided when fill_iteration=True.")
-
-            variables = self._fill_history(variables, self.max_iter)
-            values = self._fill_history(values, self.max_iter)
+        if fill_to is not None:
+            variables = self._fill(variables, fill_to)
+            values = self._fill(values, fill_to)
 
         return variables, values, self.runtime
+    
 
     @staticmethod
-    def _fill_history(history, target_length: int):
-        history = np.asarray(history)
+    def _fill(opt_history, target_length: int):
+        opt_history = np.asarray(opt_history)
 
-        if len(history) == 0 or len(history) >= target_length:
-            return history
+        if len(opt_history) == 0 or len(opt_history) >= target_length:
+            return opt_history
 
-        tail = np.repeat(history[-1:], target_length - len(history), axis=0)
-        return np.concatenate([history, tail], axis=0)
+        tail = np.repeat(opt_history[-1:], target_length - len(opt_history), axis=0)
+        return np.concatenate([opt_history, tail], axis=0)

@@ -23,7 +23,7 @@ sys.path.insert(0, str(OPTIMIZATION_DIR))
 sys.path.insert(0, str(PACKAGE_ROOT))
 
 import specular
-from specular.optimization.classical_solver import Adam, BFGS, gradient_descent_method
+from specular.optimization.solver import adam, bfgs, gradient_descent, specular_gradient, stochastic_specular_gradient, hybrid_specular_gradient
 from tools import *
 
 specular.change_backend("cpu_numpy")
@@ -81,48 +81,50 @@ def run_single_trial(args):
     trial_results = {}
     trial_times = {}
 
-    step_size_squ = specular.StepSchedule(name='square_summable_not_summable', parameters=[4.0, 0.0])
-    step_size_geo = specular.StepSchedule(name='geometric_series', parameters=[1.0, 0.5])
-
     # ==== Specular gradient methods ====
     
     # SPEG with square summable step size
     if "SPEG" in methods:
-        _, res, runtime = specular.gradient_method(
-            f=f, x_0=x_0, step_size=step_size_squ, tol=1e-10, max_iter=iteration, print_bar=True
-        ).history()
+        res_obj = specular_gradient(
+            objective_function=f, initial_point=x_0, step_size='square_summable_not_summable', a=4.0, b=0.0, tol=1e-10, max_iter=iteration, print_bar=True
+        )
+        _, res, runtime = res_obj.get_history()
         trial_results["SPEG"] = ensure_length(res, iteration)
         trial_times["SPEG"] = runtime
 
     # SPEG with square summable step size
     if "SPEG-s" in methods:
-        _, res, runtime = specular.gradient_method(
-            f=f, x_0=x_0, step_size=step_size_squ, tol=1e-10, max_iter=iteration, print_bar=True
-        ).history()
+        res_obj = specular_gradient(
+            objective_function=f, initial_point=x_0, step_size='square_summable_not_summable', a=4.0, b=0.0, tol=1e-10, max_iter=iteration, print_bar=True
+        )
+        _, res, runtime = res_obj.get_history()
         trial_results["SPEG-s"] = ensure_length(res, iteration)
         trial_times["SPEG-s"] = runtime
     
     # SPEG with geometric step size
     if "SPEG-g" in methods:
-        _, res, runtime = specular.gradient_method(
-            f=f, x_0=x_0, step_size=step_size_geo, tol=1e-10, max_iter=iteration, print_bar=True
-        ).history()
+        res_obj = specular_gradient(
+            objective_function=f, initial_point=x_0, step_size='geometric_series', a=1.0, r=0.5, tol=1e-10, max_iter=iteration, print_bar=True
+        )
+        _, res, runtime = res_obj.get_history()
         trial_results["SPEG-g"] = ensure_length(res, iteration)
         trial_times["SPEG-g"] = runtime
 
     # S-SPEG
     if "S-SPEG" in methods:
-        _, res, runtime = specular.gradient_method(
-            f=f, x_0=x_0, step_size=step_size_squ, form='stochastic', tol=1e-10, max_iter=iteration, f_j=f_components, print_bar=True # type: ignore
-        ).history()
+        res_obj = stochastic_specular_gradient(
+            objective_function=f, initial_point=x_0, step_size='square_summable_not_summable', a=4.0, b=0.0, f_j=f_components, tol=1e-10, max_iter=iteration, print_bar=True
+        )
+        _, res, runtime = res_obj.get_history()
         trial_results["S-SPEG"] = ensure_length(res, iteration)
         trial_times["S-SPEG"] = runtime
     
     # H-SPEG
     if "H-SPEG" in methods:
-        _, res, runtime = specular.gradient_method(
-            f=f, x_0=x_0, step_size=step_size_squ, form='hybrid', tol=1e-10, max_iter=iteration, f_j=f_components, switch_iter=10, print_bar=True # type: ignore
-        ).history()
+        res_obj = hybrid_specular_gradient(
+            objective_function=f, initial_point=x_0, step_size='square_summable_not_summable', a=4.0, b=0.0, f_j=f_components, switch_iter=10, tol=1e-10, max_iter=iteration, print_bar=True
+        )
+        _, res, runtime = res_obj.get_history()
         trial_results["H-SPEG"] = ensure_length(res, iteration)
         trial_times["H-SPEG"] = runtime
 
@@ -130,26 +132,28 @@ def run_single_trial(args):
 
     # Gradient Descent
     if "GD" in methods:
-        constant_step_size = specular.StepSchedule(name='constant', parameters=0.001)
-        _, res, runtime = gradient_descent_method(
-            f_torch=f_torch, x_0=x_0, step_size=constant_step_size, max_iter=iteration
-        ).history()
+        res_obj = gradient_descent(
+            objective_function=f, initial_point=x_0, step_size='constant', a=0.001, max_iter=iteration
+        ) # Changed f_torch to f since gradient_descent now natively supports callables in numpy
+        _, res, runtime = res_obj.get_history()
         trial_results["GD"] = ensure_length(res, iteration)
         trial_times["GD"] = runtime
 
     # Adam
     if "Adam" in methods:
-        _, res, runtime = Adam(
-            f_torch=f_torch, x_0=x_0, step_size=0.01, max_iter=iteration
-        ).history()
+        res_obj = adam(
+            objective_function=f, initial_point=x_0, step_size='constant', a=0.01, max_iter=iteration
+        )
+        _, res, runtime = res_obj.get_history()
         trial_results["Adam"] = ensure_length(res, iteration)
         trial_times["Adam"] = runtime
 
     # BFGS
     if "BFGS" in methods:
-        _, res, runtime = BFGS(
-            f_np=f, x_0=x_0, max_iter=iteration, tol=1e-6
-        ).history()
+        res_obj = bfgs(
+            objective_function=f, initial_point=x_0, max_iter=iteration, tol=1e-6, skip_on_fail=True
+        )
+        _, res, runtime = res_obj.get_history()
         trial_results["BFGS"] = ensure_length(res, iteration)
         trial_times["BFGS"] = runtime
     
