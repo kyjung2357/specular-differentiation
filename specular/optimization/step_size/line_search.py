@@ -2,11 +2,9 @@ from __future__ import annotations
 
 import numpy as np
 from scipy.optimize import line_search
-from scipy.optimize import approx_fprime
-from typing import Callable, Any
+from typing import Callable, Any, cast
 
-from ..._typing import Scalar, Vector, ScalarToScalarFunc, VectorToScalarFunc
-from ...calculation import derivative, gradient
+from ..._typing import Scalar, Vector, ScalarToScalarFunc, VectorToScalarFunc, ScalarToVectorFunc, VectorToVectorFunc
 
 
 class LineSearchError(RuntimeError):
@@ -110,15 +108,24 @@ class LineSearch:
 
     # ==== Unified interface ====
 
-    def __call__(self, k: int, *, x, d_k, grad) -> float:
+    def __call__(
+        self,
+        k: int,
+        *,
+        x,
+        d_k,
+        grad,
+        gradient_f: ScalarToVectorFunc | VectorToVectorFunc | None = None
+    ) -> float:
         """
         Compute the step size along direction ``d_k`` from point ``x``.
 
         Parameters:
-            k: Iteration index (unused; accepted for interface compatibility with StepSchedule).
+            k: Iteration index (unused; accepted for interface compatibility).
             x: Current point (scalar or array).
             d_k: Search direction (same type as ``x``).
-            f: Objective function.
+            grad: Current gradient (same type as ``x``).
+            gradient_f: Gradient function for Wolfe searches.
 
         Returns:
             Step size ``t > 0``.
@@ -142,6 +149,15 @@ class LineSearch:
             if scalar_input:
                 return float(self.f(float(z.ravel()[0])))  # type: ignore
             return float(self.f(z))  # type: ignore
+            
+        def grad_vec(z: np.ndarray) -> np.ndarray:
+            if gradient_f is None:
+                raise ValueError(f"Line search '{self.name}' requires gradient_f.")
+            if scalar_input:
+                gradient_scalar = cast(ScalarToVectorFunc, gradient_f)
+                return np.asarray(gradient_scalar(float(z.ravel()[0])), dtype=float).ravel()
+            gradient_vector = cast(VectorToVectorFunc, gradient_f)
+            return np.asarray(gradient_vector(z), dtype=float).ravel()
 
         f_current = f_vec(x_vec)
 
@@ -149,14 +165,10 @@ class LineSearch:
             return self._exact(f_vec, x_vec, d_vec)
         elif self._base_name == 'Armijo':
             return self._armijo(f_vec, x_vec, d_vec, f_current, initial_slope)
-        elif self.name == 'Wolfe':
-            return self._wolfe(f_vec, x_vec, d_vec, f_current, initial_slope)
-        elif self.name == 'specular_Wolfe':
-            return self._specular_wolfe(f_vec, x_vec, d_vec, f_current, initial_slope)
-        elif self.name == 'strong_Wolfe':
-            return self._strong_wolfe(f_vec, x_vec, d_vec, f_current)
-        elif self.name == 'specular_strong_Wolfe':
-            return self._specular_strong_wolfe(f_vec, x_vec, d_vec, f_current, initial_slope)
+        elif self._base_name == 'Wolfe':
+            return self._wolfe(f_vec, grad_vec, x_vec, d_vec, f_current, initial_slope)
+        elif self._base_name == 'strong_Wolfe':
+            return self._strong_wolfe(f_vec, grad_vec, x_vec, d_vec, f_current, initial_slope)
         else:
             raise ValueError(
                 f"Unknown line search '{self.name}'. "
@@ -201,9 +213,9 @@ class LineSearch:
 
         return self._updated_t_k(t)
 
-    def _wolfe(self, f, x, direction, f_current, initial_slope) -> float:
+    def _wolfe(self, f, grad_f, x, direction, f_current, initial_slope) -> float:
         """
-        Zoom-based Wolfe / strong Wolfe line search.
+        Zoom-based weak Wolfe line search.
         """
         t = self.t_k
         t_min = 0.0
@@ -218,8 +230,8 @@ class LineSearch:
                 t = self._next_smaller(0.0, t_max, t)
                 continue
                 
-            grad_trial = approx_fprime(x_trial, f, epsilon=self.h)
-            trial_slope = float(grad_trial @ direction)
+            grad_trial = grad_f(x_trial)
+            trial_slope = float(np.dot(grad_trial, direction))
             
             if self._satisfies_wolfe(f_trial, f_current, t, initial_slope, trial_slope):
                 return t
@@ -233,70 +245,9 @@ class LineSearch:
 
         return self._updated_t_k(t)
     
-    def _strong_wolfe(self, f, x, d_k, f_current) -> float:
+    def _strong_wolfe(self, f, grad_f, x, d_k, f_current, initial_slope) -> float:
         """
-        Scipy-based strong Wolfe line search.
-        """
-        gradient_f = lambda w: approx_fprime(w, f, epsilon=self.h)
-
-        t, fc, gc, new_fval, old_fval, new_slope = line_search(
-            f, 
-            gradient_f, 
-            xk=x, 
-            pk=d_k, 
-            gfk=None,
-            old_fval=f_current, 
-            c1=self.c_1, 
-            c2=self.c_2,
-            amax=self.t_max,
-            maxiter=self.max_iter
-        )
-        
-        if t is None:
-            return self._updated_t_k(self.t_max)
-            
-        return float(t)
-    
-    def _specular_wolfe(self, f, x, d_k, f_current, initial_slope) -> float:
-        """
-        Zoom-based Wolfe / strong Wolfe line search.
-        """
-        t = self.t_k
-        t_min = 0.0
-        t_max = self.t_max
-
-        for _ in range(self.max_iter):
-            x_trial = x + t * d_k
-            f_trial = float(f(x_trial))
-
-            if not self._satisfies_armijo(f_trial, f_current, t, initial_slope):
-                t_max = t
-                t = self._next_smaller(0.0, t_max, t)
-                continue
-                
-            if x_trial.size == 1:
-                val = float(x_trial.ravel()[0])
-                specular_grad_trial = np.array(derivative(f, val, self.h))
-            else:
-                specular_grad_trial = gradient(f, x_trial, self.h, self.zero_tol)
-            
-            trial_slope = float(specular_grad_trial @ d_k)
-            
-            if self._satisfies_wolfe(f_trial, f_current, t, initial_slope, trial_slope):
-                return t
-
-            if trial_slope < 0.0:
-                t_min = t
-                t = self._next_larger(t_min, t_max)
-            else:
-                t_max = t
-                t = self._next_smaller(t_min, t_max, t)
-
-        return self._updated_t_k(t)
-
-    def _specular_strong_wolfe(self, f, x, d_k, f_current, initial_slope) -> float:
-        """
-        Zoom-based Wolfe / strong Wolfe line search.
+        Zoom-based strong Wolfe line search.
         """
         t = self.t_k
         t_min = 0.0
@@ -311,13 +262,8 @@ class LineSearch:
                 t = self._next_smaller(t_min, t_max, t)
                 continue
             
-            if x_trial.size == 1:
-                val = float(x_trial.ravel()[0])
-                specular_grad_trial = np.array(derivative(f, val, self.h, self.zero_tol))
-            else:
-                specular_grad_trial = gradient(f, x_trial, self.h)
-            
-            trial_slope = float(specular_grad_trial @ d_k)
+            grad_trial = grad_f(x_trial)
+            trial_slope = float(np.dot(grad_trial, d_k))
 
             if self._satisfies_strong_wolfe(f_trial, f_current, t, initial_slope, trial_slope):
                 return t

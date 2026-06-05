@@ -166,12 +166,14 @@ def _wrapper(
             j = np.random.randint(num_components)
             f_current = get_component(j)
             if "specular" in method:
-                grad = _specular_gradient(f_current, x, h, zero_tol)
+                grad_fn_current = lambda x_: _specular_gradient(f_current, x_, h, zero_tol)
             else:
-                grad = _classical_gradient(f_current, x, h)
+                grad_fn_current = lambda x_: _classical_gradient(f_current, x_, h)
+            grad = grad_fn_current(x)
         else:
             f_current = f
-            grad = grad_fn(x)
+            grad_fn_current = grad_fn
+            grad = grad_fn_current(x)
 
         d_k = direction_finder(k, x, grad)
 
@@ -180,7 +182,7 @@ def _wrapper(
             break
 
         try:
-            t_k = t_(k, x=x, d_k=d_k, grad=grad)
+            t_k = t_(k, x=x, d_k=d_k, grad=grad, gradient_f=grad_fn_current)
         except LineSearchError as e:
             stop_reason = str(e)
             break
