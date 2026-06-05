@@ -1,5 +1,5 @@
 from .step_size.step_schedule import StepSchedule
-from .step_size.line_search import LineSearch
+from .step_size.line_search import LineSearch, LineSearchError
 from .result import OptimizationResult
 from ..calculation import derivative, gradient
 from .._typing import Scalar, Vector, ScalarToScalarFunc, VectorToScalarFunc, ComponentFuncs
@@ -77,6 +77,8 @@ def _wrapper(
     
     options = options or {}
 
+    n = np.asarray(initial_point).size
+
     h = float(options.get('h', 1e-6))
     zero_tol = float(options.get('zero_tol', 1e-8))
 
@@ -91,14 +93,14 @@ def _wrapper(
         grad_fn = lambda x_: _classical_gradient(objective_function, x_, h)
 
     from .search_direction import get_direction_finder
-    direction_finder = get_direction_finder(method, options)
+    direction_finder = get_direction_finder(method, options)  # type: ignore
     
     if step_size in StepSchedule._SUPPORTED_OPTIONS:
         t_ = StepSchedule(
             name=step_size,
-            a=options.get('a'),
-            b=options.get('b'),
-            r=options.get('r'),
+            a=options.get('a', 1.0),
+            b=options.get('b', 1.0),
+            r=options.get('r', 0.5),
             user_defined_rule=options.get('user_defined_rule')
         )
     elif step_size in LineSearch._SUPPORTED_OPTIONS:
@@ -106,14 +108,14 @@ def _wrapper(
             name=step_size,
             f=objective_function,
             h=h,
-            zero_tol=zero_tol,
-            t_0=float(options.get('t_0', 1.0)),
+            t_k=float(options.get('t_0', 1.0)),
+            t_max=float(options.get('max_alpha', 1e8)),
             c_1=float(options.get('c_1', 1e-4)),
             c_2=float(options.get('c_2', 0.9)),
             c_3=float(options.get('c_3', 0.9)),
             rho=float(options.get('rho', 0.5)),
+            zero_tol=zero_tol,
             max_iter=int(options.get('line_search_max_iter', 20)),
-            max_alpha=float(options.get('max_alpha', 1e8)),
             skip_on_fail=bool(options.get('skip_on_fail', False)),
         )
     else:
@@ -177,7 +179,12 @@ def _wrapper(
             stop_reason = "gradient norm below tolerance"
             break
 
-        t_k = t_(k, x=x, d_k=d_k, grad=grad, f=f_current)
+        try:
+            t_k = t_(k, x=x, d_k=d_k, grad=grad)
+        except LineSearchError as e:
+            stop_reason = str(e)
+            break
+            
         x = x + t_k * d_k
 
         x_history.append(x)

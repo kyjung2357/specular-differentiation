@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import numpy as np
+from scipy.optimize import line_search
+from scipy.optimize import approx_fprime
 from typing import Callable, Any
 
+from ..._typing import Scalar, Vector, ScalarToScalarFunc, VectorToScalarFunc
 from ...calculation import derivative, gradient
 
 
@@ -19,29 +22,29 @@ class LineSearch:
     """
 
     _SUPPORTED_OPTIONS = {
-        'exact': ['t_0'],
-        'Armijo': ['t_0', 'c_1'],
-        'specular_Armijo': ['t_0', 'c_1'],
-        'Wolfe': ['t_0', 'c_1', 'c_2'],
-        'specular_Wolfe': ['t_0', 'c_1', 'c_2'],
-        'strong_Wolfe': ['t_0', 'c_1', 'c_3'],
-        'specular_strong_Wolfe': ['t_0', 'c_1', 'c_3'],
+        'exact': ['t_k'],
+        'Armijo': ['t_k', 'c_1'],
+        'specular_Armijo': ['t_k', 'c_1'],
+        'Wolfe': ['t_k', 'c_1', 'c_2'],
+        'specular_Wolfe': ['t_k', 'c_1', 'c_2'],
+        'strong_Wolfe': ['t_k', 'c_1', 'c_3'],
+        'specular_strong_Wolfe': ['t_k', 'c_1', 'c_3'],
     }
 
     def __init__(
         self,
         name: str,
         *,
-        f: Callable | None = None,
-        h: float = 1e-6,
-        zero_tol: float = 1e-8,
-        t_0: float = 1.0,
-        c_1: float = 1e-4,
-        c_2: float = 0.9,
-        c_3: float = 0.9,
-        rho: float = 0.5,
+        f: ScalarToScalarFunc | VectorToScalarFunc,
+        h: Scalar = 1e-6,
+        t_k: Scalar = 1.0,
+        t_max: Scalar = 1e8,
+        c_1: Scalar = 1e-4,
+        c_2: Scalar = 0.9,
+        c_3: Scalar = 0.9,
+        rho: Scalar = 0.5,
+        zero_tol: Scalar = 1e-8,
         max_iter: int = 20,
-        max_alpha: float = 1e8,
         skip_on_fail: bool = False,
     ):
         """
@@ -50,13 +53,13 @@ class LineSearch:
             f: Objective function. Required for Wolfe / strong_Wolfe to compute gradients.
             h: Mesh size for finite difference gradient approximation.
             zero_tol: Tolerance for specular gradients.
-            t_0: Initial trial step length.
+            t_k: Initial trial step length.
             c_1: Armijo sufficient decrease parameter.
             c_2: Wolfe curvature parameter.
             c_3: Strong Wolfe curvature parameter.
             rho: Backtracking contraction factor.
             max_iter: Maximum number of line-search iterations.
-            max_alpha: Maximum trial step length (used in exact & Wolfe expansion).
+            t_max: Maximum trial step length (used in exact & Wolfe expansion).
             skip_on_fail: If ``True``, return the last trial step instead of raising.
         """
         if name not in self._SUPPORTED_OPTIONS:
@@ -70,17 +73,17 @@ class LineSearch:
         self.name = name
 
         # ---- Validation ----
-        if t_0 <= 0:
-            raise ValueError(f"t_0 must be positive. Got {t_0}")
+        if t_k <= 0:
+            raise ValueError(f"t_k must be positive. Got {t_k}")
+        if t_max <= 0:
+            raise ValueError(f"t_max must be positive. Got {t_max}")
         if not (0.0 < c_1 < 1.0):
             raise ValueError(f"c_1 must be in (0, 1). Got {c_1}")
         if not (0.0 < rho < 1.0):
             raise ValueError(f"rho must be in (0, 1). Got {rho}")
         if max_iter <= 0:
             raise ValueError(f"max_iter must be positive. Got {max_iter}")
-        if max_alpha <= 0:
-            raise ValueError(f"max_alpha must be positive. Got {max_alpha}")
-
+        
         if self._base_name == "Wolfe":
             if not (0.0 < c_2 < 1.0):
                 raise ValueError(f"c_2 must be in (0, 1). Got {c_2}")
@@ -92,44 +95,22 @@ class LineSearch:
                 raise ValueError(f"c_3 must be in (0, 1). Got {c_3}")
             if not (c_1 < c_3):
                 raise ValueError(f"strong_Wolfe requires c_1 < c_3. Got c_1={c_1}, c_3={c_3}")
-
-        if self._base_name in ("Wolfe", "strong_Wolfe"):
-            if f is None:
-                raise ValueError(f"'{name}' requires objective function 'f' to compute gradients.")
-            
-            if name.startswith("specular_"):
-                def _specular_grad(x_: float | np.ndarray):
-                    if isinstance(x_, float):
-                        return derivative(f, x_, h=h, zero_tol=zero_tol)
-                    return gradient(f, x_, h=h, zero_tol=zero_tol)
-                self.grad_fn = _specular_grad
-            else:
-                def _classical_grad(x_: float | np.ndarray):
-                    if isinstance(x_, float):
-                        return float((f(x_ + h) - f(x_ - h)) / (2.0 * h))
-                    x_arr = np.asarray(x_, dtype=float)
-                    g = np.empty_like(x_arr)
-                    for i in range(x_arr.size):
-                        e = np.zeros_like(x_arr)
-                        e[i] = h
-                        g[i] = (f(x_arr + e) - f(x_arr - e)) / (2.0 * h)
-                    return g
-                self.grad_fn = _classical_grad
-        else:
-            self.grad_fn = None
-            
-        self.t_0 = float(t_0)
+        
+        self.f = f
+        self.t_k = float(t_k)
+        self.t_max = float(t_max)
+        self.h = float(h)
         self.c_1 = float(c_1)
         self.c_2 = float(c_2)
         self.c_3 = float(c_3)
         self.rho = float(rho)
+        self.zero_tol = float(zero_tol)
         self.max_iter = int(max_iter)
-        self.max_alpha = float(max_alpha)
         self.skip_on_fail = skip_on_fail
 
     # ==== Unified interface ====
 
-    def __call__(self, k: int, *, x, d_k, grad, f) -> float:
+    def __call__(self, k: int, *, x, d_k, grad) -> float:
         """
         Compute the step size along direction ``d_k`` from point ``x``.
 
@@ -137,7 +118,6 @@ class LineSearch:
             k: Iteration index (unused; accepted for interface compatibility with StepSchedule).
             x: Current point (scalar or array).
             d_k: Search direction (same type as ``x``).
-            grad: Gradient at ``x`` (same type as ``x``).
             f: Objective function.
 
         Returns:
@@ -160,141 +140,230 @@ class LineSearch:
         # Wrap f to always accept a vector internally.
         def f_vec(z: np.ndarray) -> float:
             if scalar_input:
-                return float(f(float(z.ravel()[0])))
-            return float(f(z))
+                return float(self.f(float(z.ravel()[0])))  # type: ignore
+            return float(self.f(z))  # type: ignore
 
         f_current = f_vec(x_vec)
 
-        if self._base_name == "exact":
+        if self.name == 'exact':
             return self._exact(f_vec, x_vec, d_vec)
-
-        if self._base_name == "Armijo":
+        elif self._base_name == 'Armijo':
             return self._armijo(f_vec, x_vec, d_vec, f_current, initial_slope)
-
-        # Wolfe / strong_Wolfe need a vectorised gradient wrapper.
-        def grad_vec(z: np.ndarray) -> np.ndarray:
-            if scalar_input:
-                return np.asarray(self.grad_fn(float(z.ravel()[0])), dtype=float).ravel()  # type: ignore[misc]
-            return np.asarray(self.grad_fn(z), dtype=float).ravel()  # type: ignore[misc]
-
-        if self._base_name == "Wolfe":
-            return self._wolfe(
-                f_vec, grad_vec, x_vec, d_vec, f_current, initial_slope, strong=False,
+        elif self.name == 'Wolfe':
+            return self._wolfe(f_vec, x_vec, d_vec, f_current, initial_slope)
+        elif self.name == 'specular_Wolfe':
+            return self._specular_wolfe(f_vec, x_vec, d_vec, f_current, initial_slope)
+        elif self.name == 'strong_Wolfe':
+            return self._strong_wolfe(f_vec, x_vec, d_vec, f_current)
+        elif self.name == 'specular_strong_Wolfe':
+            return self._specular_strong_wolfe(f_vec, x_vec, d_vec, f_current, initial_slope)
+        else:
+            raise ValueError(
+                f"Unknown line search '{self.name}'. "
+                f"Options: {list(self._SUPPORTED_OPTIONS.keys())}"
             )
-
-        if self._base_name == "strong_Wolfe":
-            return self._wolfe(
-                f_vec, grad_vec, x_vec, d_vec, f_current, initial_slope, strong=True,
-            )
-
-        raise ValueError(f"Unknown base algorithm: {self._base_name}")
 
     # ==== Condition checks ====
 
-    def _satisfies_armijo(self, f_trial: float, f_current: float, alpha: float, initial_slope: float) -> bool:
-        return f_trial <= f_current + self.c_1 * alpha * initial_slope
+    def _satisfies_armijo(self, f_trial: float, f_current: float, t: float, initial_slope: float) -> bool:
+        return f_trial <= f_current + self.c_1 * t * initial_slope
 
-    def _satisfies_wolfe(self, f_trial: float, f_current: float, alpha: float, initial_slope: float, trial_slope: float) -> bool:
+    def _satisfies_wolfe(self, f_trial: float, f_current: float, t: float, initial_slope: float, trial_slope: float) -> bool:
         return (
-            self._satisfies_armijo(f_trial, f_current, alpha, initial_slope)
+            self._satisfies_armijo(f_trial, f_current, t, initial_slope)
             and trial_slope >= self.c_2 * initial_slope
         )
 
-    def _satisfies_strong_wolfe(self, f_trial: float, f_current: float, alpha: float, initial_slope: float, trial_slope: float) -> bool:
+    def _satisfies_strong_wolfe(self, f_trial: float, f_current: float, t: float, initial_slope: float, trial_slope: float) -> bool:
         return (
-            self._satisfies_armijo(f_trial, f_current, alpha, initial_slope)
+            self._satisfies_armijo(f_trial, f_current, t, initial_slope)
             and abs(trial_slope) <= self.c_3 * abs(initial_slope)
         )
 
     # ==== Algorithms ====
 
-    def _armijo(self, f, x, direction, f_current, initial_slope) -> float:
+    def _armijo(self, f, x, d_k, f_current, initial_slope) -> float:
         """
         Backtracking Armijo line search.
 
-        Starts at ``t_0`` and contracts by ``rho`` until the sufficient decrease
+        Starts at ``t_k`` and contracts by ``rho`` until the sufficient decrease
         condition is satisfied or ``max_iter`` is reached.
         """
-        t = self.t_0
+        t = self.t_k
 
         for _ in range(self.max_iter):
-            f_trial = float(f(x + t * direction))
+            f_trial = float(f(x + t * d_k))
 
             if self._satisfies_armijo(f_trial, f_current, t, initial_slope):
                 return t
 
             t *= self.rho
 
-        return self._failed(t)
+        return self._updated_t_k(t)
 
-    def _wolfe(self, f, gradient_f, x, direction, f_current, initial_slope, *, strong: bool) -> float:
+    def _wolfe(self, f, x, direction, f_current, initial_slope) -> float:
         """
         Zoom-based Wolfe / strong Wolfe line search.
         """
-        t = self.t_0
-        t_low = 0.0
-        t_high: float | None = None
+        t = self.t_k
+        t_min = 0.0
+        t_max = self.t_max
 
         for _ in range(self.max_iter):
             x_trial = x + t * direction
-            f_trial = float(f(x_trial))
+            f_trial = f(x_trial)
 
             if not self._satisfies_armijo(f_trial, f_current, t, initial_slope):
-                t_high = t
-                t = self._next_smaller(t_low, t_high, t)
+                t_max = t
+                t = self._next_smaller(0.0, t_max, t)
                 continue
-
-            grad_trial = np.asarray(gradient_f(x_trial), dtype=float).ravel()
-            trial_slope = float(np.dot(grad_trial, direction))
-
-            if strong:
-                if self._satisfies_strong_wolfe(f_trial, f_current, t, initial_slope, trial_slope):
-                    return t
-            elif self._satisfies_wolfe(f_trial, f_current, t, initial_slope, trial_slope):
+                
+            grad_trial = approx_fprime(x_trial, f, epsilon=self.h)
+            trial_slope = float(grad_trial @ direction)
+            
+            if self._satisfies_wolfe(f_trial, f_current, t, initial_slope, trial_slope):
                 return t
 
             if trial_slope < 0.0:
-                t_low = t
-                t = self._next_larger(t_low, t_high)
+                t_min = t
+                t = self._next_larger(t_min, t_max)
             else:
-                t_high = t
-                t = self._next_smaller(t_low, t_high, t)
+                t_max = t
+                t = self._next_smaller(t_min, t_max, t)
 
-        return self._failed(t)
+        return self._updated_t_k(t)
+    
+    def _strong_wolfe(self, f, x, d_k, f_current) -> float:
+        """
+        Scipy-based strong Wolfe line search.
+        """
+        gradient_f = lambda w: approx_fprime(w, f, epsilon=self.h)
 
+        t, fc, gc, new_fval, old_fval, new_slope = line_search(
+            f, 
+            gradient_f, 
+            xk=x, 
+            pk=d_k, 
+            gfk=None,
+            old_fval=f_current, 
+            c1=self.c_1, 
+            c2=self.c_2,
+            amax=self.t_max,
+            maxiter=self.max_iter
+        )
+        
+        if t is None:
+            return self._updated_t_k(self.t_max)
+            
+        return float(t)
+    
+    def _specular_wolfe(self, f, x, d_k, f_current, initial_slope) -> float:
+        """
+        Zoom-based Wolfe / strong Wolfe line search.
+        """
+        t = self.t_k
+        t_min = 0.0
+        t_max = self.t_max
+
+        for _ in range(self.max_iter):
+            x_trial = x + t * d_k
+            f_trial = float(f(x_trial))
+
+            if not self._satisfies_armijo(f_trial, f_current, t, initial_slope):
+                t_max = t
+                t = self._next_smaller(0.0, t_max, t)
+                continue
+                
+            if x_trial.size == 1:
+                val = float(x_trial.ravel()[0])
+                specular_grad_trial = np.array(derivative(f, val, self.h))
+            else:
+                specular_grad_trial = gradient(f, x_trial, self.h, self.zero_tol)
+            
+            trial_slope = float(specular_grad_trial @ d_k)
+            
+            if self._satisfies_wolfe(f_trial, f_current, t, initial_slope, trial_slope):
+                return t
+
+            if trial_slope < 0.0:
+                t_min = t
+                t = self._next_larger(t_min, t_max)
+            else:
+                t_max = t
+                t = self._next_smaller(t_min, t_max, t)
+
+        return self._updated_t_k(t)
+
+    def _specular_strong_wolfe(self, f, x, d_k, f_current, initial_slope) -> float:
+        """
+        Zoom-based Wolfe / strong Wolfe line search.
+        """
+        t = self.t_k
+        t_min = 0.0
+        t_max: float | None = None
+
+        for _ in range(self.max_iter):
+            x_trial = x + t * d_k
+            f_trial = float(f(x_trial))
+
+            if not self._satisfies_armijo(f_trial, f_current, t, initial_slope):
+                t_max = t
+                t = self._next_smaller(t_min, t_max, t)
+                continue
+            
+            if x_trial.size == 1:
+                val = float(x_trial.ravel()[0])
+                specular_grad_trial = np.array(derivative(f, val, self.h, self.zero_tol))
+            else:
+                specular_grad_trial = gradient(f, x_trial, self.h)
+            
+            trial_slope = float(specular_grad_trial @ d_k)
+
+            if self._satisfies_strong_wolfe(f_trial, f_current, t, initial_slope, trial_slope):
+                return t
+
+            if trial_slope < 0.0:
+                t_min = t
+                t = self._next_larger(t_min, t_max)
+            else:
+                t_max = t
+                t = self._next_smaller(t_min, t_max, t)
+
+        return self._updated_t_k(t)
+    
     def _exact(self, f, x, direction) -> float:
         """
-        Numerical exact line search over ``[0, max_alpha]``.
+        Numerical exact line search over ``[0, t_max]``.
 
-        Candidate step sizes are sampled around ``t_0`` by shrinking and
-        expanding with ``rho``.  Local minima are refined by golden-section search.
+        Candidate step sizes are sampled around ``t_k`` by shrinking and expanding with ``rho``.
+        Local minima are refined by golden-section search.
         """
-        def phi(alpha: float) -> float:
-            value = float(f(x + alpha * direction))
+        def phi(t: float) -> float:
+            value = float(f(x + t * direction))
             return value if np.isfinite(value) else np.inf
 
-        def _add(alpha_set: set[float], alpha: float) -> None:
-            if 0.0 <= alpha <= self.max_alpha and np.isfinite(alpha):
-                alpha_set.add(float(alpha))
+        def _add(t_set: set[float], t: float) -> None:
+            if 0.0 <= t <= self.t_max and np.isfinite(t):
+                t_set.add(float(t))
 
         candidates: set[float] = {0.0}
 
-        # Shrink from t_0.
-        alpha = min(self.t_0, self.max_alpha)
+        # Shrink from t_k.
+        t = min(self.t_k, self.t_max)
         for _ in range(self.max_iter + 1):
-            _add(candidates, alpha)
-            alpha *= self.rho
+            _add(candidates, t)
+            t *= self.rho
 
-        # Expand from t_0.
-        alpha = min(self.t_0, self.max_alpha)
+        # Expand from t_k.
+        t = min(self.t_k, self.t_max)
         for _ in range(self.max_iter):
-            next_alpha = min(alpha / self.rho, self.max_alpha)
-            if next_alpha <= alpha:
+            next_t = min(t / self.rho, self.t_max)
+            if next_t <= t:
                 break
-            _add(candidates, next_alpha)
-            if next_alpha >= self.max_alpha:
+            _add(candidates, next_t)
+            if next_t >= self.t_max:
                 break
-            alpha = next_alpha
+            t = next_t
 
         # Geometric and arithmetic midpoints.
         positive = sorted(a for a in candidates if a > 0.0)
@@ -305,12 +374,12 @@ class LineSearch:
 
         # Evaluate all candidates.
         samples = sorted((a, phi(a)) for a in candidates)
-        best_alpha, best_value = min(samples, key=lambda s: s[1])
+        best_t, best_value = min(samples, key=lambda s: s[1])
 
         # Refine local minima with golden-section search.
         for i in range(1, len(samples) - 1):
             left_val = samples[i - 1][1]
-            mid_alpha, mid_val = samples[i]
+            mid_t, mid_val = samples[i]
             right_val = samples[i + 1][1]
 
             is_local = (
@@ -325,9 +394,9 @@ class LineSearch:
             refined_val = phi(refined)
 
             if refined_val < best_value:
-                best_alpha, best_value = refined, refined_val
+                best_t, best_value = refined, refined_val
 
-        return best_alpha
+        return best_t
 
     def _golden_section(self, phi: Callable[[float], float], lower: float, upper: float) -> float:
         a, b = float(lower), float(upper)
@@ -361,19 +430,19 @@ class LineSearch:
 
     # ==== Helpers ====
 
-    def _next_smaller(self, alpha_low: float, alpha_high: float, alpha: float) -> float:
-        if alpha_low > 0.0:
-            return 0.5 * (alpha_low + alpha_high)
-        return alpha * self.rho
+    def _next_smaller(self, t_min: float, t_max: float, t: float) -> float:
+        if t_min > 0.0:
+            return 0.5 * (t_min + t_max)
+        return t * self.rho
 
-    def _next_larger(self, alpha_low: float, alpha_high: float | None) -> float:
-        if alpha_high is None:
-            return min(alpha_low / self.rho, self.max_alpha)
-        return 0.5 * (alpha_low + alpha_high)
+    def _next_larger(self, t_min: float, t_max: float | None) -> float:
+        if t_max is None:
+            return min(t_min / self.rho, self.t_max)
+        return 0.5 * (t_min + t_max)
 
-    def _failed(self, alpha: float) -> float:
+    def _updated_t_k(self, t: float) -> float:
         if not self.skip_on_fail:
             raise LineSearchError(
                 f"Line search '{self.name}' failed to satisfy its condition."
             )
-        return alpha
+        return t

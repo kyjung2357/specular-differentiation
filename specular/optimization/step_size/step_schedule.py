@@ -18,9 +18,9 @@ class StepSchedule:
         self,
         name: str,
         *,
-        a: float | int | None = None,
-        b: float | int | None = None,
-        r: float | int | None = None,
+        a: float | int,
+        b: float | int,
+        r: float | int,
         user_defined_rule: Callable | None = None
     ):
         """
@@ -63,9 +63,9 @@ class StepSchedule:
         """
         self.step_size = name
         
-        self.a = float(a) if a is not None else None
-        self.b = float(b) if b is not None else None
-        self.r = float(r) if r is not None else None
+        self.a = float(a)
+        self.b = float(b)
+        self.r = float(r)
         self.user_defined_rule = user_defined_rule
 
         init_methods = {
