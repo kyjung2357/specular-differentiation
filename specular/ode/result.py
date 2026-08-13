@@ -1,4 +1,5 @@
 import os
+import math
 import numpy as np
 from typing import Optional, Callable, Tuple
 
@@ -13,28 +14,28 @@ class ODEResult:
         self.h = h
         self.time_grid = all_history["variables"]
         self.numerical_sol = all_history["values"]
-    
+
     def history(
         self
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Returns the time grid and the numerical solution as a tuple.
-        
+
         Returns:
             (time_grid, numerical_sol)
         """
         return self.time_grid, self.numerical_sol
-    
+
     def visualization(
-        self, 
-        figure_size: tuple = (5.5, 2.5), 
+        self,
+        figure_size: tuple = (5.5, 2.5),
         exact_sol: Optional[Callable[[float], float]] = None,
         save_path: Optional[str] = None
     ):
         import matplotlib.pyplot as plt
 
         plt.figure(figsize=figure_size)
-        
+
         if exact_sol is not None:
             exact_values = np.array([exact_sol(t) for t in self.time_grid])
             plt.plot(self.time_grid, exact_values, color='black', label='Exact solution')
@@ -42,7 +43,7 @@ class ODEResult:
         number_of_circles = max(1, len(self.time_grid) // 30)
 
         capitalized_name = self.scheme[0].upper() + self.scheme[1:]
-        
+
         plt.plot(self.time_grid, self.numerical_sol, linestyle='--', marker='o', color='red', markersize=5, markevery=number_of_circles, markerfacecolor='none', markeredgewidth=1.0, label=capitalized_name)
 
         plt.xlabel(r"Time", fontsize=10)
@@ -53,17 +54,17 @@ class ODEResult:
         if save_path:
             if not os.path.exists('figures'):
                 os.makedirs('figures')
-            
+
             save_path = save_path.replace(" ", "-")
             full_path = os.path.join("figures", save_path)
 
             if not save_path.endswith(".png"):
                 save_path += ".png"
-                
+
             plt.savefig(full_path, dpi=1000, bbox_inches='tight')
 
             print(f"Figure saved: {full_path}")
-        
+
         plt.show()
 
         return self
@@ -87,16 +88,16 @@ class ODEResult:
 
             save_path = save_path.replace(" ", "-")
             full_path = os.path.join("tables", save_path)
-            
+
             if full_path.endswith(".txt"):
                 with open(full_path, "w") as f:
                     f.write(result.to_string())
             else:
                 if not full_path.endswith(".csv"):
                     full_path += ".csv"
-                
+
                 result.to_csv(full_path)
-            
+
             print(f"Table saved: {full_path}")
 
         return result
@@ -127,24 +128,38 @@ class ODEResult:
             exact_values = np.array([exact_sol(t) for t in self.time_grid])
 
         elif isinstance(exact_sol, (list, np.ndarray)):
-            exact_values = np.asarray(exact_sol, dtype=float) 
-            
+            exact_values = np.asarray(exact_sol, dtype=float)
+
         else:
             raise TypeError("exact_sol must be a callable or a list/array.")
-        
+
         if exact_values.shape != self.numerical_sol.shape:
              raise ValueError(f"Shape mismatch: exact_sol {exact_values.shape} vs numerical_sol {self.numerical_sol.shape}")
-        
+
         error_vector = np.abs(exact_values - self.numerical_sol)
 
         if norm == 'max':
             return float(np.max(error_vector))
-        
+
         elif norm == 'l2':
             return float(np.sqrt(np.sum(error_vector**2) * self.h))
-        
+
         elif norm == 'l1':
             return float(np.sum(error_vector) * self.h)
-        
+
         else:
             raise ValueError(f"Unknown norm type. Got '{norm}'. Supported types: 'max', 'l2', 'l1'.")
+
+
+def _num_steps(t_0: float, T: float, h: float) -> int:
+    if h <= 0:
+        raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
+
+    interval = T - t_0
+    if interval < 0:
+        raise ValueError(
+            f"Final time T must be greater than or equal to t_0. "
+            f"Got t_0={t_0}, T={T}"
+        )
+
+    return int(math.floor(interval / h + 1e-12))

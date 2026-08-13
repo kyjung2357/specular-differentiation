@@ -1,33 +1,45 @@
-# 2. API Reference
+# API Reference
 
-The specular package consists of the following modules and subpackages.
+The API reference is generated from the Python docstrings in the `specular` package.
 
-## [2.1. Calculation](calculation.md)
+## [`specular.calculation`](calculation.md)
 
-* [`specular.calculation`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/calculation.py): five primary functions to calculate specular differentiation, depending on the dimension of input.
+<div class="api-module-list" markdown="1">
 
-## [2.2. ODE](ode.md)
+- [`specular.calculation.A`](calculation/A.md) <span class="api-kind">module</span>
+- [`specular.calculation.derivative`](calculation/derivative.md) <span class="api-kind">module</span>
+- [`specular.calculation.directional_derivative`](calculation/directional_derivative.md) <span class="api-kind">module</span>
+- [`specular.calculation.partial_derivative`](calculation/partial_derivative.md) <span class="api-kind">module</span>
+- [`specular.calculation.gradient`](calculation/gradient.md) <span class="api-kind">module</span>
+- [`specular.calculation.jacobian`](calculation/jacobian.md) <span class="api-kind">module</span>
 
-* [`specular.ode.solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/ode/solver.py): the specular Euler, specular trigonometric, and specular Heun schemes.
+</div>
 
-* [`specular.ode.classical_solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/ode/classical_solver.py): the explicit Euler, implicit Euler, and Crank-Nicolson schemes.
+## [`specular.backend`](backend.md)
 
-* [`specular.ode.result`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/ode/result.py): the `ODEResult` class to store the results.
+<div class="api-module-list" markdown="1">
 
-## [2.3. Optimization](optimization.md)
+- [`specular.backend.backend_info`](backend/backend_info.md) <span class="api-kind">module</span>
+- [`specular.backend.change_backend`](backend/change_backend.md) <span class="api-kind">module</span>
 
-* [`specular.optimization.step_size`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/step_size.py): the `StepSize` class to define step size $h_k$.
+</div>
 
-* [`specular.optimization.solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/solver.py): the specular gradient method.
+## [`specular.ode`](ode.md)
 
-* [`specular.optimization.classical_solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/classical_solver.py): the gradient descent method, Adam, and BFGS. **Lazy importing**.
+<div class="api-module-list" markdown="1">
 
-* [`specular.optimization.result`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/result.py): the `OptimizationResult` class to store the results.
+- [`specular.ode.solver`](ode/solver.md) <span class="api-kind">module</span>
+- [`specular.ode.classical_solver`](ode/classical-solver.md) <span class="api-kind">module</span>
+- [`specular.ode.result`](ode/result.md) <span class="api-kind">module</span>
 
-## [2.4. Backend](backend.md)
+</div>
 
-* [`specular.backend`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/backend.py): backend state management and backend selection through `specular.change_backend(...)`.
+## [`specular.optimization`](optimization.md)
 
-* [`specular.calculation`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/calculation.py): routes calculation calls to the current backend.
+<div class="api-module-list" markdown="1">
 
-* [`specular.optimization.solver`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/optimization/solver.py): routes optimization calls to the current backend.
+- [`specular.optimization.step_schedule`](optimization/step-schedule.md) <span class="api-kind">module</span>
+- [`specular.optimization.solver`](optimization/solver.md) <span class="api-kind">module</span>
+- [`specular.optimization.result`](optimization/result.md) <span class="api-kind">module</span>
+
+</div>

@@ -1,5 +1,5 @@
 
-# 2.2. Ordinary differential equations
+# ODE
 
 Let the source function $F:[t_0, T] \times ℝ \to ℝ$ be given, and the initial data $u_0:ℝ \to ℝ$ be given. 
 Consider the initial value problem:
@@ -19,7 +19,7 @@ To solve the problem numerically, the subpackage [`specular.ode`](https://github
 * the implicit Euler scheme
 * the Crank-Nicolson scheme
 
-### 2.2.1. Specular Euler scheme
+### Specular Euler scheme
 
 All functions return an instance of the `ODEResult` class that encapsulates the numerical results.
 
@@ -153,7 +153,7 @@ Running the specular Euler scheme of Type 5: 100%|██████████
 0.0011409613137273178
 ```
 
-### 2.2.2. Specular trigonometric scheme
+### Specular trigonometric scheme
 
 ```python
 import specular
@@ -181,7 +181,7 @@ Figure saved: figures\specular-trigonometric
 
 ![specular-trigonometric-scheme](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-trigonometric.png)
 
-### 2.2.3. Classical schemes
+### Classical schemes
 
 The three classical schemes are available: the explicit Euler, the implicit Euler, and the Crank-Nicolson schemes.
 
@@ -228,24 +228,8 @@ Running Crank-Nicolson scheme: 100%|██████████| 18/18 [00:00
 
 ![classical-schemes](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/classical-schemes.png)
 
-## 2.2.4. API Reference
+## API Reference
 
-::: specular.ode.solver
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: true
-
----
-::: specular.ode.classical_solver
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: true
-
----
-::: specular.ode.result
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: true
+- [`specular.ode.solver`](ode/solver.md)
+- [`specular.ode.classical_solver`](ode/classical-solver.md)
+- [`specular.ode.result`](ode/result.md)

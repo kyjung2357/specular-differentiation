@@ -5,26 +5,25 @@ edit_uri: edit/main/docs/
 
 theme:
   name: material
+  logo: figures/specular-differentiation-logo.png
+  favicon: figures/specular-differentiation-logo.png
+  custom_dir: docs/overrides
   palette:
     - scheme: default
-      primary: indigo
+      primary: custom
       accent: cyan
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: indigo
+      primary: custom
       accent: cyan
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
   features:
-    - content.code.copy
-    - navigation.expand
     - navigation.indexes
     - navigation.footer
-    - navigation.tabs
-    - navigation.tabs.sticky
 
 plugins:
   - search
@@ -35,33 +34,80 @@ plugins:
         python:
           paths: [.]
           options:
+            heading_level: 3
+            line_length: 88
+            members_order: source
+            separate_signature: true
             show_source: true
-            show_root_heading: true
-            heading_level: 1
+            show_root_heading: false
+            show_root_toc_entry: false
+            show_root_full_path: false
+            show_object_full_path: false
+            show_root_members_full_path: false
   - include-markdown:
       rewrite_relative_urls: true
+
+hooks:
+  - docs/hooks/code_copy_buttons.py
   
 
 nav:
   - Home: index.md
-  - 1. Getting Started: started.md
-  - 2. API Reference:
-    - overview: api/index.md
-    - 2.1. Calculation: api/calculation.md
-    - 2.2. ODE: api/ode.md
-    - 2.3. Optimization: api/optimization.md
-    - 2.4. Backend: api/backend.md
-  - 3. Examples: examples/index.md
+  - Getting Started:
+    - started/index.md
+    - User installation: started/installation.md
+    - Quick start: started/quick-start.md
+    - LaTeX Macro: started/latex-macro.md
+    - Mathematical background: started/mathematical-background.md
+    - Simple examples: started/simple-examples.md
+  - API Reference:
+    - api/index.md
+    - specular.calculation:
+      - Overview: api/calculation.md
+      - specular.calculation.A: api/calculation/A.md
+      - specular.calculation.derivative: api/calculation/derivative.md
+      - specular.calculation.directional_derivative: api/calculation/directional_derivative.md
+      - specular.calculation.partial_derivative: api/calculation/partial_derivative.md
+      - specular.calculation.gradient: api/calculation/gradient.md
+      - specular.calculation.jacobian: api/calculation/jacobian.md
+    - specular.backend:
+      - Overview: api/backend.md
+      - specular.backend.backend_info: api/backend/backend_info.md
+      - specular.backend.change_backend: api/backend/change_backend.md
+    - specular.ode:
+      - Overview: api/ode.md
+      - specular.ode.solver: api/ode/solver.md
+      - specular.ode.classical_solver: api/ode/classical-solver.md
+      - specular.ode.result: api/ode/result.md
+    - specular.optimization:
+      - Overview: api/optimization.md
+      - specular.optimization.StepSchedule: api/optimization/step-schedule.md
+      - specular.optimization.solver: api/optimization/solver.md
+      - specular.optimization.result: api/optimization/result.md
+  - Examples:
+    - examples/index.md
+    - Ordinary differential equation:
+      - examples/ode/index.md
+      - 2026 Jung: examples/ode-2026-jung.md
+    - Optimization:
+      - examples/optimization/index.md
+      - 2026 Jung: examples/optimization-2026-jung.md
 
 markdown_extensions:
   - admonition
   - pymdownx.details
+  - pymdownx.highlight:
+      pygments_lang_class: true
   - pymdownx.superfences
   - md_in_html
   - pymdownx.arithmatex:
       generic: true
 
 extra_javascript:
+  - javascripts/header-home-link.js
+  - javascripts/code-copy-buttons.js
   - javascripts/mathjax.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - stylesheets/extra.css

@@ -1,7 +1,7 @@
 # Specular Differentiation
 
 [![PyPI version](https://badge.fury.io/py/specular-differentiation.svg)](https://badge.fury.io/py/specular-differentiation)
-![Python 3.11](https://img.shields.io/badge/python-3.11-3776AB.svg?style=flat&logo=python&logoColor=white)
+![Python 3.14](https://img.shields.io/badge/python-3.14-3776AB.svg?style=flat&logo=python&logoColor=white)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18246734.svg)](https://doi.org/10.5281/zenodo.18246734)
 [![License](https://img.shields.io/pypi/l/specular-differentiation.svg)](https://pypi.org/project/specular-differentiation/)
 [![CodeFactor](https://www.codefactor.io/repository/github/kyjung2357/specular-differentiation/badge)](https://www.codefactor.io/repository/github/kyjung2357/specular-differentiation)
@@ -21,7 +21,7 @@ Their difference is illustrated as in the following figure.
 * [Introduction](#installation)
 * [Applications](#applications)
 * [Documentation](#documentation)
-* [LaTeX macro](#latex-macro)
+* [LaTeX macros](#latex-macros)
 * [Citing specular-differentiation](#citing-specular-differentiation)
 * [References](#references)
 
@@ -31,8 +31,8 @@ Their difference is illustrated as in the following figure.
 
 `specular-differentiation` requires:
 
-* **Python** >= 3.11
-* `numpy` >= 2.0
+* **Python** >= 3.14
+* `numpy` >= 2.4
 
 Additional features are available through optional dependencies:
 
@@ -40,51 +40,45 @@ Additional features are available through optional dependencies:
 * `optimization`: `matplotlib`, `tqdm`
 * `numba`: `numba`
 * `jax`: `jax`, `jaxlib`
+* `torch`: `torch`
 
 ### User installation
 
-**Standard Installation (NumPy backend)**
+**Standard Installation**
 
 ```bash
 pip install specular-differentiation
 ```
 
-This installs the core specular differentiation API, including `A`, `derivative`,
-`directional_derivative`, `partial_derivative`, `gradient`, and `jacobian`.
+This installs the core specular differentiation API, including `A`, `derivative`, `directional_derivative`, `partial_derivative`, `gradient`, and `jacobian`.
 
-**ODE solvers**
-
-```bash
-pip install "specular-differentiation[ode]"
-```
-
-**Optimization routines**
+**Optional features**
 
 ```bash
-pip install "specular-differentiation[optimization]"
+pip install "specular-differentiation[ode]"             # ODE solvers
+pip install "specular-differentiation[optimization]"    # optimization routines
+pip install "specular-differentiation[numba]"           # Numba backend
+pip install "specular-differentiation[jax]"             # JAX backend
+pip install "specular-differentiation[torch]"           # PyTorch backend
 ```
 
-**Numba backend**
-
-```bash
-pip install "specular-differentiation[numba]"
-```
-
-If Numba is installed and available, the package may use the Numba-accelerated CPU backend.
-
-**JAX backend**
-
-```bash
-pip install "specular-differentiation[jax]"
-```
-
-See [the documentation](docs/api/jax.md) for JAX-specific usage.
-
-**Developer Installation**
+**Developer installation**
 
 ```bash
 pip install -e ".[dev]"
 ```
+
+### [Backend support](https://kyjung2357.github.io/specular-differentiation/api/backend/)
+
+The package is organized around a backend system.
+NumPy is the default backend, while accelerated backends are optional and may require extra dependencies.
+
+| Backend | Calculation | ODE | Optimization |
+|:---:|:---:|:---:|:---:|
+| NumPy | supported | supported  | supported (recommended) |
+| Numba | supported | supported (recommended) | not supported |
+| JAX | supported | supported | experimental  |
+| PyTorch | experimental | experimental | not supported |
 
 ### Quick start
 
@@ -101,26 +95,12 @@ print(specular.derivative(ReLU, x=0))
 0.41421356237309515
 ```
 
-### Backend support
-
-The package is organized around a backend system. 
-NumPy is the default backend, while accelerated backends are optional and may require extra dependencies.
-
-| Backend | Calculation | ODE | Optimization |
-|:---:|:---:|:---:|:---:|
-| NumPy | supported | supported  | supported |
-| Numba | supported | supported (recommended) | not supported |
-| JAX | supported | supported | supported (recommended) |
-| TensorFlow | experimental | experimental | not supported |
-| PyTorch | experimental | experimental | not supported |
-
-
 ## Applications
 
 Specular differentiation is defined in normed vector spaces, allowing for applications in higher-dimensional Euclidean spaces. 
 The `specular` package includes the following applications.
 
-### [Ordinary differential equation](docs/api/ode.md)
+### [Ordinary differential equation](https://kyjung2357.github.io/specular-differentiation/api/ode/)
 
 * **Directory**: `examples/ode/`
 * **References**: [[1]](#references), [[3]](#references)
@@ -130,7 +110,7 @@ In [[1]](#references), seven schemes are proposed for solving ODEs numerically:
 * the *specular Euler* scheme of Type 1~6
 * the *specular trigonometric* scheme
 * the *specular ellipse* scheme
-* the *specular Huen* scheme* 
+* the *specular Huen* scheme
 
 The following example shows that the specular Euler schemes of Type 5 and 6 yield more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
 
@@ -138,7 +118,7 @@ The following example shows that the specular Euler schemes of Type 5 and 6 yiel
 
 ![ODE-example-2](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/ODE-example-2.png)
 
-### [Optimization](docs/api/optimization.md)
+### [Optimization](https://kyjung2357.github.io/specular-differentiation/api/optimization/)
 
 * **Directory**: `examples/optimization/`
 * **References**: [[3]](#references)
@@ -159,7 +139,7 @@ The following example compares the three proposed methods with the classical met
 ### [API Reference](https://kyjung2357.github.io/specular-differentiation/api/)
 ### [Examples](https://kyjung2357.github.io/specular-differentiation/examples/)
 
-## LaTeX macro
+## [LaTeX Macro](https://kyjung2357.github.io/specular-differentiation/started/latex-macro/)
 
 To use the specular differentiation symbol in your LaTeX document, add the following code to your preamble (before `\begin{document}`):
 
@@ -167,21 +147,16 @@ To use the specular differentiation symbol in your LaTeX document, add the follo
 % Required packages
 \usepackage{graphicx}
 \usepackage{bm}
+\usepackage{amssymb}
 
-% Definition of Specular Differentiation symbol
+% specular derivative symbol
 \newcommand\sd[1][.5]{\mathbin{\vcenter{\hbox{\scalebox{#1}{\,$\bm{\wedge}$}}}}}
-```
 
-### Usage examples 
+% specular Gateaux derivative symbol
+\newcommand{\sGd}{\widehat{\mkern-2mu d}\mkern1mu}
 
-Use the symbol in your document (after `\begin{document}`):
-
-```latex
-% A specular derivative in the one-dimensional Euclidean space
-$f^{\sd}(x)$
-
-% A specular directional derivative in normed vector spaces
-$\partial^{\sd}_v f(x)$
+% specular gradient symbol
+\newcommand{\sg}{\mathord{\raisebox{-0.05ex}{\rule{0pt}{1.3ex}\smash{\scalebox{1.37}[1.22]{\ensuremath{\blacktriangledown}}}}\mkern-1.2mu}}
 ```
 
 ## Citing specular-differentiation
@@ -193,10 +168,10 @@ To cite this repository:
   author = {Jung, Kiyuob},
   doi = {10.5281/zenodo.18246734},
   license = {MIT},
-  month = may,
+  month = aug,
   title = {{specular-differentiation}},
   url = {https://github.com/kyjung2357/specular-differentiation},
-  version = {1.2.1},
+  version = {1.2.2},
   year = {2026},
 }
 ```

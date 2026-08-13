@@ -1,8 +1,8 @@
-# 2.1. Calculation
+# Calculation
 
-Directory: `specular/calculation/`
+Source code in [`specular.calculation.py`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/calculation.py)
 
-The [`specular.calculation`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/calculation.py) module provides five primary functions to calculate specular differentiation, depending on the dimension of input.
+This module provides five primary functions to calculate specular differentiation, depending on the dimension of input.
 
 | Function | Space | Description |Input Type | Output Type |
 | :--- | :--- | :--- | :--- | :--- |
@@ -12,8 +12,32 @@ The [`specular.calculation`](https://github.com/kyjung2357/specular-differentiat
 | `gradient` | $\mathbb{R}^n \to \mathbb{R}$ | specular gradient vector | `np.ndarray` | `np.ndarray` |
 | `jacobian` | $\mathbb{R}^n \to \mathbb{R}^m$ | specular jacobian matrix | `np.ndarray` | `np.ndarray` |
 
+This module provides implementations of specular directional derivatives, specular partial derivatives, specular derivatives, specular gradients, and specular Jacobians.
 
-## 2.1.1. One-dimensional Euclidean Space ($n=1$)
+The calculations are based on the function $\mathcal{A}:\mathbb{R}^2 \to \mathbb{R}$ defined by
+
+$$
+\mathcal{A}(\alpha, \beta) =
+\begin{cases}
+    \frac{\alpha \beta - 1 + \sqrt{(1 + \alpha^2)(1 + \beta^2)}}{\alpha + \beta} & \text{if } \alpha + \beta \neq 0, \\
+    0 & \text{otherwise.}
+\end{cases}
+$$
+
+The parameters $\alpha$ and $\beta$ are intended to represent right and left derivatives.
+In the code, computations are based on the finite difference approximation of one-sided (directional) derivatives:
+
+$$
+\alpha \approx \frac{f(x + hv) - f(x)}{h}
+\qquad \text{and} \qquad
+\beta \approx \frac{f(x) - f(x - hv)}{h},
+$$
+
+where $f : \mathbb{R}^n \to \mathbb{R}$ is a function, $h > 0$ is a real number, and $x, v \in \mathbb{R}^n$ are vectors.
+
+NumPy and Numba approximate this data from function values using one-sided finite differences, while JAX computes it using automatic differentiation at shifted points.
+
+## One-dimensional Euclidean Space ($n=1$)
 
 In $ℝ$, the *specular derivative* can be calculated using the function `derivative`.
 
@@ -30,13 +54,13 @@ print(specular.derivative(f, x=0.0))
 0.41421356237309515
 ```
 
-## 2.1.2. the $n$-dimensional Euclidean space ($n>1$)
+## The $n$-dimensional Euclidean space ($n>1$)
 
 In $ℝ^n$, the *specular directional derivative* of a function $f: ℝ^n \to ℝ$ at a point $x \in ℝ^n$ in the direction $v \in ℝ^n$ can be calculated using the function `directional_derivative`.
 
 ```python
 import specular
-import math 
+import math
 
 f = lambda x: math.sqrt(x[0]**2 + x[1]**2 + x[2]**2)
 print(specular.directional_derivative(f, x=[0.0, 0.1, -0.1], v=[1.0, -1.0, 2.0]))
@@ -87,10 +111,11 @@ print(specular.partial_derivative(f, x=[0.1, 2.3, -1.2], i=3))
 -0.4622227292028128
 ```
 
-## 2.1.3. API Reference
+## API Reference
 
-::: specular.calculation
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: true
+- [`specular.calculation.A`](calculation/A.md) <span class="api-kind">module</span>
+- [`specular.calculation.derivative`](calculation/derivative.md) <span class="api-kind">module</span>
+- [`specular.calculation.directional_derivative`](calculation/directional_derivative.md) <span class="api-kind">module</span>
+- [`specular.calculation.partial_derivative`](calculation/partial_derivative.md) <span class="api-kind">module</span>
+- [`specular.calculation.gradient`](calculation/gradient.md) <span class="api-kind">module</span>
+- [`specular.calculation.jacobian`](calculation/jacobian.md) <span class="api-kind">module</span>

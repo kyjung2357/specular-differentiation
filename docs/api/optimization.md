@@ -1,4 +1,4 @@
-# 2.3. Optimization
+# Optimization
 
 Consider the optimization problem:
 
@@ -33,10 +33,10 @@ where $h_k > 0$ is the step size and $s_k$ is the specular gradient for each $k 
 
 ### Quick Example
 ```python
-from specular.optimization.step_size import StepSize
+from specular.optimization import StepSchedule
 
 # Use a square-summable rule: h_k = 10 / (2 + k)
-step = StepSize(name='square_summable_not_summable', parameters=[10.0, 2.0])
+step = StepSchedule(name='square_summable_not_summable', parameters=[10.0, 2.0])
 h_1 = step(1)
 print(h_1)
 ```
@@ -45,7 +45,7 @@ print(h_1)
 3.3333333333333335
 ```
 
-## 2.3.2. The specular gradient method
+## The specular gradient method
 
 ### The one dimensional case
 ```python
@@ -55,7 +55,7 @@ import specular
 def f(x):
     return abs(x)
 
-step_size = specular.StepSize('constant', 0.1) 
+step_size = specular.StepSchedule('constant', 0.1)
 
 # Specular gradient method
 res = specular.gradient_method(f=f, x_0=1.0, step_size=step_size, form='specular gradient', max_iter=20)
@@ -82,7 +82,7 @@ def f_comp_2(x):
 f_components = [f_comp_1, f_comp_2]
 
 x_0 = [1.0, 1.0]
-step_size = specular.StepSize('square_summable_not_summable', [0.5, 1.0]) 
+step_size = specular.StepSchedule('square_summable_not_summable', [0.5, 1.0])
 
 # Specular gradient method
 res1 = specular.gradient_method(f=f, x_0=x_0, step_size=step_size, form='specular gradient', max_iter=50)
@@ -94,7 +94,7 @@ res2 = specular.gradient_method(f=f, x_0=x_0, step_size=step_size, form='stochas
 res3 = specular.gradient_method(f=f_quad_vector, x_0=x_0, step_size=step_size, form='hybrid', f_j=f_components, switch_iter=5, max_iter=20)
 ```
 
-## 2.3.3. `OptimizationResult`
+## `OptimizationResult`
 
 The class `OptimizationResult` collects the optimization results.
 To get history of optimization, call `history()`.
@@ -107,29 +107,13 @@ def f(x):
     return float(np.sum(np.array(x)**2))
 
 x_0 = [1.0, 1.0]
-step_size = specular.StepSize('square_summable_not_summable', [0.5, 1.0]) 
+step_size = specular.StepSchedule('square_summable_not_summable', [0.5, 1.0])
 
 # Specular gradient method
 res_x, res_f, res_time = specular.gradient_method(f=f, x_0=x_0, step_size=step_size, form='specular gradient', max_iter=50).history()
 ```
-## 2.3.4. API Reference
+## API Reference
 
-::: specular.optimization.step_size.StepSize
-    handler: python
-    options:
-        show_root_heading: true
-        show_source: true
-
----
-::: specular.optimization.solver
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: true
-
----
-::: specular.optimization.result
-    handler: python
-    options:
-      show_root_heading: true
-      show_source: true
+- [`specular.optimization.step_schedule`](optimization/step-schedule.md)
+- [`specular.optimization.solver`](optimization/solver.md)
+- [`specular.optimization.result`](optimization/result.md)

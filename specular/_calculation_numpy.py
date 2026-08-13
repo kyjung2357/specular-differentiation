@@ -109,6 +109,7 @@ def derivative(
 
     f_val = f(x)
 
+    # f is real-valued
     if np.ndim(f_val) == 0:
         f_scalar = cast(Callable[[float], float | np.number], f)
 
@@ -121,6 +122,7 @@ def derivative(
 
         return _A_scalar(alpha, beta, zero_tol, quasi_Fermat, monotonicity)
 
+    # f is vector-valued
     f_right = np.asarray(f(x + h), dtype=float)
     f_val = np.asarray(f_val, dtype=float)
     f_left = np.asarray(f(x - h), dtype=float)

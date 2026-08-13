@@ -11,15 +11,15 @@ def test_classical_solver_import_does_not_require_torch_or_scipy(monkeypatch):
             raise ImportError(f"blocked optional dependency: {name}")
         return real_import(name, *args, **kwargs)
 
-    sys.modules.pop("specular.optimization.classical_solver", None)
-    optimization_pkg = sys.modules.get("specular.optimization")
+    sys.modules.pop("specular.optimization", None)
+    optimization_pkg = sys.modules.get("specular")
     if optimization_pkg is not None:
-        monkeypatch.delattr(optimization_pkg, "classical_solver", raising=False)
+        monkeypatch.delattr(optimization_pkg, "optimization", raising=False)
 
     monkeypatch.setattr(builtins, "__import__", guarded_import)
 
-    module = importlib.import_module("specular.optimization.classical_solver")
+    module = importlib.import_module("specular.optimization")
 
-    assert hasattr(module, "gradient_descent_method")
-    assert hasattr(module, "Adam")
-    assert hasattr(module, "BFGS")
+    assert hasattr(module, "gradient_descent")
+    assert hasattr(module, "adam")
+    assert hasattr(module, "bfgs")
