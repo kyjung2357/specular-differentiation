@@ -118,8 +118,6 @@ for the callback contracts.
 
 ## LaTeX Macro
 
-<!-- latex-macro-start -->
-
 To use the specular differentiation symbol in your LaTeX document, add the following code to your preamble (before `\begin{document}`):
 
 ```latex
@@ -150,12 +148,10 @@ To use the specular differentiation symbol in your LaTeX document, add the follo
 To cite this repository:
 
 ```bibtex
-@software{Jung_specular-differentiation_2026,
+@software{specular_diff,
   author = {Jung, Kiyuob},
-  doi = {10.5281/zenodo.18246734},
-  license = {MIT},
-  month = may,
   title = {{specular-differentiation}},
+  doi = {10.5281/zenodo.18246734},
   url = {https://github.com/kyjung2357/specular-differentiation},
   version = {1.3.0},
   year = {2026},
