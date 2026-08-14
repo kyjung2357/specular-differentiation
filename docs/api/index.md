@@ -1,17 +1,11 @@
-# API Reference
+---
+hide:
+  - navigation
+  - toc
+---
 
-The public API consists of calculation functions and backend selection.
+<meta http-equiv="refresh" content="0; url=calculation/">
 
-## Calculation
+# Page moved
 
-- [`specular.calculation.derivative`](calculation/derivative.md)
-- [`specular.calculation.gradient`](calculation/gradient.md)
-- [`specular.calculation.jacobian`](calculation/jacobian.md)
-
-## Backends
-
-- [`specular.backends`](backend.md)
-- `specular.get_backend()`
-- `specular.available_backends()`
-- `specular.set_backend()`
-- `specular.use_backend()`
+[Continue to the Calculation API](calculation.md).

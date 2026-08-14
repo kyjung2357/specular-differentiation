@@ -1,8 +1,11 @@
-::: specular.calculation.derivative
-    handler: python
-    options:
-      heading_level: 1
-      show_root_heading: true
-      show_root_toc_entry: false
-      show_root_full_path: true
-      show_source: true
+---
+hide:
+  - navigation
+  - toc
+---
+
+<meta http-equiv="refresh" content="0; url=../#specular.calculation.derivative">
+
+# Page moved
+
+[Continue to `derivative`](../calculation.md#specular.calculation.derivative).

@@ -17,21 +17,6 @@ Their difference is illustrated as in the following figure.
 
 ![specular-derivative-animation](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-derivative-animation.gif)
 
-## Table of Contents
-- [Specular Differentiation](#specular-differentiation)
-  - [Table of Contents](#table-of-contents)
-  - [Installation](#installation)
-    - [Requirements](#requirements)
-    - [User installation](#user-installation)
-    - [Backend support](#backend-support)
-    - [Quick start](#quick-start)
-  - [Documentation](#documentation)
-    - [Getting Started](#getting-started)
-    - [API Reference](#api-reference)
-  - [LaTeX Macro](#latex-macro)
-  - [Citing specular-differentiation](#citing-specular-differentiation)
-  - [References](#references)
-
 ## Installation
 
 ### Requirements
@@ -46,17 +31,18 @@ Additional backends are available through optional dependencies:
 * `numba`: `numba`
 * `jax`: `jax`, `jaxlib`
 
-### User installation
-
 **Standard Installation**
 
 ```bash
 pip install specular-differentiation
 ```
 
-This installs `derivative`, `gradient`, and `jacobian`, using NumPy by default.
-Backend selection is available through `set_backend`, `get_backend`,
-`use_backend`, and `available_backends`.
+The package is distributed as `specular-differentiation` and imported in
+Python as `specular`.
+
+This installs `derivative`, `gradient`, and `jacobian`, using NumPy by default,
+as well as the scalar ODE schemes. Backend selection is available through
+`set_backend`, `get_backend`, `use_backend`, and `available_backends`.
 
 **Optional features**
 
@@ -71,18 +57,18 @@ pip install "specular-differentiation[jax]"             # JAX backend
 pip install -e ".[dev]"
 ```
 
-### [Backend support](https://kyjung2357.github.io/specular-differentiation/api/backend/)
+Documentation tools can be installed separately with:
+
+```bash
+pip install -e ".[docs]"
+```
+
+## [Backend support](https://kyjung2357.github.io/specular-differentiation/api/backend/)
 
 The package is organized around a backend system. 
 NumPy is the default backend, while accelerated backends are optional and may require extra dependencies.
 
-| Backend | Calculation |
-|:---:|:---:|
-| NumPy | supported |
-| Numba | supported |
-| JAX | supported |
-
-### Quick start
+## Quick start
 
 The following simple example calculates the specular derivative of the [ReLU function](https://en.wikipedia.org/wiki/Rectified_linear_unit) $f(x) = max(0, x)$ at the origin.
 
@@ -97,12 +83,42 @@ print(specular.derivative(ReLU, x=0))
 0.41421356237309503
 ```
 
-## [Documentation](https://kyjung2357.github.io/specular-differentiation/)
+## Scalar ODE schemes
 
-### [Getting Started](https://kyjung2357.github.io/specular-differentiation/started/)
-### [API Reference](https://kyjung2357.github.io/specular-differentiation/api/)
+The package provides three scalar specular ellipse schemes directly from the
+top-level namespace:
 
-## [LaTeX Macro](https://kyjung2357.github.io/specular-differentiation/started/latex-macro/)
+```python
+import specular
+
+result = specular.ellipse_scheme(
+    lambda t, y: -y,
+    (0.0, 1.0),
+    1.0,
+    n_steps=100,
+    sigma=1.0,
+)
+```
+
+`ellipse_scheme`, `ellipse_scheme_3rd_order`, and
+`ellipse_scheme_4th_order` all accept either a positive scalar `sigma` or a
+callable scale policy. A policy receives the mesh width `h`, so it may depend
+on the discretization. The advertised third- and fourth-order convergence is
+conditional on the corresponding cancellation assumptions; choosing an
+arbitrary or mesh-dependent policy does not by itself provide that order.
+
+See the [scalar ODE API documentation](https://kyjung2357.github.io/specular-differentiation/api/ode/)
+for the callback contracts.
+
+## Documentation
+
+- [Calculation API](https://kyjung2357.github.io/specular-differentiation/api/calculation/)
+- [Scalar ODE API](https://kyjung2357.github.io/specular-differentiation/api/ode/)
+- [Backend API](https://kyjung2357.github.io/specular-differentiation/api/backend/)
+
+## LaTeX Macro
+
+<!-- latex-macro-start -->
 
 To use the specular differentiation symbol in your LaTeX document, add the following code to your preamble (before `\begin{document}`):
 
@@ -118,8 +134,16 @@ To use the specular differentiation symbol in your LaTeX document, add the follo
 \newcommand{\sGd}{\widehat{\mkern-2mu d}\mkern1mu}
 
 % specular gradient symbol
-\newcommand{\sg}{\mathord{\raisebox{-0.05ex}{\rule{0pt}{1.3ex}\smash{\scalebox{1.37}[1.22]{\ensuremath{\blacktriangledown}}}}\mkern-1.2mu}}
+\newcommand{\sg}{%
+  \mathchoice
+    {\mathord{\raisebox{-0.05ex}{\rule{0pt}{1.3ex}\smash{\scalebox{1.37}[1.22]{\ensuremath{\displaystyle\blacktriangledown}}}}\mkern-1.2mu}}
+    {\mathord{\raisebox{-0.05ex}{\rule{0pt}{1.3ex}\smash{\scalebox{1.37}[1.22]{\ensuremath{\textstyle\blacktriangledown}}}}\mkern-1.2mu}}
+    {\mathord{\raisebox{-0.03ex}{\rule{0pt}{1.0ex}\smash{\scalebox{1.29}[1.15]{\ensuremath{\scriptstyle\blacktriangledown}}}}\mkern-0.8mu}}
+    {\mathord{\raisebox{-0.02ex}{\rule{0pt}{0.8ex}\smash{\scalebox{1.18}[1.05]{\ensuremath{\scriptscriptstyle\blacktriangledown}}}}\mkern-0.5mu}}
+}
 ```
+
+<!-- latex-macro-end -->
 
 ## Citing specular-differentiation
 

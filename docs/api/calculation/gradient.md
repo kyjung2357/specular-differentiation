@@ -1,8 +1,11 @@
-::: specular.calculation.gradient
-    handler: python
-    options:
-      heading_level: 1
-      show_root_heading: true
-      show_root_toc_entry: false
-      show_root_full_path: true
-      show_source: true
+---
+hide:
+  - navigation
+  - toc
+---
+
+<meta http-equiv="refresh" content="0; url=../#specular.calculation.gradient">
+
+# Page moved
+
+[Continue to `gradient`](../calculation.md#specular.calculation.gradient).

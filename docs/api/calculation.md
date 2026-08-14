@@ -19,20 +19,11 @@ are rejected as well when `x` is concrete. Under JAX transformations, a
 traced `x` cannot be inspected before execution, so an ineffective sample may
 instead appear as a non-finite result.
 
-## Derivative
+## Examples
 
-```python
-import specular
+A vector-valued derivative produces a one-dimensional vector.
 
-relu = lambda x: max(x, 0.0)
-print(specular.derivative(relu, 0.0))
-```
-
-```text
-0.41421356237309503
-```
-
-A vector-valued callback produces a one-dimensional vector.
+### Vector derivative
 
 ```python
 import numpy as np
@@ -42,7 +33,7 @@ f = lambda x: np.array([x, x * x])
 print(specular.derivative(f, 2.0))
 ```
 
-## Gradient
+### Gradient
 
 ```python
 import numpy as np
@@ -52,7 +43,7 @@ f = lambda x: np.sum(x * x)
 print(specular.gradient(f, [1.0, 2.0, 3.0]))
 ```
 
-## Jacobian
+### Jacobian
 
 ```python
 import numpy as np
@@ -64,6 +55,29 @@ print(specular.jacobian(f, [1.0, 2.0]))
 
 ## API reference
 
-- [`specular.calculation.derivative`](calculation/derivative.md)
-- [`specular.calculation.gradient`](calculation/gradient.md)
-- [`specular.calculation.jacobian`](calculation/jacobian.md)
+::: specular.calculation.derivative
+    handler: python
+    options:
+      heading_level: 3
+      show_root_heading: true
+      show_root_toc_entry: false
+      show_root_full_path: true
+      show_source: true
+
+::: specular.calculation.gradient
+    handler: python
+    options:
+      heading_level: 3
+      show_root_heading: true
+      show_root_toc_entry: false
+      show_root_full_path: true
+      show_source: true
+
+::: specular.calculation.jacobian
+    handler: python
+    options:
+      heading_level: 3
+      show_root_heading: true
+      show_root_toc_entry: false
+      show_root_full_path: true
+      show_source: true

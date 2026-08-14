@@ -53,20 +53,11 @@ hooks:
 
 nav:
   - Home: index.md
-  - Getting Started:
-    - started/index.md
-    - User installation: started/installation.md
-    - Quick start: started/quick-start.md
-    - LaTeX Macro: started/latex-macro.md
+  - LaTeX Macro: started/latex-macro.md
   - API Reference:
-    - api/index.md
-    - specular.calculation:
-      - Overview: api/calculation.md
-      - specular.calculation.derivative: api/calculation/derivative.md
-      - specular.calculation.gradient: api/calculation/gradient.md
-      - specular.calculation.jacobian: api/calculation/jacobian.md
-    - specular.backends:
-      - Overview: api/backend.md
+    - Calculation: api/calculation.md
+    - Scalar ODE schemes: api/ode.md
+    - Backends: api/backend.md
 
 markdown_extensions:
   - admonition

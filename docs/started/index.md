@@ -1,8 +1,11 @@
-# Getting Started
+---
+hide:
+  - navigation
+  - toc
+---
 
-Start with the core package and install optional extras only when a backend
-needs them.
+<meta http-equiv="refresh" content="0; url=../#installation">
 
-* [User installation](installation.md)
-* [Quick start](quick-start.md)
-* [LaTeX Macro](latex-macro.md)
+# Page moved
+
+[Continue to Installation](../index.md#installation).
