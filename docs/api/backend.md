@@ -15,7 +15,7 @@ specular.backend_info()
 specular.change_backend("cpu_jax")
 ```
 
-Optional backend dependencies such as JAX, Numba, and PyTorch are not imported when `import specular` is executed. They are checked when the user explicitly selects the corresponding backend or calls `specular.backend_info()`.
+Optional backend dependencies such as JAX and Numba are not imported when `import specular` is executed. They are checked when the user explicitly selects the corresponding backend or calls `specular.backend_info()`.
 
 ## Backend support
 
@@ -24,7 +24,6 @@ Optional backend dependencies such as JAX, Numba, and PyTorch are not imported w
 | NumPy | supported | supported  | supported (recommended) |
 | Numba | supported | supported (recommended) | not supported |
 | JAX | supported | supported | experimental  |
-| PyTorch | experimental | experimental | not supported |
 
 TensorFlow is not supported for the Python 3.14 target.
 

@@ -35,14 +35,12 @@ pip install "specular-differentiation[ode]"             # ODE solvers
 pip install "specular-differentiation[optimization]"    # optimization routines
 pip install "specular-differentiation[numba]"           # Numba backend
 pip install "specular-differentiation[jax]"             # JAX backend
-pip install "specular-differentiation[torch]"           # PyTorch backend
 ```
 
 This adds the following dependencies:
 
 * **[Numba](https://numba.pydata.org/)** (`numba` >= 0.65)
 * **[JAX](https://docs.jax.dev/en/latest/index.html)** (`jax`, `jaxlib` >= 0.10)
-* **[PyTorch](https://pytorch.org/)** (`torch` >= 2.12)
 
 ## Developer installation
 
@@ -67,7 +65,6 @@ To enable hardware acceleration, you can install the package with different back
 | NumPy | supported | supported | supported |
 | Numba | supported | supported | not supported |
 | JAX | supported | supported | experimental |
-| PyTorch | experimental | experimental | not supported |
 
 > [!NOTE]
 > TensorFlow is not supported for the Python 3.14 target.

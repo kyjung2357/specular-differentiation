@@ -40,7 +40,6 @@ Additional features are available through optional dependencies:
 * `optimization`: `matplotlib`, `tqdm`
 * `numba`: `numba`
 * `jax`: `jax`, `jaxlib`
-* `torch`: `torch`
 
 ### User installation
 
@@ -59,7 +58,6 @@ pip install "specular-differentiation[ode]"             # ODE solvers
 pip install "specular-differentiation[optimization]"    # optimization routines
 pip install "specular-differentiation[numba]"           # Numba backend
 pip install "specular-differentiation[jax]"             # JAX backend
-pip install "specular-differentiation[torch]"           # PyTorch backend
 ```
 
 **Developer installation**
@@ -78,7 +76,6 @@ NumPy is the default backend, while accelerated backends are optional and may re
 | NumPy | supported | supported  | supported (recommended) |
 | Numba | supported | supported (recommended) | not supported |
 | JAX | supported | supported | experimental  |
-| PyTorch | experimental | experimental | not supported |
 
 ### Quick start
 

@@ -38,10 +38,6 @@ numba = [
     "numba>=0.65"
 ]
 
-torch = [
-    "torch>=2.12"
-]
-
 ode = [
     "matplotlib>=3.10",
     "pandas>=3.0",
@@ -60,7 +56,6 @@ dev = [
     "specular-differentiation[jax]",
     "pytest>=9.0",
     "scipy>=1.17",
-    "torch>=2.12",
     "ipython>=9.13",
 ]
 

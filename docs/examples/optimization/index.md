@@ -3,7 +3,6 @@
 * **Directory**: `examples/optimization/`
 * **Requirements**:
   * `scipy` >= 1.17
-  * `torch` >= 2.12
 
 ## Papers
 

@@ -1,13 +1,12 @@
-"""Specular differentiation."""
+"""Backend selection and backend-specific implementations."""
 
-from .backends import (
+from ._registry import (
     BackendName,
     available_backends,
     get_backend,
     set_backend,
     use_backend,
 )
-from .calculation import derivative, gradient, jacobian
 
 
 __all__ = [
@@ -16,7 +15,4 @@ __all__ = [
     "get_backend",
     "set_backend",
     "use_backend",
-    "derivative",
-    "gradient",
-    "jacobian",
 ]
