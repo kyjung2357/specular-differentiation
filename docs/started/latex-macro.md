@@ -1,5 +1,7 @@
 # LaTeX Macro
 
+## Preamble
+
 {%
     include-markdown "../../README.md"
     start="<!-- latex-macro-start -->"

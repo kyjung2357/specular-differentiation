@@ -118,6 +118,8 @@ for the callback contracts.
 
 ## LaTeX Macro
 
+<!-- latex-macro-start -->
+
 To use the specular differentiation symbol in your LaTeX document, add the following code to your preamble (before `\begin{document}`):
 
 ```latex

@@ -1,5 +1,6 @@
 """Specular differentiation."""
 
+from importlib import metadata as _metadata
 from typing import TYPE_CHECKING, Any
 
 from .backends import (
@@ -10,6 +11,14 @@ from .backends import (
     use_backend,
 )
 from .calculation import derivative, gradient, jacobian
+
+
+try:
+    __version__ = _metadata.version("specular-differentiation")
+except _metadata.PackageNotFoundError:
+    __version__ = "0+unknown"
+
+del _metadata
 
 
 if TYPE_CHECKING:
@@ -48,6 +57,7 @@ def __dir__() -> list[str]:
 
 
 __all__ = [
+    "__version__",
     "BackendName",
     "available_backends",
     "get_backend",
