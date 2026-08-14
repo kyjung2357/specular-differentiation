@@ -67,16 +67,7 @@
 
   const sourcePathMap = [
     { page: "/api/calculation/", source: "specular/calculation.py" },
-    { page: "/api/backend/", source: "specular/backend.py" },
-    { page: "/api/ode/solver/", source: "specular/ode/solver.py" },
-    { page: "/api/ode/result/", source: "specular/ode/result.py" },
-    { page: "/api/ode/classical-solver/", source: "specular/ode/classical_solver.py" },
-    { page: "/api/optimization/solver/", source: "specular/optimization/solver.py" },
-    { page: "/api/optimization/result/", source: "specular/optimization/result.py" },
-    {
-      page: "/api/optimization/step-schedule/",
-      source: "specular/optimization/step_schedule.py",
-    },
+    { page: "/api/backend/", source: "specular/backends/_registry.py" },
   ];
 
   function sourceUrlForCurrentPage() {

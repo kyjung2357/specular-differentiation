@@ -6,8 +6,10 @@ from collections.abc import Callable
 from typing import overload
 
 from jax import Array, vmap
+from jax.extend.core import concrete_or_error
 import jax.numpy as jnp
 from jax.typing import ArrayLike
+import numpy as np
 
 from ._types import (
     Matrix,
@@ -60,11 +62,13 @@ def _same_sign_C(
     """Evaluate the same-sign mean as a stable convex combination."""
 
     a_radius_high = radius_a >= radius_b
-    ratio_a = radius_b / radius_a
-    ratio_b = radius_a / radius_b
-    from_a = beta + (alpha - beta) * (ratio_a / (1 + ratio_a))
-    from_b = alpha + (beta - alpha) * (ratio_b / (1 + ratio_b))
-    result = jnp.where(a_radius_high, from_a, from_b)
+    high_value = jnp.where(a_radius_high, alpha, beta)
+    low_value = jnp.where(a_radius_high, beta, alpha)
+    radius_high = jnp.where(a_radius_high, radius_a, radius_b)
+    radius_low = jnp.where(a_radius_high, radius_b, radius_a)
+    result = (
+        (high_value / radius_high) * (radius_low / 2) + low_value / 2
+    ) / (0.5 + 0.5 * (radius_low / radius_high))
     return jnp.clip(result, jnp.minimum(alpha, beta), jnp.maximum(alpha, beta))
 
 
@@ -89,29 +93,8 @@ def _A(a: ArrayLike, b: ArrayLike, c: ArrayLike) -> Array:
     same_sign = jnp.signbit(a_array) == jnp.signbit(b_array)
     slope_a = a_array / c_array
     slope_b = b_array / c_array
-    slope_radius_a = jnp.hypot(jnp.ones_like(slope_a), slope_a)
-    slope_radius_b = jnp.hypot(jnp.ones_like(slope_b), slope_b)
-    finite_slope_value = _same_sign_C(
-        slope_a,
-        slope_b,
-        slope_radius_a,
-        slope_radius_b,
-    )
-    direct_value = (unit_a + unit_b) / (inverse_a + inverse_b)
-    direct = jnp.where(
-        jnp.isfinite(slope_a) & jnp.isfinite(slope_b),
-        finite_slope_value,
-        direct_value,
-    )
-    radius_high = jnp.maximum(radius_a, radius_b)
-    radius_low = jnp.minimum(radius_a, radius_b)
-    rationalized = (
-        ((a_array + b_array) / radius_high) * (c_array / radius_low)
-    ) / (1 + inverse_a * inverse_b - unit_a * unit_b)
-    result = jnp.where(same_sign, direct, rationalized)
-
-    result = jnp.where(a_array == b_array, a_array / c_array, result)
-    result = jnp.where(a_array == -b_array, jnp.zeros_like(result), result)
+    slope_value = _C(slope_a, slope_b)
+    finite_slopes = jnp.isfinite(slope_a) & jnp.isfinite(slope_b)
 
     valid = (
         jnp.isfinite(a_array)
@@ -119,6 +102,39 @@ def _A(a: ArrayLike, b: ArrayLike, c: ArrayLike) -> Array:
         & jnp.isfinite(c_array)
         & (c_array > 0)
     )
+    diagonal = valid & (a_array == b_array)
+    antidiagonal = valid & ~diagonal & (a_array == -b_array)
+    same_nonfinite = (
+        valid
+        & ~(diagonal | antidiagonal)
+        & same_sign
+        & ~finite_slopes
+    )
+    a_high = jnp.abs(a_array) >= jnp.abs(b_array)
+    raw_high = jnp.where(a_high, a_array, b_array)
+    raw_low = jnp.where(a_high, b_array, a_array)
+    high = jnp.where(same_nonfinite, raw_high, jnp.ones_like(raw_high))
+    low = jnp.where(same_nonfinite, raw_low, jnp.zeros_like(raw_low))
+    scale = jnp.where(same_nonfinite, c_array, jnp.ones_like(c_array))
+    w = ((low / scale) - (scale / high)) / (1 + low / high)
+    same_nonfinite_value = w + jnp.copysign(
+        jnp.hypot(jnp.ones_like(w), w),
+        high,
+    )
+
+    radius_high = jnp.maximum(radius_a, radius_b)
+    radius_low = jnp.minimum(radius_a, radius_b)
+    rationalized = (
+        ((a_array + b_array) / radius_high) * (c_array / radius_low)
+    ) / (1 + inverse_a * inverse_b - unit_a * unit_b)
+    result = jnp.where(
+        finite_slopes,
+        slope_value,
+        jnp.where(same_nonfinite, same_nonfinite_value, rationalized),
+    )
+
+    result = jnp.where(diagonal, a_array / c_array, result)
+    result = jnp.where(antidiagonal, jnp.zeros_like(result), result)
     return jnp.where(valid, result, jnp.full_like(result, jnp.nan))
 
 
@@ -199,6 +215,8 @@ def _B(alpha: ArrayLike, beta: ArrayLike) -> Array:
         | (jnp.abs(half_angle) >= angular_limit)
     )
     result = jnp.where(saturated, _C(alpha_array, beta_array), angular)
+    opposite_sign = jnp.signbit(alpha_array) != jnp.signbit(beta_array)
+    result = jnp.where(opposite_sign, _C(alpha_array, beta_array), result)
 
     result = jnp.where(alpha_array == beta_array, alpha_array, result)
     return jnp.where(
@@ -210,13 +228,12 @@ def _B(alpha: ArrayLike, beta: ArrayLike) -> Array:
 
 def _point_and_step(
     x: ArrayLike,
-    h: ArrayLike,
+    h: ArrayLike | None,
     *,
     point_ndim: int,
 ) -> tuple[Array, Array]:
-    """Convert a point and scalar step using only static rank checks."""
+    """Convert a point and return explicit or dtype-adaptive steps."""
     x_array = jnp.asarray(x)
-    h_array = jnp.asarray(h)
 
     if x_array.ndim != point_ndim:
         kind = "scalar" if point_ndim == 0 else "vector"
@@ -225,16 +242,71 @@ def _point_and_step(
         )
     if point_ndim == 1 and x_array.shape[0] == 0:
         raise ValueError("Input 'x' must be a nonempty vector.")
-    if h_array.ndim != 0:
-        raise TypeError(
-            f"Step size 'h' must be a scalar; got shape {h_array.shape}."
-        )
 
-    dtype = _real_dtype(x_array, h_array)
-    return (
-        jnp.asarray(x_array, dtype=dtype),
-        jnp.asarray(h_array, dtype=dtype),
+    if h is None:
+        dtype = _real_dtype(x_array)
+        point = jnp.asarray(x_array, dtype=dtype)
+        base = jnp.cbrt(jnp.asarray(jnp.finfo(dtype).eps, dtype=dtype))
+        step = base * jnp.maximum(jnp.ones_like(point), jnp.abs(point))
+    else:
+        raw_h = jnp.asarray(h)
+        if raw_h.ndim != 0:
+            raise TypeError(
+                f"Step size 'h' must be a scalar; got shape {raw_h.shape}."
+            )
+        if jnp.issubdtype(raw_h.dtype, jnp.bool_):
+            raise TypeError("h must be a concrete real scalar")
+
+        dtype = _real_dtype(x_array, raw_h)
+        try:
+            concrete_h = concrete_or_error(
+                float,
+                h,
+                "h must be concrete under JAX transformations",
+            )
+        except TypeError as exc:
+            raise TypeError(
+                "h must be a concrete real scalar; close over it or pass it "
+                "as a static argument under JAX transformations"
+            ) from exc
+
+        effective_h = np.asarray(concrete_h, dtype=np.dtype(dtype)).item()
+        if not np.isfinite(effective_h) or effective_h <= 0.0:
+            raise ValueError("h must be finite and greater than zero")
+
+        point = jnp.asarray(x_array, dtype=dtype)
+        step = jnp.asarray(effective_h, dtype=dtype)
+
+    right_sample = point + step
+    left_sample = point - step
+    effective = (
+        jnp.isfinite(right_sample)
+        & jnp.isfinite(left_sample)
+        & (right_sample != point)
+        & (left_sample != point)
     )
+    step = jnp.where(effective, step, jnp.full_like(step, jnp.nan))
+
+    try:
+        point_host = np.asarray(point)
+        step_host = np.asarray(step)
+    except TypeError:
+        # A traced point cannot be value-inspected. The concrete step is still
+        # validated above, and JAX evaluates the displacement at runtime.
+        pass
+    else:
+        with np.errstate(over="ignore", invalid="ignore"):
+            right = point_host + step_host
+            left = point_host - step_host
+        if (
+            np.any(~np.isfinite(right))
+            or np.any(~np.isfinite(left))
+            or np.any(right == point_host)
+            or np.any(left == point_host)
+        ):
+            raise ValueError("h is too small or too large to perturb x")
+
+    return point, step
 
 
 def _function_value(
@@ -296,7 +368,8 @@ def _coordinate_derivatives(
     value = _function_value(f, x)
     _require_output_rank(value, output_ndim)
 
-    offsets = h * jnp.eye(x.shape[0], dtype=x.dtype)
+    steps = jnp.broadcast_to(h, x.shape)
+    offsets = steps[:, None] * jnp.eye(x.shape[0], dtype=x.dtype)
 
     def sample(offset: Array) -> tuple[Array, Array]:
         return (
@@ -314,14 +387,19 @@ def _coordinate_derivatives(
             "Function 'f' must return the same shape at x and x +/- h e_i."
         )
 
-    return _A(right_values - value, value - left_values, h)
+    step_shape = (x.shape[0],) + (1,) * value.ndim
+    return _A(
+        right_values - value,
+        value - left_values,
+        steps.reshape(step_shape),
+    )
 
 
 @overload
 def derivative(
     f: ScalarToScalarFunc,
     x: ArrayLike,
-    h: ArrayLike = 1e-6,
+    h: ArrayLike | None = None,
 ) -> Scalar: ...
 
 
@@ -329,14 +407,14 @@ def derivative(
 def derivative(
     f: ScalarToVectorFunc,
     x: ArrayLike,
-    h: ArrayLike = 1e-6,
+    h: ArrayLike | None = None,
 ) -> Vector: ...
 
 
 def derivative(
     f: ScalarToScalarFunc | ScalarToVectorFunc,
     x: ArrayLike,
-    h: ArrayLike = 1e-6,
+    h: ArrayLike | None = None,
 ) -> Scalar | Vector:
     r"""Approximate the specular derivative of a map from
     :math:`\mathbb R` to :math:`\mathbb R` or :math:`\mathbb R^m`.
@@ -351,7 +429,7 @@ def derivative(
 def gradient(
     f: VectorToScalarFunc,
     x: ArrayLike,
-    h: ArrayLike = 1e-6,
+    h: ArrayLike | None = None,
 ) -> Vector:
     r"""Approximate the specular gradient of
     :math:`f:\mathbb R^n\to\mathbb R`.
@@ -370,7 +448,7 @@ def gradient(
 def jacobian(
     f: VectorToVectorFunc,
     x: ArrayLike,
-    h: ArrayLike = 1e-6,
+    h: ArrayLike | None = None,
 ) -> Matrix:
     r"""Approximate the specular Jacobian of
     :math:`f:\mathbb R^n\to\mathbb R^m`.

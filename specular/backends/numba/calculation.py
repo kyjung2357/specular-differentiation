@@ -77,17 +77,9 @@ def _finite_C_scalar(alpha: float, beta: float) -> float:
         # infinity.
         if radius_a >= radius_b:
             ratio = radius_b / radius_a
-            inverse_weight_sum = 1.0 / (1.0 + ratio)
-            return (
-                alpha * (ratio * inverse_weight_sum)
-                + beta * inverse_weight_sum
-            )
+            return beta + (alpha - beta) * (ratio / (1.0 + ratio))
         ratio = radius_a / radius_b
-        inverse_weight_sum = 1.0 / (1.0 + ratio)
-        return (
-            alpha * inverse_weight_sum
-            + beta * (ratio * inverse_weight_sum)
-        )
+        return alpha + (beta - alpha) * (ratio / (1.0 + ratio))
 
     unit_a = alpha / radius_a
     unit_b = beta / radius_b
@@ -115,19 +107,19 @@ def _A_scalar(a: float, b: float, c: float) -> float:
     if a == -b:
         return 0.0
 
+    slope_a = a / c
+    slope_b = b / c
+    if math.isfinite(slope_a) and math.isfinite(slope_b):
+        return _finite_C_scalar(slope_a, slope_b)
+
+    same_sign = math.copysign(1.0, a) == math.copysign(1.0, b)
+    if same_sign:
+        high, low = (a, b) if abs(a) >= abs(b) else (b, a)
+        w = ((low / c) - (c / high)) / (1.0 + low / high)
+        return w + math.copysign(math.hypot(1.0, w), high)
+
     radius_a = math.hypot(a, c)
     radius_b = math.hypot(b, c)
-    same_sign = math.copysign(1.0, a) == math.copysign(1.0, b)
-
-    if same_sign:
-        slope_a = a / c
-        slope_b = b / c
-        if math.isfinite(slope_a) and math.isfinite(slope_b):
-            return _finite_C_scalar(slope_a, slope_b)
-        return (a / radius_a + b / radius_b) / (
-            c / radius_a + c / radius_b
-        )
-
     unit_a = a / radius_a
     unit_b = b / radius_b
     inverse_a = c / radius_a
@@ -155,6 +147,8 @@ def _B_scalar(alpha: float, beta: float) -> float:
         return _one_infinite_scalar(beta, math.copysign(1.0, alpha))
     if beta_infinite:
         return _one_infinite_scalar(alpha, math.copysign(1.0, beta))
+    if math.copysign(1.0, alpha) != math.copysign(1.0, beta):
+        return _finite_C_scalar(alpha, beta)
 
     angle = 0.5 * (math.atan(alpha) + math.atan(beta))
     if abs(angle) >= _ANGLE_LIMIT:
@@ -285,6 +279,44 @@ def _real_scalar(value: object, *, name: str) -> float:
         raise TypeError(f"{name} must be a real scalar") from exc
 
 
+def _positive_step(value: object) -> float:
+    """Require a finite, positive scalar step before compiling a callback."""
+
+    array = np.asarray(value)
+    if array.dtype.kind not in "iuf" or array.ndim != 0:
+        raise TypeError("h must be a concrete real scalar")
+    step = float(array)
+    if not np.isfinite(step) or step <= 0.0:
+        raise ValueError("h must be finite and greater than zero")
+    return step
+
+
+def _step_values(x: RealArray, h: Scalar | None) -> RealArray:
+    """Return explicit or dtype-adaptive steps matching the point shape."""
+
+    if h is None:
+        base = np.cbrt(np.finfo(np.float64).eps)
+        steps = base * np.maximum(1.0, np.abs(x))
+    else:
+        steps = np.full_like(x, _positive_step(h), dtype=np.float64)
+    return np.asarray(steps, dtype=np.float64)
+
+
+def _require_distinct_samples(x: RealArray, h: RealArray) -> None:
+    """Reject steps that cannot form finite, distinct floating-point samples."""
+
+    with np.errstate(over="ignore", invalid="ignore"):
+        right = x + h
+        left = x - h
+    if (
+        np.any(~np.isfinite(right))
+        or np.any(~np.isfinite(left))
+        or np.any(right == x)
+        or np.any(left == x)
+    ):
+        raise ValueError("h is too small or too large to perturb x")
+
+
 def _real_vector(value: object, *, name: str) -> Vector:
     """Normalize a vector argument to a private float64 copy."""
 
@@ -365,10 +397,6 @@ def _evaluate_center(
     return _real_output(value)
 
 
-def _invalid_h(h: float) -> bool:
-    return not np.isfinite(h) or h <= 0.0
-
-
 @njit
 def _line_scalar_loop(
     f: Callable[[float], Any],
@@ -407,21 +435,21 @@ def _line_vector_loop(
 def _coordinate_scalar_loop(
     f: Callable[[RealArray], Any],
     x: RealArray,
-    h: float,
+    h: RealArray,
     center: float,
 ) -> RealArray:
     result = np.empty(x.size, dtype=np.float64)
     for coordinate in range(x.size):
         x_right = x.copy()
         x_left = x.copy()
-        x_right[coordinate] += h
-        x_left[coordinate] -= h
+        x_right[coordinate] += h[coordinate]
+        x_left[coordinate] -= h[coordinate]
         right = np.asarray(f(x_right)).item()
         left = np.asarray(f(x_left)).item()
         result[coordinate] = _A_scalar(
             right - center,
             center - left,
-            h,
+            h[coordinate],
         )
     return result
 
@@ -430,15 +458,15 @@ def _coordinate_scalar_loop(
 def _coordinate_vector_loop(
     f: Callable[[RealArray], RealArray],
     x: RealArray,
-    h: float,
+    h: RealArray,
     center: RealArray,
 ) -> RealArray:
     result = np.empty((center.size, x.size), dtype=np.float64)
     for coordinate in range(x.size):
         x_right = x.copy()
         x_left = x.copy()
-        x_right[coordinate] += h
-        x_left[coordinate] -= h
+        x_right[coordinate] += h[coordinate]
+        x_left[coordinate] -= h[coordinate]
         right = np.asarray(f(x_right)).copy()
         left = np.asarray(f(x_left)).copy()
         if right.shape != center.shape or left.shape != center.shape:
@@ -448,7 +476,7 @@ def _coordinate_vector_loop(
             result[output, coordinate] = _A_scalar(
                 right[output] - center[output],
                 center[output] - left[output],
-                h,
+                h[coordinate],
             )
     return result
 
@@ -457,7 +485,7 @@ def _coordinate_vector_loop(
 def derivative(
     f: ScalarToScalarFunc,
     x: Scalar,
-    h: Scalar = 1e-6,
+    h: Scalar | None = None,
 ) -> Scalar: ...
 
 
@@ -465,50 +493,48 @@ def derivative(
 def derivative(
     f: ScalarToVectorFunc,
     x: Scalar,
-    h: Scalar = 1e-6,
+    h: Scalar | None = None,
 ) -> Vector: ...
 
 
 def derivative(
     f: ScalarToScalarFunc | ScalarToVectorFunc,
     x: Scalar,
-    h: Scalar = 1e-6,
+    h: Scalar | None = None,
 ) -> Scalar | Vector:
     r"""Approximate the Numba-compiled specular derivative on :math:`\mathbb R`."""
 
     x_value = _real_scalar(x, name="x")
-    h_value = _real_scalar(h, name="h")
+    x_array = np.asarray(x_value, dtype=np.float64)
+    h_value = _step_values(x_array, h)
+    _require_distinct_samples(x_array, h_value)
+    step = float(h_value)
     compiled_f = _compile_callback(f)
     center = _evaluate_center(compiled_f, x_value)
 
     if center.ndim == 0:
-        if _invalid_h(h_value):
-            return math.nan
-        return _line_scalar_loop(compiled_f, x_value, h_value, center.item())
+        return _line_scalar_loop(compiled_f, x_value, step, center.item())
 
-    if _invalid_h(h_value):
-        return np.full(center.shape, np.nan, dtype=np.float64)
-    return _line_vector_loop(compiled_f, x_value, h_value, center)
+    return _line_vector_loop(compiled_f, x_value, step, center)
 
 
 def gradient(
     f: VectorToScalarFunc,
     x: Vector,
-    h: Scalar = 1e-6,
+    h: Scalar | None = None,
 ) -> Vector:
     r"""Approximate the Numba-compiled gradient; result shape is ``(n,)``."""
 
     x_array = _real_vector(x, name="x")
     if x_array.size == 0:
         raise ValueError("x must be a nonempty vector")
-    h_value = _real_scalar(h, name="h")
+    h_value = _step_values(x_array, h)
+    _require_distinct_samples(x_array, h_value)
     compiled_f = _compile_callback(f)
     center = _evaluate_center(compiled_f, x_array.copy())
     if center.ndim != 0:
         raise TypeError("f must return a scalar")
 
-    if _invalid_h(h_value):
-        return np.full(x_array.shape, np.nan, dtype=np.float64)
     return _coordinate_scalar_loop(
         compiled_f,
         x_array,
@@ -520,19 +546,18 @@ def gradient(
 def jacobian(
     f: VectorToVectorFunc,
     x: Vector,
-    h: Scalar = 1e-6,
+    h: Scalar | None = None,
 ) -> Matrix:
     r"""Approximate the Numba-compiled Jacobian; result shape is ``(m, n)``."""
 
     x_array = _real_vector(x, name="x")
     if x_array.size == 0:
         raise ValueError("x must be a nonempty vector")
-    h_value = _real_scalar(h, name="h")
+    h_value = _step_values(x_array, h)
+    _require_distinct_samples(x_array, h_value)
     compiled_f = _compile_callback(f)
     center = _evaluate_center(compiled_f, x_array.copy())
     if center.ndim != 1:
         raise TypeError("f must return a vector")
 
-    if _invalid_h(h_value):
-        return np.full((center.size, x_array.size), np.nan, dtype=np.float64)
     return _coordinate_vector_loop(compiled_f, x_array, h_value, center)

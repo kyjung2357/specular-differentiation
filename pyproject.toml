@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=77.0.3", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,13 +7,12 @@ name = "specular-differentiation"
 version = "1.3.0"
 description = "Specular differentiation in normed vector spaces and its applications"
 requires-python = ">=3.14"
-license = {text = "MIT License"}
+license = "MIT"
 authors = [{name = "Kiyuob Jung", email = "kyjung@msu.edu"}]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.14",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Mathematics"
 ]
@@ -38,20 +37,7 @@ numba = [
     "numba>=0.65"
 ]
 
-ode = [
-    "matplotlib>=3.10",
-    "pandas>=3.0",
-    "tqdm>=4.67"
-]
-
-optimization = [
-    "matplotlib>=3.10",
-    "tqdm>=4.67",
-]
-
 dev = [
-    "specular-differentiation[ode]",
-    "specular-differentiation[optimization]",
     "specular-differentiation[numba]",
     "specular-differentiation[jax]",
     "pytest>=9.0",

@@ -174,37 +174,33 @@ def _A(a: RealInput, b: RealInput, c: RealInput) -> RealResult:
     result[antidiagonal] = 0.0
 
     unresolved = valid & ~(diagonal | antidiagonal)
-    same_sign = unresolved & (np.signbit(a_flat) == np.signbit(b_flat))
+    with np.errstate(over="ignore", divide="ignore", invalid="ignore"):
+        slope_a = a_flat / c_flat
+        slope_b = b_flat / c_flat
+
+    finite_slopes = unresolved & np.isfinite(slope_a) & np.isfinite(slope_b)
+    if np.any(finite_slopes):
+        result[finite_slopes] = _finite_C(
+            slope_a[finite_slopes],
+            slope_b[finite_slopes],
+        )
+
+    nonfinite_slopes = unresolved & ~finite_slopes
+    same_sign = nonfinite_slopes & (
+        np.signbit(a_flat) == np.signbit(b_flat)
+    )
     if np.any(same_sign):
         av = a_flat[same_sign]
         bv = b_flat[same_sign]
         cv = c_flat[same_sign]
-        radius_a = np.hypot(av, cv)
-        radius_b = np.hypot(bv, cv)
+        a_high = np.abs(av) >= np.abs(bv)
+        high = np.where(a_high, av, bv)
+        low = np.where(a_high, bv, av)
         with np.errstate(over="ignore", divide="ignore", invalid="ignore"):
-            slope_a = av / cv
-            slope_b = bv / cv
-        finite_slopes = np.isfinite(slope_a) & np.isfinite(slope_b)
-        values = np.empty_like(av)
-        if np.any(finite_slopes):
-            values[finite_slopes] = _finite_C(
-                slope_a[finite_slopes],
-                slope_b[finite_slopes],
-            )
-        infinite_slopes = ~finite_slopes
-        if np.any(infinite_slopes):
-            ai = av[infinite_slopes]
-            bi = bv[infinite_slopes]
-            ci = cv[infinite_slopes]
-            rai = radius_a[infinite_slopes]
-            rbi = radius_b[infinite_slopes]
-            with np.errstate(over="ignore", divide="ignore", invalid="ignore"):
-                values[infinite_slopes] = (
-                    ai / rai + bi / rbi
-                ) / (ci / rai + ci / rbi)
-        result[same_sign] = values
+            w = ((low / cv) - (cv / high)) / (1.0 + low / high)
+            result[same_sign] = w + np.copysign(np.hypot(1.0, w), high)
 
-    opposite_sign = unresolved & ~same_sign
+    opposite_sign = nonfinite_slopes & ~same_sign
     if np.any(opposite_sign):
         av = a_flat[opposite_sign]
         bv = b_flat[opposite_sign]
@@ -273,15 +269,28 @@ def _B(alpha: RealInput, beta: RealInput) -> RealResult:
     if np.any(finite):
         av = alpha_flat[finite]
         bv = beta_flat[finite]
-        angle = 0.5 * (np.arctan(av) + np.arctan(bv))
-        values = np.tan(angle)
+        opposite_sign = np.signbit(av) != np.signbit(bv)
+        values = np.empty_like(av)
+        values[opposite_sign] = _finite_C(
+            av[opposite_sign], bv[opposite_sign]
+        )
+
+        same_sign = ~opposite_sign
+        angle = 0.5 * (
+            np.arctan(av[same_sign]) + np.arctan(bv[same_sign])
+        )
+        same_sign_values = np.tan(angle)
 
         # arctan can round a very large finite slope to pi/2.
         # Fall back to the algebraic representation before tan loses its magnitude.
         angle_limit = np.nextafter(np.pi / 2.0, 0.0)
         saturated = np.abs(angle) >= angle_limit
         if np.any(saturated):
-            values[saturated] = _finite_C(av[saturated], bv[saturated])
+            same_sign_values[saturated] = _finite_C(
+                av[same_sign][saturated],
+                bv[same_sign][saturated],
+            )
+        values[same_sign] = same_sign_values
         result[finite] = values
 
     return _finish(result.reshape(shape))
@@ -349,6 +358,44 @@ def _real_scalar(value: object, *, name: str) -> float:
         raise TypeError(f"{name} must be a real scalar") from exc
 
 
+def _positive_step(value: object) -> float:
+    """Require a finite, positive scalar step before evaluating a callback."""
+
+    array = np.asarray(value)
+    if array.dtype.kind not in "iuf" or array.ndim != 0:
+        raise TypeError("h must be a concrete real scalar")
+    step = float(array)
+    if not np.isfinite(step) or step <= 0.0:
+        raise ValueError("h must be finite and greater than zero")
+    return step
+
+
+def _step_values(x: RealArray, h: Scalar | None) -> RealArray:
+    """Return explicit or dtype-adaptive steps matching the point shape."""
+
+    if h is None:
+        base = np.cbrt(np.finfo(np.float64).eps)
+        steps = base * np.maximum(1.0, np.abs(x))
+    else:
+        steps = np.full_like(x, _positive_step(h), dtype=np.float64)
+    return np.asarray(steps, dtype=np.float64)
+
+
+def _require_distinct_samples(x: RealArray, h: RealArray) -> None:
+    """Reject steps that cannot form finite, distinct floating-point samples."""
+
+    with np.errstate(over="ignore", invalid="ignore"):
+        right = x + h
+        left = x - h
+    if (
+        np.any(~np.isfinite(right))
+        or np.any(~np.isfinite(left))
+        or np.any(right == x)
+        or np.any(left == x)
+    ):
+        raise ValueError("h is too small or too large to perturb x")
+
+
 def _real_vector(value: object, *, name: str) -> Vector:
     """Normalize a vector argument to a private float64 copy."""
 
@@ -397,22 +444,25 @@ def _matching_output(value: object, shape: tuple[int, ...]) -> RealArray:
 def _line_derivative(
     f: ScalarToScalarFunc | ScalarToVectorFunc,
     x: Scalar,
-    h: Scalar,
+    h: Scalar | None,
 ) -> Scalar | Vector:
     """Differentiate a scalar-domain map with scalar or vector codomain."""
 
     x_value = _real_scalar(x, name="x")
-    h_value = _real_scalar(h, name="h")
+    x_array = np.asarray(x_value, dtype=np.float64)
+    h_value = _step_values(x_array, h)
+    _require_distinct_samples(x_array, h_value)
+    step = float(h_value)
     f_value = _real_output(f(x_value))
-    f_right = _matching_output(f(x_value + h_value), f_value.shape)
-    f_left = _matching_output(f(x_value - h_value), f_value.shape)
-    return _A(f_right - f_value, f_value - f_left, h_value)
+    f_right = _matching_output(f(x_value + step), f_value.shape)
+    f_left = _matching_output(f(x_value - step), f_value.shape)
+    return _A(f_right - f_value, f_value - f_left, step)
 
 
 def _coordinate_derivatives(
     f: VectorToScalarFunc | VectorToVectorFunc,
     x: Vector,
-    h: Scalar,
+    h: Scalar | None,
     *,
     output_ndim: int,
 ) -> RealArray:
@@ -422,7 +472,8 @@ def _coordinate_derivatives(
     if x_array.size == 0:
         raise ValueError("x must be a nonempty vector")
 
-    h_value = _real_scalar(h, name="h")
+    h_values = _step_values(x_array, h)
+    _require_distinct_samples(x_array, h_values)
     f_value = _real_output(f(x_array.copy()))
     if f_value.ndim != output_ndim:
         output_name = "a scalar" if output_ndim == 0 else "a vector"
@@ -435,15 +486,20 @@ def _coordinate_derivatives(
     for index in range(x_array.size):
         x_right = x_array.copy()
         x_left = x_array.copy()
-        x_right[index] += h_value
-        x_left[index] -= h_value
+        x_right[index] += h_values[index]
+        x_left[index] -= h_values[index]
         right_values[index] = _matching_output(f(x_right), f_value.shape)
         left_values[index] = _matching_output(f(x_left), f_value.shape)
 
     increments_right = right_values - f_value
     increments_left = f_value - left_values
+    step_shape = (x_array.size,) + (1,) * f_value.ndim
     values = np.asarray(
-        _A(increments_right, increments_left, h_value),
+        _A(
+            increments_right,
+            increments_left,
+            h_values.reshape(step_shape),
+        ),
         dtype=np.float64,
     )
     return values
@@ -453,7 +509,7 @@ def _coordinate_derivatives(
 def derivative(
     f: ScalarToScalarFunc,
     x: Scalar,
-    h: Scalar = 1e-6,
+    h: Scalar | None = None,
 ) -> Scalar: ...
 
 
@@ -461,14 +517,14 @@ def derivative(
 def derivative(
     f: ScalarToVectorFunc,
     x: Scalar,
-    h: Scalar = 1e-6,
+    h: Scalar | None = None,
 ) -> Vector: ...
 
 
 def derivative(
     f: ScalarToScalarFunc | ScalarToVectorFunc,
     x: Scalar,
-    h: Scalar = 1e-6,
+    h: Scalar | None = None,
 ) -> Scalar | Vector:
     r"""Approximate the specular derivative of a map from
     :math:`\mathbb R` to :math:`\mathbb R` or :math:`\mathbb R^m`.
@@ -483,7 +539,7 @@ def derivative(
 def gradient(
     f: VectorToScalarFunc,
     x: Vector,
-    h: Scalar = 1e-6,
+    h: Scalar | None = None,
 ) -> Vector:
     r"""Approximate the specular gradient of
     :math:`f:\mathbb R^n\to\mathbb R`.
@@ -497,7 +553,7 @@ def gradient(
 def jacobian(
     f: VectorToVectorFunc,
     x: Vector,
-    h: Scalar = 1e-6,
+    h: Scalar | None = None,
 ) -> Matrix:
     r"""Approximate the specular Jacobian of
     :math:`f:\mathbb R^n\to\mathbb R^m`.

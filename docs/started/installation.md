@@ -13,26 +13,14 @@ Requirements:
 * **Python** >= 3.14
 * `numpy` >= 2.4
 
-The package is distributed on PyPI as `specular-differentiation` and imported in Python as `specular`.
-Check the version:
-
-```python
-import specular
-
-print("version: ", specular.__version__)
-```
-
-```text
-version:  1.3.0
-```
+The package is distributed on PyPI as `specular-differentiation` and imported
+in Python as `specular`.
 
 ## Optional features
 
 Additional features are provided as optional extras:
 
 ```bash
-pip install "specular-differentiation[ode]"             # ODE solvers
-pip install "specular-differentiation[optimization]"    # optimization routines
 pip install "specular-differentiation[numba]"           # Numba backend
 pip install "specular-differentiation[jax]"             # JAX backend
 ```
@@ -44,27 +32,31 @@ This adds the following dependencies:
 
 ## Developer installation
 
-To install all dependencies including tests, docs, and examples.
+To install the optional backends and development dependencies for tests:
 
 ```bash
 pip install -e ".[dev]"
 ```
 
-This adds the following dependencies:
+The `dev` extra also installs SciPy, Pytest, and IPython.
 
-* **[SciPy](https://scipy.org/)** (`scipy` >= 1.17)
-* **[Pytest](https://docs.pytest.org/en/stable/)** (`pytest` >= 9.0)
+Documentation tools are available separately with `pip install -e ".[docs]"`.
 
 ## Backend support
 
-By default, specular-differentiation uses the NumPy backend (CPU).
-To enable hardware acceleration, you can install the package with different backends.
+By default, specular-differentiation uses the NumPy backend. Installing an
+optional dependency does not change the backend automatically.
 
-| Backend | Calculation | ODE | Optimization |
-|:---:|:---:|:---:|:---:|
-| NumPy | supported | supported | supported |
-| Numba | supported | supported | not supported |
-| JAX | supported | supported | experimental |
+| Backend | Calculation |
+|:---:|:---:|
+| NumPy | supported |
+| Numba | supported |
+| JAX | supported |
 
-> [!NOTE]
-> TensorFlow is not supported for the Python 3.14 target.
+Select an installed backend explicitly:
+
+```python
+import specular
+
+specular.set_backend("numba")
+```

@@ -58,35 +58,15 @@ nav:
     - User installation: started/installation.md
     - Quick start: started/quick-start.md
     - LaTeX Macro: started/latex-macro.md
-    - Mathematical background: started/mathematical-background.md
-    - Simple examples: started/simple-examples.md
   - API Reference:
     - api/index.md
     - specular.calculation:
       - Overview: api/calculation.md
-      - specular.calculation: api/calculation/specular-calculation.md
-    - specular.backend:
+      - specular.calculation.derivative: api/calculation/derivative.md
+      - specular.calculation.gradient: api/calculation/gradient.md
+      - specular.calculation.jacobian: api/calculation/jacobian.md
+    - specular.backends:
       - Overview: api/backend.md
-      - specular.backend.backend_info: api/backend/backend_info.md
-      - specular.backend.change_backend: api/backend/change_backend.md
-    - specular.ode:
-      - Overview: api/ode.md
-      - specular.ode.solver: api/ode/solver.md
-      - specular.ode.classical_solver: api/ode/classical-solver.md
-      - specular.ode.result: api/ode/result.md
-    - specular.optimization:
-      - Overview: api/optimization.md
-      - specular.optimization.step_schedule: api/optimization/step-schedule.md
-      - specular.optimization.solver: api/optimization/solver.md
-      - specular.optimization.result: api/optimization/result.md
-  - Examples:
-    - examples/index.md
-    - Ordinary differential equation:
-      - examples/ode/index.md
-      - 2026 Jung: examples/ode-2026-jung.md
-    - Optimization:
-      - examples/optimization/index.md
-      - 2026 Jung: examples/optimization-2026-jung.md
 
 markdown_extensions:
   - admonition
@@ -102,7 +82,6 @@ extra_javascript:
   - javascripts/header-home-link.js
   - javascripts/code-copy-buttons.js
   - javascripts/mathjax.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 extra_css:
