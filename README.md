@@ -41,7 +41,7 @@ The package is distributed as `specular-differentiation` and imported in
 Python as `specular`.
 
 This installs `derivative`, `gradient`, and `jacobian`, using NumPy by default,
-as well as the scalar ODE schemes. Backend selection is available through
+as well as the scalar ODE scheme. Backend selection is available through
 `set_backend`, `get_backend`, `use_backend`, and `available_backends`.
 
 **Optional features**
@@ -83,29 +83,32 @@ print(specular.derivative(ReLU, x=0))
 0.41421356237309503
 ```
 
-## Scalar ODE schemes
+## Scalar ODE scheme
 
-The package provides three scalar specular ellipse schemes directly from the
-top-level namespace:
+The scalar specular ellipse scheme is available directly from the top-level
+namespace:
 
 ```python
 import specular
 
 result = specular.ellipse_scheme(
-    lambda t, y: -y,
-    (0.0, 1.0),
+    lambda t, u: -u,
+    0.0,
+    1.0,
     1.0,
     n_steps=100,
-    sigma=1.0,
+    sigma_n=1.0,
 )
 ```
 
-`ellipse_scheme`, `ellipse_scheme_3rd_order`, and
-`ellipse_scheme_4th_order` all accept either a positive scalar `sigma` or a
-callable scale policy. A policy receives the mesh width `h`, so it may depend
-on the discretization. The advertised third- and fourth-order convergence is
-conditional on the corresponding cancellation assumptions; choosing an
-arbitrary or mesh-dependent policy does not by itself provide that order.
+`sigma_n` may be a positive scalar or a callable
+`sigma_n(n, t_n, u_n, h_n)`. Set `third_order=True` or `fourth_order=True`,
+with `sigma_n=None`, to select the scale by numerically enforcing the
+corresponding defect-cancellation condition. The two flags are mutually
+exclusive. Cancellation alone is not an unconditional convergence-order
+guarantee. Fourth-order convergence requires the unique positive E5(i) branch
+and the stated uniform smoothness and boundedness hypotheses; it is not
+guaranteed for arbitrary `F`.
 
 See the [scalar ODE API documentation](https://kyjung2357.github.io/specular-differentiation/api/ode/)
 for the callback contracts.

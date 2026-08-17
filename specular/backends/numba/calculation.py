@@ -5,8 +5,7 @@ from __future__ import annotations
 import math
 from collections.abc import Callable
 from functools import lru_cache
-from types import BuiltinFunctionType, FunctionType
-from typing import Any, overload
+from typing import Any, NamedTuple, overload
 
 import numpy as np
 import numpy.typing as npt
@@ -32,6 +31,7 @@ type RealResult = float | RealArray
 __all__ = ["derivative", "gradient", "jacobian"]
 
 _ANGLE_LIMIT = float(np.nextafter(np.pi / 2.0, 0.0))
+_CALLBACK_CACHE_SIZE = 128
 
 
 @njit(cache=True, error_model="numpy")
@@ -350,9 +350,8 @@ def _real_output(value: object) -> RealArray:
         raise TypeError("f must return real values") from exc
 
 
-@lru_cache(maxsize=128)
 def _compile_python_callback(f: Callable[..., Any]) -> CPUDispatcher:
-    """Compile and retain a bounded set of ordinary callback functions."""
+    """Compile an ordinary callable directly or through a one-argument wrapper."""
 
     try:
         return njit(f)
@@ -369,17 +368,123 @@ def _compile_python_callback(f: Callable[..., Any]) -> CPUDispatcher:
             raise TypeError("f must be a Numba-compilable callable") from exc
 
 
-def _compile_callback(f: Callable[..., Any]) -> CPUDispatcher:
-    """Return a reusable nopython dispatcher for a supported callback."""
+class _CompiledCallback(NamedTuple):
+    """A callback dispatcher and its callback-specific numerical drivers."""
 
-    if isinstance(f, CPUDispatcher):
-        return f
-    if not isinstance(f, (FunctionType, BuiltinFunctionType, np.ufunc)):
-        raise TypeError(
-            "f must be a Python function, builtin, NumPy ufunc, "
-            "or Numba CPUDispatcher"
-        )
-    return _compile_python_callback(f)
+    dispatcher: CPUDispatcher
+    line_scalar: CPUDispatcher
+    line_vector: CPUDispatcher
+    coordinate_scalar: CPUDispatcher
+    coordinate_vector: CPUDispatcher
+
+
+def _build_compiled_callback(f: Callable[..., Any]) -> _CompiledCallback:
+    """Build drivers that close over one callback instead of specializing globally."""
+
+    compiled_f = f if isinstance(f, CPUDispatcher) else _compile_python_callback(f)
+
+    @njit
+    def line_scalar(
+        x: float,
+        h: float,
+        center: float,
+    ) -> float:
+        right = np.asarray(compiled_f(x + h)).item()
+        left = np.asarray(compiled_f(x - h)).item()
+        return _A_scalar(right - center, center - left, h)
+
+    @njit
+    def line_vector(
+        x: float,
+        h: float,
+        center: RealArray,
+    ) -> RealArray:
+        right = np.asarray(compiled_f(x + h)).copy()
+        left = np.asarray(compiled_f(x - h)).copy()
+        if right.shape != center.shape or left.shape != center.shape:
+            raise ValueError("f returned inconsistent shapes")
+
+        result = np.empty(center.size, dtype=np.float64)
+        for index in range(center.size):
+            result[index] = _A_scalar(
+                right[index] - center[index],
+                center[index] - left[index],
+                h,
+            )
+        return result
+
+    @njit
+    def coordinate_scalar(
+        x: RealArray,
+        h: RealArray,
+        center: float,
+    ) -> RealArray:
+        result = np.empty(x.size, dtype=np.float64)
+        for coordinate in range(x.size):
+            x_right = x.copy()
+            x_left = x.copy()
+            x_right[coordinate] += h[coordinate]
+            x_left[coordinate] -= h[coordinate]
+            right = np.asarray(compiled_f(x_right)).item()
+            left = np.asarray(compiled_f(x_left)).item()
+            result[coordinate] = _A_scalar(
+                right - center,
+                center - left,
+                h[coordinate],
+            )
+        return result
+
+    @njit
+    def coordinate_vector(
+        x: RealArray,
+        h: RealArray,
+        center: RealArray,
+    ) -> RealArray:
+        result = np.empty((center.size, x.size), dtype=np.float64)
+        for coordinate in range(x.size):
+            x_right = x.copy()
+            x_left = x.copy()
+            x_right[coordinate] += h[coordinate]
+            x_left[coordinate] -= h[coordinate]
+            right = np.asarray(compiled_f(x_right)).copy()
+            left = np.asarray(compiled_f(x_left)).copy()
+            if right.shape != center.shape or left.shape != center.shape:
+                raise ValueError("f returned inconsistent shapes")
+
+            for output in range(center.size):
+                result[output, coordinate] = _A_scalar(
+                    right[output] - center[output],
+                    center[output] - left[output],
+                    h[coordinate],
+                )
+        return result
+
+    return _CompiledCallback(
+        compiled_f,
+        line_scalar,
+        line_vector,
+        coordinate_scalar,
+        coordinate_vector,
+    )
+
+
+@lru_cache(maxsize=_CALLBACK_CACHE_SIZE)
+def _cached_compiled_callback(f: Callable[..., Any]) -> _CompiledCallback:
+    """Retain a bounded set of callback-specific dispatchers and drivers."""
+
+    return _build_compiled_callback(f)
+
+
+def _compile_callback(f: Callable[..., Any]) -> _CompiledCallback:
+    """Compile any callable that Numba can use in nopython mode."""
+
+    if not callable(f):
+        raise TypeError("f must be a Numba-compilable callable")
+    try:
+        hash(f)
+    except TypeError:
+        return _build_compiled_callback(f)
+    return _cached_compiled_callback(f)
 
 
 def _evaluate_center(
@@ -395,90 +500,6 @@ def _evaluate_center(
     if not compiled_f.nopython_signatures:
         raise TypeError("f must be Numba-compilable in nopython mode")
     return _real_output(value)
-
-
-@njit
-def _line_scalar_loop(
-    f: Callable[[float], Any],
-    x: float,
-    h: float,
-    center: float,
-) -> float:
-    right = np.asarray(f(x + h)).item()
-    left = np.asarray(f(x - h)).item()
-    return _A_scalar(right - center, center - left, h)
-
-
-@njit
-def _line_vector_loop(
-    f: Callable[[float], RealArray],
-    x: float,
-    h: float,
-    center: RealArray,
-) -> RealArray:
-    right = np.asarray(f(x + h)).copy()
-    left = np.asarray(f(x - h)).copy()
-    if right.shape != center.shape or left.shape != center.shape:
-        raise ValueError("f returned inconsistent shapes")
-
-    result = np.empty(center.size, dtype=np.float64)
-    for index in range(center.size):
-        result[index] = _A_scalar(
-            right[index] - center[index],
-            center[index] - left[index],
-            h,
-        )
-    return result
-
-
-@njit
-def _coordinate_scalar_loop(
-    f: Callable[[RealArray], Any],
-    x: RealArray,
-    h: RealArray,
-    center: float,
-) -> RealArray:
-    result = np.empty(x.size, dtype=np.float64)
-    for coordinate in range(x.size):
-        x_right = x.copy()
-        x_left = x.copy()
-        x_right[coordinate] += h[coordinate]
-        x_left[coordinate] -= h[coordinate]
-        right = np.asarray(f(x_right)).item()
-        left = np.asarray(f(x_left)).item()
-        result[coordinate] = _A_scalar(
-            right - center,
-            center - left,
-            h[coordinate],
-        )
-    return result
-
-
-@njit
-def _coordinate_vector_loop(
-    f: Callable[[RealArray], RealArray],
-    x: RealArray,
-    h: RealArray,
-    center: RealArray,
-) -> RealArray:
-    result = np.empty((center.size, x.size), dtype=np.float64)
-    for coordinate in range(x.size):
-        x_right = x.copy()
-        x_left = x.copy()
-        x_right[coordinate] += h[coordinate]
-        x_left[coordinate] -= h[coordinate]
-        right = np.asarray(f(x_right)).copy()
-        left = np.asarray(f(x_left)).copy()
-        if right.shape != center.shape or left.shape != center.shape:
-            raise ValueError("f returned inconsistent shapes")
-
-        for output in range(center.size):
-            result[output, coordinate] = _A_scalar(
-                right[output] - center[output],
-                center[output] - left[output],
-                h[coordinate],
-            )
-    return result
 
 
 @overload
@@ -509,13 +530,13 @@ def derivative(
     h_value = _step_values(x_array, h)
     _require_distinct_samples(x_array, h_value)
     step = float(h_value)
-    compiled_f = _compile_callback(f)
-    center = _evaluate_center(compiled_f, x_value)
+    compiled = _compile_callback(f)
+    center = _evaluate_center(compiled.dispatcher, x_value)
 
     if center.ndim == 0:
-        return _line_scalar_loop(compiled_f, x_value, step, center.item())
+        return compiled.line_scalar(x_value, step, center.item())
 
-    return _line_vector_loop(compiled_f, x_value, step, center)
+    return compiled.line_vector(x_value, step, center)
 
 
 def gradient(
@@ -530,13 +551,12 @@ def gradient(
         raise ValueError("x must be a nonempty vector")
     h_value = _step_values(x_array, h)
     _require_distinct_samples(x_array, h_value)
-    compiled_f = _compile_callback(f)
-    center = _evaluate_center(compiled_f, x_array.copy())
+    compiled = _compile_callback(f)
+    center = _evaluate_center(compiled.dispatcher, x_array.copy())
     if center.ndim != 0:
         raise TypeError("f must return a scalar")
 
-    return _coordinate_scalar_loop(
-        compiled_f,
+    return compiled.coordinate_scalar(
         x_array,
         h_value,
         center.item(),
@@ -555,9 +575,9 @@ def jacobian(
         raise ValueError("x must be a nonempty vector")
     h_value = _step_values(x_array, h)
     _require_distinct_samples(x_array, h_value)
-    compiled_f = _compile_callback(f)
-    center = _evaluate_center(compiled_f, x_array.copy())
+    compiled = _compile_callback(f)
+    center = _evaluate_center(compiled.dispatcher, x_array.copy())
     if center.ndim != 1:
         raise TypeError("f must return a vector")
 
-    return _coordinate_vector_loop(compiled_f, x_array, h_value, center)
+    return compiled.coordinate_vector(x_array, h_value, center)

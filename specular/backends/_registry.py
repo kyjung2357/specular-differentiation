@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from contextlib import ContextDecorator
-from contextvars import ContextVar
+from contextvars import ContextVar, Token
 from functools import lru_cache, wraps
 from importlib import import_module
 from inspect import (
@@ -12,10 +12,14 @@ from inspect import (
     iscoroutinefunction,
     isgeneratorfunction,
 )
-from typing import Any, Final, Literal, Protocol, cast
+from threading import Lock
+from typing import Any, Final, Literal, Protocol, TypeVar, cast
 
 
 type BackendName = Literal["numpy", "numba", "jax"]
+
+
+_F = TypeVar("_F", bound=Callable[..., Any])
 
 
 class _CalculationBackend(Protocol):
@@ -40,10 +44,10 @@ _BACKEND_MODULES: Final[dict[BackendName, str]] = {
     "jax": "specular.backends.jax.calculation",
 }
 
-_BACKEND_DEPENDENCIES: Final[dict[BackendName, str]] = {
-    "numpy": "numpy",
-    "numba": "numba",
-    "jax": "jax",
+_BACKEND_DEPENDENCIES: Final[dict[BackendName, tuple[str, ...]]] = {
+    "numpy": ("numpy",),
+    "numba": ("numba",),
+    "jax": ("jax", "jaxlib"),
 }
 
 _REQUIRED_MEMBERS: Final = (
@@ -86,13 +90,20 @@ def _load_backend(name: BackendName) -> _CalculationBackend:
     try:
         module = import_module(module_name)
     except ModuleNotFoundError as exc:
-        dependency = _BACKEND_DEPENDENCIES[name]
-        if exc.name == dependency or (
-            exc.name is not None and exc.name.startswith(f"{dependency}.")
-        ):
+        dependencies = _BACKEND_DEPENDENCIES[name]
+        missing_dependency = exc.name is not None and any(
+            exc.name == dependency
+            or exc.name.startswith(f"{dependency}.")
+            for dependency in dependencies
+        )
+        if missing_dependency:
+            dependency_names = " and ".join(map(repr, dependencies))
+            dependency_label = (
+                "dependency" if len(dependencies) == 1 else "dependencies"
+            )
             raise _BackendUnavailableError(
-                f"backend {name!r} requires the optional dependency "
-                f"{dependency!r}; install "
+                f"backend {name!r} requires the optional {dependency_label} "
+                f"{dependency_names}; install "
                 f"'specular-differentiation[{name}]'"
             ) from exc
         raise
@@ -110,13 +121,10 @@ def _load_backend(name: BackendName) -> _CalculationBackend:
     return cast(_CalculationBackend, module)
 
 
-def _get_backend_module(
-    name: str | None = None,
-) -> _CalculationBackend:
-    """Return the selected backend module for internal dispatch."""
+def _get_selected_backend() -> _CalculationBackend:
+    """Return the backend module selected in the current context."""
 
-    selected = get_backend() if name is None else _validate_backend(name)
-    return _load_backend(selected)
+    return _load_backend(get_backend())
 
 
 def get_backend() -> BackendName:
@@ -159,24 +167,35 @@ class _BackendContext(ContextDecorator):
 
     def __init__(self, name: str) -> None:
         self._name = name
-        self._token: Any = None
+        self._entry_lock = Lock()
+        self._token: Token[BackendName] | None = None
 
     def _recreate_cm(self) -> _BackendContext:
         return type(self)(self._name)
 
     def __enter__(self) -> BackendName:
-        selected = _validate_backend(self._name)
-        _load_backend(selected)
-        self._token = _current_backend.set(selected)
-        return selected
+        with self._entry_lock:
+            if self._token is not None:
+                raise RuntimeError("backend context is already entered")
+            selected = _validate_backend(self._name)
+            _load_backend(selected)
+            self._token = _current_backend.set(selected)
+            return selected
 
     def __exit__(self, *exc_info: object) -> None:
-        if self._token is None:
-            raise RuntimeError("backend context was not entered")
-        _current_backend.reset(self._token)
-        self._token = None
+        with self._entry_lock:
+            if self._token is None:
+                raise RuntimeError("backend context was not entered")
+            _current_backend.reset(self._token)
+            self._token = None
 
-    def __call__(self, func: Callable[..., Any]) -> Callable[..., Any]:
+    def __call__(self, func: _F) -> _F:
+        if isgeneratorfunction(func) or isasyncgenfunction(func):
+            raise TypeError(
+                "use_backend does not support decorating generator or "
+                "async-generator functions"
+            )
+
         if iscoroutinefunction(func):
 
             @wraps(func)
@@ -184,34 +203,17 @@ class _BackendContext(ContextDecorator):
                 with self._recreate_cm():
                     return await func(*args, **kwargs)
 
-            return async_wrapper
+            return cast(_F, async_wrapper)
 
-        if isasyncgenfunction(func):
-
-            @wraps(func)
-            async def async_generator_wrapper(*args: Any, **kwargs: Any):
-                with self._recreate_cm():
-                    async for item in func(*args, **kwargs):
-                        yield item
-
-            return async_generator_wrapper
-
-        if isgeneratorfunction(func):
-
-            @wraps(func)
-            def generator_wrapper(*args: Any, **kwargs: Any):
-                with self._recreate_cm():
-                    yield from func(*args, **kwargs)
-
-            return generator_wrapper
-
-        return super().__call__(func)
+        return cast(_F, super().__call__(func))
 
 
 def use_backend(name: str) -> _BackendContext:
     """Temporarily select a backend, restoring the previous choice afterward.
 
     The returned object is both a context manager and a function decorator.
+    It can be reused after its context exits, but cannot be re-entered while
+    active. Generator and async-generator functions cannot be decorated.
     """
 
     return _BackendContext(name)

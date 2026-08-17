@@ -56,6 +56,10 @@ def run():
     return specular.gradient(lambda x: (x * x).sum(), [1.0, 2.0])
 ```
 
+The decorator form supports ordinary synchronous and asynchronous functions.
+For a generator or async generator, put a `with use_backend(...)` block inside
+the generator body instead.
+
 ## Backend behavior
 
 All three backends use the same centered function samples and the same

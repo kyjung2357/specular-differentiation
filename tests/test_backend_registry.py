@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import subprocess
 import sys
+from types import SimpleNamespace
 
 import pytest
 
@@ -56,6 +57,40 @@ def test_available_backends_probes_without_changing_selection() -> None:
         assert "jax" in sys.modules
 
 
+@pytest.mark.parametrize("missing_dependency", ["jax", "jaxlib"])
+def test_missing_jax_dependency_does_not_abort_availability_probe(
+    monkeypatch: pytest.MonkeyPatch,
+    missing_dependency: str,
+) -> None:
+    backend_module = SimpleNamespace(
+        **{
+            member: lambda *args, **kwargs: None
+            for member in _registry._REQUIRED_MEMBERS
+        }
+    )
+
+    def fake_import(module_name: str):
+        if module_name == "specular.backends.jax.calculation":
+            raise ModuleNotFoundError(
+                f"No module named {missing_dependency!r}",
+                name=missing_dependency,
+            )
+        return backend_module
+
+    uncached_load = _registry._load_backend.__wrapped__
+    monkeypatch.setattr(_registry, "import_module", fake_import)
+
+    with pytest.raises(
+        _registry._BackendUnavailableError,
+        match=r"dependencies 'jax' and 'jaxlib'.*\[jax\]",
+    ):
+        uncached_load("jax")
+
+    monkeypatch.setattr(_registry, "_load_backend", uncached_load)
+    assert specular.available_backends() == ("numpy", "numba")
+    assert specular.get_backend() == "numpy"
+
+
 def test_unknown_backend_is_rejected_without_changing_selection() -> None:
     with pytest.raises(ValueError, match="unknown backend"):
         specular.set_backend("unknown")
@@ -92,6 +127,70 @@ def test_context_manager_restores_selection_after_error(
         with specular.use_backend("jax"):
             raise RuntimeError("stop")
 
+    assert specular.get_backend() == "numpy"
+
+
+def test_context_manager_object_supports_sequential_reuse(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(_registry, "_load_backend", lambda name: object())
+    context = specular.use_backend("numba")
+
+    with context:
+        assert specular.get_backend() == "numba"
+    with context:
+        assert specular.get_backend() == "numba"
+
+    assert specular.get_backend() == "numpy"
+
+
+def test_context_manager_rejects_nested_reentry_without_changing_state(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(_registry, "_load_backend", lambda name: object())
+    context = specular.use_backend("numba")
+
+    with context:
+        assert specular.get_backend() == "numba"
+        with pytest.raises(RuntimeError, match="already entered"):
+            with context:
+                pass
+        assert specular.get_backend() == "numba"
+
+    assert specular.get_backend() == "numpy"
+
+
+def test_context_manager_rejects_concurrent_reentry_without_corruption(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(_registry, "_load_backend", lambda name: object())
+    context = specular.use_backend("numba")
+
+    async def exercise_context() -> None:
+        first_entered = asyncio.Event()
+        release_first = asyncio.Event()
+
+        async def first_user() -> str:
+            with context:
+                first_entered.set()
+                await release_first.wait()
+                return specular.get_backend()
+
+        first_task = asyncio.create_task(first_user())
+        await first_entered.wait()
+        try:
+            with pytest.raises(RuntimeError, match="already entered"):
+                with context:
+                    pass
+            assert specular.get_backend() == "numpy"
+        finally:
+            release_first.set()
+
+        assert await first_task == "numba"
+        with context:
+            assert specular.get_backend() == "numba"
+
+    asyncio.run(exercise_context())
     assert specular.get_backend() == "numpy"
 
 
@@ -144,16 +243,23 @@ def test_async_tasks_keep_independent_backend_contexts(
     assert specular.get_backend() == "numpy"
 
 
-def test_use_backend_decorates_generator_functions(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setattr(_registry, "_load_backend", lambda name: object())
-
-    @specular.use_backend("numba")
+def test_use_backend_rejects_generator_function_decorators() -> None:
     def selected_inside():
         yield specular.get_backend()
 
-    assert list(selected_inside()) == ["numba"]
+    with pytest.raises(TypeError, match="generator.*functions"):
+        specular.use_backend("numba")(selected_inside)
+
+    assert specular.get_backend() == "numpy"
+
+
+def test_use_backend_rejects_async_generator_function_decorators() -> None:
+    async def selected_inside():
+        yield specular.get_backend()
+
+    with pytest.raises(TypeError, match="generator.*functions"):
+        specular.use_backend("numba")(selected_inside)
+
     assert specular.get_backend() == "numpy"
 
 

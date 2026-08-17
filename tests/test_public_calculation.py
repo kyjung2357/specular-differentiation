@@ -6,7 +6,6 @@ import numpy as np
 import pytest
 
 import specular
-from specular.calculation import _A, _B, _C
 
 
 @pytest.fixture(autouse=True)
@@ -38,14 +37,6 @@ def test_numpy_facade_calculates_all_map_shapes() -> None:
     assert derivative == pytest.approx(4.0)
     np.testing.assert_allclose(gradient, [2.0, 4.0, 6.0])
     np.testing.assert_allclose(jacobian, [[1.0, 2.0], [3.0, -1.0]])
-
-
-def test_internal_kernels_follow_the_selected_backend() -> None:
-    specular.set_backend("numpy")
-
-    assert _A(2.0, 2.0, 1.0) == pytest.approx(2.0)
-    assert _B(1.0, -1.0) == pytest.approx(0.0)
-    assert _C(1.0, -1.0) == pytest.approx(0.0)
 
 
 @pytest.mark.parametrize("backend", ["numpy", "numba", "jax"])
@@ -82,6 +73,58 @@ def test_automatic_coordinate_steps_work_on_each_available_backend(
         rtol=3e-4,
         atol=3e-4,
     )
+
+
+def test_numba_accepts_callables_that_are_compilable_through_a_wrapper() -> None:
+    if "numba" not in specular.available_backends():
+        pytest.skip("numba is not installed")
+
+    specular.set_backend("numba")
+    derivative = specular.derivative(np.float64, 2.0, h=1e-4)
+    gradient_sum = specular.gradient(np.sum, np.array([1.0, 2.0]), h=1e-4)
+    gradient_norm = specular.gradient(
+        np.linalg.norm,
+        np.array([3.0, 4.0]),
+        h=1e-4,
+    )
+
+    assert derivative == pytest.approx(1.0)
+    np.testing.assert_allclose(gradient_sum, [1.0, 1.0], rtol=1e-8)
+    np.testing.assert_allclose(gradient_norm, [0.6, 0.8], rtol=1e-8)
+
+
+def test_numba_callback_driver_cache_evicts_old_callbacks() -> None:
+    if "numba" not in specular.available_backends():
+        pytest.skip("numba is not installed")
+
+    import gc
+    import weakref
+
+    from specular.backends.numba import calculation as numba_backend
+
+    cache = numba_backend._cached_compiled_callback
+    cache.cache_clear()
+    first_callback = lambda value: value
+    first_compiled = numba_backend._compile_callback(first_callback)
+    center = numba_backend._evaluate_center(first_compiled.dispatcher, 1.0)
+    first_compiled.line_scalar(1.0, 1e-4, center.item())
+    dispatcher_ref = weakref.ref(first_compiled.dispatcher)
+    driver_ref = weakref.ref(first_compiled.line_scalar)
+    del first_compiled, center
+
+    try:
+        for offset in range(numba_backend._CALLBACK_CACHE_SIZE):
+            callback = lambda value, shift=offset: value + shift
+            numba_backend._compile_callback(callback)
+
+        cache_info = cache.cache_info()
+        assert cache_info.maxsize == numba_backend._CALLBACK_CACHE_SIZE
+        assert cache_info.currsize == numba_backend._CALLBACK_CACHE_SIZE
+        gc.collect()
+        assert dispatcher_ref() is None
+        assert driver_ref() is None
+    finally:
+        cache.cache_clear()
 
 
 @pytest.mark.parametrize(

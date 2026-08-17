@@ -22,20 +22,13 @@ del _metadata
 
 
 if TYPE_CHECKING:
-    from .ode import (
-        ODEResult,
-        ellipse_scheme,
-        ellipse_scheme_3rd_order,
-        ellipse_scheme_4th_order,
-    )
+    from .ode import ODEResult, ellipse_scheme
 
 
 _ODE_EXPORTS = frozenset(
     {
         "ODEResult",
         "ellipse_scheme",
-        "ellipse_scheme_3rd_order",
-        "ellipse_scheme_4th_order",
     }
 )
 
@@ -68,6 +61,4 @@ __all__ = [
     "jacobian",
     "ODEResult",
     "ellipse_scheme",
-    "ellipse_scheme_3rd_order",
-    "ellipse_scheme_4th_order",
 ]

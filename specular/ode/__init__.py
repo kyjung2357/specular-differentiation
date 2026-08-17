@@ -1,16 +1,9 @@
-"""Scalar specular ellipse schemes for ordinary differential equations."""
+"""The scalar specular ellipse scheme for ordinary differential equations."""
 
-from ._solver import (
-    ODEResult,
-    ellipse_scheme,
-    ellipse_scheme_3rd_order,
-    ellipse_scheme_4th_order,
-)
+from ._solver import ODEResult, ellipse_scheme
 
 
 __all__ = [
     "ODEResult",
     "ellipse_scheme",
-    "ellipse_scheme_3rd_order",
-    "ellipse_scheme_4th_order",
 ]

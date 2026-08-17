@@ -7,7 +7,7 @@ from typing import Any
 
 import numpy as np
 
-from .backends._registry import _get_backend_module
+from .backends._registry import _get_selected_backend
 
 
 def _positive_step(h: Any) -> float:
@@ -27,27 +27,6 @@ def _positive_step(h: Any) -> float:
     return step
 
 
-def _A(a: Any, b: Any, c: Any) -> Any:
-    """Evaluate the defining secant kernel with the selected backend."""
-
-    backend = _get_backend_module()
-    return backend._A(a, b, c)
-
-
-def _B(alpha: Any, beta: Any) -> Any:
-    """Evaluate the angular slope mean with the selected backend."""
-
-    backend = _get_backend_module()
-    return backend._B(alpha, beta)
-
-
-def _C(alpha: Any, beta: Any) -> Any:
-    """Evaluate the algebraic slope mean with the selected backend."""
-
-    backend = _get_backend_module()
-    return backend._C(alpha, beta)
-
-
 def derivative(f: Any, x: Any, h: Any = None) -> Any:
     """Evaluate a specular derivative with the selected backend.
 
@@ -56,9 +35,9 @@ def derivative(f: Any, x: Any, h: Any = None) -> Any:
     scalar and is validated before ``f`` is evaluated.
     """
 
-    step = None if h is None else _positive_step(h)
-    backend = _get_backend_module()
-    return backend.derivative(f, x, step)
+    validated_h = None if h is None else _positive_step(h)
+    backend = _get_selected_backend()
+    return backend.derivative(f, x, validated_h)
 
 
 def gradient(f: Any, x: Any, h: Any = None) -> Any:
@@ -70,9 +49,9 @@ def gradient(f: Any, x: Any, h: Any = None) -> Any:
     evaluated.
     """
 
-    step = None if h is None else _positive_step(h)
-    backend = _get_backend_module()
-    return backend.gradient(f, x, step)
+    validated_h = None if h is None else _positive_step(h)
+    backend = _get_selected_backend()
+    return backend.gradient(f, x, validated_h)
 
 
 def jacobian(f: Any, x: Any, h: Any = None) -> Any:
@@ -84,9 +63,9 @@ def jacobian(f: Any, x: Any, h: Any = None) -> Any:
     evaluated.
     """
 
-    step = None if h is None else _positive_step(h)
-    backend = _get_backend_module()
-    return backend.jacobian(f, x, step)
+    validated_h = None if h is None else _positive_step(h)
+    backend = _get_selected_backend()
+    return backend.jacobian(f, x, validated_h)
 
 
 __all__ = ["derivative", "gradient", "jacobian"]

@@ -73,6 +73,16 @@ def test_cpu_slope_kernels_match_on_extreme_values(kernel_name: str) -> None:
     assert expected[-1] == 0.0
 
 
+@pytest.mark.parametrize("kernel_name", ["_B", "_C"])
+def test_numpy_infinite_slope_overflow_is_quiet(kernel_name: str) -> None:
+    maximum = np.finfo(np.float64).max
+
+    with np.errstate(over="raise"):
+        result = getattr(numpy_backend, kernel_name)(maximum, np.inf)
+
+    assert result == np.inf
+
+
 def test_cpu_increment_kernel_preserves_scale_invariance_at_subnormal_scale(
 ) -> None:
     numba_backend = _numba_backend()

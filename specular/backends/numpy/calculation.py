@@ -56,7 +56,8 @@ def _one_infinite(x: RealArray, sign: RealArray) -> RealArray:
     radius = np.hypot(1.0, x)
     direct = sign * x >= 0.0
     result = np.empty_like(x)
-    result[direct] = x[direct] + sign[direct] * radius[direct]
+    with np.errstate(over="ignore"):
+        result[direct] = x[direct] + sign[direct] * radius[direct]
     result[~direct] = (sign[~direct] / radius[~direct]) / (
         1.0 - sign[~direct] * x[~direct] / radius[~direct]
     )
