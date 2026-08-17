@@ -57,7 +57,7 @@ nav:
   - LaTeX Macro: started/latex-macro.md
   - API Reference:
     - Calculation: api/calculation.md
-    - Scalar ODE scheme: api/ode.md
+    - Scalar ODE schemes: api/ode.md
     - Backends: api/backend.md
 
 markdown_extensions:

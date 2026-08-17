@@ -10,7 +10,7 @@ from .backends import (
     set_backend,
     use_backend,
 )
-from .calculation import derivative, gradient, jacobian
+from .calculation import derivative, gradient, jacobian, scaled_mean
 
 
 try:
@@ -22,13 +22,22 @@ del _metadata
 
 
 if TYPE_CHECKING:
-    from .ode import ODEResult, ellipse_scheme
+    from .ode import (
+        ODEResult,
+        ellipse_scheme,
+        euler_scheme_1,
+        euler_scheme_2,
+        euler_scheme_5,
+    )
 
 
 _ODE_EXPORTS = frozenset(
     {
         "ODEResult",
         "ellipse_scheme",
+        "euler_scheme_1",
+        "euler_scheme_2",
+        "euler_scheme_5",
     }
 )
 
@@ -56,9 +65,13 @@ __all__ = [
     "get_backend",
     "set_backend",
     "use_backend",
+    "scaled_mean",
     "derivative",
     "gradient",
     "jacobian",
     "ODEResult",
     "ellipse_scheme",
+    "euler_scheme_1",
+    "euler_scheme_2",
+    "euler_scheme_5",
 ]

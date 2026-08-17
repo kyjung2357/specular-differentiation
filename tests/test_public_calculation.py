@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 import specular
+from specular.backends.numpy.calculation import _C as _numpy_C
 
 
 @pytest.fixture(autouse=True)
@@ -17,6 +18,81 @@ def _use_numpy_backend():
 
 def _square(value):
     return value * value
+
+
+def test_scaled_mean_is_available_from_the_top_level_package() -> None:
+    assert "scaled_mean" in specular.__all__
+
+    alpha = np.array([1.0, -1.0, 2.0])
+    beta = np.array([2.0, 0.5, -0.25])
+    sigma = 2.5
+
+    result = np.asarray(specular.scaled_mean(alpha, beta, sigma))
+    expected = sigma * np.asarray(_numpy_C(alpha / sigma, beta / sigma))
+
+    np.testing.assert_allclose(result, expected)
+
+
+def test_scaled_mean_preserves_the_backend_C_cancellation() -> None:
+    beta = -np.nextafter(1.0, 0.0)
+
+    result = specular.scaled_mean(1.0, beta)
+
+    assert result > 0.0
+    assert result == pytest.approx(
+        np.finfo(np.float64).eps / 8.0,
+        rel=8 * np.finfo(np.float64).eps,
+        abs=0.0,
+    )
+
+
+@pytest.mark.parametrize("backend", ["numpy", "numba", "jax"])
+def test_scaled_mean_dispatches_to_each_available_backend(
+    backend: str,
+) -> None:
+    if backend not in specular.available_backends():
+        pytest.skip(f"{backend} is not installed")
+
+    specular.set_backend(backend)
+    result = np.asarray(
+        specular.scaled_mean([1.0, -1.0], [2.0, 0.5], 3.0)
+    )
+    expected = 3.0 * np.asarray(
+        _numpy_C(
+            [1.0 / 3.0, -1.0 / 3.0],
+            [2.0 / 3.0, 1.0 / 6.0],
+        )
+    )
+
+    np.testing.assert_allclose(result, expected, rtol=2e-6, atol=2e-6)
+
+
+@pytest.mark.parametrize("sigma", [0.0, -1.0, np.nan, np.inf, -np.inf])
+def test_scaled_mean_rejects_a_nonpositive_or_nonfinite_scale(sigma) -> None:
+    with pytest.raises(ValueError, match="sigma must be finite and greater"):
+        specular.scaled_mean(1.0, 2.0, sigma)
+
+
+@pytest.mark.parametrize("sigma", [[1.0], 1.0 + 0.0j, "1.0", True])
+def test_scaled_mean_rejects_a_nonscalar_or_nonreal_scale(sigma) -> None:
+    with pytest.raises(TypeError, match="sigma must be a concrete real scalar"):
+        specular.scaled_mean(1.0, 2.0, sigma)
+
+
+def test_jax_scaled_mean_with_a_static_scale_is_jittable() -> None:
+    if "jax" not in specular.available_backends():
+        pytest.skip("jax is not installed")
+
+    import jax
+
+    specular.set_backend("jax")
+    compiled = jax.jit(
+        lambda alpha, beta: specular.scaled_mean(alpha, beta, sigma=2.0)
+    )
+
+    result = compiled(1.0, -0.5)
+    expected = 2.0 * float(_numpy_C(0.5, -0.25))
+    assert float(result) == pytest.approx(expected, rel=2e-6, abs=2e-6)
 
 
 def test_numpy_facade_calculates_all_map_shapes() -> None:

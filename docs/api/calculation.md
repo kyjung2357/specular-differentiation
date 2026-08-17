@@ -1,10 +1,12 @@
 # Calculation
 
-The public calculation API covers the four finite-dimensional real map types
-with three functions.
+The public calculation API provides the scaled angular mean and the three
+finite-difference operators used for the four finite-dimensional real map
+types.
 
 | Function | Map type | Result |
 | :--- | :--- | :--- |
+| `scaled_mean` | $\mathbb R^2\times(0,\infty)\to\mathbb R$ | scalar or broadcast array |
 | `derivative` | $\mathbb R\to\mathbb R$ or $\mathbb R\to\mathbb R^m$ | scalar or vector |
 | `gradient` | $\mathbb R^n\to\mathbb R$ | vector of shape `(n,)` |
 | `jacobian` | $\mathbb R^n\to\mathbb R^m$ | matrix of shape `(m, n)` |
@@ -20,6 +22,27 @@ traced `x` cannot be inspected before execution, so an ineffective sample may
 instead appear as a non-finite result.
 
 ## Examples
+
+The scaled angular mean is evaluated elementwise by the selected backend.
+Its `sigma` argument is a concrete, finite, positive scalar. Evaluation uses
+the defining rescaling
+
+\[
+\mathcal C_\sigma(\alpha,\beta)
+=\sigma\mathcal C(\alpha/\sigma,\beta/\sigma),
+\]
+
+so its floating-point range and return type follow the selected backend.
+Under JAX transformations, `alpha` and `beta` may be traced while `sigma`
+must remain static.
+
+### Scaled angular mean
+
+```python
+import specular
+
+print(specular.scaled_mean(1.0, -0.5, sigma=2.0))
+```
 
 A vector-valued derivative produces a one-dimensional vector.
 
@@ -54,6 +77,15 @@ print(specular.jacobian(f, [1.0, 2.0]))
 ```
 
 ## API reference
+
+::: specular.calculation.scaled_mean
+    handler: python
+    options:
+      heading_level: 3
+      show_root_heading: true
+      show_root_toc_entry: false
+      show_root_full_path: true
+      show_source: true
 
 ::: specular.calculation.derivative
     handler: python

@@ -1,4 +1,4 @@
-"""Tests for the scalar specular ellipse ODE scheme."""
+"""Tests for the scalar specular ODE schemes."""
 
 from __future__ import annotations
 
@@ -11,12 +11,17 @@ import numpy as np
 import pytest
 
 import specular
-from specular.backends.numpy.calculation import _C as _unscaled_mean
-from specular.ode import ODEResult, ellipse_scheme
-from specular.ode._solver import (
+from specular.ode import (
+    ODEResult,
+    ellipse_scheme,
+    euler_scheme_1,
+    euler_scheme_2,
+    euler_scheme_5,
+)
+from specular.ode import solver as ode_solver
+from specular.ode._ellipse import (
     _fourth_order_scale,
     _numeric_derivatives_of_F,
-    _scaled_mean,
     _third_order_scale,
 )
 
@@ -24,20 +29,38 @@ from specular.ode._solver import (
 def test_ode_api_is_available_from_the_top_level_package() -> None:
     assert specular.ODEResult is ODEResult
     assert specular.ellipse_scheme is ellipse_scheme
+    assert specular.euler_scheme_1 is euler_scheme_1
+    assert specular.euler_scheme_2 is euler_scheme_2
+    assert specular.euler_scheme_5 is euler_scheme_5
+    assert ode_solver.ellipse_scheme is ellipse_scheme
+    assert ode_solver.euler_scheme_1 is euler_scheme_1
+    assert ode_solver.euler_scheme_2 is euler_scheme_2
+    assert ode_solver.euler_scheme_5 is euler_scheme_5
+    assert "euler_scheme_1" in specular.__all__
+    assert "euler_scheme_2" in specular.__all__
+    assert "euler_scheme_5" in specular.__all__
     assert "ellipse_scheme_3rd_order" not in specular.__all__
     assert "ellipse_scheme_4th_order" not in specular.__all__
     assert not hasattr(specular, "ellipse_scheme_3rd_order")
     assert not hasattr(specular, "ellipse_scheme_4th_order")
     assert not hasattr(sys.modules["specular.ode"], "ellipse_scheme_3rd_order")
     assert not hasattr(sys.modules["specular.ode"], "ellipse_scheme_4th_order")
-    assert [field.name for field in fields(ODEResult)] == ["t", "u", "sigma"]
+    assert [field.name for field in fields(ODEResult)] == [
+        "t",
+        "u",
+        "sigma",
+        "number_of_field_evaluations",
+    ]
 
 
 def test_importing_specular_does_not_import_heavy_example_dependencies() -> None:
     code = (
         "import sys; import specular; "
         "assert 'specular.ode' not in sys.modules; "
-        "_ = specular.ellipse_scheme; "
+        "assert specular.euler_scheme_1.__name__ == 'euler_scheme_1'; "
+        "assert specular.euler_scheme_2.__name__ == 'euler_scheme_2'; "
+        "assert specular.euler_scheme_5.__name__ == 'euler_scheme_5'; "
+        "assert specular.ellipse_scheme.__name__ == 'ellipse_scheme'; "
         "assert 'specular.ode' in sys.modules; "
         "assert 'jax' not in sys.modules; "
         "assert 'jaxlib' not in sys.modules; "
@@ -54,111 +77,16 @@ def test_importing_specular_does_not_import_heavy_example_dependencies() -> None
     )
 
 
-def test_scaled_mean_preserves_a_tiny_scale_beside_a_huge_slope() -> None:
-    sigma = 1e-200
-    result = _scaled_mean(1e200, sigma, sigma)
-    reversed_result = _scaled_mean(sigma, 1e200, sigma)
-
-    assert result == pytest.approx(
-        sigma * (1.0 + math.sqrt(2.0)),
-        rel=8 * np.finfo(np.float64).eps,
-        abs=0.0,
-    )
-    assert reversed_result == result
-
-
-def test_scaled_mean_keeps_tiny_same_sign_slopes_when_sigma_dominates(
-) -> None:
-    alpha = 1e-200
-    beta = 2e-200
-    sigma = 1e200
-
-    forward = _scaled_mean(alpha, beta, sigma)
-    reverse = _scaled_mean(beta, alpha, sigma)
-
-    assert forward == pytest.approx(1.5e-200, rel=0.0, abs=5e-216)
-    assert reverse == forward
-
-
-def test_scaled_mean_does_not_drop_a_subnormal_same_sign_contribution(
-) -> None:
-    tiny = np.nextafter(0.0, 1.0)
-    sigma = np.finfo(np.float64).max
-
-    forward = _scaled_mean(tiny, 2.0 * tiny, sigma)
-    reverse = _scaled_mean(2.0 * tiny, tiny, sigma)
-
-    assert forward == 2.0 * tiny
-    assert reverse == forward
-
-
-def test_scaled_mean_handles_an_overflowing_same_sign_radius() -> None:
-    maximum = np.finfo(np.float64).max
-    expected = maximum * (math.sqrt(2.0) - 1.0)
-
-    forward = _scaled_mean(maximum, 1.0, maximum)
-    reverse = _scaled_mean(1.0, maximum, maximum)
-
-    assert math.isfinite(forward)
-    assert forward == pytest.approx(
-        expected,
-        rel=8 * np.finfo(np.float64).eps,
-        abs=0.0,
-    )
-    assert reverse == forward
-
-
-def test_scaled_mean_stays_finite_between_same_sign_maximal_slopes() -> None:
-    alpha = np.finfo(np.float64).max
-    beta = alpha / 2.0
-    result = _scaled_mean(alpha, beta, 1.0)
-
-    assert math.isfinite(result)
-    assert beta < result < alpha
-
-
-def test_scaled_mean_resolves_a_near_antidiagonal_residual() -> None:
-    beta = -np.nextafter(1.0, 0.0)
-    result = _scaled_mean(1.0, beta, 1.0)
-
-    assert result > 0.0
-    assert result == pytest.approx(
-        np.finfo(np.float64).eps / 8.0,
-        rel=8 * np.finfo(np.float64).eps,
-        abs=0.0,
-    )
-
-
-def test_scaled_mean_matches_the_defining_identity_on_moderate_data() -> None:
-    rng = np.random.default_rng(20260813)
-    alpha = rng.uniform(-10.0, 10.0, size=256)
-    beta = rng.uniform(-10.0, 10.0, size=256)
-    sigma = 10.0 ** rng.uniform(-2.0, 2.0, size=256)
-
-    actual = np.array(
-        [
-            _scaled_mean(float(a), float(b), float(s))
-            for a, b, s in zip(alpha, beta, sigma, strict=True)
-        ]
-    )
-    expected = sigma * np.asarray(_unscaled_mean(alpha / sigma, beta / sigma))
-    swapped = np.array(
-        [
-            _scaled_mean(float(b), float(a), float(s))
-            for a, b, s in zip(alpha, beta, sigma, strict=True)
-        ]
-    )
-
-    tolerance = 64 * np.finfo(np.float64).eps
-    np.testing.assert_allclose(actual, expected, rtol=tolerance, atol=tolerance)
-    np.testing.assert_allclose(swapped, actual, rtol=tolerance, atol=tolerance)
-    assert np.all(actual >= np.minimum(alpha, beta))
-    assert np.all(actual <= np.maximum(alpha, beta))
-
-
 def test_constant_equation_is_exact_and_result_has_minimal_shapes() -> None:
+    calls = 0
+
+    def F(t: float, u: float) -> float:
+        nonlocal calls
+        calls += 1
+        return 2.5
+
     result = ellipse_scheme(
-        lambda t, u: 2.5,
+        F,
         1.0,
         2.5,
         -3.0,
@@ -179,6 +107,32 @@ def test_constant_equation_is_exact_and_result_has_minimal_shapes() -> None:
         atol=2e-14,
     )
     np.testing.assert_array_equal(result.sigma, np.full(6, 0.75))
+    assert result.number_of_field_evaluations == calls
+
+
+@pytest.mark.parametrize("mode", ["third_order", "fourth_order"])
+def test_automatic_modes_count_every_internal_field_evaluation(
+    mode: str,
+) -> None:
+    calls = 0
+
+    def F(t: float, u: float) -> float:
+        nonlocal calls
+        calls += 1
+        return -u
+
+    result = ellipse_scheme(
+        F,
+        0.0,
+        0.1,
+        1.0,
+        n_steps=1,
+        atol=1e-13,
+        rtol=1e-13,
+        **{mode: True},
+    )
+
+    assert result.number_of_field_evaluations == calls
 
 
 def test_uniform_mesh_reaches_both_endpoints_exactly() -> None:
@@ -237,6 +191,330 @@ def test_solver_uses_each_represented_time_interval_as_h_n() -> None:
     np.testing.assert_array_equal([call[1] for call in calls], result.t[:-1])
     np.testing.assert_array_equal([call[2] for call in calls], result.u[:-1])
     np.testing.assert_array_equal([call[3] for call in calls], represented_steps)
+
+
+def _reference_unscaled_C(alpha: float, beta: float) -> float:
+    """Evaluate the defining unscaled specular mean on moderate data."""
+
+    slope_sum = alpha + beta
+    if slope_sum == 0.0:
+        return 0.0
+    w = (alpha * beta - 1.0) / slope_sum
+    return w + math.copysign(math.sqrt(1.0 + w * w), slope_sum)
+
+
+@pytest.mark.parametrize(
+    ("scheme", "uses_field_history"),
+    [(euler_scheme_1, True), (euler_scheme_2, False)],
+)
+def test_two_step_euler_schemes_follow_their_defining_recurrence(
+    scheme,
+    uses_field_history: bool,
+) -> None:
+    def F(t: float, u: float) -> float:
+        return 1.0 + t + 0.2 * u
+
+    result = scheme(F, 0.0, 1.5, 0.5, 0.9, n_steps=3)
+    expected = np.empty(4)
+    expected[:2] = [0.5, 0.9]
+
+    for step in range(1, 3):
+        current = F(float(result.t[step]), float(expected[step]))
+        if uses_field_history:
+            second_slope = F(
+                float(result.t[step - 1]),
+                float(expected[step - 1]),
+            )
+        else:
+            second_slope = (
+                float(expected[step]) - float(expected[step - 1])
+            ) / float(result.t[step] - result.t[step - 1])
+        expected[step + 1] = expected[step] + (
+            float(result.t[step + 1] - result.t[step])
+            * _reference_unscaled_C(current, second_slope)
+        )
+
+    np.testing.assert_allclose(
+        result.u,
+        expected,
+        rtol=2e-15,
+        atol=2e-15,
+    )
+    np.testing.assert_array_equal(result.sigma, np.ones(3))
+
+
+@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
+def test_two_step_euler_schemes_are_exact_for_a_constant_field(
+    scheme,
+) -> None:
+    t_0 = -0.5
+    T = 1.5
+    n_steps = 8
+    u_0 = -3.0
+    slope = 2.5
+    h = (T - t_0) / n_steps
+
+    result = scheme(
+        lambda t, u: slope,
+        t_0,
+        T,
+        u_0,
+        u_0 + h * slope,
+        n_steps=n_steps,
+    )
+
+    np.testing.assert_allclose(
+        result.u,
+        u_0 + slope * (result.t - t_0),
+        rtol=0.0,
+        atol=2e-15,
+    )
+    np.testing.assert_array_equal(result.sigma, np.ones(n_steps))
+
+
+@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
+def test_two_step_euler_schemes_require_an_external_u_1(scheme) -> None:
+    with pytest.raises(TypeError, match="u_1"):
+        scheme(  # type: ignore[call-arg]
+            lambda t, u: 0.0,
+            0.0,
+            1.0,
+            0.0,
+            n_steps=1,
+        )
+
+
+@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
+def test_one_interval_two_step_call_returns_the_starter_without_F(
+    scheme,
+) -> None:
+    calls = 0
+
+    def F(t: float, u: float) -> float:
+        nonlocal calls
+        calls += 1
+        raise AssertionError("F must not be evaluated for n_steps=1")
+
+    result = scheme(F, 2.0, 5.0, -1.0, 7.0, n_steps=1)
+
+    assert calls == 0
+    np.testing.assert_array_equal(result.t, [2.0, 5.0])
+    np.testing.assert_array_equal(result.u, [-1.0, 7.0])
+    np.testing.assert_array_equal(result.sigma, [1.0])
+    assert result.number_of_field_evaluations == 0
+
+
+@pytest.mark.parametrize(
+    ("scheme", "expected_indices"),
+    [
+        (euler_scheme_1, [0, 1, 2, 3]),
+        (euler_scheme_2, [1, 2, 3]),
+    ],
+)
+def test_two_step_euler_field_evaluation_counts_and_nodes(
+    scheme,
+    expected_indices: list[int],
+) -> None:
+    calls: list[tuple[float, float]] = []
+
+    def F(t: float, u: float) -> float:
+        calls.append((t, u))
+        return 0.25
+
+    result = scheme(F, 0.0, 1.0, 2.0, 2.0625, n_steps=4)
+
+    assert len(calls) == len(expected_indices)
+    assert result.number_of_field_evaluations == len(calls)
+    np.testing.assert_array_equal(
+        [call[0] for call in calls],
+        result.t[expected_indices],
+    )
+    np.testing.assert_array_equal(
+        [call[1] for call in calls],
+        result.u[expected_indices],
+    )
+
+
+@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
+def test_two_step_euler_schemes_have_generic_first_order_convergence(
+    scheme,
+) -> None:
+    errors = []
+    for n_steps in (20, 40, 80):
+        h = 1.0 / n_steps
+        result = scheme(
+            lambda t, u: -u,
+            0.0,
+            1.0,
+            1.0,
+            math.exp(-h),
+            n_steps=n_steps,
+        )
+        errors.append(abs(result.u[-1] - math.exp(-1.0)))
+
+    assert errors[0] > errors[1] > errors[2] > 0.0
+    observed_orders = [
+        math.log2(errors[index] / errors[index + 1]) for index in (0, 1)
+    ]
+    assert min(observed_orders) > 0.97
+
+
+def test_euler_scheme_5_is_the_unit_scale_ellipse_scheme() -> None:
+    def F(t: float, u: float) -> float:
+        return 1.0 - 0.5 * u + 0.1 * math.sin(t)
+
+    kwargs = {
+        "n_steps": 16,
+        "atol": 1e-13,
+        "rtol": 1e-13,
+        "max_iter": 200,
+    }
+    actual = euler_scheme_5(F, 0.0, 1.0, -1.0, **kwargs)
+    expected = ellipse_scheme(F, 0.0, 1.0, -1.0, sigma_n=1.0, **kwargs)
+
+    np.testing.assert_array_equal(actual.t, expected.t)
+    np.testing.assert_array_equal(actual.u, expected.u)
+    np.testing.assert_array_equal(actual.sigma, expected.sigma)
+    np.testing.assert_array_equal(actual.sigma, np.ones(16))
+    assert (
+        actual.number_of_field_evaluations
+        == expected.number_of_field_evaluations
+    )
+
+
+@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
+def test_two_step_euler_schemes_support_a_large_represented_grid(
+    scheme,
+) -> None:
+    result = scheme(
+        lambda t, u: 0.0,
+        -1e308,
+        1e308,
+        3.0,
+        3.0,
+        n_steps=2,
+    )
+
+    np.testing.assert_array_equal(result.t, [-1e308, 0.0, 1e308])
+    np.testing.assert_array_equal(result.u, [3.0, 3.0, 3.0])
+    np.testing.assert_array_equal(result.sigma, [1.0, 1.0])
+
+
+@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
+def test_two_step_euler_schemes_reject_nonfinite_field_values(
+    scheme,
+) -> None:
+    with pytest.raises(ValueError, match=r"F\(.*must be finite"):
+        scheme(
+            lambda t, u: math.nan,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            n_steps=2,
+        )
+
+
+@pytest.mark.parametrize(
+    ("scheme", "u_0", "u_1"),
+    [
+        (euler_scheme_1, np.finfo(np.float64).max, np.finfo(np.float64).max),
+        (euler_scheme_2, 0.0, np.finfo(np.float64).max),
+    ],
+)
+def test_two_step_euler_schemes_reject_a_nonfinite_advanced_state(
+    scheme,
+    u_0: float,
+    u_1: float,
+) -> None:
+    with pytest.raises(RuntimeError, match=r"state is non-finite at step 1"):
+        scheme(
+            lambda t, u: np.finfo(np.float64).max,
+            0.0,
+            2.0,
+            u_0,
+            u_1,
+            n_steps=2,
+        )
+
+
+@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
+@pytest.mark.parametrize("bad_u_1", [math.nan, math.inf, -math.inf])
+def test_two_step_euler_schemes_reject_nonfinite_u_1_before_F(
+    scheme,
+    bad_u_1: float,
+) -> None:
+    calls = 0
+
+    def F(t: float, u: float) -> float:
+        nonlocal calls
+        calls += 1
+        return 0.0
+
+    with pytest.raises(ValueError, match="u_1"):
+        scheme(F, 0.0, 1.0, 0.0, bad_u_1, n_steps=2)
+
+    assert calls == 0
+
+
+@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
+@pytest.mark.parametrize("bad_n_steps", [0, -1, True, 1.5])
+def test_two_step_euler_schemes_validate_n_steps_before_F(
+    scheme,
+    bad_n_steps,
+) -> None:
+    calls = 0
+
+    def F(t: float, u: float) -> float:
+        nonlocal calls
+        calls += 1
+        return 0.0
+
+    with pytest.raises((TypeError, ValueError), match="n_steps"):
+        scheme(F, 0.0, 1.0, 0.0, 0.0, n_steps=bad_n_steps)
+
+    assert calls == 0
+
+
+@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
+@pytest.mark.parametrize(
+    ("t_0", "T"),
+    [(0.0, 0.0), (1.0, 0.0), (0.0, math.inf), (math.nan, 1.0)],
+)
+def test_two_step_euler_schemes_validate_the_time_interval_before_F(
+    scheme,
+    t_0: float,
+    T: float,
+) -> None:
+    calls = 0
+
+    def F(t: float, u: float) -> float:
+        nonlocal calls
+        calls += 1
+        return 0.0
+
+    with pytest.raises((TypeError, ValueError)):
+        scheme(F, t_0, T, 0.0, 0.0, n_steps=2)
+
+    assert calls == 0
+
+
+@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
+def test_two_step_euler_schemes_reject_a_noncallable_field(scheme) -> None:
+    with pytest.raises(TypeError, match="F"):
+        scheme(1.0, 0.0, 1.0, 0.0, 0.0, n_steps=2)
+
+
+@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
+def test_two_step_euler_schemes_preserve_field_exceptions(scheme) -> None:
+    class FieldError(Exception):
+        pass
+
+    def F(t: float, u: float) -> float:
+        raise FieldError("field failed")
+
+    with pytest.raises(FieldError, match="field failed"):
+        scheme(F, 0.0, 1.0, 0.0, 0.0, n_steps=2)
 
 
 def test_affine_equation_matches_its_exact_solution() -> None:

@@ -1,9 +1,18 @@
-"""The scalar specular ellipse scheme for ordinary differential equations."""
+"""Scalar specular schemes for ordinary differential equations."""
 
-from ._solver import ODEResult, ellipse_scheme
+from ._result import ODEResult
+from .solver import (
+    ellipse_scheme,
+    euler_scheme_1,
+    euler_scheme_2,
+    euler_scheme_5,
+)
 
 
 __all__ = [
     "ODEResult",
+    "euler_scheme_1",
+    "euler_scheme_2",
+    "euler_scheme_5",
     "ellipse_scheme",
 ]

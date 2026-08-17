@@ -40,9 +40,10 @@ pip install specular-differentiation
 The package is distributed as `specular-differentiation` and imported in
 Python as `specular`.
 
-This installs `derivative`, `gradient`, and `jacobian`, using NumPy by default,
-as well as the scalar ODE scheme. Backend selection is available through
-`set_backend`, `get_backend`, `use_backend`, and `available_backends`.
+This installs `scaled_mean`, `derivative`, `gradient`, and `jacobian`, using
+NumPy by default, as well as the scalar ODE schemes. Backend selection is
+available through `set_backend`, `get_backend`, `use_backend`, and
+`available_backends`.
 
 **Optional features**
 
@@ -83,16 +84,20 @@ print(specular.derivative(ReLU, x=0))
 0.41421356237309503
 ```
 
-## Scalar ODE scheme
+## Scalar ODE schemes
 
-The scalar specular ellipse scheme is available directly from the top-level
-namespace:
+The scalar ODE schemes are available directly from the top-level namespace.
+For example, the scaled specular ellipse scheme is called as follows:
 
 ```python
 import specular
 
+def F(t, u):
+    return -u
+
+
 result = specular.ellipse_scheme(
-    lambda t, u: -u,
+    F,
     0.0,
     1.0,
     1.0,
@@ -109,6 +114,52 @@ exclusive. Cancellation alone is not an unconditional convergence-order
 guarantee. Fourth-order convergence requires the unique positive E5(i) branch
 and the stated uniform smoothness and boundedness hypotheses; it is not
 guaranteed for arbitrary `F`.
+
+The unscaled specular Euler schemes of Types 1, 2, and 5 are exposed as
+`euler_scheme_1`, `euler_scheme_2`, and `euler_scheme_5`. Writing
+`h_n = t[n + 1] - t[n]` and denoting the unscaled angular mean by
+`C = C_1`, their recurrences are
+
+\[
+\begin{aligned}
+\text{SE1:}\quad
+u_{n+1}
+&=u_n+h_n\mathcal C\!\left(
+F(t_n,u_n),F(t_{n-1},u_{n-1})
+\right),\\
+\text{SE2:}\quad
+u_{n+1}
+&=u_n+h_n\mathcal C\!\left(
+F(t_n,u_n),\frac{u_n-u_{n-1}}{h_{n-1}}
+\right),\\
+\text{SE5:}\quad
+u_{n+1}
+&=u_n+h_n\mathcal C\!\left(
+F(t_{n+1},u_{n+1}),F(t_n,u_n)
+\right).
+\end{aligned}
+\]
+
+SE1 and SE2 are explicit two-step methods, so the caller must supply `u_1`
+at `t[1]`; they are generically only first-order consistent. SE5 is implicit
+and is exactly `ellipse_scheme(..., sigma_n=1.0)`. All three return
+`ODEResult.sigma` as an array of ones, recording the unscaled convention.
+
+```python
+h = 0.01
+u_0 = 1.0
+u_1 = u_0 + h * F(0.0, u_0)  # starter chosen by the caller
+
+se1 = specular.euler_scheme_1(
+    F, 0.0, 1.0, u_0, u_1, n_steps=100
+)
+se2 = specular.euler_scheme_2(
+    F, 0.0, 1.0, u_0, u_1, n_steps=100
+)
+se5 = specular.euler_scheme_5(
+    F, 0.0, 1.0, u_0, n_steps=100
+)
+```
 
 See the [scalar ODE API documentation](https://kyjung2357.github.io/specular-differentiation/api/ode/)
 for the callback contracts.

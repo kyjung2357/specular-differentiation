@@ -3,252 +3,45 @@
 from __future__ import annotations
 
 import math
-import operator
 from collections.abc import Callable
-from dataclasses import dataclass
-from typing import Any
 
 import numpy as np
-import numpy.typing as npt
 
 from ..backends.numpy._types import VectorToVectorFunc
+from ..calculation import scaled_mean
+from ._common import (
+    RealScalar,
+    ScalarField,
+    _FieldEvaluationCounter,
+    _field_value,
+    _finite_real,
+    _positive_integer,
+    _time_grid,
+)
+from ._numerics import (
+    _Dyadic,
+    _dyadic,
+    _dyadic_negate,
+    _dyadic_product,
+    _dyadic_ratio_float,
+    _dyadic_sum,
+    _magnitude,
+    _magnitude_add,
+    _magnitude_divide,
+    _magnitude_float,
+    _magnitude_multiply,
+    _magnitude_shift,
+    _magnitude_sqrt,
+    _relative_dyadic_sum,
+)
+from ._result import ODEResult
 
 
-type RealScalar = int | float | np.integer[Any] | np.floating[Any]
-type FloatArray = npt.NDArray[np.float64]
-type ScalarField = Callable[[float, float], RealScalar]
 type StepScale = Callable[[int, float, float, float], RealScalar]
-type _Dyadic = tuple[int, int]
-type _Magnitude = tuple[float, int]
-
-
-@dataclass(frozen=True, slots=True)
-class ODEResult:
-    """Values produced by a specular ellipse scheme.
-
-    ``t`` and ``u`` contain the initial value and every accepted step, while
-    ``sigma`` contains the scale used on each step.
-    """
-
-    t: FloatArray
-    u: FloatArray
-    sigma: FloatArray
 
 
 class _ScaleSelectionError(RuntimeError):
     """Internal marker for an unavailable automatic scale branch."""
-
-
-def _normalize_dyadic(integer: int, exponent: int) -> _Dyadic:
-    """Normalize an exact dyadic number ``integer * 2**exponent``."""
-
-    if integer == 0:
-        return 0, 0
-
-    magnitude = abs(integer)
-    shift = (magnitude & -magnitude).bit_length() - 1
-    return integer >> shift, exponent + shift
-
-
-def _dyadic(value: float) -> _Dyadic:
-    """Return the exact dyadic representation of a finite float."""
-
-    numerator, denominator = float(value).as_integer_ratio()
-    exponent = -(denominator.bit_length() - 1)
-    return _normalize_dyadic(numerator, exponent)
-
-
-def _dyadic_negate(value: _Dyadic) -> _Dyadic:
-    """Return the exact additive inverse of a dyadic number."""
-
-    return (-value[0], value[1]) if value[0] else value
-
-
-def _dyadic_sum(*values: _Dyadic) -> _Dyadic:
-    """Add dyadic numbers exactly."""
-
-    nonzero = [value for value in values if value[0]]
-    if not nonzero:
-        return 0, 0
-
-    common_exponent = min(exponent for _, exponent in nonzero)
-    integer = sum(
-        significand << (exponent - common_exponent)
-        for significand, exponent in nonzero
-    )
-    return _normalize_dyadic(integer, common_exponent)
-
-
-def _dyadic_product(*values: _Dyadic) -> _Dyadic:
-    """Multiply dyadic numbers exactly."""
-
-    integer = 1
-    exponent = 0
-    for significand, value_exponent in values:
-        if significand == 0:
-            return 0, 0
-        integer *= significand
-        exponent += value_exponent
-    return _normalize_dyadic(integer, exponent)
-
-
-def _magnitude(value: _Dyadic) -> _Magnitude:
-    """Round a nonzero dyadic magnitude to 53 binary digits."""
-
-    integer = abs(value[0])
-    bit_count = integer.bit_length()
-    exponent = value[1] + bit_count
-
-    if bit_count <= 53:
-        significand = integer << (53 - bit_count)
-    else:
-        shift = bit_count - 53
-        significand, remainder = divmod(integer, 1 << shift)
-        halfway = 1 << (shift - 1)
-        if remainder > halfway or (
-            remainder == halfway and significand & 1
-        ):
-            significand += 1
-        if significand == 1 << 53:
-            significand >>= 1
-            exponent += 1
-
-    return math.ldexp(float(significand), -53), exponent
-
-
-def _normalize_magnitude(
-    mantissa: float,
-    exponent: int,
-) -> _Magnitude:
-    """Normalize a positive binary magnitude."""
-
-    normalized, shift = math.frexp(mantissa)
-    return normalized, exponent + shift
-
-
-def _magnitude_add(
-    first: _Magnitude,
-    second: _Magnitude,
-) -> _Magnitude:
-    """Add two positive binary magnitudes without exponent overflow."""
-
-    if first[1] < second[1]:
-        first, second = second, first
-    return _normalize_magnitude(
-        first[0] + math.ldexp(second[0], second[1] - first[1]),
-        first[1],
-    )
-
-
-def _magnitude_multiply(
-    first: _Magnitude,
-    second: _Magnitude,
-) -> _Magnitude:
-    """Multiply two positive binary magnitudes."""
-
-    return _normalize_magnitude(
-        first[0] * second[0],
-        first[1] + second[1],
-    )
-
-
-def _magnitude_divide(
-    numerator: _Magnitude,
-    denominator: _Magnitude,
-) -> _Magnitude:
-    """Divide two positive binary magnitudes."""
-
-    return _normalize_magnitude(
-        numerator[0] / denominator[0],
-        numerator[1] - denominator[1],
-    )
-
-
-def _magnitude_sqrt(value: _Magnitude) -> _Magnitude:
-    """Take the square root of a positive binary magnitude."""
-
-    mantissa, exponent = value
-    if exponent & 1:
-        mantissa *= 2.0
-        exponent -= 1
-    return _normalize_magnitude(math.sqrt(mantissa), exponent // 2)
-
-
-def _magnitude_shift(
-    value: _Magnitude,
-    exponent: int,
-) -> _Magnitude:
-    """Multiply a positive magnitude by ``2**exponent`` exactly."""
-
-    return value[0], value[1] + exponent
-
-
-def _magnitude_float(value: _Magnitude) -> float:
-    """Convert a binary magnitude to float, returning infinity on overflow."""
-
-    try:
-        return math.ldexp(value[0], value[1])
-    except OverflowError:
-        return math.inf
-
-
-def _dyadic_ratio_float(
-    numerator: _Dyadic,
-    denominator: _Dyadic,
-) -> float:
-    """Round an exact dyadic ratio to float without intermediate overflow."""
-
-    if numerator[0] == 0:
-        return 0.0
-    magnitude = _magnitude_divide(
-        _magnitude(numerator),
-        _magnitude(denominator),
-    )
-    return math.copysign(_magnitude_float(magnitude), numerator[0])
-
-
-def _relative_dyadic_sum(*terms: _Dyadic) -> float:
-    """Return an exact sum's magnitude relative to its largest term."""
-
-    residual = _dyadic_sum(*terms)
-    if residual[0] == 0:
-        return 0.0
-    term_magnitudes = [_magnitude(term) for term in terms if term[0]]
-    scale = max(term_magnitudes, key=lambda value: (value[1], value[0]))
-    return _magnitude_float(
-        _magnitude_divide(_magnitude(residual), scale)
-    )
-
-
-def _finite_real(value: object, *, name: str) -> float:
-    """Convert a real numeric scalar to a finite Python float."""
-
-    try:
-        array = np.asarray(value)
-    except Exception as exc:
-        raise TypeError(f"{name} must be a real scalar") from exc
-
-    if array.ndim != 0 or array.dtype.kind not in "iuf":
-        raise TypeError(f"{name} must be a real scalar")
-
-    result = float(array)
-    if not math.isfinite(result):
-        raise ValueError(f"{name} must be finite")
-    return result
-
-
-def _positive_integer(value: object, *, name: str) -> int:
-    """Return a strictly positive integer, excluding booleans."""
-
-    if isinstance(value, (bool, np.bool_)):
-        raise TypeError(f"{name} must be an integer")
-    try:
-        result = operator.index(value)
-    except TypeError as exc:
-        raise TypeError(f"{name} must be an integer") from exc
-    if result <= 0:
-        raise ValueError(f"{name} must be positive")
-    return result
 
 
 def _positive_scale(value: object, *, step: int) -> float:
@@ -258,173 +51,6 @@ def _positive_scale(value: object, *, step: int) -> float:
     if scale <= 0.0:
         raise ValueError(f"sigma_n at step {step} must be positive")
     return scale
-
-
-def _hypot_parts(first: float, second: float) -> tuple[float, int]:
-    """Represent ``hypot(first, second)`` without overflow or underflow."""
-
-    scale = max(abs(first), abs(second))
-    scale_mantissa, scale_exponent = math.frexp(scale)
-    normalized_radius = math.hypot(first / scale, second / scale)
-    radius_mantissa, radius_exponent = math.frexp(
-        scale_mantissa * normalized_radius
-    )
-    return radius_mantissa, scale_exponent + radius_exponent
-
-
-def _radius_ratio(
-    numerator: tuple[float, int],
-    denominator: tuple[float, int],
-) -> float:
-    """Return a radius ratio known mathematically to lie in ``[0, 1]``."""
-
-    numerator_mantissa, numerator_exponent = numerator
-    denominator_mantissa, denominator_exponent = denominator
-    ratio = math.ldexp(
-        numerator_mantissa / denominator_mantissa,
-        numerator_exponent - denominator_exponent,
-    )
-    return min(ratio, 1.0)
-
-
-def _multiply_by_radius_ratio(
-    value: float,
-    numerator: tuple[float, int],
-    denominator: tuple[float, int],
-) -> float:
-    """Evaluate ``value * numerator / denominator`` by binary exponent."""
-
-    if value == 0.0:
-        return 0.0
-
-    value_mantissa, value_exponent = math.frexp(value)
-    numerator_mantissa, numerator_exponent = numerator
-    denominator_mantissa, denominator_exponent = denominator
-    try:
-        result = math.ldexp(
-            value_mantissa * numerator_mantissa / denominator_mantissa,
-            value_exponent + numerator_exponent - denominator_exponent,
-        )
-    except OverflowError:
-        return value
-    return min(result, value)
-
-
-def _divide_by_radius(
-    value: float,
-    radius: tuple[float, int],
-) -> float:
-    """Evaluate a finite scalar divided by an exponent-split radius."""
-
-    if value == 0.0:
-        return 0.0
-
-    value_mantissa, value_exponent = math.frexp(value)
-    radius_mantissa, radius_exponent = radius
-    return math.ldexp(
-        value_mantissa / radius_mantissa,
-        value_exponent - radius_exponent,
-    )
-
-
-def _scaled_mean(alpha: float, beta: float, sigma: float) -> float:
-    r"""Evaluate :math:`\mathcal C_\sigma(\alpha,\beta)` stably.
-
-    Exponent-split radii retain the relative scale of ``sigma`` beside each
-    slope without overflowing.  Separate same- and opposite-sign formulas
-    avoid both underflowed convex weights and cancellation near the
-    antidiagonal.
-    """
-
-    alpha = float(alpha)
-    beta = float(beta)
-    sigma = float(sigma)
-
-    if alpha == beta:
-        return alpha
-    if alpha == -beta:
-        return 0.0
-
-    radius_alpha = _hypot_parts(sigma, alpha)
-    radius_beta = _hypot_parts(sigma, beta)
-    same_sign = (alpha >= 0.0 and beta >= 0.0) or (
-        alpha <= 0.0 and beta <= 0.0
-    )
-
-    if same_sign:
-        magnitude_alpha = abs(alpha)
-        magnitude_beta = abs(beta)
-        if magnitude_alpha >= magnitude_beta:
-            high = magnitude_alpha
-            low = magnitude_beta
-            radius_high = radius_alpha
-            radius_low = radius_beta
-        else:
-            high = magnitude_beta
-            low = magnitude_alpha
-            radius_high = radius_beta
-            radius_low = radius_alpha
-
-        ratio = _radius_ratio(radius_low, radius_high)
-        weighted_high = _multiply_by_radius_ratio(
-            high,
-            radius_low,
-            radius_high,
-        )
-        numerator = weighted_high + low
-        if math.isfinite(numerator):
-            magnitude = numerator / (1.0 + ratio)
-        else:
-            magnitude = (0.5 * weighted_high + 0.5 * low) / (
-                0.5 + 0.5 * ratio
-            )
-        result = magnitude if alpha >= 0.0 and beta >= 0.0 else -magnitude
-    else:
-        slope_sum = alpha + beta
-        unit_alpha = _divide_by_radius(alpha, radius_alpha)
-        unit_beta = _divide_by_radius(beta, radius_beta)
-        inverse_alpha = _divide_by_radius(sigma, radius_alpha)
-        inverse_beta = _divide_by_radius(sigma, radius_beta)
-        denominator = (
-            1.0
-            + inverse_alpha * inverse_beta
-            - unit_alpha * unit_beta
-        )
-
-        sum_mantissa, sum_exponent = math.frexp(slope_sum)
-        sigma_mantissa, sigma_exponent = math.frexp(sigma)
-        alpha_mantissa, alpha_exponent = radius_alpha
-        beta_mantissa, beta_exponent = radius_beta
-        mantissa = (
-            sum_mantissa
-            * sigma_mantissa
-            * sigma_mantissa
-            / (alpha_mantissa * beta_mantissa * denominator)
-        )
-        result = math.ldexp(
-            mantissa,
-            sum_exponent
-            + 2 * sigma_exponent
-            - alpha_exponent
-            - beta_exponent,
-        )
-
-    return min(max(result, min(alpha, beta)), max(alpha, beta))
-
-
-def _field_value(
-    F: ScalarField,
-    t: float,
-    u: float,
-    *,
-    step: int,
-) -> float:
-    """Evaluate and validate the scalar field ``F``."""
-
-    return _finite_real(
-        F(t, u),
-        name=f"F({t!r}, {u!r}) at step {step}",
-    )
 
 
 def _finite_point(t: float, u: float, *, step: int) -> None:
@@ -617,12 +243,6 @@ def _field_quantities(
     return F_0, float(derivatives[0]), float(derivatives[1])
 
 
-def _all_scale_value(previous_sigma: float | None) -> float:
-    """Continue a degenerate cancelling branch, starting from one."""
-
-    return 1.0 if previous_sigma is None else previous_sigma
-
-
 def _third_order_scale(
     quantities: tuple[float, float, float],
     previous_sigma: float | None,
@@ -634,7 +254,7 @@ def _third_order_scale(
     F_0, Q, R = quantities
     if F_0 == 0.0 or Q == 0.0:
         if R == 0.0:
-            return _all_scale_value(previous_sigma)
+            return 1.0 if previous_sigma is None else previous_sigma
         raise _ScaleSelectionError(
             "no unique positive defect-cancelling scale exists "
             f"at step {step}"
@@ -745,7 +365,7 @@ def _fourth_order_scale(
 
     A, B, C = _fourth_order_coefficients(left, right)
     if A[0] == B[0] == C[0] == 0:
-        return _all_scale_value(previous_sigma)
+        return 1.0 if previous_sigma is None else previous_sigma
 
     opposite_signs = (
         A[0] != 0
@@ -828,7 +448,6 @@ def _fixed_scale_step(
     F: ScalarField,
     *,
     step: int,
-    t_n: float,
     t_next: float,
     u_n: float,
     h_n: float,
@@ -847,7 +466,8 @@ def _fixed_scale_step(
         )
     for _ in range(max_iter):
         F_right = _field_value(F, t_next, v, step=step)
-        updated = u_n + h_n * _scaled_mean(F_right, F_left, sigma)
+        mean = float(scaled_mean(F_right, F_left, sigma))
+        updated = u_n + h_n * mean
         if not math.isfinite(updated):
             raise RuntimeError(
                 "fixed-point iteration produced a non-finite value "
@@ -866,7 +486,6 @@ def _fourth_order_step(
     F: ScalarField,
     *,
     step: int,
-    t_n: float,
     t_next: float,
     u_n: float,
     h_n: float,
@@ -902,7 +521,8 @@ def _fourth_order_step(
         sigma = _fourth_order_scale(
             left, right, previous_sigma, step=step
         )
-        updated = u_n + h_n * _scaled_mean(right[0], F_left, sigma)
+        mean = float(scaled_mean(right[0], F_left, sigma))
+        updated = u_n + h_n * mean
         if not math.isfinite(updated):
             raise RuntimeError(
                 "coupled iteration produced a non-finite value "
@@ -1059,7 +679,6 @@ def _validated_inputs(
     rtol: object,
     max_iter: object,
 ) -> tuple[
-    ScalarField,
     float,
     float,
     float,
@@ -1138,7 +757,6 @@ def _validated_inputs(
         selected_sigma = _positive_scale(sigma_n, step=0)
 
     return (
-        F,
         initial_time,
         final_time,
         initial_value,
@@ -1152,23 +770,6 @@ def _validated_inputs(
         relative_tolerance,
         iteration_limit,
     )
-
-
-def _uniform_time_grid(
-    t_0: float,
-    T: float,
-    n_steps: int,
-) -> FloatArray:
-    """Construct a float64 grid without overflowing ``T - t_0``."""
-
-    weights = np.linspace(0.0, 1.0, n_steps + 1, dtype=np.float64)
-    if t_0 < 0.0 < T:
-        values = (1.0 - weights) * t_0 + weights * T
-    else:
-        values = t_0 + weights * (T - t_0)
-    values[0] = t_0
-    values[-1] = T
-    return values
 
 
 def ellipse_scheme(
@@ -1201,7 +802,6 @@ def ellipse_scheme(
     """
 
     (
-        field,
         initial_time,
         final_time,
         initial_value,
@@ -1229,13 +829,13 @@ def ellipse_scheme(
         rtol=rtol,
         max_iter=max_iter,
     )
+    counted_field = _FieldEvaluationCounter(F)
 
-    t_values = _uniform_time_grid(initial_time, final_time, step_count)
-    step_sizes = np.diff(t_values)
-    if np.any(~np.isfinite(step_sizes)) or np.any(step_sizes <= 0.0):
-        raise ValueError(
-            "the requested uniform time grid is not representable in float64"
-        )
+    t_values, step_sizes = _time_grid(
+        initial_time,
+        final_time,
+        step_count,
+    )
     if (
         selected_derivative_step is not None
         and selected_derivatives is None
@@ -1279,11 +879,10 @@ def ellipse_scheme(
             else:
                 assert selected_sigma is not None
                 sigma = selected_sigma
-            F_left = _field_value(field, t_n, u_n, step=step)
+            F_left = _field_value(counted_field, t_n, u_n, step=step)
             u_next = _fixed_scale_step(
-                field,
+                counted_field,
                 step=step,
-                t_n=t_n,
                 t_next=t_next,
                 u_n=u_n,
                 h_n=h_n,
@@ -1295,7 +894,7 @@ def ellipse_scheme(
             )
         else:
             left = _field_quantities(
-                field,
+                counted_field,
                 t_n,
                 u_n,
                 selected_derivatives,
@@ -1307,9 +906,8 @@ def ellipse_scheme(
                     left, previous_sigma, step=step
                 )
                 u_next = _fixed_scale_step(
-                    field,
+                    counted_field,
                     step=step,
-                    t_n=t_n,
                     t_next=t_next,
                     u_n=u_n,
                     h_n=h_n,
@@ -1321,9 +919,8 @@ def ellipse_scheme(
                 )
             else:
                 u_next, sigma = _fourth_order_step(
-                    field,
+                    counted_field,
                     step=step,
-                    t_n=t_n,
                     t_next=t_next,
                     u_n=u_n,
                     h_n=h_n,
@@ -1340,7 +937,12 @@ def ellipse_scheme(
         sigma_values[step] = sigma
         previous_sigma = sigma
 
-    return ODEResult(t=t_values, u=u_values, sigma=sigma_values)
+    return ODEResult(
+        t=t_values,
+        u=u_values,
+        sigma=sigma_values,
+        number_of_field_evaluations=counted_field.number_of_field_evaluations,
+    )
 
 
-__all__ = ["ODEResult", "ellipse_scheme"]
+__all__ = ["ellipse_scheme"]

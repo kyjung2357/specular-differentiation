@@ -1,4 +1,4 @@
-# Scalar ODE scheme
+# Scalar ODE schemes
 
 The ODE API solves scalar initial-value problems in the notation of the
 specular ellipse scheme:
@@ -7,12 +7,137 @@ specular ellipse scheme:
 u'(t)=F(t,u(t)), \qquad u(t_0)=u_0, \qquad t\in[t_0,T].
 \]
 
-The single entry point is `specular.ellipse_scheme`. Importing `specular`
-does not eagerly load the ODE implementation. Vector-valued states are not
-currently supported.
+The public entry points are `specular.euler_scheme_1`,
+`specular.euler_scheme_2`, `specular.euler_scheme_5`, and
+`specular.ellipse_scheme`. Importing `specular` does not eagerly load the ODE
+implementation. Vector-valued states are not currently supported.
+
+The same functions are also available from the public
+`specular.ode.solver` module.
+
+The angular means used by these schemes are evaluated by the currently
+selected calculation backend. The scalar result is converted back to a
+Python float for the ODE iteration; NumPy therefore remains the default and
+the reproducible float64 path.
 
 The result contains numerical data only. Plotting, table generation, event
 handling, and dense output are intentionally outside this API.
+
+## Unscaled specular Euler schemes
+
+The functions `euler_scheme_1`, `euler_scheme_2`, and `euler_scheme_5`
+implement the unscaled specular Euler schemes SE1, SE2, and SE5. Throughout
+this section,
+
+\[
+h_n:=t_{n+1}-t_n,
+\qquad
+\mathcal C:=\mathcal C_1,
+\]
+
+where `t` is the represented mesh returned by the function and
+\(\mathcal C_1\) is the unscaled angular mean.
+
+### SE1
+
+SE1 is the explicit two-step recurrence
+
+\[
+u_{n+1}=u_n+h_n\mathcal C\!\left(
+F(t_n,u_n),F(t_{n-1},u_{n-1})
+\right),
+\qquad n=1,\ldots,N-1.
+\]
+
+The value `u_1` at `t[1]` is supplied externally. The function neither
+constructs nor modifies that starting value:
+
+```python
+import specular
+
+
+def F(t, u):
+    return -u
+
+
+t_0 = 0.0
+T = 1.0
+n_steps = 100
+h = (T - t_0) / n_steps
+u_0 = 1.0
+u_1 = u_0 + h * F(t_0, u_0)  # starter chosen by the caller
+
+se1 = specular.euler_scheme_1(
+    F,
+    t_0,
+    T,
+    u_0,
+    u_1,
+    n_steps=n_steps,
+)
+```
+
+### SE2
+
+SE2 is the explicit two-step recurrence
+
+\[
+u_{n+1}=u_n+h_n\mathcal C\!\left(
+F(t_n,u_n),\frac{u_n-u_{n-1}}{h_{n-1}}
+\right),
+\qquad n=1,\ldots,N-1.
+\]
+
+It has the same external `u_1` contract as SE1:
+
+```python
+se2 = specular.euler_scheme_2(
+    F,
+    t_0,
+    T,
+    u_0,
+    u_1,
+    n_steps=n_steps,
+)
+```
+
+SE1 and SE2 are generically only first-order consistent. No higher-order
+theorem is implied by these functions or by the caller's choice of `u_1`.
+
+### SE5
+
+SE5 is the implicit one-step recurrence
+
+\[
+u_{n+1}=u_n+h_n\mathcal C\!\left(
+F(t_{n+1},u_{n+1}),F(t_n,u_n)
+\right),
+\qquad n=0,\ldots,N-1.
+\]
+
+It is exactly the ellipse scheme with the fixed scale \(\sigma_n=1\):
+
+```python
+se5 = specular.euler_scheme_5(
+    F,
+    t_0,
+    T,
+    u_0,
+    n_steps=n_steps,
+)
+
+same_method = specular.ellipse_scheme(
+    F,
+    t_0,
+    T,
+    u_0,
+    n_steps=n_steps,
+    sigma_n=1.0,
+)
+```
+
+`euler_scheme_5` accepts the same `atol`, `rtol`, and `max_iter` controls used
+by the base ellipse scheme's implicit solve.
 
 ## Prescribed scale
 
@@ -140,12 +265,31 @@ an automatically selected scale are different modes.
 ## Result
 
 `ODEResult.t` and `ODEResult.u` contain the initial value and every accepted
-step. `ODEResult.sigma` contains the scale used on each step and therefore has
-one fewer entry.
+step. `ODEResult.sigma` contains the scale associated with each represented
+interval and therefore has one fewer entry. For SE1, SE2, and SE5 it is an
+array of ones, representing the convention \(\mathcal C=\mathcal C_1\). In
+the two-step methods this also includes the externally supplied first
+interval; it does not describe how `u_1` was produced.
+
+`ODEResult.number_of_field_evaluations` records the total number of calls to
+the supplied field `F(t, u)` made by the solver. Calls made internally by a
+user-provided `derivatives_of_F` callback are outside this count.
 
 ## API reference
 
 ::: specular.ode.ODEResult
+    options:
+      show_root_heading: true
+
+::: specular.ode.euler_scheme_1
+    options:
+      show_root_heading: true
+
+::: specular.ode.euler_scheme_2
+    options:
+      show_root_heading: true
+
+::: specular.ode.euler_scheme_5
     options:
       show_root_heading: true
 
