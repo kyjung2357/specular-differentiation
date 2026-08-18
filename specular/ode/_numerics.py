@@ -144,15 +144,6 @@ def _magnitude_sqrt(value: _Magnitude) -> _Magnitude:
     return _normalize_magnitude(math.sqrt(mantissa), exponent // 2)
 
 
-def _magnitude_shift(
-    value: _Magnitude,
-    exponent: int,
-) -> _Magnitude:
-    """Multiply a positive magnitude by ``2**exponent`` exactly."""
-
-    return value[0], value[1] + exponent
-
-
 def _magnitude_float(value: _Magnitude) -> float:
     """Convert a binary magnitude to float, returning infinity on overflow."""
 
@@ -188,4 +179,3 @@ def _relative_dyadic_sum(*terms: _Dyadic) -> float:
     return _magnitude_float(
         _magnitude_divide(_magnitude(residual), scale)
     )
-

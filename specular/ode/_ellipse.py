@@ -30,7 +30,6 @@ from ._numerics import (
     _magnitude_divide,
     _magnitude_float,
     _magnitude_multiply,
-    _magnitude_shift,
     _magnitude_sqrt,
     _relative_dyadic_sum,
 )
@@ -412,18 +411,18 @@ def _fourth_order_scale(
         discriminant_root = _magnitude_sqrt(
             _magnitude_add(
                 _magnitude_multiply(p_magnitude, p_magnitude),
-                _magnitude_shift(q_magnitude, 2),
+                (q_magnitude[0], q_magnitude[1] + 2),
             )
         )
         denominator = _magnitude_add(p_magnitude, discriminant_root)
         p_is_positive = (A[0] < 0) == (B[0] < 0)
         if p_is_positive:
             z_magnitude = _magnitude_divide(
-                _magnitude_shift(q_magnitude, 1),
+                (q_magnitude[0], q_magnitude[1] + 1),
                 denominator,
             )
         else:
-            z_magnitude = _magnitude_shift(denominator, -1)
+            z_magnitude = denominator[0], denominator[1] - 1
 
     sigma = _magnitude_float(_magnitude_sqrt(z_magnitude))
     if not math.isfinite(sigma) or sigma <= 0.0:
