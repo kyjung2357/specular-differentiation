@@ -20,6 +20,7 @@ from specular.ode import (
 )
 from specular.ode import solver as ode_solver
 from specular.ode._ellipse import (
+    _fourth_order_mean,
     _fourth_order_scale,
     _numeric_derivatives_of_F,
     _third_order_scale,
@@ -732,7 +733,139 @@ def test_fourth_order_scale_allows_cancelling_large_endpoint_terms() -> None:
     left = (1.0, Q_left, 0.0)
     right = (-2.0, Q_right, 2.8145366785447223e292)
 
-    assert _fourth_order_scale(left, right, None, step=0) == 1.0
+    assert _fourth_order_scale(left, right, step=0) == 1.0
+
+
+@pytest.mark.parametrize(
+    ("case", "left", "right", "expected"),
+    [
+        ("E2", (1.0, 1.0, 0.0), (-2.0, 1.0, 0.0), math.sqrt(2.0)),
+        (
+            "E4",
+            (-4.0, 2.0, 0.0),
+            (1.0, 1.0, -1.0),
+            math.sqrt(14.0 - 6.0 * math.sqrt(5.0)),
+        ),
+        ("E5(i)", (1.0, 1.0, 0.0), (0.0, 0.0, 1.0), math.sqrt(2.0)),
+        (
+            "E5(ii)",
+            (1.0, 1.0, 0.0),
+            (-2.0, 1.0, 1.0),
+            math.sqrt(3.0 * math.sqrt(2.0) - 4.0),
+        ),
+        (
+            "E5(iii)",
+            (-4.0, 3.0, 0.0),
+            (1.0, 1.0, -5.0),
+            math.sqrt(2.0),
+        ),
+        (
+            "E6b",
+            (-4.0, 1.0, 0.0),
+            (1.0, 1.0, -20.0),
+            math.sqrt(14.0),
+        ),
+    ],
+)
+def test_fourth_order_scale_selects_each_finite_formula_case(
+    case: str,
+    left: tuple[float, float, float],
+    right: tuple[float, float, float],
+    expected: float,
+) -> None:
+    actual = _fourth_order_scale(left, right, step=0)
+    assert actual == pytest.approx(
+        expected,
+        rel=3e-15,
+        abs=0.0,
+    ), case
+
+
+@pytest.mark.parametrize(
+    ("left", "right"),
+    [
+        ((1.0, 1.0, 0.0), (-1.0, 1.0, 0.0)),  # Case E1
+        ((1.0, 0.0, 1.0), (1.0, 0.0, 0.0)),  # Case E6a
+    ],
+)
+def test_fourth_order_scale_uses_one_for_indifferent_cases(
+    left: tuple[float, float, float],
+    right: tuple[float, float, float],
+) -> None:
+    assert _fourth_order_scale(left, right, step=0) == 1.0
+
+
+@pytest.mark.parametrize(
+    ("case", "left", "right", "expected"),
+    [
+        ("E3a", (1.0, 1.0, 0.0), (-4.0, 2.0, 0.0), 0.0),
+        ("E3b", (1.0, 1.0, 0.0), (2.0, 1.0, 0.0), math.inf),
+        ("E6c1", (-4.0, 0.0, 0.0), (-4.0, 2.0, -3.0), 0.0),
+        ("E6c2", (1.0, 1.0, 10.0), (1.0, 1.0, 0.0), 0.0),
+        ("E6c3", (-4.0, 0.0, 0.0), (-4.0, 1.0, 1.0), math.inf),
+    ],
+)
+def test_fourth_order_scale_selects_boundary_limits(
+    case: str,
+    left: tuple[float, float, float],
+    right: tuple[float, float, float],
+    expected: float,
+) -> None:
+    actual = _fourth_order_scale(left, right, step=0)
+    assert actual == expected, case
+
+
+@pytest.mark.parametrize(
+    ("alpha", "beta", "expected"),
+    [
+        (2.0, 4.0, 8.0 / 3.0),
+        (-2.0, -4.0, -8.0 / 3.0),
+        (2.0, -4.0, 0.0),
+        (0.0, 4.0, 0.0),
+        (
+            np.finfo(np.float64).max,
+            np.finfo(np.float64).max,
+            np.finfo(np.float64).max,
+        ),
+    ],
+)
+def test_fourth_order_zero_scale_uses_the_harmonic_limit(
+    alpha: float,
+    beta: float,
+    expected: float,
+) -> None:
+    assert _fourth_order_mean(alpha, beta, 0.0) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize(
+    ("alpha", "beta", "expected"),
+    [
+        (2.0, 4.0, 3.0),
+        (-2.0, -4.0, -3.0),
+        (
+            np.finfo(np.float64).max,
+            np.finfo(np.float64).max,
+            np.finfo(np.float64).max,
+        ),
+        (np.finfo(np.float64).max, -np.finfo(np.float64).max, 0.0),
+        (
+            np.nextafter(0.0, 1.0),
+            np.nextafter(0.0, 1.0),
+            np.nextafter(0.0, 1.0),
+        ),
+        (
+            np.nextafter(0.0, 1.0),
+            2.0 * np.nextafter(0.0, 1.0),
+            2.0 * np.nextafter(0.0, 1.0),
+        ),
+    ],
+)
+def test_fourth_order_infinite_scale_uses_crank_nicolson(
+    alpha: float,
+    beta: float,
+    expected: float,
+) -> None:
+    assert _fourth_order_mean(alpha, beta, math.inf) == expected
 
 
 def test_third_order_scale_avoids_max_float_residual_overflow() -> None:
@@ -787,7 +920,7 @@ def test_fourth_order_default_numerical_derivatives_balance_defects() -> None:
 
 
 @pytest.mark.parametrize("mode", ["third_order", "fourth_order"])
-def test_automatic_modes_continue_an_all_scale_cancelling_branch(
+def test_automatic_modes_use_one_for_an_all_scale_cancelling_case(
     mode: str,
 ) -> None:
     result = ellipse_scheme(
@@ -931,8 +1064,7 @@ def test_third_order_reports_when_no_positive_cancelling_scale_exists(
         )
 
 
-def test_fourth_order_reports_when_no_positive_balancing_scale_exists(
-) -> None:
+def test_fourth_order_e6c3_uses_crank_nicolson() -> None:
     def F(t: float, u: float) -> float:
         return u**0.25
 
@@ -940,25 +1072,58 @@ def test_fourth_order_reports_when_no_positive_balancing_scale_exists(
         u = float(point[1])
         return np.array([0.25 * u**-0.5, -0.125 * u**-1.25])
 
-    with pytest.raises(
-        RuntimeError,
-        match=r"no unique positive defect-balancing scale.*step 0",
-    ):
-        ellipse_scheme(
-            F,
-            0.0,
-            0.1,
-            1.0,
-            n_steps=1,
-            fourth_order=True,
-            derivatives_of_F=derivatives_of_F,
-        )
+    result = ellipse_scheme(
+        F,
+        0.0,
+        0.1,
+        1.0,
+        n_steps=1,
+        fourth_order=True,
+        derivatives_of_F=derivatives_of_F,
+        atol=1e-13,
+        rtol=1e-13,
+    )
+
+    assert result.sigma[0] == math.inf
+    assert result.u[1] == pytest.approx(
+        1.0 + 0.05 * (F(0.0, 1.0) + F(0.1, result.u[1])),
+        rel=1e-11,
+        abs=1e-12,
+    )
 
 
-def test_fourth_order_rejects_two_positive_balancing_branches() -> None:
+def test_fourth_order_e3a_uses_the_zero_scale_limit() -> None:
+    # Endpoint data are (F, L_F F, L_F^2 F) = (1, 1, -39) and
+    # (-4, 2, 39), which is case E3a. Since the slopes have opposite signs,
+    # the zero-scale limiting mean is zero.
+    def F(t: float, u: float) -> float:
+        del u
+        return 1.0 + t - 19.5 * t**2 + 14.0 * t**3 - 0.5 * t**4
+
+    def derivatives_of_F(point: np.ndarray) -> np.ndarray:
+        t = float(point[0])
+        first = 1.0 - 39.0 * t + 42.0 * t**2 - 2.0 * t**3
+        second = -39.0 + 84.0 * t - 6.0 * t**2
+        return np.array([first, second])
+
+    result = ellipse_scheme(
+        F,
+        0.0,
+        1.0,
+        0.0,
+        n_steps=1,
+        fourth_order=True,
+        derivatives_of_F=derivatives_of_F,
+    )
+
+    np.testing.assert_array_equal(result.u, [0.0, 0.0])
+    np.testing.assert_array_equal(result.sigma, [0.0])
+
+
+def test_fourth_order_uses_the_smaller_e4_branch() -> None:
     # This quintic has endpoint data F=(1, -2), L_F F=(1, 1), and
     # L_F^2 F=(-0.05, -0.05).  The resulting scale equation has two
-    # distinct positive roots, so no branch is determined by the method.
+    # distinct positive roots. The implementation selects the smaller one.
     def F(t: float, u: float) -> float:
         return (
             1.0
@@ -981,19 +1146,18 @@ def test_fourth_order_rejects_two_positive_balancing_branches() -> None:
         second = -0.05 - 239.7 * t + 719.7 * t**2 - 480.0 * t**3
         return np.array([first, second])
 
-    with pytest.raises(
-        RuntimeError,
-        match=r"ambiguous.*two positive.*step 0",
-    ):
-        ellipse_scheme(
-            F,
-            0.0,
-            1.0,
-            0.0,
-            n_steps=1,
-            fourth_order=True,
-            derivatives_of_F=derivatives_of_F,
-        )
+    result = ellipse_scheme(
+        F,
+        0.0,
+        1.0,
+        0.0,
+        n_steps=1,
+        fourth_order=True,
+        derivatives_of_F=derivatives_of_F,
+    )
+
+    expected = math.sqrt(12.8 / (2.5 + math.sqrt(3.69)))
+    assert result.sigma[0] == pytest.approx(expected, rel=2e-14)
 
 
 def test_high_order_modes_are_mutually_exclusive() -> None:

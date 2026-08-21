@@ -109,11 +109,15 @@ result = specular.ellipse_scheme(
 `sigma_n` may be a positive scalar or a callable
 `sigma_n(n, t_n, u_n, h_n)`. Set `third_order=True` or `fourth_order=True`,
 with `sigma_n=None`, to select the scale by numerically enforcing the
-corresponding defect-cancellation condition. The two flags are mutually
-exclusive. Cancellation alone is not an unconditional convergence-order
-guarantee. Fourth-order convergence requires the unique positive E5(i) branch
-and the stated uniform smoothness and boundedness hypotheses; it is not
-guaranteed for arbitrary `F`.
+corresponding defect condition. The two flags are mutually exclusive. The
+fourth-order selector follows the theorem's E1--E6 classification: it uses
+`1.0` in E1 and E6a, the explicit finite scale in E2, E4, E5, and E6b,
+the zero-scale limit in E3a, E6c1, and E6c2, and the Crank--Nicolson
+infinite-scale limit in E3b and E6c3. In E4, the smaller of the two positive
+scales is selected. Exact cancellation, or scale minimization by itself, is
+not an unconditional convergence-order guarantee. The available fourth-order
+convergence theorem assumes the uniform `AC < 0` branch and its stated
+smoothness and boundedness hypotheses.
 
 The unscaled specular Euler schemes of Types 1, 2, and 5 are exposed as
 `euler_scheme_1`, `euler_scheme_2`, and `euler_scheme_5`. Writing

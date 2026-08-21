@@ -317,8 +317,17 @@ def _third_order_scale(
 def _fourth_order_coefficients(
     left: tuple[float, float, float],
     right: tuple[float, float, float],
-) -> tuple[_Dyadic, _Dyadic, _Dyadic]:
-    """Build the two-endpoint scale polynomial exactly."""
+) -> tuple[
+    _Dyadic,
+    _Dyadic,
+    _Dyadic,
+    _Dyadic,
+    _Dyadic,
+    _Dyadic,
+    _Dyadic,
+    _Dyadic,
+]:
+    """Return ``b, c, e, f, A, B, C, D`` as exact dyadics."""
 
     F_left, Q_left, R_left = left
     F_right, Q_right, R_right = right
@@ -350,81 +359,224 @@ def _fourth_order_coefficients(
         _dyadic_negate(_dyadic_product(b, f)),
         _dyadic_negate(_dyadic_product(e, c)),
     )
-    return A, B, C
+    D = _dyadic_sum(
+        _dyadic_product(B, B),
+        _dyadic_negate(_dyadic_product(_dyadic(4.0), A, C)),
+    )
+    return b, c, e, f, A, B, C, D
+
+
+def _cancelling_scale(
+    A: _Dyadic,
+    B: _Dyadic,
+    C: _Dyadic,
+    D: _Dyadic,
+    *,
+    smaller_root: bool,
+) -> float:
+    """Return a cancellation-safe positive root of the scale equation."""
+
+    absolute_B = _magnitude(B) if B[0] else None
+    if D[0]:
+        square_root_D = _magnitude_sqrt(_magnitude(D))
+        root_sum = (
+            square_root_D
+            if absolute_B is None
+            else _magnitude_add(absolute_B, square_root_D)
+        )
+    else:
+        assert absolute_B is not None
+        root_sum = absolute_B
+
+    if smaller_root:
+        absolute_C = _magnitude(C)
+        twice_absolute_C = absolute_C[0], absolute_C[1] + 1
+        squared_scale = _magnitude_divide(twice_absolute_C, root_sum)
+    else:
+        absolute_A = _magnitude(A)
+        twice_absolute_A = absolute_A[0], absolute_A[1] + 1
+        squared_scale = _magnitude_divide(root_sum, twice_absolute_A)
+
+    return _magnitude_float(_magnitude_sqrt(squared_scale))
+
+
+def _case_e6b_scale(
+    b: _Dyadic,
+    c: _Dyadic,
+    e: _Dyadic,
+    f: _Dyadic,
+    A: _Dyadic,
+) -> float | None:
+    """Return the unique nonoptimal minimizer in case E6b, if present."""
+
+    if (
+        b[0] == 0
+        or e[0] == 0
+        or ((b[0] < 0) == (e[0] < 0))
+    ):
+        return None
+
+    absolute_b = abs(b[0]), b[1]
+    absolute_e = abs(e[0]), e[1]
+    difference_b = _dyadic_sum(
+        absolute_b,
+        _dyadic_negate(absolute_e),
+    )
+    if difference_b[0] == 0:
+        return None
+
+    difference_numerator = _dyadic_sum(
+        _dyadic_product(absolute_e, c, c),
+        _dyadic_negate(_dyadic_product(absolute_b, f, f)),
+    )
+    if difference_numerator[0] == 0 or (
+        (difference_b[0] < 0) != (difference_numerator[0] < 0)
+    ):
+        return None
+
+    b_plus_e = _dyadic_sum(b, e)
+    if (A[0] < 0) != (b_plus_e[0] < 0):
+        return None
+
+    square_root_b = _magnitude_sqrt(_magnitude(absolute_b))
+    square_root_e = _magnitude_sqrt(_magnitude(absolute_e))
+    root_sum = _magnitude_add(square_root_b, square_root_e)
+    weighted_sum = _magnitude_add(
+        _magnitude_multiply(square_root_e, _magnitude(c)),
+        _magnitude_multiply(square_root_b, _magnitude(f)),
+    )
+    E_magnitude = _magnitude_divide(
+        _magnitude_multiply(
+            _magnitude(difference_numerator),
+            root_sum,
+        ),
+        _magnitude_multiply(
+            _magnitude(difference_b),
+            weighted_sum,
+        ),
+    )
+    return _magnitude_float(_magnitude_sqrt(E_magnitude))
 
 
 def _fourth_order_scale(
     left: tuple[float, float, float],
     right: tuple[float, float, float],
-    previous_sigma: float | None,
     *,
     step: int,
 ) -> float:
-    """Select the unique positive E5(i) two-endpoint cancelling scale."""
+    """Apply the fourth-order theorem's finite and boundary scale rule."""
 
-    A, B, C = _fourth_order_coefficients(left, right)
+    b, c, e, f, A, B, C, D = _fourth_order_coefficients(left, right)
+
+    # Case E1: every positive scale is an optimal minimizer.
     if A[0] == B[0] == C[0] == 0:
-        return 1.0 if previous_sigma is None else previous_sigma
+        return 1.0
 
-    opposite_signs = (
-        A[0] != 0
-        and C[0] != 0
-        and ((A[0] < 0) != (C[0] < 0))
-    )
-    if not opposite_signs:
-        two_positive_roots = (
-            A[0] != 0
-            and B[0] != 0
+    if A[0] == 0:
+        opposite_BC = (
+            B[0] != 0
             and C[0] != 0
-            and ((A[0] < 0) == (C[0] < 0))
-            and ((A[0] < 0) != (B[0] < 0))
+            and ((B[0] < 0) != (C[0] < 0))
         )
-        if two_positive_roots:
-            discriminant = _dyadic_sum(
-                _dyadic_product(B, B),
-                _dyadic_negate(
-                    _dyadic_product(_dyadic(4.0), A, C)
-                ),
+        if opposite_BC:
+            # Case E2: z = sigma**2 = -C / B is the unique root.
+            squared_scale = _magnitude_divide(
+                _magnitude(C),
+                _magnitude(B),
             )
-            if discriminant[0] > 0:
-                raise _ScaleSelectionError(
-                    "ambiguous: two positive defect-balancing scales exist "
-                    f"at step {step}"
-                )
-        raise _ScaleSelectionError(
-            "no unique positive defect-balancing scale exists "
-            f"at step {step}"
-        )
-
-    A_magnitude = _magnitude(A)
-    q_magnitude = _magnitude_divide(
-        _magnitude(C),
-        A_magnitude,
-    )
-    if B[0] == 0:
-        z_magnitude = _magnitude_sqrt(q_magnitude)
+            sigma = _magnitude_float(_magnitude_sqrt(squared_scale))
+        else:
+            if left[0] != 0.0 and right[0] != 0.0 and C[0] == 0:
+                # Case E3a: use the sigma -> 0+ limiting scheme.
+                return 0.0
+            # Case E3b: use the sigma -> infinity Crank--Nicolson limit.
+            return math.inf
     else:
-        p_magnitude = _magnitude_divide(
-            _magnitude(B),
-            A_magnitude,
-        )
-        discriminant_root = _magnitude_sqrt(
-            _magnitude_add(
-                _magnitude_multiply(p_magnitude, p_magnitude),
-                (q_magnitude[0], q_magnitude[1] + 2),
-            )
-        )
-        denominator = _magnitude_add(p_magnitude, discriminant_root)
-        p_is_positive = (A[0] < 0) == (B[0] < 0)
-        if p_is_positive:
-            z_magnitude = _magnitude_divide(
-                (q_magnitude[0], q_magnitude[1] + 1),
-                denominator,
+        opposite_AB = B[0] != 0 and ((A[0] < 0) != (B[0] < 0))
+        opposite_AC = C[0] != 0 and ((A[0] < 0) != (C[0] < 0))
+        same_nonzero_AC = C[0] != 0 and not opposite_AC
+
+        # Case E4: choose the smaller of the two positive optimal scales.
+        if D[0] > 0 and opposite_AB and same_nonzero_AC:
+            sigma = _cancelling_scale(
+                A,
+                B,
+                C,
+                D,
+                smaller_root=True,
             )
         else:
-            z_magnitude = denominator[0], denominator[1] - 1
+            case_E5_i = D[0] > 0 and opposite_AB and C[0] == 0
+            case_E5_ii = D[0] > 0 and opposite_AC
+            case_E5_iii = D[0] == 0 and opposite_AB
+            if case_E5_i or case_E5_ii or case_E5_iii:
+                # Cases E5(i)--E5(iii): one positive optimal scale.
+                sigma = _cancelling_scale(
+                    A,
+                    B,
+                    C,
+                    D,
+                    smaller_root=not opposite_AB,
+                )
+            else:
+                constant_B = _dyadic_product(A, _dyadic_sum(c, f))
+                constant_C = _dyadic_product(A, c, f)
+                if B == constant_B and C == constant_C:
+                    # Case E6a: every positive scale is minimizing.
+                    return 1.0
 
-    sigma = _magnitude_float(_magnitude_sqrt(z_magnitude))
+                # Case E6b: use its unique interior nonoptimal minimizer.
+                sigma = _case_e6b_scale(b, c, e, f, A)
+                if sigma is not None:
+                    if not math.isfinite(sigma) or sigma <= 0.0:
+                        raise _ScaleSelectionError(
+                            "case E6b scale is outside float64 range "
+                            f"at step {step}"
+                        )
+
+                    z = _dyadic_product(_dyadic(sigma), _dyadic(sigma))
+                    z_plus_c = _dyadic_sum(z, c)
+                    z_plus_f = _dyadic_sum(z, f)
+                    relative_residual = _relative_dyadic_sum(
+                        _dyadic_product(b, z_plus_f, z_plus_f),
+                        _dyadic_product(e, z_plus_c, z_plus_c),
+                    )
+                    if relative_residual > 1024.0 * np.finfo(np.float64).eps:
+                        raise _ScaleSelectionError(
+                            "case E6b minimizer is not resolved "
+                            f"at step {step}"
+                        )
+                    return sigma
+
+                # Cases E6c1--E6c3: select the corresponding boundary limit.
+                cf = _dyadic_product(c, f)
+                if cf[0]:
+                    boundary_coefficient = C
+                    boundary_reference = _dyadic_product(A, c, f)
+                else:
+                    c_plus_f = _dyadic_sum(c, f)
+                    boundary_coefficient = B
+                    boundary_reference = _dyadic_product(A, c_plus_f)
+
+                if boundary_coefficient[0] == 0:
+                    # Case E6c1: the minimizing limit is sigma -> 0+.
+                    return 0.0
+
+                boundary_difference = _dyadic_sum(
+                    (abs(boundary_coefficient[0]), boundary_coefficient[1]),
+                    _dyadic_negate(
+                        (
+                            abs(boundary_reference[0]),
+                            boundary_reference[1],
+                        )
+                    ),
+                )
+                if boundary_difference[0] < 0:
+                    # Case E6c2: the smaller residual occurs at sigma -> 0+.
+                    return 0.0
+                # Case E6c3: use the sigma -> infinity Crank--Nicolson limit.
+                return math.inf
+
     if not math.isfinite(sigma) or sigma <= 0.0:
         raise _ScaleSelectionError(
             f"fourth-order scale is outside float64 range at step {step}"
@@ -441,6 +593,34 @@ def _fourth_order_scale(
             f"fourth-order scale residual is not resolved at step {step}"
         )
     return sigma
+
+
+def _fourth_order_mean(alpha: float, beta: float, sigma: float) -> float:
+    r"""Evaluate the finite or boundary mean selected by the case rule."""
+
+    if sigma == 0.0:
+        same_nonzero_sign = (
+            (alpha > 0.0 and beta > 0.0)
+            or (alpha < 0.0 and beta < 0.0)
+        )
+        if not same_nonzero_sign:
+            return 0.0
+        if abs(alpha) >= abs(beta):
+            return beta / (0.5 + 0.5 * (beta / alpha))
+        return alpha / (0.5 + 0.5 * (alpha / beta))
+    if math.isinf(sigma):
+        scale = max(abs(alpha), abs(beta))
+        if scale == 0.0:
+            return 0.0
+        _, exponent = math.frexp(scale)
+        scaled_sum = math.fsum(
+            (
+                math.ldexp(alpha, -exponent),
+                math.ldexp(beta, -exponent),
+            )
+        )
+        return math.ldexp(0.5 * scaled_sum, exponent)
+    return float(scaled_mean(alpha, beta, sigma))
 
 
 def _fixed_scale_step(
@@ -491,12 +671,11 @@ def _fourth_order_step(
     left: tuple[float, float, float],
     derivatives_of_F: VectorToVectorFunc | None,
     derivative_step: float | None,
-    previous_sigma: float | None,
     atol: float,
     rtol: float,
     max_iter: int,
 ) -> tuple[float, float]:
-    """Solve the coupled endpoint and E5(i) scale equations."""
+    """Solve the coupled endpoint and residual-minimizing scale equations."""
 
     F_left = left[0]
     predictor = u_n + h_n * F_left
@@ -517,10 +696,8 @@ def _fourth_order_step(
             derivative_step,
             step=step,
         )
-        sigma = _fourth_order_scale(
-            left, right, previous_sigma, step=step
-        )
-        mean = float(scaled_mean(right[0], F_left, sigma))
+        sigma = _fourth_order_scale(left, right, step=step)
+        mean = _fourth_order_mean(right[0], F_left, sigma)
         updated = u_n + h_n * mean
         if not math.isfinite(updated):
             raise RuntimeError(
@@ -567,7 +744,7 @@ def _fourth_order_step(
 
     # Fixed-point iteration remains the inexpensive local path.  Trying the
     # interior segment first avoids rejecting a valid coupled root merely
-    # because the Euler endpoint lies on a degenerate/non-E5 boundary.
+    # because the Euler endpoint lies in a different theorem case.
     if v is not None:
         for _ in range(max_iter):
             evaluated = evaluate(v)
@@ -636,9 +813,9 @@ def _fourth_order_step(
         midpoint = lower[0] + 0.5 * (upper[0] - lower[0])
         evaluated = evaluate(midpoint)
         if evaluated is None:
-            # Under the uniform E5(i) hypothesis the branch remains valid
-            # throughout a sufficiently small bracket.  If numerical branch
-            # classification breaks inside it, do not invent a continuation.
+            # A locally unique minimizing branch remains valid throughout a
+            # sufficiently small bracket. If numerical case classification
+            # breaks inside it, do not invent a continuation.
             if last_scale_error is not None:
                 raise last_scale_error
             break
@@ -792,8 +969,9 @@ def ellipse_scheme(
     In the base mode, ``sigma_n`` is a positive scalar or a callable
     ``sigma_n(n, t_n, u_n, h_n)`` and is frozen during its implicit step.
     ``third_order=True`` numerically enforces left-endpoint defect
-    cancellation. ``fourth_order=True`` couples the endpoint update to the
-    unique positive E5(i) two-endpoint cancelling scale.
+    cancellation. ``fourth_order=True`` couples the endpoint update to a
+    scale rule from the two-endpoint fourth-order case theorem, including its
+    zero- and infinite-scale limiting schemes.
 
     When ``derivatives_of_F`` is omitted, ``L_F F`` and ``L_F^2 F`` are
     estimated from ``F`` along a local RK4 flow. Otherwise the callback must
@@ -926,7 +1104,6 @@ def ellipse_scheme(
                     left=left,
                     derivatives_of_F=selected_derivatives,
                     derivative_step=selected_derivative_step,
-                    previous_sigma=previous_sigma,
                     atol=absolute_tolerance,
                     rtol=relative_tolerance,
                     max_iter=iteration_limit,
@@ -934,7 +1111,8 @@ def ellipse_scheme(
 
         u_values[step + 1] = u_next
         sigma_values[step] = sigma
-        previous_sigma = sigma
+        if use_third:
+            previous_sigma = sigma
 
     return ODEResult(
         t=t_values,

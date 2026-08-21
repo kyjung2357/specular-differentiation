@@ -180,7 +180,7 @@ def sigma_n(n, t_n, u_n, h_n):
     return h_n**0.5
 ```
 
-## Numerical cancellation modes
+## Automatic scale-selection modes
 
 Set exactly one of `third_order` or `fourth_order` to request numerical scale
 selection. Leave `sigma_n=None` in either mode:
@@ -207,12 +207,31 @@ fourth_order_result = specular.ellipse_scheme(
 
 The third-order mode numerically selects a positive `sigma_n` satisfying the
 left-endpoint defect-cancellation condition. The fourth-order mode couples
-the trial right endpoint and `sigma_n` and numerically enforces the
-two-endpoint defect balance on the unique positive E5(i) branch. If no such
-scale is found, or if the branch is ambiguous, the solver raises an error
-instead of silently falling back to the base scheme.
-If the defect vanishes for every positive scale, the previous accepted scale
-is continued; the first such step uses `1.0`.
+the trial right endpoint and `sigma_n`, then applies the theorem's E1--E6
+classification to the two-endpoint absolute defect residual. Cases E2 and
+E5(i)--E5(iii) use their explicit cancelling scales, and E6b uses its explicit
+finite nonoptimal minimizer. E4 has two positive cancelling scales; the solver
+selects the smaller one. Cases E1 and E6a use `sigma_n=1.0`. Cases E3a,
+E6c1, and E6c2 use the zero-scale limiting mean
+
+\[
+\mathcal C_0(\alpha,\beta)
+=
+\begin{cases}
+\dfrac{2\alpha\beta}{\alpha+\beta},&\alpha\beta>0,\\
+0,&\alpha\beta\leq0,
+\end{cases}
+\]
+
+while E3b and E6c3 use the infinite-scale limit
+
+\[
+\mathcal C_\infty(\alpha,\beta)
+=
+\frac{\alpha+\beta}{2},
+\]
+
+which is the Crank--Nicolson update.
 
 Both modes require derivatives of `F` along solution curves of the ODE:
 
@@ -250,13 +269,15 @@ an automatically selected scale are different modes.
 
 !!! warning "Conditional order"
 
-    These flags numerically enforce the corresponding cancellation condition;
-    they do not provide an unconditional convergence-order guarantee. Third-
-    order convergence still depends on the smoothness and boundedness of the
-    selected branch and on sufficiently accurate field derivatives. The
-    fourth-order result is also conditional: it requires the unique positive
-    E5(i) branch together with the stated uniform smoothness and boundedness
-    hypotheses. It is not an unconditional guarantee for arbitrary `F`.
+    Third-order mode numerically enforces its cancellation condition, while
+    fourth-order mode applies the theorem's finite-minimizer and boundary-limit
+    rule. Neither flag provides an unconditional convergence-order guarantee.
+    Third-order convergence still depends on the smoothness and boundedness of
+    the selected branch and on sufficiently accurate field derivatives. The
+    fourth-order result is also conditional: the convergence theorem assumes
+    the uniform `AC < 0` branch together with its stated smoothness and
+    boundedness hypotheses. A relaxed E6 minimizer does not cancel the defect
+    and therefore does not by itself imply fourth-order convergence.
     Finite-difference error can also produce an accuracy plateau as the mesh
     is refined. Rapid variation, or variation that is small relative to a
     large additive offset in `F`, may require an explicit `derivative_step` or
@@ -269,7 +290,10 @@ step. `ODEResult.sigma` contains the scale associated with each represented
 interval and therefore has one fewer entry. For SE1, SE2, and SE5 it is an
 array of ones, representing the convention \(\mathcal C=\mathcal C_1\). In
 the two-step methods this also includes the externally supplied first
-interval; it does not describe how `u_1` was produced.
+interval; it does not describe how `u_1` was produced. In automatic
+fourth-order mode, `0.0` records the zero-scale limiting scheme and `inf`
+records the Crank--Nicolson infinite-scale limit. These values are result
+sentinels, not valid `sigma` arguments for the public `scaled_mean()` function.
 
 `ODEResult.number_of_field_evaluations` records the total number of calls to
 the supplied field `F(t, u)` made by the solver. Calls made internally by a
