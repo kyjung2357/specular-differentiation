@@ -43,6 +43,7 @@ dev = [
     "pytest>=9.0",
     "scipy>=1.17",
     "ipython>=9.13",
+    "matplotlib>=3.10",
 ]
 
 docs = [

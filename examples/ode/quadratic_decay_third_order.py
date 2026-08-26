@@ -1,7 +1,8 @@
-"""Compare SE scale choices and classical methods for u' = 1/u."""
+"""Compare third-order SE with CN and RK3 for u' = -u^2."""
 
 from __future__ import annotations
 
+import math
 import os
 from collections.abc import Callable
 
@@ -11,7 +12,7 @@ import numpy as np
 
 import specular
 
-from _common import crank_nicolson, maximum_error, rk3, rk4
+from _common import crank_nicolson, maximum_error, rk3
 
 
 STEP_COUNTS = (
@@ -32,12 +33,7 @@ STEP_COUNTS = (
     1280,
     1810,
     2560,
-    3620,
-    5120,
-    7241,
-    10240,
 )
-type StepScale = float | Callable[[int, float, float, float], float]
 type ErrorSolver = Callable[[int], float]
 type Method = tuple[str, ErrorSolver]
 type ErrorSeries = tuple[str, np.ndarray]
@@ -67,23 +63,20 @@ plt.rcParams.update(
 
 
 def exact(t: np.ndarray) -> np.ndarray:
-    return np.sqrt(1.0 + 2.0 * t)
+    return 1.0 / (1.0 + t)
 
 
 def F(t: float, u: float) -> float:
     del t
-    return 1.0 / u
+    return -(u * u)
 
 
-def mesh_scale(power: float) -> StepScale:
-    def sigma_n(n: int, t_n: float, u_n: float, h_n: float) -> float:
-        del n, t_n, u_n
-        return h_n**power
-
-    return sigma_n
+def sigma_n(n: int, t_n: float, u_n: float, h_n: float) -> float:
+    del n, t_n, h_n
+    return u_n * u_n
 
 
-def solve_SE(sigma_n: StepScale, n_steps: int) -> float:
+def solve_SE(n_steps: int) -> float:
     result = specular.ellipse_scheme(
         F,
         0.0,
@@ -135,39 +128,25 @@ def evaluate(methods: tuple[Method, ...]) -> tuple[ErrorSeries, ...]:
 
 def main() -> None:
     methods: tuple[Method, ...] = (
-        (r"SE ($\sigma_n = 1$)", lambda n: solve_SE(1.0, n)),
-        (r"SE ($\sigma_n = 0.1$)", lambda n: solve_SE(0.1, n)),
-        (r"SE ($\sigma_n = h$)", lambda n: solve_SE(mesh_scale(1.0), n)),
-        (r"SE ($\sigma_n = h^2$)", lambda n: solve_SE(mesh_scale(2.0), n)),
-        (r"SE ($\sigma_n = h^3$)", lambda n: solve_SE(mesh_scale(3.0), n)),
-        (r"SE ($\sigma_n = h^4$)", lambda n: solve_SE(mesh_scale(4.0), n)),
+        (r"SE ($\sigma_n=u_n^2$)", solve_SE),
         ("CN", lambda n: solve_classical(crank_nicolson, n)),
         ("RK3", lambda n: solve_classical(rk3, n)),
-        ("RK4", lambda n: solve_classical(rk4, n)),
     )
     series = evaluate(methods)
 
-    print("u' = 1/u on [0, 1]")
-    final_n = STEP_COUNTS[-1]
-    print(f"{'method':<26} {f'error at N={final_n}':>18}")
+    coarse_index = STEP_COUNTS.index(1280)
+    fine_index = STEP_COUNTS.index(2560)
+    print("u' = -u^2 on [0, 1]")
+    print(f"{'method':<24} {'error at N=2560':>18} {'order':>10}")
     for label, errors in series:
-        print(f"{label:<26} {errors[-1]:18.8e}")
+        order = math.log2(errors[coarse_index] / errors[fine_index])
+        print(f"{label:<24} {errors[fine_index]:18.8e} {order:10.6f}")
 
     step_sizes = 1.0 / np.asarray(STEP_COUNTS, dtype=np.float64)
-    figure, ax = plt.subplots(figsize=(5.125, 2.55))
-    colors = (
-        "#fcbba1",
-        "#fc9272",
-        "#fb6a4a",
-        "#ef3b2c",
-        "#cb181d",
-        "#99000d",
-        "#7b3294",
-        "#238b45",
-        "#08519c",
-    )
-    markers = ("o", "s", "^", "D", "P", "X", "x", ">", "v")
-    line_styles = ("-", "-", "-", "-", "-", "-", "--", "--", "--")
+    figure, ax = plt.subplots(figsize=(5.125, 1.5))
+    colors = ("#d7301f", "#7b3294", "#238b45")
+    markers = ("o", "x", ">")
+    line_styles = ("-", "--", "--")
     for (label, errors), color, marker, line_style in zip(
         series,
         colors,
@@ -209,7 +188,7 @@ def main() -> None:
         top=0.97,
     )
     figure.savefig(
-        os.path.join(figures_dir, "inverse_equation_small_scale.pdf"),
+        os.path.join(figures_dir, "quadratic_decay_third_order.pdf"),
         format="pdf",
         dpi=300,
     )
