@@ -16,7 +16,7 @@ from _common import crank_nicolson, observed_order
 
 
 STEP_SIZES = np.array(
-    (0.4, 0.2, 0.1, 0.05, 0.025, 0.0125, 0.00625),
+    (0.5, 0.25, 0.125, 0.0625, 0.03125, 0.015625, 0.0078125),
     dtype=np.float64,
 )
 FIXED_SCALES = (1.0, 3.0, 10.0)
@@ -160,12 +160,14 @@ def main() -> None:
 
     methods: tuple[Method, ...] = tuple(
         (
-            rf"SE ($\sigma={sigma:g}$)",
+            r"SE2 $(\sigma_n = 1)$"
+            if sigma == 1.0
+            else rf"SE $(\sigma_n = {sigma:g})$",
             lambda h, sigma=sigma: solve_se(h, sigma),
         )
         for sigma in FIXED_SCALES
     ) + (
-        (r"SE ($\sigma=h^{-1}$)", lambda h: solve_se(h, 1.0 / h)),
+        (r"SE $\left(\sigma_n = h^{-1}\right)$", lambda h: solve_se(h, 1.0 / h)),
         ("CN", solve_cn),
     )
     series = evaluate(methods)
@@ -178,15 +180,16 @@ def main() -> None:
         f"(u_n,u_(n+1))=({u_left:.12f},{u_right:.12f})"
     )
     print(f"A={A:.3e}, B={B:.8f}, C={C:.8f}, BC={B*C:.8f}, cf={cf:.8f}")
-    print(f"{'method':<22} {'error at h=0.00625':>22} {'order':>10}")
+    error_heading = f"error at h={STEP_SIZES[-1]:g}"
+    print(f"{'method':<22} {error_heading:>22} {'order':>10}")
     for label, errors in series:
         order = observed_order(float(errors[-2]), float(errors[-1]))
         print(f"{label:<22} {errors[-1]:22.8e} {order:10.6f}")
 
-    figure, ax = plt.subplots(figsize=(5.125, 1.7))
-    colors = ("#fcae91", "#fb6a4a", "#cb181d", "#08519c", "#7b3294")
+    figure, ax = plt.subplots(figsize=(5.125, 1.8))
+    colors = ("#fcae91", "#fb6a4a", "#cb181d", "#99000d", "#7b3294")
     markers = ("o", "s", "^", "D", "x")
-    line_styles = ("-", "-", "-", "--", "--")
+    line_styles = ("-", "-", "-", "-", "--")
     for (label, errors), color, marker, line_style in zip(
         series,
         colors,
@@ -213,7 +216,12 @@ def main() -> None:
         loc="center left",
         bbox_to_anchor=(1.02, 0.5),
         ncol=1,
+        fontsize=7.5,
         handlelength=1.7,
+        handletextpad=0.6,
+        labelspacing=0.45,
+        borderpad=0.4,
+        markerscale=1.0,
         frameon=True,
         facecolor="white",
         framealpha=1.0,
@@ -224,7 +232,7 @@ def main() -> None:
     figure.subplots_adjust(
         left=0.115,
         right=0.73,
-        bottom=0.16,
+        bottom=0.22,
         top=0.97,
     )
     figure.savefig(
@@ -232,7 +240,7 @@ def main() -> None:
         format="pdf",
         dpi=300,
     )
-    plt.show()
+    plt.close(figure)
 
 
 if __name__ == "__main__":

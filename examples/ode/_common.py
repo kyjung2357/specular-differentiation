@@ -29,6 +29,25 @@ def observed_order(coarse_error: float, fine_error: float) -> float:
     return math.log2(coarse_error / fine_error)
 
 
+def uniform_step_count(t_0: float, T: float, h: float) -> int:
+    """Return the number of uniform steps for a prescribed step size."""
+
+    if h <= 0.0:
+        raise ValueError("the step size must be positive")
+
+    n_steps = round((T - t_0) / h)
+    if n_steps < 1 or not math.isclose(
+        (T - t_0) / n_steps,
+        h,
+        rel_tol=1e-12,
+        abs_tol=1e-15,
+    ):
+        raise ValueError(
+            f"h={h:.16g} does not define a uniform mesh on [{t_0}, {T}]"
+        )
+    return n_steps
+
+
 def crank_nicolson(
     F: ScalarField,
     t_0: float,

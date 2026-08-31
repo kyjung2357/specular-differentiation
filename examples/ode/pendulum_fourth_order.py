@@ -1,4 +1,4 @@
-"""Compare SE scale choices on normalized pendulum branches."""
+"""Compare SE2, SE3, and SE4 on normalized pendulum branches."""
 
 from __future__ import annotations
 
@@ -12,34 +12,37 @@ from matplotlib.ticker import NullFormatter
 
 import specular
 
-from _common import maximum_error, rk4
+from _common import maximum_error, rk4, uniform_step_count
 
 
-# The automatic fourth-order selector starts in E5(i), then follows E5(ii).
+# The SE4 scale selector starts in E5a, then follows E5b.
 X_LEFT = 0.0
 X_RIGHT = 0.8
-STEP_COUNTS = (
-    8,
-    14,
-    25,
-    45,
-    80,
-    142,
-    253,
-    450,
-    800,
-    1423,
-    2530,
-    4500,
-    8000,
+STEP_SIZES = np.array(
+    (
+        1.0e-1,
+        5.714285714285715e-2,
+        3.2e-2,
+        1.7777777777777778e-2,
+        1.0e-2,
+        5.633802816901409e-3,
+        3.1620553359683794e-3,
+        1.7777777777777779e-3,
+        1.0e-3,
+        5.621925509487e-4,
+        3.1620553359683795e-4,
+        1.7777777777777778e-4,
+        1.0e-4,
+    ),
+    dtype=np.float64,
 )
 AMPLITUDES = (1.0, 0.25, 0.1, 0.01)
 
 METHOD_STYLES = (
-    (r"SE ($\sigma_n=1$)", "fixed", "#fcbba1", "s", "-"),
-    (r"SE ($\sigma_n=\sigma_\ast$)", "third", "#ef3b2c", "o", "-"),
+    (r"SE2", "fixed", "#fcbba1", "s", "-"),
+    (r"SE3", "third", "#ef3b2c", "o", "-"),
     (
-        r"SE ($\sigma_n=\sigma_{\mathrm{bal}}$)",
+        r"SE4",
         "fourth",
         "#99000d",
         "D",
@@ -101,9 +104,10 @@ def field_derivatives(amplitude: float):
     return derivatives
 
 
-def run_se(amplitude: float, n_steps: int, mode: str) -> float:
+def run_se(amplitude: float, h: float, mode: str) -> float:
     exact = lambda x: exact_solution(amplitude, x)
     y_0 = float(exact(np.array(X_LEFT)))
+    n_steps = uniform_step_count(X_LEFT, X_RIGHT, h)
 
     common_options = {
         "n_steps": n_steps,
@@ -146,24 +150,25 @@ def run_se(amplitude: float, n_steps: int, mode: str) -> float:
     return maximum_error(result.t, result.u, exact)
 
 
-def run_rk4(amplitude: float, n_steps: int) -> float:
+def run_rk4(amplitude: float, h: float) -> float:
     exact = lambda x: exact_solution(amplitude, x)
     y_0 = float(exact(np.array(X_LEFT)))
+    n_steps = uniform_step_count(X_LEFT, X_RIGHT, h)
     t, y = rk4(field(amplitude), X_LEFT, X_RIGHT, y_0, n_steps)
     return maximum_error(t, y, exact)
 
 
-def run_method(amplitude: float, n_steps: int, method: str) -> float:
+def run_method(amplitude: float, h: float, method: str) -> float:
     if method in {"fixed", "third", "fourth"}:
-        return run_se(amplitude, n_steps, method)
+        return run_se(amplitude, h, method)
     if method == "rk4":
-        return run_rk4(amplitude, n_steps)
+        return run_rk4(amplitude, h)
     raise ValueError(f"unknown method: {method}")
 
 
 def main() -> None:
-    print("Normalized pendulum: SE scale choices and RK4")
-    print(f"{'A':>5} {'method':>36} {'error at h=1e-4':>20}")
+    print("Normalized pendulum: SE2, SE3, SE4, and RK4")
+    print(f"{'theta':>5} {'method':>36} {'error at h=1e-4':>20}")
 
     plot_data: list[tuple[float, dict[str, np.ndarray]]] = []
     for amplitude in AMPLITUDES:
@@ -171,8 +176,8 @@ def main() -> None:
         for label, method, *_ in METHOD_STYLES:
             errors = np.array(
                 [
-                    run_method(amplitude, n_steps, method)
-                    for n_steps in STEP_COUNTS
+                    run_method(amplitude, float(h), method)
+                    for h in STEP_SIZES
                 ],
                 dtype=np.float64,
             )
@@ -180,10 +185,6 @@ def main() -> None:
             print(f"{amplitude:5.2f} {label:>36} {errors[-1]:20.6e}")
         plot_data.append((amplitude, errors_by_method))
 
-    step_sizes = (X_RIGHT - X_LEFT) / np.asarray(
-        STEP_COUNTS,
-        dtype=np.float64,
-    )
     figure, axes = plt.subplots(
         2,
         2,
@@ -198,7 +199,7 @@ def main() -> None:
     ):
         for label, method, color, marker, linestyle in METHOD_STYLES:
             ax.loglog(
-                step_sizes,
+                STEP_SIZES,
                 errors_by_method[method],
                 color=color,
                 marker=marker,
@@ -214,7 +215,7 @@ def main() -> None:
             (r"$10^{-1}$", r"$10^{-2}$", r"$10^{-3}$", r"$10^{-4}$"),
         )
         ax.xaxis.set_minor_formatter(NullFormatter())
-        ax.set_title(rf"$A={amplitude:g}$")
+        ax.set_title(rf"$\theta={amplitude:g}$")
         ax.grid(color="0.85", linewidth=0.4, which="major")
 
     for ax in axes[-1, :]:
@@ -229,8 +230,12 @@ def main() -> None:
         loc="center right",
         bbox_to_anchor=(0.985, 0.5),
         ncol=1,
-        handlelength=1.6,
+        fontsize=7.5,
+        handlelength=1.7,
+        handletextpad=0.6,
         labelspacing=0.45,
+        borderpad=0.4,
+        markerscale=1.0,
         frameon=True,
         facecolor="white",
         framealpha=1.0,
@@ -239,8 +244,8 @@ def main() -> None:
     legend.get_frame().set_linewidth(0.6)
 
     figure.subplots_adjust(
-        left=0.11,
-        right=0.75,
+        left=0.14,
+        right=0.82,
         bottom=0.13,
         top=0.95,
         wspace=0.18,
@@ -251,7 +256,7 @@ def main() -> None:
         format="pdf",
         dpi=300,
     )
-    plt.show()
+    plt.close(figure)
 
 
 if __name__ == "__main__":

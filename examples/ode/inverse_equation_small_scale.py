@@ -11,34 +11,13 @@ import numpy as np
 
 import specular
 
-from _common import crank_nicolson, maximum_error, rk3, rk4
+from _common import crank_nicolson, maximum_error, rk3, rk4, uniform_step_count
 
 
-STEP_COUNTS = (
-    10,
-    14,
-    20,
-    28,
-    40,
-    57,
-    80,
-    113,
-    160,
-    226,
-    320,
-    453,
-    640,
-    905,
-    1280,
-    1810,
-    2560,
-    3620,
-    5120,
-    7241,
-    10240,
-)
+STEP_COUNTS = np.rint(np.logspace(1.0, 3.0, 17)).astype(np.int64)
+STEP_SIZES = 1.0 / STEP_COUNTS.astype(np.float64)
 type StepScale = float | Callable[[int, float, float, float], float]
-type ErrorSolver = Callable[[int], float]
+type ErrorSolver = Callable[[float], float]
 type Method = tuple[str, ErrorSolver]
 type ErrorSeries = tuple[str, np.ndarray]
 
@@ -83,7 +62,8 @@ def mesh_scale(power: float) -> StepScale:
     return sigma_n
 
 
-def solve_SE(sigma_n: StepScale, n_steps: int) -> float:
+def solve_SE(sigma_n: StepScale, h: float) -> float:
+    n_steps = uniform_step_count(0.0, 1.0, h)
     result = specular.ellipse_scheme(
         F,
         0.0,
@@ -100,8 +80,9 @@ def solve_SE(sigma_n: StepScale, n_steps: int) -> float:
 
 def solve_classical(
     method: Callable[..., tuple[np.ndarray, np.ndarray]],
-    n_steps: int,
+    h: float,
 ) -> float:
+    n_steps = uniform_step_count(0.0, 1.0, h)
     if method is crank_nicolson:
         t, u = method(
             F,
@@ -125,7 +106,7 @@ def evaluate(methods: tuple[Method, ...]) -> tuple[ErrorSeries, ...]:
         (
             label,
             np.array(
-                [solver(n_steps) for n_steps in STEP_COUNTS],
+                [solver(float(h)) for h in STEP_SIZES],
                 dtype=np.float64,
             ),
         )
@@ -135,25 +116,27 @@ def evaluate(methods: tuple[Method, ...]) -> tuple[ErrorSeries, ...]:
 
 def main() -> None:
     methods: tuple[Method, ...] = (
-        (r"SE ($\sigma_n = 1$)", lambda n: solve_SE(1.0, n)),
-        (r"SE ($\sigma_n = 0.1$)", lambda n: solve_SE(0.1, n)),
-        (r"SE ($\sigma_n = h$)", lambda n: solve_SE(mesh_scale(1.0), n)),
-        (r"SE ($\sigma_n = h^2$)", lambda n: solve_SE(mesh_scale(2.0), n)),
-        (r"SE ($\sigma_n = h^3$)", lambda n: solve_SE(mesh_scale(3.0), n)),
-        (r"SE ($\sigma_n = h^4$)", lambda n: solve_SE(mesh_scale(4.0), n)),
-        ("CN", lambda n: solve_classical(crank_nicolson, n)),
-        ("RK3", lambda n: solve_classical(rk3, n)),
-        ("RK4", lambda n: solve_classical(rk4, n)),
+        (r"SE2 $(\sigma_n = 1)$", lambda h: solve_SE(1.0, h)),
+        (
+            r"SE3 $\left(\sigma_n = \sqrt{h}\right)$",
+            lambda h: solve_SE(mesh_scale(0.5), h),
+        ),
+        (r"SE3 $(\sigma_n = h)$", lambda h: solve_SE(mesh_scale(1.0), h)),
+        (r"SE3 $\left(\sigma_n = h^{2}\right)$", lambda h: solve_SE(mesh_scale(2.0), h)),
+        (r"SE3 $\left(\sigma_n = h^{3}\right)$", lambda h: solve_SE(mesh_scale(3.0), h)),
+        (r"SE3 $\left(\sigma_n = h^{4}\right)$", lambda h: solve_SE(mesh_scale(4.0), h)),
+        ("CN", lambda h: solve_classical(crank_nicolson, h)),
+        ("RK3", lambda h: solve_classical(rk3, h)),
+        ("RK4", lambda h: solve_classical(rk4, h)),
     )
     series = evaluate(methods)
 
     print("u' = 1/u on [0, 1]")
-    final_n = STEP_COUNTS[-1]
-    print(f"{'method':<26} {f'error at N={final_n}':>18}")
+    final_h = float(STEP_SIZES[-1])
+    print(f"{'method':<26} {f'error at h={final_h:.8g}':>24}")
     for label, errors in series:
-        print(f"{label:<26} {errors[-1]:18.8e}")
+        print(f"{label:<26} {errors[-1]:24.8e}")
 
-    step_sizes = 1.0 / np.asarray(STEP_COUNTS, dtype=np.float64)
     figure, ax = plt.subplots(figsize=(5.125, 2.55))
     colors = (
         "#fcbba1",
@@ -176,7 +159,7 @@ def main() -> None:
         strict=True,
     ):
         ax.loglog(
-            step_sizes,
+            STEP_SIZES,
             errors,
             color=color,
             marker=marker,
@@ -186,7 +169,7 @@ def main() -> None:
             label=label,
         )
 
-    ax.set_xlim(1.15 * step_sizes[0], step_sizes[-1] / 1.15)
+    ax.set_xlim(1.15 * STEP_SIZES[0], STEP_SIZES[-1] / 1.15)
     ax.set_xlabel(r"$h$")
     ax.set_ylabel("Maximum global error")
     ax.grid(color="0.85", linewidth=0.4, which="major")
@@ -194,7 +177,12 @@ def main() -> None:
         loc="center left",
         bbox_to_anchor=(1.02, 0.5),
         ncol=1,
+        fontsize=7.5,
         handlelength=1.7,
+        handletextpad=0.6,
+        labelspacing=0.45,
+        borderpad=0.4,
+        markerscale=1.0,
         frameon=True,
         facecolor="white",
         framealpha=1.0,
@@ -213,7 +201,7 @@ def main() -> None:
         format="pdf",
         dpi=300,
     )
-    plt.show()
+    plt.close(figure)
 
 
 if __name__ == "__main__":

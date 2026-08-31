@@ -1,50 +1,27 @@
-"""Compare SE scale choices and RK4 for quadratic decay."""
+"""Compare CN, SE2, SE3, SE4, RK3, and RK4 for u' = -u^2."""
 
 from __future__ import annotations
 
+import math
 import os
+from collections.abc import Callable
 
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.ticker import NullFormatter
 
 import specular
 
-from _common import maximum_error, rk4
+from _common import crank_nicolson, maximum_error, rk3, rk4, uniform_step_count
 
 
 T_0 = 0.0
 T = 1.0
 U_0 = 1.0
-STEP_COUNTS = (
-    10,
-    18,
-    32,
-    56,
-    100,
-    178,
-    316,
-    562,
-    1000,
-    1778,
-    3162,
-    5623,
-    10000,
-)
-
-METHOD_STYLES = (
-    (r"SE ($\sigma_n=1$)", "fixed", "#fcbba1", "s", "-"),
-    (r"SE ($\sigma_n=\sigma_\ast$)", "third", "#ef3b2c", "o", "-"),
-    (
-        r"SE ($\sigma_n=\sigma_{\mathrm{bal}}$)",
-        "fourth",
-        "#99000d",
-        "D",
-        "-",
-    ),
-    ("RK4", "rk4", "#08519c", "v", "--"),
-)
+STEP_SIZES = 1.0e-1 * 2.0 ** (-np.arange(6, dtype=np.float64))
+type ErrorSolver = Callable[[float], float]
+type Method = tuple[str, ErrorSolver]
+type ErrorSeries = tuple[str, np.ndarray]
 
 figures_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "figures")
 if not os.path.exists(figures_dir):
@@ -86,7 +63,8 @@ def derivatives_of_F(point: np.ndarray) -> np.ndarray:
     return np.array([2.0 * u**3, -6.0 * u**4])
 
 
-def run_se(n_steps: int, mode: str) -> float:
+def solve_se(h: float, mode: str) -> float:
+    n_steps = uniform_step_count(T_0, T, h)
     common_options = {
         "n_steps": n_steps,
         "atol": 0.0,
@@ -128,62 +106,108 @@ def run_se(n_steps: int, mode: str) -> float:
     return maximum_error(result.t, result.u, exact)
 
 
-def run_rk4(n_steps: int) -> float:
-    t, u = rk4(F, T_0, T, U_0, n_steps)
+def solve_classical(
+    method: Callable[..., tuple[np.ndarray, np.ndarray]],
+    h: float,
+) -> float:
+    n_steps = uniform_step_count(T_0, T, h)
+    if method is crank_nicolson:
+        t, u = method(
+            F,
+            T_0,
+            T,
+            U_0,
+            n_steps,
+            atol=0.0,
+            rtol=1e-15,
+            max_iter=2000,
+        )
+    else:
+        t, u = method(F, T_0, T, U_0, n_steps)
     return maximum_error(t, u, exact)
 
 
-def run_method(n_steps: int, method: str) -> float:
-    if method in {"fixed", "third", "fourth"}:
-        return run_se(n_steps, method)
-    if method == "rk4":
-        return run_rk4(n_steps)
-    raise ValueError(f"unknown method: {method}")
+def evaluate(methods: tuple[Method, ...]) -> tuple[ErrorSeries, ...]:
+    """Return the error series for the requested methods."""
+
+    return tuple(
+        (
+            label,
+            np.array(
+                [solver(float(h)) for h in STEP_SIZES],
+                dtype=np.float64,
+            ),
+        )
+        for label, solver in methods
+    )
 
 
 def main() -> None:
-    print("Quadratic decay: SE scale choices and RK4")
-    print(f"{'method':>36} {'error at h=1e-4':>20}")
+    methods: tuple[Method, ...] = (
+        ("CN", lambda h: solve_classical(crank_nicolson, h)),
+        (r"SE2", lambda h: solve_se(h, "fixed")),
+        (r"SE3", lambda h: solve_se(h, "third")),
+        (r"SE4", lambda h: solve_se(h, "fourth")),
+        ("RK3", lambda h: solve_classical(rk3, h)),
+        ("RK4", lambda h: solve_classical(rk4, h)),
+    )
+    series = evaluate(methods)
 
-    errors_by_method: dict[str, np.ndarray] = {}
-    for label, method, *_ in METHOD_STYLES:
-        errors = np.array(
-            [run_method(n_steps, method) for n_steps in STEP_COUNTS],
-            dtype=np.float64,
+    coarse_index = 0
+    fine_index = -1
+    coarse_h = float(STEP_SIZES[coarse_index])
+    fine_h = float(STEP_SIZES[fine_index])
+    print("u' = -u^2 on [0, 1]")
+    print(f"{'method':<24} {f'error at h={fine_h:.8g}':>24} {'order':>10}")
+    for label, errors in series:
+        order = math.log(errors[coarse_index] / errors[fine_index]) / math.log(
+            coarse_h / fine_h
         )
-        errors_by_method[method] = errors
-        print(f"{label:>36} {errors[-1]:20.6e}")
+        print(f"{label:<24} {errors[fine_index]:24.8e} {order:10.6f}")
 
-    step_sizes = (T - T_0) / np.asarray(STEP_COUNTS, dtype=np.float64)
     figure, ax = plt.subplots(figsize=(5.125, 1.8))
-    for label, method, color, marker, linestyle in METHOD_STYLES:
+    colors = (
+        "#7b3294",
+        "#fcbba1",
+        "#ef3b2c",
+        "#99000d",
+        "#238b45",
+        "#08519c",
+    )
+    markers = ("x", "s", "o", "D", ">", "v")
+    line_styles = ("--", "-", "-", "-", "--", "--")
+    for (label, errors), color, marker, line_style in zip(
+        series,
+        colors,
+        markers,
+        line_styles,
+        strict=True,
+    ):
         ax.loglog(
-            step_sizes,
-            errors_by_method[method],
+            STEP_SIZES,
+            errors,
             color=color,
             marker=marker,
             markersize=3.0,
-            linewidth=1.0,
-            linestyle=linestyle,
+            linewidth=1.1,
+            linestyle=line_style,
             label=label,
         )
 
-    ax.set_xlim(1e-1, 1e-4)
-    ax.set_xticks(
-        (1e-1, 1e-2, 1e-3, 1e-4),
-        (r"$10^{-1}$", r"$10^{-2}$", r"$10^{-3}$", r"$10^{-4}$"),
-    )
-    ax.xaxis.set_minor_formatter(NullFormatter())
+    ax.set_xlim(1.15 * STEP_SIZES[0], STEP_SIZES[-1] / 1.15)
     ax.set_xlabel(r"$h$")
     ax.set_ylabel("Maximum global error")
     ax.grid(color="0.85", linewidth=0.4, which="major")
-
     legend = ax.legend(
         loc="center left",
         bbox_to_anchor=(1.02, 0.5),
         ncol=1,
-        handlelength=1.6,
+        fontsize=7.5,
+        handlelength=1.7,
+        handletextpad=0.6,
         labelspacing=0.45,
+        borderpad=0.4,
+        markerscale=1.0,
         frameon=True,
         facecolor="white",
         framealpha=1.0,
@@ -193,16 +217,16 @@ def main() -> None:
 
     figure.subplots_adjust(
         left=0.105,
-        right=0.73,
-        bottom=0.19,
+        right=0.78,
+        bottom=0.22,
         top=0.97,
     )
     figure.savefig(
-        os.path.join(figures_dir, "quadratic_decay_fourth_order.pdf"),
+        os.path.join(figures_dir, "quadratic_decay_convergence.pdf"),
         format="pdf",
         dpi=300,
     )
-    plt.show()
+    plt.close(figure)
 
 
 if __name__ == "__main__":
