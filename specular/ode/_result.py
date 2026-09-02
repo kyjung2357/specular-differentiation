@@ -15,8 +15,8 @@ class ODEResult:
 
     ``t`` and ``u`` contain the initial value and every accepted step, while
     ``sigma`` contains the scale associated with each represented interval.
-    In automatic fourth-order mode, ``0.0`` and ``inf`` denote the zero- and
-    infinite-scale limiting methods, respectively.
+    In automatic ``minimize_defect`` mode, ``0.0`` and ``inf`` denote the
+    zero- and infinite-scale limiting methods, respectively.
     ``number_of_field_evaluations`` counts calls to ``F(t, u)`` made by the
     solver.
     """

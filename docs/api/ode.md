@@ -1,36 +1,27 @@
 # Scalar ODE methods
 
-The ODE API solves scalar initial-value problems in the notation of the
-specular ellipse method:
+The ODE API solves scalar initial-value problems in the notation of the specular ellipse method:
 
 \[
 u'(t)=F(t,u(t)), \qquad u(t_0)=u_0, \qquad t\in[t_0,T].
 \]
 
-The public entry points are `specular.euler_scheme_1`,
-`specular.euler_scheme_2`, `specular.euler_scheme_5`, and
-`specular.ellipse_scheme`. Importing `specular` does not eagerly load the ODE
-implementation. Vector-valued states are not currently supported.
+The public entry points are `specular.euler_scheme_1`, `specular.euler_scheme_2`, `specular.euler_scheme_5`, and `specular.ellipse_scheme`. Importing `specular` does not eagerly load the ODE implementation.
+Vector-valued states are not currently supported.
 
-The same functions are also available from the public
-`specular.ode.solver` module.
+The same functions are also available from the public `specular.ode.solver` module.
 
-The angular means used by these methods are evaluated by the currently
-selected calculation backend. The scalar result is converted back to a
-Python float for the ODE iteration; NumPy therefore remains the default and
-the reproducible float64 path.
+The angular means used by these methods are evaluated by the currently selected calculation backend.
+The scalar result is converted back to a Python float for the ODE iteration; NumPy therefore remains the default and the reproducible float64 path.
 
-The result contains numerical data only. Plotting, table generation, event
-handling, and dense output are intentionally outside this API.
+The result contains numerical data only.
+Plotting, table generation, event handling, and dense output are intentionally outside this API.
 
-The [scalar ODE examples](../examples/ode/index.md) reproduce the six numerical
-experiments discussed in the manuscript.
+The [scalar ODE examples](../examples/ode/index.md) reproduce the six numerical experiments discussed in the manuscript.
 
 ## Unscaled specular Euler methods
 
-The functions `euler_scheme_1`, `euler_scheme_2`, and `euler_scheme_5`
-implement the unscaled specular Euler methods of Types 1, 2, and 5. Throughout
-this section,
+The functions `euler_scheme_1`, `euler_scheme_2`, and `euler_scheme_5` implement the unscaled specular Euler methods of Types 1, 2, and 5. Throughout this section,
 
 \[
 h_n:=t_{n+1}-t_n,
@@ -38,15 +29,12 @@ h_n:=t_{n+1}-t_n,
 \mathcal C:=\mathcal C_1,
 \]
 
-where `t` is the represented mesh returned by the function and
-\(\mathcal C_1\) is the unscaled angular mean.
+where `t` is the represented mesh returned by the function and \(\mathcal C_1\) is the unscaled angular mean.
 
 !!! note "Type numbers and convergence-order labels"
 
-    Type 2 here means the two-step method implemented by
-    `euler_scheme_2`. On the numerical-examples page, SE2, SE3, and SE4
-    instead denote second-, third-, and fourth-order configurations of
-    `ellipse_scheme`. In particular, ellipse SE2 is Type 5, not Type 2.
+    Type 2 here means the two-step method implemented by `euler_scheme_2`. On the numerical-examples page, SE2, SE3, and SE4 instead denote second-, third-, and fourth-order configurations of `ellipse_scheme`.
+    In particular, ellipse SE2 is Type 5, not Type 2.
 
 ### Type 1
 
@@ -59,8 +47,8 @@ F(t_n,u_n),F(t_{n-1},u_{n-1})
 \qquad n=1,\ldots,N-1.
 \]
 
-The value `u_1` at `t[1]` is supplied externally. The function neither
-constructs nor modifies that starting value:
+The value `u_1` at `t[1]` is supplied externally.
+The function neither constructs nor modifies that starting value:
 
 ```python
 import specular
@@ -111,8 +99,8 @@ se2 = specular.euler_scheme_2(
 )
 ```
 
-Types 1 and 2 are generically only first-order consistent. No higher-order
-theorem is implied by these functions or by the caller's choice of `u_1`.
+Types 1 and 2 are generically only first-order consistent.
+No higher-order theorem is implied by these functions or by the caller's choice of `u_1`.
 
 ### Type 5
 
@@ -146,13 +134,12 @@ same_method = specular.ellipse_scheme(
 )
 ```
 
-`euler_scheme_5` accepts the same `atol`, `rtol`, and `max_iter` controls used
-by the base ellipse method's implicit solve.
+`euler_scheme_5` accepts the same `atol`, `rtol`, and `max_iter` controls used by the base ellipse method's implicit solve.
 
 ## Prescribed scale
 
-In the base method, pass `sigma_n` as either a positive real scalar or a
-callable. A scalar uses the same scale at every step.
+In the base method, pass `sigma_n` as either a positive real scalar or a callable.
+A scalar uses the same scale at every step.
 
 ```python
 import specular
@@ -180,9 +167,8 @@ A callable scale has the contract
 sigma_n(n, t_n, u_n, h_n) -> positive float
 ```
 
-It is evaluated once at the accepted left endpoint and frozen during that
-step's implicit solve. The index `n` permits prescribed sequences, and `h_n`
-is the represented interval `t[n + 1] - t[n]` actually used by the solver.
+It is evaluated once at the accepted left endpoint and frozen during that step's implicit solve.
+The index `n` permits prescribed sequences, and `h_n` is the represented interval `t[n + 1] - t[n]` actually used by the solver.
 Consequently, the scale may depend explicitly on the mesh:
 
 ```python
@@ -192,8 +178,8 @@ def sigma_n(n, t_n, u_n, h_n):
 
 ## Automatic scale-selection modes
 
-Set exactly one of `third_order` or `fourth_order` to request numerical scale
-selection. Leave `sigma_n=None` in either mode:
+Set exactly one of `third_order`, `fourth_order`, or `minimize_defect` to request numerical scale selection.
+Leave `sigma_n=None` in any of these modes:
 
 ```python
 third_order_result = specular.ellipse_scheme(
@@ -213,36 +199,46 @@ fourth_order_result = specular.ellipse_scheme(
     n_steps=100,
     fourth_order=True,
 )
+
+minimum_defect_result = specular.ellipse_scheme(
+    F,
+    0.0,
+    1.0,
+    1.0,
+    n_steps=100,
+    minimize_defect=True,
+)
 ```
 
-The third-order mode numerically selects a positive `sigma_n` satisfying the
-left-endpoint defect-cancellation condition. The fourth-order mode couples
-the trial right endpoint and `sigma_n`, then applies the implementation's
-two-endpoint defect classification. Depending on that classification, it
-uses a finite positive scale, an arbitrary representative scale when the
-objective is scale-independent, or one of the following boundary limits.
-The zero-scale limiting mean is
+The three flags request different modes.
+
+**`third_order=True`.** This mode numerically selects a positive
+`sigma_n` satisfying the left-endpoint defect-cancellation condition.
+
+**`fourth_order=True`.** This is the strict fourth-order mode. It couples
+the trial right endpoint and `sigma_n`. In cases E5a and E5b it uses the
+positive defect-balancing scale
 
 \[
-\mathcal C_0(\alpha,\beta)
+\Sigma(t,x;s,y)
 =
-\begin{cases}
-\dfrac{2\alpha\beta}{\alpha+\beta},&\alpha\beta>0,\\
-0,&\alpha\beta\leq0,
-\end{cases}
+\left(
+\frac{-B+\operatorname{sgn}(A)\sqrt D}{2A}
+\right)^{1/2},
 \]
 
-The infinite-scale limit is
+evaluated at the current point and the trial right endpoint. In every other
+classification case, this mode falls back to `sigma_n=1`. It does not use
+zero- or infinite-scale sentinels.
 
-\[
-\mathcal C_\infty(\alpha,\beta)
-=
-\frac{\alpha+\beta}{2},
-\]
+**`minimize_defect=True`.** This mode applies the full E1--E6
+two-endpoint classification. Depending on the case, it may select a finite
+positive scale, the zero-scale limiting method recorded by `0.0`, or the
+infinite-scale Crank--Nicolson limit recorded by `inf`. This is a
+defect-minimization mode, not an order mode; it does not promise a maximal
+convergence order or fourth-order convergence.
 
-which is the Crank--Nicolson update.
-
-Both modes require derivatives of `F` along solution curves of the ODE:
+All three modes require derivatives of `F` along solution curves of the ODE:
 
 \[
 L_F F,\qquad L_F^2 F,
@@ -272,43 +268,35 @@ The input and output both have shape `(2,)`. The returned components are
 `derivative_step` cannot be supplied together with `derivatives_of_F`, because
 the exact callback bypasses numerical differentiation.
 
-`third_order=True` and `fourth_order=True` are mutually exclusive. Supplying
-`sigma_n` together with either flag is also an error: a prescribed scale and
-an automatically selected scale are different modes.
+The flags `third_order`, `fourth_order`, and `minimize_defect` are
+mutually exclusive, so at most one may be `True`. Supplying `sigma_n`
+together with any of them is also an error: a prescribed scale and an
+automatically selected scale are different modes.
 
 !!! warning "Conditional order"
 
-    Third-order mode numerically enforces its cancellation condition, while
-    fourth-order mode applies a finite-minimizer and boundary-limit rule.
-    Neither flag provides an unconditional convergence-order guarantee.
-    Third-order convergence still depends on the smoothness and boundedness of
-    the selected branch and on sufficiently accurate field derivatives. The
-    fourth-order result is also conditional: the current convergence theorem
-    assumes that all sufficiently close pairs in a tube satisfy the
-    manuscript's uniform E5a-or-E5b condition, together with its stated
-    smoothness, boundedness, and nondegeneracy hypotheses. Other numerical
-    minimizers and boundary limits do not inherit that fourth-order guarantee.
-    Finite-difference error can also produce an accuracy plateau as the mesh
-    is refined. Rapid variation, or variation that is small relative to a
-    large additive offset in `F`, may require an explicit `derivative_step` or
-    a `derivatives_of_F` callback.
+    Third-order mode numerically enforces its cancellation condition, while strict fourth-order mode uses the two-endpoint scale above in E5a/E5b and the fixed-scale fallback `sigma_n=1` otherwise.
+    Neither order flag provides an unconditional convergence-order guarantee.
+    Third-order convergence still depends on the smoothness and boundedness of the selected branch and on sufficiently accurate field derivatives.
+    The fourth-order result is also conditional: the current convergence theorem assumes that all sufficiently close pairs in a tube satisfy the manuscript's uniform E5a-or-E5b condition, together with its stated smoothness, boundedness, and nondegeneracy hypotheses.
+    Steps that use the `sigma_n=1` fallback do not inherit that fourth-order guarantee.
+    The separate `minimize_defect` mode only minimizes the classified two-endpoint defect and carries no maximal- or fourth-order guarantee.
+    Finite-difference error can also produce an accuracy plateau as the mesh is refined.
+    Rapid variation, or variation that is small relative to a large additive offset in `F`, may require an explicit `derivative_step` or a `derivatives_of_F` callback.
 
 ## Result
 
-`ODEResult.t` and `ODEResult.u` contain the initial value and every accepted
-step. `ODEResult.sigma` contains the scale associated with each represented
-interval and therefore has one fewer entry. For the Type 1, Type 2, and Type 5
-Euler functions it is an
-array of ones, representing the convention \(\mathcal C=\mathcal C_1\). In
-the two-step methods this also includes the externally supplied first
-interval; it does not describe how `u_1` was produced. In automatic
-fourth-order mode, `0.0` records the zero-scale limiting method and `inf`
-records the Crank--Nicolson infinite-scale limit. These values are result
-sentinels, not valid `sigma` arguments for the public `scaled_mean()` function.
+`ODEResult.t` and `ODEResult.u` contain the initial value and every accepted step.
+`ODEResult.sigma` contains the scale associated with each represented interval and therefore has one fewer entry.
+For the Type 1, Type 2, and Type 5 Euler functions it is an array of ones, representing the convention \(\mathcal C=\mathcal C_1\).
+In the two-step methods this also includes the externally supplied first interval; it does not describe how `u_1` was produced.
+In automatic fourth-order mode, the array records the positive E5a/E5b scale or `1.0` when the selector uses its fallback.
+This mode does not place zero- or infinite-scale sentinels in `ODEResult.sigma`.
+In `minimize_defect` mode, `0.0` records the zero-scale limiting method and `inf` records the Crank--Nicolson infinite-scale limit.
+These are result sentinels, not valid `sigma` arguments for the public `scaled_mean()` function.
 
-`ODEResult.number_of_field_evaluations` records the total number of calls to
-the supplied field `F(t, u)` made by the solver. Calls made internally by a
-user-provided `derivatives_of_F` callback are outside this count.
+`ODEResult.number_of_field_evaluations` records the total number of calls to the supplied field `F(t, u)` made by the solver.
+Calls made internally by a user-provided `derivatives_of_F` callback are outside this count.
 
 ## API reference
 

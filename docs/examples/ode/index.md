@@ -5,9 +5,17 @@ They use the public `specular` API and save their canonical PDF figures under `e
 
 !!! note "SE2, SE3, and SE4 on this page"
 
-    These labels refer to second-, third-, and fourth-order configurations of the specular ellipse scheme.
-    SE2 uses `sigma_n=1`, SE3 uses a pointwise defect condition or a problem-specific vanishing-scale family, and SE4 balances the defect at two consecutive endpoints.
+    These labels refer to second-, third-, and fourth-order configurations of the specular ellipse method.
+    SE2 uses `sigma_n=1`, SE3 uses a pointwise defect condition or a problem-specific vanishing-scale family, and strict SE4 uses the two-endpoint scale in E5a/E5b and `sigma_n=1` otherwise.
     This SE2 is `ellipse_scheme(..., sigma_n=1)`, which equals `euler_scheme_5`; it is not `euler_scheme_2`.
+
+The public API also provides `minimize_defect=True`. That separate mode
+uses the full E1--E6 two-endpoint classification and may return a finite scale,
+the `0.0` zero-scale sentinel, or the `inf` Crank--Nicolson sentinel.
+It minimizes the classified defect but does not assert a maximal or
+fourth-order convergence rate. See the
+[automatic scale-selection modes](../../api/ode.md#automatic-scale-selection-modes)
+for the API and validation rules.
 
 Install the development dependencies, then run any script from the repository root:
 

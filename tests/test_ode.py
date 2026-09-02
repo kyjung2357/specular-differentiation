@@ -20,7 +20,8 @@ from specular.ode import (
 )
 from specular.ode import solver as ode_solver
 from specular.ode._ellipse import (
-    _fourth_order_mean,
+    _defect_minimizing_mean,
+    _defect_minimizing_scale,
     _fourth_order_scale,
     _numeric_derivatives_of_F,
     _third_order_scale,
@@ -111,7 +112,10 @@ def test_constant_equation_is_exact_and_result_has_minimal_shapes() -> None:
     assert result.number_of_field_evaluations == calls
 
 
-@pytest.mark.parametrize("mode", ["third_order", "fourth_order"])
+@pytest.mark.parametrize(
+    "mode",
+    ["third_order", "fourth_order", "minimize_defect"],
+)
 def test_automatic_modes_count_every_internal_field_evaluation(
     mode: str,
 ) -> None:
@@ -694,6 +698,7 @@ def test_numerical_field_derivatives_avoid_intermediate_overflow() -> None:
     [
         ("third_order", math.sqrt(2.0)),
         ("fourth_order", 1.3497316999446598),
+        ("minimize_defect", 1.3497316999446598),
     ],
 )
 @pytest.mark.parametrize("amplitude", [1e-200, 1.0, 1e200])
@@ -739,35 +744,16 @@ def test_fourth_order_scale_allows_cancelling_large_endpoint_terms() -> None:
 @pytest.mark.parametrize(
     ("case", "left", "right", "expected"),
     [
-        ("E2", (1.0, 1.0, 0.0), (-2.0, 1.0, 0.0), math.sqrt(2.0)),
+        ("E5a", (1.0, 1.0, 0.0), (0.0, 0.0, 1.0), math.sqrt(2.0)),
         (
-            "E4",
-            (-4.0, 2.0, 0.0),
-            (1.0, 1.0, -1.0),
-            math.sqrt(14.0 - 6.0 * math.sqrt(5.0)),
-        ),
-        ("E5(i)", (1.0, 1.0, 0.0), (0.0, 0.0, 1.0), math.sqrt(2.0)),
-        (
-            "E5(ii)",
+            "E5b",
             (1.0, 1.0, 0.0),
             (-2.0, 1.0, 1.0),
             math.sqrt(3.0 * math.sqrt(2.0) - 4.0),
         ),
-        (
-            "E5(iii)",
-            (-4.0, 3.0, 0.0),
-            (1.0, 1.0, -5.0),
-            math.sqrt(2.0),
-        ),
-        (
-            "E6b",
-            (-4.0, 1.0, 0.0),
-            (1.0, 1.0, -20.0),
-            math.sqrt(14.0),
-        ),
     ],
 )
-def test_fourth_order_scale_selects_each_finite_formula_case(
+def test_fourth_order_scale_selects_sigma_in_e5a_and_e5b(
     case: str,
     left: tuple[float, float, float],
     right: tuple[float, float, float],
@@ -782,37 +768,73 @@ def test_fourth_order_scale_selects_each_finite_formula_case(
 
 
 @pytest.mark.parametrize(
-    ("left", "right"),
+    ("case", "left", "right"),
     [
-        ((1.0, 1.0, 0.0), (-1.0, 1.0, 0.0)),  # Case E1
-        ((1.0, 0.0, 1.0), (1.0, 0.0, 0.0)),  # Case E6a
+        ("E1", (1.0, 1.0, 0.0), (-1.0, 1.0, 0.0)),
+        ("E2", (1.0, 1.0, 0.0), (-2.0, 1.0, 0.0)),
+        ("E3a", (1.0, 1.0, 0.0), (-4.0, 2.0, 0.0)),
+        ("E3b", (1.0, 1.0, 0.0), (2.0, 1.0, 0.0)),
+        ("E4", (-4.0, 2.0, 0.0), (1.0, 1.0, -1.0)),
+        ("E5c", (-4.0, 3.0, 0.0), (1.0, 1.0, -5.0)),
+        ("E6a", (1.0, 0.0, 1.0), (1.0, 0.0, 0.0)),
+        ("E6b", (-4.0, 1.0, 0.0), (1.0, 1.0, -20.0)),
+        ("E6c1", (-4.0, 0.0, 0.0), (-4.0, 2.0, -3.0)),
+        ("E6c2", (1.0, 1.0, 10.0), (1.0, 1.0, 0.0)),
+        ("E6c3", (-4.0, 0.0, 0.0), (-4.0, 1.0, 1.0)),
     ],
 )
-def test_fourth_order_scale_uses_one_for_indifferent_cases(
+def test_fourth_order_scale_uses_one_outside_e5a_and_e5b(
+    case: str,
     left: tuple[float, float, float],
     right: tuple[float, float, float],
 ) -> None:
-    assert _fourth_order_scale(left, right, step=0) == 1.0
+    actual = _fourth_order_scale(left, right, step=0)
+    assert actual == 1.0, case
 
 
 @pytest.mark.parametrize(
     ("case", "left", "right", "expected"),
     [
+        ("E1", (1.0, 1.0, 0.0), (-1.0, 1.0, 0.0), 1.0),
+        ("E2", (1.0, 1.0, 0.0), (-2.0, 1.0, 0.0), math.sqrt(2.0)),
         ("E3a", (1.0, 1.0, 0.0), (-4.0, 2.0, 0.0), 0.0),
         ("E3b", (1.0, 1.0, 0.0), (2.0, 1.0, 0.0), math.inf),
+        (
+            "E4",
+            (-4.0, 2.0, 0.0),
+            (1.0, 1.0, -1.0),
+            math.sqrt(14.0 - 6.0 * math.sqrt(5.0)),
+        ),
+        ("E5a", (1.0, 1.0, 0.0), (0.0, 0.0, 1.0), math.sqrt(2.0)),
+        (
+            "E5b",
+            (1.0, 1.0, 0.0),
+            (-2.0, 1.0, 1.0),
+            math.sqrt(3.0 * math.sqrt(2.0) - 4.0),
+        ),
+        ("E5c", (-4.0, 3.0, 0.0), (1.0, 1.0, -5.0), math.sqrt(2.0)),
+        ("E6a", (1.0, 0.0, 1.0), (1.0, 0.0, 0.0), 1.0),
+        ("E6b", (-4.0, 1.0, 0.0), (1.0, 1.0, -20.0), math.sqrt(14.0)),
         ("E6c1", (-4.0, 0.0, 0.0), (-4.0, 2.0, -3.0), 0.0),
         ("E6c2", (1.0, 1.0, 10.0), (1.0, 1.0, 0.0), 0.0),
         ("E6c3", (-4.0, 0.0, 0.0), (-4.0, 1.0, 1.0), math.inf),
     ],
 )
-def test_fourth_order_scale_selects_boundary_limits(
+def test_defect_minimizing_scale_restores_the_full_classification(
     case: str,
     left: tuple[float, float, float],
     right: tuple[float, float, float],
     expected: float,
 ) -> None:
-    actual = _fourth_order_scale(left, right, step=0)
-    assert actual == expected, case
+    actual = _defect_minimizing_scale(left, right, step=0)
+    if math.isinf(expected):
+        assert actual == expected, case
+    else:
+        assert actual == pytest.approx(
+            expected,
+            rel=3e-15,
+            abs=0.0,
+        ), case
 
 
 @pytest.mark.parametrize(
@@ -829,12 +851,14 @@ def test_fourth_order_scale_selects_boundary_limits(
         ),
     ],
 )
-def test_fourth_order_zero_scale_uses_the_harmonic_limit(
+def test_defect_minimizing_zero_scale_uses_the_harmonic_limit(
     alpha: float,
     beta: float,
     expected: float,
 ) -> None:
-    assert _fourth_order_mean(alpha, beta, 0.0) == pytest.approx(expected)
+    assert _defect_minimizing_mean(alpha, beta, 0.0) == pytest.approx(
+        expected
+    )
 
 
 @pytest.mark.parametrize(
@@ -860,12 +884,12 @@ def test_fourth_order_zero_scale_uses_the_harmonic_limit(
         ),
     ],
 )
-def test_fourth_order_infinite_scale_uses_crank_nicolson(
+def test_defect_minimizing_infinite_scale_uses_crank_nicolson(
     alpha: float,
     beta: float,
     expected: float,
 ) -> None:
-    assert _fourth_order_mean(alpha, beta, math.inf) == expected
+    assert _defect_minimizing_mean(alpha, beta, math.inf) == expected
 
 
 def test_third_order_scale_avoids_max_float_residual_overflow() -> None:
@@ -919,7 +943,10 @@ def test_fourth_order_default_numerical_derivatives_balance_defects() -> None:
     assert defect_sum == pytest.approx(0.0, rel=0.0, abs=2e-5)
 
 
-@pytest.mark.parametrize("mode", ["third_order", "fourth_order"])
+@pytest.mark.parametrize(
+    "mode",
+    ["third_order", "fourth_order", "minimize_defect"],
+)
 def test_automatic_modes_use_one_for_an_all_scale_cancelling_case(
     mode: str,
 ) -> None:
@@ -936,7 +963,10 @@ def test_automatic_modes_use_one_for_an_all_scale_cancelling_case(
     np.testing.assert_array_equal(result.sigma, np.ones(3))
 
 
-@pytest.mark.parametrize("mode", ["third_order", "fourth_order"])
+@pytest.mark.parametrize(
+    "mode",
+    ["third_order", "fourth_order", "minimize_defect"],
+)
 def test_default_derivative_radius_is_not_limited_by_a_tiny_ode_step(
     mode: str,
 ) -> None:
@@ -989,7 +1019,8 @@ def test_default_derivative_radius_is_time_translation_invariant(
     assert min(observed_orders) > minimum_order
 
 
-def test_fourth_order_recovers_when_the_euler_endpoint_is_not_e5() -> None:
+def test_fourth_order_recovers_when_euler_endpoint_is_outside_e5a_and_e5b(
+) -> None:
     result = ellipse_scheme(
         lambda t, u: -u,
         0.0,
@@ -1064,7 +1095,7 @@ def test_third_order_reports_when_no_positive_cancelling_scale_exists(
         )
 
 
-def test_fourth_order_e6c3_uses_crank_nicolson() -> None:
+def test_fourth_order_e6c3_matches_the_unit_scale_method() -> None:
     def F(t: float, u: float) -> float:
         return u**0.25
 
@@ -1083,19 +1114,29 @@ def test_fourth_order_e6c3_uses_crank_nicolson() -> None:
         atol=1e-13,
         rtol=1e-13,
     )
+    unit_scale = ellipse_scheme(
+        F,
+        0.0,
+        0.1,
+        1.0,
+        n_steps=1,
+        sigma_n=1.0,
+        atol=1e-13,
+        rtol=1e-13,
+    )
 
-    assert result.sigma[0] == math.inf
-    assert result.u[1] == pytest.approx(
-        1.0 + 0.05 * (F(0.0, 1.0) + F(0.1, result.u[1])),
-        rel=1e-11,
-        abs=1e-12,
+    np.testing.assert_array_equal(result.sigma, [1.0])
+    np.testing.assert_allclose(
+        result.u,
+        unit_scale.u,
+        rtol=5e-15,
+        atol=5e-16,
     )
 
 
-def test_fourth_order_e3a_uses_the_zero_scale_limit() -> None:
+def test_fourth_order_e3a_matches_the_unit_scale_method() -> None:
     # Endpoint data are (F, L_F F, L_F^2 F) = (1, 1, -39) and
-    # (-4, 2, 39), which is case E3a. Since the slopes have opposite signs,
-    # the zero-scale limiting mean is zero.
+    # (-4, 2, 39), which is case E3a and therefore falls back to unit scale.
     def F(t: float, u: float) -> float:
         del u
         return 1.0 + t - 19.5 * t**2 + 14.0 * t**3 - 0.5 * t**4
@@ -1115,15 +1156,28 @@ def test_fourth_order_e3a_uses_the_zero_scale_limit() -> None:
         fourth_order=True,
         derivatives_of_F=derivatives_of_F,
     )
+    unit_scale = ellipse_scheme(
+        F,
+        0.0,
+        1.0,
+        0.0,
+        n_steps=1,
+        sigma_n=1.0,
+    )
 
-    np.testing.assert_array_equal(result.u, [0.0, 0.0])
-    np.testing.assert_array_equal(result.sigma, [0.0])
+    np.testing.assert_array_equal(result.sigma, [1.0])
+    np.testing.assert_allclose(
+        result.u,
+        unit_scale.u,
+        rtol=5e-15,
+        atol=5e-16,
+    )
 
 
-def test_fourth_order_uses_the_smaller_e4_branch() -> None:
+def test_fourth_order_e4_matches_the_unit_scale_method() -> None:
     # This quintic has endpoint data F=(1, -2), L_F F=(1, 1), and
     # L_F^2 F=(-0.05, -0.05).  The resulting scale equation has two
-    # distinct positive roots. The implementation selects the smaller one.
+    # distinct positive roots, so E4 falls back to unit scale.
     def F(t: float, u: float) -> float:
         return (
             1.0
@@ -1155,21 +1209,160 @@ def test_fourth_order_uses_the_smaller_e4_branch() -> None:
         fourth_order=True,
         derivatives_of_F=derivatives_of_F,
     )
+    unit_scale = ellipse_scheme(
+        F,
+        0.0,
+        1.0,
+        0.0,
+        n_steps=1,
+        sigma_n=1.0,
+    )
+
+    np.testing.assert_array_equal(result.sigma, [1.0])
+    np.testing.assert_allclose(
+        result.u,
+        unit_scale.u,
+        rtol=5e-15,
+        atol=5e-16,
+    )
+
+
+def test_minimize_defect_e6c3_uses_crank_nicolson() -> None:
+    def F(t: float, u: float) -> float:
+        return u**0.25
+
+    def derivatives_of_F(point: np.ndarray) -> np.ndarray:
+        u = float(point[1])
+        return np.array([0.25 * u**-0.5, -0.125 * u**-1.25])
+
+    result = ellipse_scheme(
+        F,
+        0.0,
+        0.1,
+        1.0,
+        n_steps=1,
+        minimize_defect=True,
+        derivatives_of_F=derivatives_of_F,
+        atol=1e-13,
+        rtol=1e-13,
+    )
+
+    assert result.sigma[0] == math.inf
+    assert result.u[1] == pytest.approx(
+        1.0 + 0.05 * (F(0.0, 1.0) + F(0.1, result.u[1])),
+        rel=1e-11,
+        abs=1e-12,
+    )
+
+
+def test_minimize_defect_e3a_uses_the_zero_scale_limit() -> None:
+    # Endpoint data are (F, L_F F, L_F^2 F) = (1, 1, -39) and
+    # (-4, 2, 39), which is E3a. Opposite endpoint slopes give a zero mean.
+    def F(t: float, u: float) -> float:
+        del u
+        return 1.0 + t - 19.5 * t**2 + 14.0 * t**3 - 0.5 * t**4
+
+    def derivatives_of_F(point: np.ndarray) -> np.ndarray:
+        t = float(point[0])
+        first = 1.0 - 39.0 * t + 42.0 * t**2 - 2.0 * t**3
+        second = -39.0 + 84.0 * t - 6.0 * t**2
+        return np.array([first, second])
+
+    result = ellipse_scheme(
+        F,
+        0.0,
+        1.0,
+        0.0,
+        n_steps=1,
+        minimize_defect=True,
+        derivatives_of_F=derivatives_of_F,
+    )
+
+    np.testing.assert_array_equal(result.u, [0.0, 0.0])
+    np.testing.assert_array_equal(result.sigma, [0.0])
+
+
+def test_minimize_defect_e4_uses_the_smaller_positive_scale() -> None:
+    def F(t: float, u: float) -> float:
+        return (
+            1.0
+            + t
+            - 0.025 * t**2
+            - 39.95 * t**3
+            + 59.975 * t**4
+            - 24.0 * t**5
+        )
+
+    def derivatives_of_F(point: np.ndarray) -> np.ndarray:
+        t = float(point[0])
+        first = (
+            1.0
+            - 0.05 * t
+            - 119.85 * t**2
+            + 239.9 * t**3
+            - 120.0 * t**4
+        )
+        second = -0.05 - 239.7 * t + 719.7 * t**2 - 480.0 * t**3
+        return np.array([first, second])
+
+    result = ellipse_scheme(
+        F,
+        0.0,
+        1.0,
+        0.0,
+        n_steps=1,
+        minimize_defect=True,
+        derivatives_of_F=derivatives_of_F,
+    )
 
     expected = math.sqrt(12.8 / (2.5 + math.sqrt(3.69)))
     assert result.sigma[0] == pytest.approx(expected, rel=2e-14)
 
 
-def test_high_order_modes_are_mutually_exclusive() -> None:
-    with pytest.raises(ValueError, match="third_order.*fourth_order"):
+@pytest.mark.parametrize(
+    ("first_mode", "second_mode"),
+    [
+        ("third_order", "fourth_order"),
+        ("third_order", "minimize_defect"),
+        ("fourth_order", "minimize_defect"),
+    ],
+)
+def test_automatic_modes_are_mutually_exclusive(
+    first_mode: str,
+    second_mode: str,
+) -> None:
+    with pytest.raises(
+        ValueError,
+        match="mutually exclusive|cannot.*True|only one",
+    ):
         ellipse_scheme(
             lambda t, u: -u,
             0.0,
             1.0,
             1.0,
             n_steps=1,
-            third_order=True,
-            fourth_order=True,
+            **{first_mode: True, second_mode: True},
+        )
+
+
+@pytest.mark.parametrize(
+    "mode",
+    ["third_order", "fourth_order", "minimize_defect"],
+)
+@pytest.mark.parametrize("bad_value", [0, 1, 1.0, None, "true"])
+def test_automatic_mode_flags_require_booleans(
+    mode: str,
+    bad_value,
+) -> None:
+    with pytest.raises(TypeError, match=mode):
+        ellipse_scheme(
+            lambda t, u: -u,
+            0.0,
+            1.0,
+            1.0,
+            n_steps=1,
+            sigma_n=1.0,
+            **{mode: bad_value},
         )
 
 
@@ -1178,7 +1371,10 @@ def test_base_mode_requires_sigma_n() -> None:
         ellipse_scheme(lambda t, u: -u, 0.0, 1.0, 1.0, n_steps=1)
 
 
-@pytest.mark.parametrize("mode", ["third_order", "fourth_order"])
+@pytest.mark.parametrize(
+    "mode",
+    ["third_order", "fourth_order", "minimize_defect"],
+)
 def test_automatic_modes_reject_sigma_n(mode: str) -> None:
     with pytest.raises(ValueError, match="sigma_n"):
         ellipse_scheme(
@@ -1200,7 +1396,10 @@ def test_automatic_modes_reject_sigma_n(mode: str) -> None:
     ],
 )
 def test_base_mode_rejects_automatic_derivative_options(extra: dict) -> None:
-    with pytest.raises(ValueError, match="third_order|fourth_order"):
+    with pytest.raises(
+        ValueError,
+        match="automatic|third_order|fourth_order|minimize_defect",
+    ):
         ellipse_scheme(
             lambda t, u: -u,
             0.0,
@@ -1212,7 +1411,10 @@ def test_base_mode_rejects_automatic_derivative_options(extra: dict) -> None:
         )
 
 
-@pytest.mark.parametrize("mode", ["third_order", "fourth_order"])
+@pytest.mark.parametrize(
+    "mode",
+    ["third_order", "fourth_order", "minimize_defect"],
+)
 def test_exact_and_numerical_derivative_options_cannot_be_combined(
     mode: str,
 ) -> None:
@@ -1241,7 +1443,12 @@ def test_exact_and_numerical_derivative_options_cannot_be_combined(
         np.array([1.0, -1.0, 2.0]),
     ],
 )
+@pytest.mark.parametrize(
+    "mode",
+    ["third_order", "fourth_order", "minimize_defect"],
+)
 def test_derivatives_of_F_requires_a_length_two_vector(
+    mode: str,
     bad_values: np.ndarray,
 ) -> None:
     with pytest.raises((TypeError, ValueError), match="derivatives_of_F"):
@@ -1251,8 +1458,8 @@ def test_derivatives_of_F_requires_a_length_two_vector(
             0.1,
             1.0,
             n_steps=1,
-            third_order=True,
             derivatives_of_F=lambda point: bad_values,
+            **{mode: True},
         )
 
 
@@ -1260,7 +1467,12 @@ def test_derivatives_of_F_requires_a_length_two_vector(
     "bad_values",
     [np.array([math.nan, -1.0]), np.array([1.0, math.inf])],
 )
+@pytest.mark.parametrize(
+    "mode",
+    ["third_order", "fourth_order", "minimize_defect"],
+)
 def test_derivatives_of_F_requires_finite_values(
+    mode: str,
     bad_values: np.ndarray,
 ) -> None:
     with pytest.raises(ValueError, match="derivatives_of_F"):
@@ -1270,12 +1482,16 @@ def test_derivatives_of_F_requires_finite_values(
             0.1,
             1.0,
             n_steps=1,
-            third_order=True,
             derivatives_of_F=lambda point: bad_values,
+            **{mode: True},
         )
 
 
-def test_derivatives_of_F_must_be_callable() -> None:
+@pytest.mark.parametrize(
+    "mode",
+    ["third_order", "fourth_order", "minimize_defect"],
+)
+def test_derivatives_of_F_must_be_callable(mode: str) -> None:
     with pytest.raises(TypeError, match="derivatives_of_F"):
         ellipse_scheme(
             lambda t, u: -u,
@@ -1283,8 +1499,8 @@ def test_derivatives_of_F_must_be_callable() -> None:
             0.1,
             1.0,
             n_steps=1,
-            third_order=True,
             derivatives_of_F=1.0,  # type: ignore[arg-type]
+            **{mode: True},
         )
 
 
@@ -1292,7 +1508,11 @@ def test_derivatives_of_F_must_be_callable() -> None:
     "bad_step",
     [0.0, -1.0, math.nan, math.inf, True, "1e-4"],
 )
-def test_invalid_derivative_step_is_rejected(bad_step) -> None:
+@pytest.mark.parametrize(
+    "mode",
+    ["third_order", "fourth_order", "minimize_defect"],
+)
+def test_invalid_derivative_step_is_rejected(mode: str, bad_step) -> None:
     with pytest.raises((TypeError, ValueError), match="derivative_step"):
         ellipse_scheme(
             lambda t, u: -u,
@@ -1300,12 +1520,18 @@ def test_invalid_derivative_step_is_rejected(bad_step) -> None:
             0.1,
             1.0,
             n_steps=1,
-            third_order=True,
             derivative_step=bad_step,
+            **{mode: True},
         )
 
 
-def test_unrepresentable_derivative_step_is_rejected_before_F() -> None:
+@pytest.mark.parametrize(
+    "mode",
+    ["third_order", "fourth_order", "minimize_defect"],
+)
+def test_unrepresentable_derivative_step_is_rejected_before_F(
+    mode: str,
+) -> None:
     calls = 0
 
     def F(t: float, u: float) -> float:
@@ -1320,14 +1546,17 @@ def test_unrepresentable_derivative_step_is_rejected_before_F() -> None:
             1e16 + 4.0,
             1.0,
             n_steps=1,
-            third_order=True,
             derivative_step=1e-8,
+            **{mode: True},
         )
 
     assert calls == 0
 
 
-def test_overflowing_full_derivative_radius_is_rejected_before_F() -> None:
+@pytest.mark.parametrize("mode", ["fourth_order", "minimize_defect"])
+def test_overflowing_full_derivative_radius_is_rejected_before_F(
+    mode: str,
+) -> None:
     calls = 0
 
     def F(t: float, u: float) -> float:
@@ -1342,8 +1571,8 @@ def test_overflowing_full_derivative_radius_is_rejected_before_F() -> None:
             1.7e308,
             0.0,
             n_steps=1,
-            fourth_order=True,
             derivative_step=1e307,
+            **{mode: True},
         )
 
     assert calls == 0

@@ -464,7 +464,52 @@ def _fourth_order_scale(
     *,
     step: int,
 ) -> float:
-    """Apply the fourth-order theorem's finite and boundary scale rule."""
+    """Return the E5a/E5b scale, or ``1.0`` outside those cases."""
+
+    _, _, _, _, A, B, C, D = _fourth_order_coefficients(left, right)
+    if A[0] == 0 or D[0] <= 0:
+        return 1.0
+
+    opposite_AB = B[0] != 0 and ((A[0] < 0) != (B[0] < 0))
+    opposite_AC = C[0] != 0 and ((A[0] < 0) != (C[0] < 0))
+    case_E5a = opposite_AB and C[0] == 0
+    case_E5b = opposite_AC
+    if not (case_E5a or case_E5b):
+        return 1.0
+
+    sigma = _cancelling_scale(
+        A,
+        B,
+        C,
+        D,
+        smaller_root=not opposite_AB,
+    )
+
+    if not math.isfinite(sigma) or sigma <= 0.0:
+        raise _ScaleSelectionError(
+            f"fourth-order scale is outside float64 range at step {step}"
+        )
+
+    z = _dyadic_product(_dyadic(sigma), _dyadic(sigma))
+    relative_residual = _relative_dyadic_sum(
+        _dyadic_product(A, z, z),
+        _dyadic_product(B, z),
+        C,
+    )
+    if relative_residual > 1024.0 * np.finfo(np.float64).eps:
+        raise _ScaleSelectionError(
+            f"fourth-order scale residual is not resolved at step {step}"
+        )
+    return sigma
+
+
+def _defect_minimizing_scale(
+    left: tuple[float, float, float],
+    right: tuple[float, float, float],
+    *,
+    step: int,
+) -> float:
+    """Apply the full two-endpoint defect-minimization case rule."""
 
     b, c, e, f, A, B, C, D = _fourth_order_coefficients(left, right)
 
@@ -506,11 +551,11 @@ def _fourth_order_scale(
                 smaller_root=True,
             )
         else:
-            case_E5_i = D[0] > 0 and opposite_AB and C[0] == 0
-            case_E5_ii = D[0] > 0 and opposite_AC
-            case_E5_iii = D[0] == 0 and opposite_AB
-            if case_E5_i or case_E5_ii or case_E5_iii:
-                # Cases E5(i)--E5(iii): one positive optimal scale.
+            case_E5a = D[0] > 0 and opposite_AB and C[0] == 0
+            case_E5b = D[0] > 0 and opposite_AC
+            case_E5c = D[0] == 0 and opposite_AB
+            if case_E5a or case_E5b or case_E5c:
+                # Cases E5a--E5c: one positive optimal scale.
                 sigma = _cancelling_scale(
                     A,
                     B,
@@ -579,7 +624,7 @@ def _fourth_order_scale(
 
     if not math.isfinite(sigma) or sigma <= 0.0:
         raise _ScaleSelectionError(
-            f"fourth-order scale is outside float64 range at step {step}"
+            f"defect-minimizing scale is outside float64 range at step {step}"
         )
 
     z = _dyadic_product(_dyadic(sigma), _dyadic(sigma))
@@ -590,13 +635,17 @@ def _fourth_order_scale(
     )
     if relative_residual > 1024.0 * np.finfo(np.float64).eps:
         raise _ScaleSelectionError(
-            f"fourth-order scale residual is not resolved at step {step}"
+            f"defect-minimizing scale residual is not resolved at step {step}"
         )
     return sigma
 
 
-def _fourth_order_mean(alpha: float, beta: float, sigma: float) -> float:
-    r"""Evaluate the finite or boundary mean selected by the case rule."""
+def _defect_minimizing_mean(
+    alpha: float,
+    beta: float,
+    sigma: float,
+) -> float:
+    r"""Evaluate the finite or boundary mean selected by the full case rule."""
 
     if sigma == 0.0:
         same_nonzero_sign = (
@@ -661,7 +710,7 @@ def _fixed_scale_step(
     )
 
 
-def _fourth_order_step(
+def _coupled_step(
     F: ScalarField,
     *,
     step: int,
@@ -671,11 +720,12 @@ def _fourth_order_step(
     left: tuple[float, float, float],
     derivatives_of_F: VectorToVectorFunc | None,
     derivative_step: float | None,
+    minimize_defect: bool,
     atol: float,
     rtol: float,
     max_iter: int,
 ) -> tuple[float, float]:
-    """Solve the coupled endpoint and residual-minimizing scale equations."""
+    """Solve a coupled endpoint and two-endpoint scale equation."""
 
     F_left = left[0]
     predictor = u_n + h_n * F_left
@@ -683,6 +733,11 @@ def _fourth_order_step(
         raise RuntimeError(
             f"Euler predictor produced a non-finite value at step {step}"
         )
+    scale_rule = (
+        _defect_minimizing_scale
+        if minimize_defect
+        else _fourth_order_scale
+    )
 
     def tolerance(v: float) -> float:
         return atol + rtol * max(abs(u_n), abs(v))
@@ -696,8 +751,12 @@ def _fourth_order_step(
             derivative_step,
             step=step,
         )
-        sigma = _fourth_order_scale(left, right, step=step)
-        mean = _fourth_order_mean(right[0], F_left, sigma)
+        sigma = scale_rule(left, right, step=step)
+        mean = (
+            _defect_minimizing_mean(right[0], F_left, sigma)
+            if minimize_defect
+            else float(scaled_mean(right[0], F_left, sigma))
+        )
         updated = u_n + h_n * mean
         if not math.isfinite(updated):
             raise RuntimeError(
@@ -849,6 +908,7 @@ def _validated_inputs(
     sigma_n: object,
     third_order: object,
     fourth_order: object,
+    minimize_defect: object,
     derivatives_of_F: object,
     derivative_step: object,
     atol: object,
@@ -860,6 +920,7 @@ def _validated_inputs(
     float,
     int,
     float | StepScale | None,
+    bool,
     bool,
     bool,
     VectorToVectorFunc | None,
@@ -874,23 +935,31 @@ def _validated_inputs(
         raise TypeError("third_order must be a boolean")
     if not isinstance(fourth_order, (bool, np.bool_)):
         raise TypeError("fourth_order must be a boolean")
+    if not isinstance(minimize_defect, (bool, np.bool_)):
+        raise TypeError("minimize_defect must be a boolean")
     use_third = bool(third_order)
     use_fourth = bool(fourth_order)
-    if use_third and use_fourth:
-        raise ValueError("third_order and fourth_order cannot both be True")
+    use_minimize = bool(minimize_defect)
+    if sum((use_third, use_fourth, use_minimize)) > 1:
+        raise ValueError(
+            "third_order, fourth_order, and minimize_defect are mutually "
+            "exclusive"
+        )
 
-    automatic = use_third or use_fourth
+    automatic = use_third or use_fourth or use_minimize
     if automatic and sigma_n is not None:
-        raise ValueError("sigma_n must be None in an automatic order mode")
+        raise ValueError("sigma_n must be None in an automatic mode")
     if not automatic and sigma_n is None:
         raise ValueError("sigma_n is required in the base mode")
     if not automatic and derivatives_of_F is not None:
         raise ValueError(
-            "derivatives_of_F requires third_order=True or fourth_order=True"
+            "derivatives_of_F requires third_order=True, fourth_order=True, "
+            "or minimize_defect=True"
         )
     if not automatic and derivative_step is not None:
         raise ValueError(
-            "derivative_step requires third_order=True or fourth_order=True"
+            "derivative_step requires third_order=True, fourth_order=True, "
+            "or minimize_defect=True"
         )
     if derivatives_of_F is not None and not callable(derivatives_of_F):
         raise TypeError("derivatives_of_F must be callable")
@@ -940,6 +1009,7 @@ def _validated_inputs(
         selected_sigma,
         use_third,
         use_fourth,
+        use_minimize,
         derivatives_of_F,
         selected_derivative_step,
         absolute_tolerance,
@@ -958,6 +1028,7 @@ def ellipse_scheme(
     sigma_n: RealScalar | StepScale | None = None,
     third_order: bool = False,
     fourth_order: bool = False,
+    minimize_defect: bool = False,
     derivatives_of_F: VectorToVectorFunc | None = None,
     derivative_step: RealScalar | None = None,
     atol: RealScalar = 1e-12,
@@ -969,9 +1040,10 @@ def ellipse_scheme(
     In the base mode, ``sigma_n`` is a positive scalar or a callable
     ``sigma_n(n, t_n, u_n, h_n)`` and is frozen during its implicit step.
     ``third_order=True`` numerically enforces left-endpoint defect
-    cancellation. ``fourth_order=True`` couples the endpoint update to a
-    scale rule from the two-endpoint fourth-order case theorem, including its
-    zero- and infinite-scale limiting methods.
+    cancellation. ``fourth_order=True`` couples the endpoint update to the
+    two-endpoint scale in cases E5a and E5b and otherwise uses scale ``1.0``.
+    ``minimize_defect=True`` instead applies the full E1--E6 two-endpoint
+    defect-minimization rule, including its zero- and infinite-scale limits.
 
     When ``derivatives_of_F`` is omitted, ``L_F F`` and ``L_F^2 F`` are
     estimated from ``F`` along a local RK4 flow. Otherwise the callback must
@@ -986,6 +1058,7 @@ def ellipse_scheme(
         selected_sigma,
         use_third,
         use_fourth,
+        use_minimize,
         selected_derivatives,
         selected_derivative_step,
         absolute_tolerance,
@@ -1000,6 +1073,7 @@ def ellipse_scheme(
         sigma_n=sigma_n,
         third_order=third_order,
         fourth_order=fourth_order,
+        minimize_defect=minimize_defect,
         derivatives_of_F=derivatives_of_F,
         derivative_step=derivative_step,
         atol=atol,
@@ -1017,7 +1091,11 @@ def ellipse_scheme(
         selected_derivative_step is not None
         and selected_derivatives is None
     ):
-        derivative_times = t_values if use_fourth else t_values[:-1]
+        derivative_times = (
+            t_values
+            if use_fourth or use_minimize
+            else t_values[:-1]
+        )
         for sample_time_value in derivative_times:
             sample_time = float(sample_time_value)
             for radius in (
@@ -1048,7 +1126,7 @@ def ellipse_scheme(
         u_n = float(u_values[step])
         h_n = float(step_sizes[step])
 
-        if not use_third and not use_fourth:
+        if not use_third and not use_fourth and not use_minimize:
             if callable(selected_sigma):
                 sigma = _positive_scale(
                     selected_sigma(step, t_n, u_n, h_n), step=step
@@ -1095,7 +1173,7 @@ def ellipse_scheme(
                     max_iter=iteration_limit,
                 )
             else:
-                u_next, sigma = _fourth_order_step(
+                u_next, sigma = _coupled_step(
                     counted_field,
                     step=step,
                     t_next=t_next,
@@ -1104,6 +1182,7 @@ def ellipse_scheme(
                     left=left,
                     derivatives_of_F=selected_derivatives,
                     derivative_step=selected_derivative_step,
+                    minimize_defect=use_minimize,
                     atol=absolute_tolerance,
                     rtol=relative_tolerance,
                     max_iter=iteration_limit,
