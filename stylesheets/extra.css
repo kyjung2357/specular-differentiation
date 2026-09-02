@@ -1,0 +1,584 @@
+:root {
+  --md-primary-fg-color: #009fdf;
+  --md-primary-fg-color--light: #33b7e8;
+  --md-primary-fg-color--dark: #0079aa;
+}
+
+.md-header {
+  background-color: var(--md-primary-fg-color);
+}
+
+.md-grid {
+  max-width: 100%;
+}
+
+.md-content {
+  max-width: none;
+  width: 100%;
+}
+
+.md-content__inner {
+  max-width: none;
+  width: auto;
+}
+
+.home-intro {
+  align-items: center;
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 1.2rem 0 2rem;
+}
+
+.home-intro__copy > :first-child {
+  margin-top: 0;
+}
+
+.home-intro__copy > :last-child {
+  margin-bottom: 0;
+}
+
+.home-intro__visual img {
+  display: block;
+  height: auto;
+  margin: 0 auto;
+  width: 80%;
+}
+
+@media screen and (max-width: 49.9844em) {
+  .home-intro {
+    grid-template-columns: 1fr;
+  }
+}
+
+.md-header .md-logo {
+  display: none;
+}
+
+.md-header__title {
+  cursor: pointer;
+}
+
+.md-nav--primary > .md-nav__title {
+  align-items: center;
+  background: transparent;
+  box-shadow: none;
+  color: transparent;
+  display: flex;
+  font-size: 0;
+  height: 9.75rem;
+  justify-content: center;
+  line-height: 0;
+  margin: 0 0 1rem;
+  overflow: visible;
+  padding: 0;
+}
+
+.md-nav--primary > .md-nav__title .md-logo {
+  display: block;
+  height: 7.35rem;
+  margin: 0 auto;
+  padding: 0;
+  transform: translateY(0.1rem);
+  width: 7.35rem;
+}
+
+.md-nav--primary > .md-nav__title .md-logo img {
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.md-nav--primary .md-nav__link {
+  font-size: 0.78rem;
+}
+
+.md-nav--primary .md-nav--secondary {
+  display: none;
+}
+
+.md-sidebar--secondary,
+.md-sidebar--secondary:not([hidden]) {
+  display: none;
+  flex: 0 0 0;
+  margin: 0;
+  padding: 0;
+  width: 0;
+}
+
+.md-sidebar--primary .md-sidebar__scrollwrap {
+  max-height: calc(100vh - 2.4rem);
+  overflow-y: auto;
+  scrollbar-color: rgba(0, 0, 0, 0.24) transparent;
+  scrollbar-width: thin;
+}
+
+.md-sidebar--primary .md-sidebar__scrollwrap::-webkit-scrollbar {
+  width: 0.25rem;
+}
+
+.md-sidebar--primary .md-sidebar__scrollwrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.md-sidebar--primary .md-sidebar__scrollwrap::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.24);
+  border-radius: 999px;
+}
+
+@media screen and (max-width: 799px) {
+  html .md-nav--primary > .md-nav__title,
+  html .md-nav--primary .md-nav__title[for="__drawer"] {
+    background-color: #fff;
+  }
+}
+
+@media screen and (min-width: 800px) and (max-width: 76.234375em) {
+  .md-header__button[for="__drawer"] {
+    display: none;
+  }
+
+  .md-sidebar--primary {
+    align-self: flex-start;
+    background: transparent;
+    box-shadow: none;
+    flex-shrink: 0;
+    height: calc(100vh - 2.4rem);
+    padding: 1.2rem 0 0;
+    position: sticky;
+    top: 2.4rem;
+    transform: none !important;
+    transition: none;
+    width: 12.1rem;
+    z-index: auto;
+  }
+
+  [dir="ltr"] .md-sidebar--primary {
+    left: auto;
+  }
+
+  [dir="rtl"] .md-sidebar--primary {
+    right: auto;
+  }
+
+  .md-sidebar--primary .md-sidebar__scrollwrap {
+    bottom: auto;
+    height: 100%;
+    left: auto;
+    margin: 0 0.2rem;
+    max-height: none;
+    overflow-y: auto;
+    position: static;
+    right: auto;
+    top: auto;
+  }
+
+  .md-nav__source {
+    display: none;
+  }
+
+  .md-nav--primary,
+  .md-nav--primary .md-nav {
+    background: transparent;
+    display: block;
+    height: auto;
+    left: auto;
+    position: static;
+    right: auto;
+    top: auto;
+    z-index: auto;
+  }
+
+  .md-nav--primary .md-nav__title {
+    background: transparent;
+    box-shadow: none;
+    color: transparent;
+    cursor: default;
+    line-height: 0;
+    position: static;
+    white-space: normal;
+  }
+
+  html .md-nav--primary .md-nav__title[for="__drawer"] {
+    background: transparent;
+    box-shadow: none;
+    color: transparent;
+  }
+
+  .md-nav--primary .md-nav__title .md-nav__icon {
+    display: none;
+  }
+
+  .md-nav--primary .md-nav__title .md-logo {
+    left: auto;
+    position: static;
+    right: auto;
+    top: auto;
+  }
+
+  .md-nav--primary .md-nav__title ~ .md-nav__list {
+    box-shadow: none;
+    overflow: visible;
+    scroll-snap-type: none;
+    touch-action: auto;
+  }
+
+  .md-nav--primary .md-nav__list {
+    flex: initial;
+    padding-bottom: 0.4rem;
+    padding-left: 0.6rem;
+  }
+
+  .md-nav--primary .md-nav__item {
+    border-top: 0;
+  }
+
+  .md-nav--primary .md-nav__item > .md-nav__link {
+    margin-right: 0.4rem;
+  }
+
+  .md-nav--primary .md-nav__link {
+    margin-top: 0.625em;
+    padding: 0;
+  }
+
+  .md-nav--primary .md-nav__link .md-nav__icon {
+    font-size: inherit;
+    height: 0.9rem;
+    margin-right: 0;
+    width: 0.9rem;
+  }
+
+  .md-nav__toggle ~ .md-nav {
+    display: grid;
+    grid-template-rows: minmax(0.4rem, 0fr);
+    opacity: 0;
+    transform: none;
+    transition: grid-template-rows 0.25s cubic-bezier(0.86, 0, 0.07, 1),
+      opacity 0.25s, visibility 0ms 0.25s;
+    visibility: collapse;
+  }
+
+  .md-nav__toggle ~ .md-nav > .md-nav__list {
+    overflow: hidden;
+  }
+
+  .md-nav__toggle.md-toggle--indeterminate ~ .md-nav,
+  .md-nav__toggle:checked ~ .md-nav {
+    grid-template-rows: minmax(0.4rem, 1fr);
+    opacity: 1;
+    transition: grid-template-rows 0.25s cubic-bezier(0.86, 0, 0.07, 1),
+      opacity 0.15s 0.1s, visibility 0ms;
+    visibility: visible;
+  }
+
+  .md-nav__item--nested > .md-nav > .md-nav__title {
+    display: none;
+  }
+
+  [data-md-toggle="drawer"]:checked ~ .md-container .md-sidebar--primary {
+    box-shadow: none;
+    transform: none;
+  }
+
+  .md-overlay {
+    display: none;
+  }
+
+  [dir="ltr"] .md-sidebar--primary:not([hidden]) ~ .md-content > .md-content__inner {
+    margin-left: 1.2rem;
+  }
+
+  [dir="rtl"] .md-sidebar--primary:not([hidden]) ~ .md-content > .md-content__inner {
+    margin-right: 1.2rem;
+  }
+}
+
+.md-typeset h1 {
+  color: var(--md-default-fg-color);
+  font-weight: 500;
+}
+
+.md-typeset h2 {
+  color: var(--md-primary-fg-color);
+  font-weight: 500;
+}
+
+.md-typeset .doc.doc-object {
+  margin-top: 1.25rem;
+}
+
+.md-typeset .doc.doc-object.doc-function,
+.md-typeset .doc.doc-object.doc-class {
+  border-top: 0.05rem solid var(--md-default-fg-color--lightest);
+  margin: 1.8rem 0 2.1rem;
+  padding-top: 1.1rem;
+}
+
+.md-typeset .doc.doc-contents.first > .doc-children > .doc.doc-object:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.md-typeset .doc.doc-heading {
+  color: var(--md-default-fg-color);
+  font-weight: 650;
+  letter-spacing: 0;
+  margin: 0 0 0.45rem;
+}
+
+.md-typeset h3.doc.doc-heading {
+  font-size: 1.55rem;
+  line-height: 1.25;
+}
+
+.md-typeset .doc.doc-heading .doc-object-name {
+  font-family: var(--md-text-font-family);
+  font-weight: 650;
+}
+
+.md-typeset .doc.doc-heading code {
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+  padding: 0;
+}
+
+.md-typeset .doc-section-title {
+  display: inline-block;
+  font-weight: 700;
+  margin-top: 0.2rem;
+}
+
+.md-typeset div.doc-signature.highlight {
+  background: #f9e054;
+  border-radius: 0.05rem;
+  box-shadow: inset 0 -0.05rem 0 rgba(36, 49, 61, 0.08);
+  margin: 0.35rem 0 0.8rem;
+  overflow-x: auto;
+}
+
+.md-typeset div.doc-signature.highlight::before,
+.md-typeset div.doc-signature.highlight .code-copy-button {
+  display: none;
+}
+
+.md-typeset div.doc-signature.highlight > pre {
+  color: #1f2933;
+  font-size: 0.72rem;
+  font-weight: 650;
+  line-height: 1.55;
+  padding: 0.35rem 7.4rem 0.35rem 0.5rem;
+}
+
+.md-typeset div.doc-signature.highlight code {
+  color: inherit;
+}
+
+.md-typeset div.doc-signature.highlight .full-source-button {
+  background: #ffffff;
+  border: 0.05rem solid rgba(31, 41, 51, 0.28);
+  border-radius: 999px;
+  color: #1f2933;
+  font-family: var(--md-code-font-family);
+  font-size: 0.55rem;
+  font-weight: 800;
+  line-height: 1;
+  padding: 0.22rem 0.48rem;
+  position: absolute;
+  right: 0.65rem;
+  text-decoration: none;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+}
+
+.md-typeset div.doc-signature.highlight .full-source-button:hover,
+.md-typeset div.doc-signature.highlight .full-source-button:focus-visible {
+  background: #fff8e6;
+  color: #0f1720;
+}
+
+.md-typeset div.doc-signature.highlight .nf {
+  color: #1f2933;
+  font-weight: 800;
+}
+
+.md-typeset div.doc-signature.highlight .kc,
+.md-typeset div.doc-signature.highlight .mi,
+.md-typeset div.doc-signature.highlight .mf {
+  color: #0079aa;
+}
+
+.md-typeset div.doc-signature.highlight .n,
+.md-typeset div.doc-signature.highlight .o,
+.md-typeset div.doc-signature.highlight .p {
+  color: #1f2933;
+}
+
+.md-typeset details.mkdocstrings-source {
+  margin: 0.75rem 0 0;
+}
+
+.md-typeset details.mkdocstrings-source > summary {
+  color: var(--md-default-fg-color--light);
+  font-size: 0.64rem;
+  font-weight: 700;
+  padding-bottom: 0.25rem;
+  padding-top: 0.25rem;
+}
+
+.md-typeset details.mkdocstrings-source > summary code {
+  background: var(--md-code-bg-color);
+  border-radius: 0.1rem;
+  color: var(--md-code-fg-color);
+  font-size: 0.62rem;
+  padding: 0.05rem 0.22rem;
+}
+
+.md-typeset div.highlight {
+  background: #22282e;
+  border-radius: 0.7rem;
+  margin: 1em 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.md-typeset div.highlight > pre {
+  background: transparent;
+  color: #d7e7ff;
+  margin: 0;
+  padding: 2.2rem 1rem 1rem;
+}
+
+.md-typeset div.highlight .highlighttable {
+  background: transparent;
+  border-spacing: 0;
+  margin: 0;
+  padding-top: 1.75rem;
+}
+
+.md-typeset div.highlight .highlighttable td {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.md-typeset div.highlight .highlighttable pre {
+  background: transparent;
+  color: #d7e7ff;
+  margin: 0;
+  padding: 0.45rem 1rem 1rem;
+}
+
+.md-typeset div.highlight .linenodiv pre {
+  color: #8ea1b3;
+  padding-left: 0.7rem;
+  padding-right: 0.45rem;
+}
+
+.md-typeset div.highlight code {
+  background: transparent;
+  color: inherit;
+}
+
+.md-typeset div.highlight code span {
+  color: #d7e7ff;
+}
+
+.md-typeset div.highlight[class*="language-"]::before {
+  background: #30363d;
+  border: 0.05rem solid #59636f;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 700;
+  left: 0.6rem;
+  line-height: 1;
+  padding: 0.2rem 0.45rem;
+  position: absolute;
+  top: 0.55rem;
+  z-index: 2;
+}
+
+.md-typeset div.language-bash.highlight::before {
+  content: "bash";
+}
+
+.md-typeset div.language-python.highlight::before {
+  content: "python";
+}
+
+.md-typeset div.language-pycon.highlight::before {
+  content: "python";
+}
+
+.md-typeset div.language-tex.highlight::before,
+.md-typeset div.language-latex.highlight::before {
+  content: "tex";
+}
+
+.md-typeset div.language-text.highlight::before {
+  content: "output";
+}
+
+.md-typeset div.highlight .code-copy-button {
+  background: #30363d;
+  border: 0.05rem solid #59636f;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  font-family: var(--md-code-font-family);
+  font-size: 0.55rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0.2rem 0.45rem;
+  position: absolute;
+  right: 0.75rem;
+  top: 0.55rem;
+  z-index: 3;
+}
+
+.md-typeset div.highlight .code-copy-button:hover,
+.md-typeset div.highlight .code-copy-button:focus-visible {
+  background: #3a4149;
+}
+
+.md-typeset div.highlight .c,
+.md-typeset div.highlight .c1 {
+  color: #8ea1b3;
+}
+
+.md-typeset div.highlight .k,
+.md-typeset div.highlight .kc,
+.md-typeset div.highlight .kn,
+.md-typeset div.highlight .nb,
+.md-typeset div.highlight .ow {
+  color: #b58cff;
+}
+
+.md-typeset div.highlight .n,
+.md-typeset div.highlight .nn,
+.md-typeset div.highlight .o,
+.md-typeset div.highlight .p {
+  color: #d7e7ff;
+}
+
+.md-typeset div.highlight .s,
+.md-typeset div.highlight .s1,
+.md-typeset div.highlight .s2,
+.md-typeset div.highlight .sa,
+.md-typeset div.highlight .sd,
+.md-typeset div.highlight .si {
+  color: #83c7ff;
+}
+
+.md-typeset div.highlight .gp,
+.md-typeset div.highlight .go {
+  color: #d7e7ff;
+}
+
+.md-typeset div.highlight .w {
+  color: inherit;
+}
