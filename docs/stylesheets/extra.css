@@ -22,6 +22,35 @@
   width: auto;
 }
 
+.home-intro {
+  align-items: center;
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 1.2rem 0 2rem;
+}
+
+.home-intro__copy > :first-child {
+  margin-top: 0;
+}
+
+.home-intro__copy > :last-child {
+  margin-bottom: 0;
+}
+
+.home-intro__visual img {
+  display: block;
+  height: auto;
+  margin: 0 auto;
+  width: 80%;
+}
+
+@media screen and (max-width: 49.9844em) {
+  .home-intro {
+    grid-template-columns: 1fr;
+  }
+}
+
 .md-header .md-logo {
   display: none;
 }

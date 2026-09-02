@@ -1,4 +1,4 @@
-"""Shared types, validation, and runtime helpers for scalar ODE schemes."""
+"""Shared types, validation, and runtime helpers for scalar ODE methods."""
 
 from __future__ import annotations
 

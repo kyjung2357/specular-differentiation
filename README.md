@@ -8,14 +8,30 @@
 [![CodeQL Advanced](https://github.com/kyjung2357/specular-differentiation/actions/workflows/codeql.yml/badge.svg)](https://github.com/kyjung2357/specular-differentiation/actions/workflows/codeql.yml)
 [![Docs](https://img.shields.io/github/deployments/kyjung2357/specular-differentiation/github-pages?label=docs&logo=github)](https://kyjung2357.github.io/specular-differentiation)
 
-The Python package `specular` implements *specular differentiation* which generalizes classical differentiation.
-This implementation strictly follows the definitions, notations, and results in [[1]](#references) and [[2]](#references).
-
-A specular derivative (the red line) can be understood as the average of the inclination angles of the right and left derivatives. 
-In contrast, a symmetric derivative (the purple line) is the average of the right and left derivatives.
-Their difference is illustrated as in the following figure.
-
-![specular-derivative-animation](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-derivative-animation.gif)
+<div class="home-intro">
+  <div class="home-intro__copy">
+    <p>
+      The Python package <code>specular</code> implements
+      <em>specular differentiation</em>, which generalizes classical
+      differentiation. This implementation strictly follows the definitions,
+      notations, and results in <a href="#references">[1]</a>,
+      <a href="#references">[2]</a>, and
+      <a href="#references">[3]</a>.
+    </p>
+    <p>
+      A specular derivative (the red line) can be understood as the average of
+      the inclination angles of the right and left derivatives. In contrast, a
+      symmetric derivative (the purple line) is the average of the right and
+      left derivatives. Their difference is illustrated in the animation.
+    </p>
+  </div>
+  <div class="home-intro__visual">
+    <img
+      src="https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-derivative-animation.gif"
+      alt="Animation comparing specular and symmetric derivatives"
+    >
+  </div>
+</div>
 
 ## Installation
 
@@ -41,7 +57,7 @@ The package is distributed as `specular-differentiation` and imported in
 Python as `specular`.
 
 This installs `scaled_mean`, `derivative`, `gradient`, and `jacobian`, using
-NumPy by default, as well as the scalar ODE schemes. Backend selection is
+NumPy by default, as well as the scalar ODE methods. Backend selection is
 available through `set_backend`, `get_backend`, `use_backend`, and
 `available_backends`.
 
@@ -84,94 +100,11 @@ print(specular.derivative(ReLU, x=0))
 0.41421356237309503
 ```
 
-## Scalar ODE schemes
-
-The scalar ODE schemes are available directly from the top-level namespace.
-For example, the scaled specular ellipse scheme is called as follows:
-
-```python
-import specular
-
-def F(t, u):
-    return -u
-
-
-result = specular.ellipse_scheme(
-    F,
-    0.0,
-    1.0,
-    1.0,
-    n_steps=100,
-    sigma_n=1.0,
-)
-```
-
-`sigma_n` may be a positive scalar or a callable
-`sigma_n(n, t_n, u_n, h_n)`. Set `third_order=True` or `fourth_order=True`,
-with `sigma_n=None`, to select the scale by numerically enforcing the
-corresponding defect condition. The two flags are mutually exclusive. The
-fourth-order selector follows the theorem's E1--E6 classification: it uses
-`1.0` in E1 and E6a, the explicit finite scale in E2, E4, E5, and E6b,
-the zero-scale limit in E3a, E6c1, and E6c2, and the Crank--Nicolson
-infinite-scale limit in E3b and E6c3. In E4, the smaller of the two positive
-scales is selected. Exact cancellation, or scale minimization by itself, is
-not an unconditional convergence-order guarantee. The available fourth-order
-convergence theorem assumes the uniform `AC < 0` branch and its stated
-smoothness and boundedness hypotheses.
-
-The unscaled specular Euler schemes of Types 1, 2, and 5 are exposed as
-`euler_scheme_1`, `euler_scheme_2`, and `euler_scheme_5`. Writing
-`h_n = t[n + 1] - t[n]` and denoting the unscaled angular mean by
-`C = C_1`, their recurrences are
-
-\[
-\begin{aligned}
-\text{SE1:}\quad
-u_{n+1}
-&=u_n+h_n\mathcal C\!\left(
-F(t_n,u_n),F(t_{n-1},u_{n-1})
-\right),\\
-\text{SE2:}\quad
-u_{n+1}
-&=u_n+h_n\mathcal C\!\left(
-F(t_n,u_n),\frac{u_n-u_{n-1}}{h_{n-1}}
-\right),\\
-\text{SE5:}\quad
-u_{n+1}
-&=u_n+h_n\mathcal C\!\left(
-F(t_{n+1},u_{n+1}),F(t_n,u_n)
-\right).
-\end{aligned}
-\]
-
-SE1 and SE2 are explicit two-step methods, so the caller must supply `u_1`
-at `t[1]`; they are generically only first-order consistent. SE5 is implicit
-and is exactly `ellipse_scheme(..., sigma_n=1.0)`. All three return
-`ODEResult.sigma` as an array of ones, recording the unscaled convention.
-
-```python
-h = 0.01
-u_0 = 1.0
-u_1 = u_0 + h * F(0.0, u_0)  # starter chosen by the caller
-
-se1 = specular.euler_scheme_1(
-    F, 0.0, 1.0, u_0, u_1, n_steps=100
-)
-se2 = specular.euler_scheme_2(
-    F, 0.0, 1.0, u_0, u_1, n_steps=100
-)
-se5 = specular.euler_scheme_5(
-    F, 0.0, 1.0, u_0, n_steps=100
-)
-```
-
-See the [scalar ODE API documentation](https://kyjung2357.github.io/specular-differentiation/api/ode/)
-for the callback contracts.
-
 ## Documentation
 
 - [Calculation API](https://kyjung2357.github.io/specular-differentiation/api/calculation/)
 - [Scalar ODE API](https://kyjung2357.github.io/specular-differentiation/api/ode/)
+- [Scalar ODE examples](https://kyjung2357.github.io/specular-differentiation/examples/ode/)
 - [Backend API](https://kyjung2357.github.io/specular-differentiation/api/backend/)
 
 ## LaTeX Macro
@@ -222,6 +155,8 @@ To cite this repository:
 
 [1] K. Jung. [*Specular differentiation in one dimension: a quasi-mean value theorem, regularity, and discontinuities*](https://arxiv.org/abs/2601.09900). arXiv preprint arXiv:2601.09900, 2026.
 
-[2] K. Jung. [*Specular differentiation in normed vector spaces: Quasi-Mean Value and Quasi-Fermat Theorems*](https://arxiv.org/abs/2601.10950). arXiv preprint arXiv:2601.10950, 2026. 
+[2] K. Jung. [*The specular ellipse method for scalar ordinary differential equations: exactness and accuracy up to fourth order*](https://arxiv.org/abs/2608.30280). arXiv preprint arXiv:2608.30280, 2026.
 
-[3] K. Jung. [*Specular gradient methods for nonsmooth convex optimization in Euclidean spaces: a subgradient selection strategy*](https://arxiv.org/abs/2605.25490). arXiv preprint 	arXiv:2605.25490, 2026.
+[3] K. Jung. [*Specular differentiation in normed vector spaces: Quasi-Mean Value and Quasi-Fermat Theorems*](https://arxiv.org/abs/2601.10950). arXiv preprint arXiv:2601.10950, 2026.
+
+[4] K. Jung. [*Specular gradient methods for nonsmooth convex optimization in Euclidean spaces: a subgradient selection strategy*](https://arxiv.org/abs/2605.25490). arXiv preprint arXiv:2605.25490, 2026.

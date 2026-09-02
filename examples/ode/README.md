@@ -1,7 +1,10 @@
 # Specular Ellipse method
 
-Here, SE denotes the specular ellipse method.
-SE2 uses `sigma_n = 1`, SE3 uses the pointwise third-order scale, and SE4 uses the two-point fourth-order scale.
+Here, SE denotes the specular ellipse method. In the numerical-results
+notation, SE2 uses `sigma_n = 1`, SE3 uses either a pointwise cancelling scale
+or a problem-specific vanishing-scale family, and SE4 uses a two-point
+defect-balancing scale. These order labels are unrelated to the Type 1, Type 2,
+and Type 5 names of the unscaled specular Euler methods.
 
 The scalar ODE examples include:
 
@@ -11,7 +14,6 @@ The scalar ODE examples include:
 - `autonomous_large_scale.py`: fixed and diverging SE scales compared with CN on one-step E3b1 pairs for `u' = 1-u^2`;
 - `inverse_equation_small_scale.py`: mesh-dependent scales for `u' = 1/u`;
 - `pendulum_fourth_order.py`: SE2, SE3, and SE4 compared with RK4 on normalized pendulum branches.
-- `pendulum_fourth_order_diagnostics.py`: accepted-step scale, discriminant, defect-residual, and classification diagnostics for the SE4 pendulum calculation.
 
 Run them from the repository root:
 
@@ -22,14 +24,19 @@ python examples/ode/quadratic_decay_convergence.py
 python examples/ode/autonomous_large_scale.py
 python examples/ode/inverse_equation_small_scale.py
 python examples/ode/pendulum_fourth_order.py
-python examples/ode/pendulum_fourth_order_diagnostics.py
 ```
 
 The examples use NumPy and the public `specular` API.
-They also use Matplotlib from the `dev` extra, print compact numerical summaries, open comparison figures, and save PDFs under `figures/`.
+They also use Matplotlib from the `dev` extra, print compact numerical
+summaries, and save PDFs under `figures/`.
 
-The scales used by SE3 and SE4 enforce the corresponding defect conditions.
-Their observed orders are conditional on the regularity and boundedness of the selected scale branch; they are not guarantees for an arbitrary scalar field.
+The pointwise and two-point selectors enforce their corresponding finite-scale
+defect conditions where such a scale exists. The vanishing- and diverging-scale
+experiments instead study boundary regimes. All observed orders are conditional
+on the problem and on the hypotheses of the applicable result; they are not
+guarantees for an arbitrary scalar field.
 
 The SE4 pendulum example uses `[0, 0.8]`, as in the manuscript.
-Its first accepted pair is in case E5a, and subsequent accepted pairs are in case E5b in the current theorem statement.
+For the reported `h = 1e-2` calculation, its first accepted pair is in case
+E5a and the subsequent accepted pairs are in case E5b. This accepted-path
+check does not verify the theorem's uniform-neighborhood hypothesis.

@@ -1,4 +1,4 @@
-"""Scalar specular schemes for ordinary differential equations."""
+"""Scalar specular methods for ordinary differential equations."""
 
 from ._result import ODEResult
 from .solver import (

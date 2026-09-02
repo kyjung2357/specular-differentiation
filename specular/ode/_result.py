@@ -1,4 +1,4 @@
-"""Result model shared by the scalar ODE schemes."""
+"""Result model shared by the scalar ODE methods."""
 
 from dataclasses import dataclass
 
@@ -11,12 +11,12 @@ type FloatArray = npt.NDArray[np.float64]
 
 @dataclass(frozen=True, slots=True)
 class ODEResult:
-    """Values produced by a scalar specular ODE scheme.
+    """Values produced by a scalar specular ODE method.
 
     ``t`` and ``u`` contain the initial value and every accepted step, while
     ``sigma`` contains the scale associated with each represented interval.
     In automatic fourth-order mode, ``0.0`` and ``inf`` denote the zero- and
-    infinite-scale limiting schemes, respectively.
+    infinite-scale limiting methods, respectively.
     ``number_of_field_evaluations`` counts calls to ``F(t, u)`` made by the
     solver.
     """

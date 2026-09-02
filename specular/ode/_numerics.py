@@ -1,4 +1,4 @@
-"""Stable scalar numerical primitives for the ODE schemes."""
+"""Stable scalar numerical primitives for the ODE methods."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Tests for the scalar specular ODE schemes."""
+"""Tests for the scalar specular ODE methods."""
 
 from __future__ import annotations
 
@@ -205,17 +205,17 @@ def _reference_unscaled_C(alpha: float, beta: float) -> float:
 
 
 @pytest.mark.parametrize(
-    ("scheme", "uses_field_history"),
+    ("method", "uses_field_history"),
     [(euler_scheme_1, True), (euler_scheme_2, False)],
 )
-def test_two_step_euler_schemes_follow_their_defining_recurrence(
-    scheme,
+def test_two_step_euler_methods_follow_their_defining_recurrence(
+    method,
     uses_field_history: bool,
 ) -> None:
     def F(t: float, u: float) -> float:
         return 1.0 + t + 0.2 * u
 
-    result = scheme(F, 0.0, 1.5, 0.5, 0.9, n_steps=3)
+    result = method(F, 0.0, 1.5, 0.5, 0.9, n_steps=3)
     expected = np.empty(4)
     expected[:2] = [0.5, 0.9]
 
@@ -244,9 +244,9 @@ def test_two_step_euler_schemes_follow_their_defining_recurrence(
     np.testing.assert_array_equal(result.sigma, np.ones(3))
 
 
-@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
-def test_two_step_euler_schemes_are_exact_for_a_constant_field(
-    scheme,
+@pytest.mark.parametrize("method", [euler_scheme_1, euler_scheme_2])
+def test_two_step_euler_methods_are_exact_for_a_constant_field(
+    method,
 ) -> None:
     t_0 = -0.5
     T = 1.5
@@ -255,7 +255,7 @@ def test_two_step_euler_schemes_are_exact_for_a_constant_field(
     slope = 2.5
     h = (T - t_0) / n_steps
 
-    result = scheme(
+    result = method(
         lambda t, u: slope,
         t_0,
         T,
@@ -273,10 +273,10 @@ def test_two_step_euler_schemes_are_exact_for_a_constant_field(
     np.testing.assert_array_equal(result.sigma, np.ones(n_steps))
 
 
-@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
-def test_two_step_euler_schemes_require_an_external_u_1(scheme) -> None:
+@pytest.mark.parametrize("method", [euler_scheme_1, euler_scheme_2])
+def test_two_step_euler_methods_require_an_external_u_1(method) -> None:
     with pytest.raises(TypeError, match="u_1"):
-        scheme(  # type: ignore[call-arg]
+        method(  # type: ignore[call-arg]
             lambda t, u: 0.0,
             0.0,
             1.0,
@@ -285,9 +285,9 @@ def test_two_step_euler_schemes_require_an_external_u_1(scheme) -> None:
         )
 
 
-@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
+@pytest.mark.parametrize("method", [euler_scheme_1, euler_scheme_2])
 def test_one_interval_two_step_call_returns_the_starter_without_F(
-    scheme,
+    method,
 ) -> None:
     calls = 0
 
@@ -296,7 +296,7 @@ def test_one_interval_two_step_call_returns_the_starter_without_F(
         calls += 1
         raise AssertionError("F must not be evaluated for n_steps=1")
 
-    result = scheme(F, 2.0, 5.0, -1.0, 7.0, n_steps=1)
+    result = method(F, 2.0, 5.0, -1.0, 7.0, n_steps=1)
 
     assert calls == 0
     np.testing.assert_array_equal(result.t, [2.0, 5.0])
@@ -306,14 +306,14 @@ def test_one_interval_two_step_call_returns_the_starter_without_F(
 
 
 @pytest.mark.parametrize(
-    ("scheme", "expected_indices"),
+    ("method", "expected_indices"),
     [
         (euler_scheme_1, [0, 1, 2, 3]),
         (euler_scheme_2, [1, 2, 3]),
     ],
 )
 def test_two_step_euler_field_evaluation_counts_and_nodes(
-    scheme,
+    method,
     expected_indices: list[int],
 ) -> None:
     calls: list[tuple[float, float]] = []
@@ -322,7 +322,7 @@ def test_two_step_euler_field_evaluation_counts_and_nodes(
         calls.append((t, u))
         return 0.25
 
-    result = scheme(F, 0.0, 1.0, 2.0, 2.0625, n_steps=4)
+    result = method(F, 0.0, 1.0, 2.0, 2.0625, n_steps=4)
 
     assert len(calls) == len(expected_indices)
     assert result.number_of_field_evaluations == len(calls)
@@ -336,14 +336,14 @@ def test_two_step_euler_field_evaluation_counts_and_nodes(
     )
 
 
-@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
-def test_two_step_euler_schemes_have_generic_first_order_convergence(
-    scheme,
+@pytest.mark.parametrize("method", [euler_scheme_1, euler_scheme_2])
+def test_two_step_euler_methods_have_generic_first_order_convergence(
+    method,
 ) -> None:
     errors = []
     for n_steps in (20, 40, 80):
         h = 1.0 / n_steps
-        result = scheme(
+        result = method(
             lambda t, u: -u,
             0.0,
             1.0,
@@ -383,11 +383,11 @@ def test_euler_scheme_5_is_the_unit_scale_ellipse_scheme() -> None:
     )
 
 
-@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
-def test_two_step_euler_schemes_support_a_large_represented_grid(
-    scheme,
+@pytest.mark.parametrize("method", [euler_scheme_1, euler_scheme_2])
+def test_two_step_euler_methods_support_a_large_represented_grid(
+    method,
 ) -> None:
-    result = scheme(
+    result = method(
         lambda t, u: 0.0,
         -1e308,
         1e308,
@@ -401,12 +401,12 @@ def test_two_step_euler_schemes_support_a_large_represented_grid(
     np.testing.assert_array_equal(result.sigma, [1.0, 1.0])
 
 
-@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
-def test_two_step_euler_schemes_reject_nonfinite_field_values(
-    scheme,
+@pytest.mark.parametrize("method", [euler_scheme_1, euler_scheme_2])
+def test_two_step_euler_methods_reject_nonfinite_field_values(
+    method,
 ) -> None:
     with pytest.raises(ValueError, match=r"F\(.*must be finite"):
-        scheme(
+        method(
             lambda t, u: math.nan,
             0.0,
             1.0,
@@ -417,19 +417,19 @@ def test_two_step_euler_schemes_reject_nonfinite_field_values(
 
 
 @pytest.mark.parametrize(
-    ("scheme", "u_0", "u_1"),
+    ("method", "u_0", "u_1"),
     [
         (euler_scheme_1, np.finfo(np.float64).max, np.finfo(np.float64).max),
         (euler_scheme_2, 0.0, np.finfo(np.float64).max),
     ],
 )
-def test_two_step_euler_schemes_reject_a_nonfinite_advanced_state(
-    scheme,
+def test_two_step_euler_methods_reject_a_nonfinite_advanced_state(
+    method,
     u_0: float,
     u_1: float,
 ) -> None:
     with pytest.raises(RuntimeError, match=r"state is non-finite at step 1"):
-        scheme(
+        method(
             lambda t, u: np.finfo(np.float64).max,
             0.0,
             2.0,
@@ -439,10 +439,10 @@ def test_two_step_euler_schemes_reject_a_nonfinite_advanced_state(
         )
 
 
-@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
+@pytest.mark.parametrize("method", [euler_scheme_1, euler_scheme_2])
 @pytest.mark.parametrize("bad_u_1", [math.nan, math.inf, -math.inf])
-def test_two_step_euler_schemes_reject_nonfinite_u_1_before_F(
-    scheme,
+def test_two_step_euler_methods_reject_nonfinite_u_1_before_F(
+    method,
     bad_u_1: float,
 ) -> None:
     calls = 0
@@ -453,15 +453,15 @@ def test_two_step_euler_schemes_reject_nonfinite_u_1_before_F(
         return 0.0
 
     with pytest.raises(ValueError, match="u_1"):
-        scheme(F, 0.0, 1.0, 0.0, bad_u_1, n_steps=2)
+        method(F, 0.0, 1.0, 0.0, bad_u_1, n_steps=2)
 
     assert calls == 0
 
 
-@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
+@pytest.mark.parametrize("method", [euler_scheme_1, euler_scheme_2])
 @pytest.mark.parametrize("bad_n_steps", [0, -1, True, 1.5])
-def test_two_step_euler_schemes_validate_n_steps_before_F(
-    scheme,
+def test_two_step_euler_methods_validate_n_steps_before_F(
+    method,
     bad_n_steps,
 ) -> None:
     calls = 0
@@ -472,18 +472,18 @@ def test_two_step_euler_schemes_validate_n_steps_before_F(
         return 0.0
 
     with pytest.raises((TypeError, ValueError), match="n_steps"):
-        scheme(F, 0.0, 1.0, 0.0, 0.0, n_steps=bad_n_steps)
+        method(F, 0.0, 1.0, 0.0, 0.0, n_steps=bad_n_steps)
 
     assert calls == 0
 
 
-@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
+@pytest.mark.parametrize("method", [euler_scheme_1, euler_scheme_2])
 @pytest.mark.parametrize(
     ("t_0", "T"),
     [(0.0, 0.0), (1.0, 0.0), (0.0, math.inf), (math.nan, 1.0)],
 )
-def test_two_step_euler_schemes_validate_the_time_interval_before_F(
-    scheme,
+def test_two_step_euler_methods_validate_the_time_interval_before_F(
+    method,
     t_0: float,
     T: float,
 ) -> None:
@@ -495,19 +495,19 @@ def test_two_step_euler_schemes_validate_the_time_interval_before_F(
         return 0.0
 
     with pytest.raises((TypeError, ValueError)):
-        scheme(F, t_0, T, 0.0, 0.0, n_steps=2)
+        method(F, t_0, T, 0.0, 0.0, n_steps=2)
 
     assert calls == 0
 
 
-@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
-def test_two_step_euler_schemes_reject_a_noncallable_field(scheme) -> None:
+@pytest.mark.parametrize("method", [euler_scheme_1, euler_scheme_2])
+def test_two_step_euler_methods_reject_a_noncallable_field(method) -> None:
     with pytest.raises(TypeError, match="F"):
-        scheme(1.0, 0.0, 1.0, 0.0, 0.0, n_steps=2)
+        method(1.0, 0.0, 1.0, 0.0, 0.0, n_steps=2)
 
 
-@pytest.mark.parametrize("scheme", [euler_scheme_1, euler_scheme_2])
-def test_two_step_euler_schemes_preserve_field_exceptions(scheme) -> None:
+@pytest.mark.parametrize("method", [euler_scheme_1, euler_scheme_2])
+def test_two_step_euler_methods_preserve_field_exceptions(method) -> None:
     class FieldError(Exception):
         pass
 
@@ -515,7 +515,7 @@ def test_two_step_euler_schemes_preserve_field_exceptions(scheme) -> None:
         raise FieldError("field failed")
 
     with pytest.raises(FieldError, match="field failed"):
-        scheme(F, 0.0, 1.0, 0.0, 0.0, n_steps=2)
+        method(F, 0.0, 1.0, 0.0, 0.0, n_steps=2)
 
 
 def test_affine_equation_matches_its_exact_solution() -> None:

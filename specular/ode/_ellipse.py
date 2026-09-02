@@ -1,4 +1,4 @@
-"""The lightweight scalar ODE specular ellipse scheme."""
+"""The lightweight scalar ODE specular ellipse method."""
 
 from __future__ import annotations
 
@@ -487,7 +487,7 @@ def _fourth_order_scale(
             sigma = _magnitude_float(_magnitude_sqrt(squared_scale))
         else:
             if left[0] != 0.0 and right[0] != 0.0 and C[0] == 0:
-                # Case E3a: use the sigma -> 0+ limiting scheme.
+                # Case E3a: use the sigma -> 0+ limiting method.
                 return 0.0
             # Case E3b: use the sigma -> infinity Crank--Nicolson limit.
             return math.inf
@@ -964,14 +964,14 @@ def ellipse_scheme(
     rtol: RealScalar = 1e-10,
     max_iter: int = 100,
 ) -> ODEResult:
-    r"""Apply the scalar specular ellipse scheme on ``[t_0, T]``.
+    r"""Apply the scalar specular ellipse method on ``[t_0, T]``.
 
     In the base mode, ``sigma_n`` is a positive scalar or a callable
     ``sigma_n(n, t_n, u_n, h_n)`` and is frozen during its implicit step.
     ``third_order=True`` numerically enforces left-endpoint defect
     cancellation. ``fourth_order=True`` couples the endpoint update to a
     scale rule from the two-endpoint fourth-order case theorem, including its
-    zero- and infinite-scale limiting schemes.
+    zero- and infinite-scale limiting methods.
 
     When ``derivatives_of_F`` is omitted, ``L_F F`` and ``L_F^2 F`` are
     estimated from ``F`` along a local RK4 flow. Otherwise the callback must

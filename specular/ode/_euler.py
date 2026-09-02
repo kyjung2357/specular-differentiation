@@ -1,4 +1,4 @@
-"""The unscaled specular Euler schemes of Types 1, 2, and 5."""
+"""The unscaled specular Euler methods of Types 1, 2, and 5."""
 
 from __future__ import annotations
 
@@ -108,7 +108,7 @@ def euler_scheme_1(
     *,
     n_steps: int,
 ) -> ODEResult:
-    r"""Apply the explicit two-step specular Euler scheme of Type 1.
+    r"""Apply the explicit two-step specular Euler method of Type 1.
 
     ``u_1`` is an externally supplied value at the first represented node.
     For :math:`n\geq1`, the method uses
@@ -175,7 +175,7 @@ def euler_scheme_2(
     *,
     n_steps: int,
 ) -> ODEResult:
-    r"""Apply the explicit two-step specular Euler scheme of Type 2.
+    r"""Apply the explicit two-step specular Euler method of Type 2.
 
     ``u_1`` is an externally supplied value at the first represented node.
     For :math:`n\geq1`, the method uses
@@ -242,9 +242,9 @@ def euler_scheme_5(
     rtol: RealScalar = 1e-10,
     max_iter: int = 100,
 ) -> ODEResult:
-    r"""Apply the implicit one-step specular Euler scheme of Type 5.
+    r"""Apply the implicit one-step specular Euler method of Type 5.
 
-    This is exactly the specular ellipse scheme with the fixed scale
+    This is exactly the specular ellipse method with the fixed scale
     :math:`\sigma_n=1`.
     """
 
