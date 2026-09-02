@@ -13,6 +13,7 @@ from ._common import (
     RealScalar,
     ScalarField,
     _FieldEvaluationCounter,
+    _advance,
     _field_value,
     _finite_real,
     _positive_integer,
@@ -400,14 +401,14 @@ def _cancelling_scale(
     return _magnitude_float(_magnitude_sqrt(squared_scale))
 
 
-def _case_e6b_scale(
+def _case_e6c_interior_scale(
     b: _Dyadic,
     c: _Dyadic,
     e: _Dyadic,
     f: _Dyadic,
     A: _Dyadic,
 ) -> float | None:
-    """Return the unique nonoptimal minimizer in case E6b, if present."""
+    """Return the finite nonoptimal minimizer in case E6c, if present."""
 
     if (
         b[0] == 0
@@ -570,12 +571,25 @@ def _defect_minimizing_scale(
                     # Case E6a: every positive scale is minimizing.
                     return 1.0
 
-                # Case E6b: use its unique interior nonoptimal minimizer.
-                sigma = _case_e6b_scale(b, c, e, f, A)
+                cf = _dyadic_product(c, f)
+                c_plus_f = _dyadic_sum(c, f)
+                case_E6b = (
+                    cf[0] > 0 and C[0] == 0
+                ) or (
+                    cf[0] == 0
+                    and c_plus_f[0] > 0
+                    and B[0] == 0
+                )
+                if case_E6b:
+                    # Case E6b: the residual infimum is the zero-scale limit.
+                    return 0.0
+
+                # Case E6c: use its finite interior minimizer when present.
+                sigma = _case_e6c_interior_scale(b, c, e, f, A)
                 if sigma is not None:
                     if not math.isfinite(sigma) or sigma <= 0.0:
                         raise _ScaleSelectionError(
-                            "case E6b scale is outside float64 range "
+                            "case E6c scale is outside float64 range "
                             f"at step {step}"
                         )
 
@@ -588,24 +602,20 @@ def _defect_minimizing_scale(
                     )
                     if relative_residual > 1024.0 * np.finfo(np.float64).eps:
                         raise _ScaleSelectionError(
-                            "case E6b minimizer is not resolved "
+                            "case E6c minimizer is not resolved "
                             f"at step {step}"
                         )
                     return sigma
 
-                # Cases E6c1--E6c3: select the corresponding boundary limit.
-                cf = _dyadic_product(c, f)
+                # Case E6c: without an interior minimizer, use the boundary
+                # with the smaller residual. A tie keeps the infinite-scale
+                # choice used by the previous implementation.
                 if cf[0]:
                     boundary_coefficient = C
                     boundary_reference = _dyadic_product(A, c, f)
                 else:
-                    c_plus_f = _dyadic_sum(c, f)
                     boundary_coefficient = B
                     boundary_reference = _dyadic_product(A, c_plus_f)
-
-                if boundary_coefficient[0] == 0:
-                    # Case E6c1: the minimizing limit is sigma -> 0+.
-                    return 0.0
 
                 boundary_difference = _dyadic_sum(
                     (abs(boundary_coefficient[0]), boundary_coefficient[1]),
@@ -617,9 +627,9 @@ def _defect_minimizing_scale(
                     ),
                 )
                 if boundary_difference[0] < 0:
-                    # Case E6c2: the smaller residual occurs at sigma -> 0+.
+                    # The smaller residual occurs as sigma -> 0+.
                     return 0.0
-                # Case E6c3: use the sigma -> infinity Crank--Nicolson limit.
+                # Use the sigma -> infinity Crank--Nicolson limit.
                 return math.inf
 
     if not math.isfinite(sigma) or sigma <= 0.0:
@@ -687,20 +697,25 @@ def _fixed_scale_step(
 ) -> float:
     """Solve one implicit SE update with a fixed scale."""
 
-    v = u_n + h_n * F_left
-    if not math.isfinite(v):
-        raise RuntimeError(
-            f"Euler predictor produced a non-finite value at step {step}"
-        )
+    v = _advance(
+        u_n,
+        h_n,
+        F_left,
+        step=step,
+        nonfinite_message="Euler predictor produced a non-finite value",
+    )
     for _ in range(max_iter):
         F_right = _field_value(F, t_next, v, step=step)
         mean = float(scaled_mean(F_right, F_left, sigma))
-        updated = u_n + h_n * mean
-        if not math.isfinite(updated):
-            raise RuntimeError(
-                "fixed-point iteration produced a non-finite value "
-                f"at step {step}"
-            )
+        updated = _advance(
+            u_n,
+            h_n,
+            mean,
+            step=step,
+            nonfinite_message=(
+                "fixed-point iteration produced a non-finite value"
+            ),
+        )
         if math.isclose(updated, v, rel_tol=rtol, abs_tol=atol):
             return updated
         v = updated
@@ -728,11 +743,13 @@ def _coupled_step(
     """Solve a coupled endpoint and two-endpoint scale equation."""
 
     F_left = left[0]
-    predictor = u_n + h_n * F_left
-    if not math.isfinite(predictor):
-        raise RuntimeError(
-            f"Euler predictor produced a non-finite value at step {step}"
-        )
+    predictor = _advance(
+        u_n,
+        h_n,
+        F_left,
+        step=step,
+        nonfinite_message="Euler predictor produced a non-finite value",
+    )
     scale_rule = (
         _defect_minimizing_scale
         if minimize_defect
@@ -757,12 +774,15 @@ def _coupled_step(
             if minimize_defect
             else float(scaled_mean(right[0], F_left, sigma))
         )
-        updated = u_n + h_n * mean
-        if not math.isfinite(updated):
-            raise RuntimeError(
-                "coupled iteration produced a non-finite value "
-                f"at step {step}"
-            )
+        updated = _advance(
+            u_n,
+            h_n,
+            mean,
+            step=step,
+            nonfinite_message=(
+                "coupled iteration produced a non-finite value"
+            ),
+        )
         value = v - updated
         if not math.isfinite(value):
             raise RuntimeError(
@@ -1038,7 +1058,8 @@ def ellipse_scheme(
     r"""Apply the scalar specular ellipse method on ``[t_0, T]``.
 
     In the base mode, ``sigma_n`` is a positive scalar or a callable
-    ``sigma_n(n, t_n, u_n, h_n)`` and is frozen during its implicit step.
+    ``sigma_n(n, t_n, u_n, h)`` and is frozen during its implicit step. The
+    fourth argument is the represented step size ``t[n + 1] - t[n]``.
     ``third_order=True`` numerically enforces left-endpoint defect
     cancellation. ``fourth_order=True`` couples the endpoint update to the
     two-endpoint scale in cases E5a and E5b and otherwise uses scale ``1.0``.

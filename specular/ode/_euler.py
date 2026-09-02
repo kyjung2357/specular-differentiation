@@ -11,6 +11,7 @@ from ._common import (
     RealScalar,
     ScalarField,
     _FieldEvaluationCounter,
+    _advance,
     _field_value,
     _finite_real,
     _positive_integer,
@@ -20,7 +21,6 @@ from ._ellipse import ellipse_scheme
 from ._numerics import (
     _dyadic,
     _dyadic_negate,
-    _dyadic_product,
     _dyadic_ratio_float,
     _dyadic_sum,
 )
@@ -53,27 +53,6 @@ def _two_step_inputs(
         step_count,
     )
     return t_values, step_sizes, initial_value, first_value
-
-
-def _advance(
-    u_n: float,
-    h_n: float,
-    slope: float,
-    *,
-    step: int,
-) -> float:
-    """Evaluate ``u_n + h_n * slope`` without intermediate overflow."""
-
-    value = _dyadic_ratio_float(
-        _dyadic_sum(
-            _dyadic(u_n),
-            _dyadic_product(_dyadic(h_n), _dyadic(slope)),
-        ),
-        _dyadic(1.0),
-    )
-    if not math.isfinite(value):
-        raise RuntimeError(f"the state is non-finite at step {step}")
-    return value
 
 
 def _backward_slope(
@@ -111,13 +90,6 @@ def euler_scheme_1(
     r"""Apply the explicit two-step specular Euler method of Type 1.
 
     ``u_1`` is an externally supplied value at the first represented node.
-    For :math:`n\geq1`, the method uses
-
-    .. math::
-
-        u_{n+1}=u_n+h_n\mathcal C\left(
-            F(t_n,u_n),F(t_{n-1},u_{n-1})
-        \right).
     """
 
     t_values, step_sizes, initial_value, first_value = _two_step_inputs(
@@ -178,13 +150,6 @@ def euler_scheme_2(
     r"""Apply the explicit two-step specular Euler method of Type 2.
 
     ``u_1`` is an externally supplied value at the first represented node.
-    For :math:`n\geq1`, the method uses
-
-    .. math::
-
-        u_{n+1}=u_n+h_n\mathcal C\left(
-            F(t_n,u_n),\frac{u_n-u_{n-1}}{h_{n-1}}
-        \right).
     """
 
     t_values, step_sizes, initial_value, first_value = _two_step_inputs(

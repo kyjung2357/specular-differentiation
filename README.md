@@ -103,9 +103,10 @@ print(specular.derivative(ReLU, x=0))
 ## Documentation
 
 - [Calculation API](https://kyjung2357.github.io/specular-differentiation/api/calculation/)
-- [Scalar ODE API](https://kyjung2357.github.io/specular-differentiation/api/ode/)
+- [ODE API](https://kyjung2357.github.io/specular-differentiation/api/ode/)
 - [Scalar ODE examples](https://kyjung2357.github.io/specular-differentiation/examples/ode/)
 - [Backend API](https://kyjung2357.github.io/specular-differentiation/api/backend/)
+- [GitHub releases](https://github.com/kyjung2357/specular-differentiation/releases)
 
 ## LaTeX Macro
 

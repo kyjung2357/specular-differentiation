@@ -17,6 +17,8 @@ numpy
 
 The available tuple depends on the optional packages installed in the current
 environment. Probing availability does not change the selected backend.
+`BackendName` is the public type alias for the three accepted names:
+`Literal["numpy", "numba", "jax"]`.
 
 ## Persistent selection
 

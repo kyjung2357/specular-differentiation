@@ -8,7 +8,6 @@ from collections.abc import Callable
 from typing import Any
 
 import numpy as np
-
 from ._result import FloatArray
 
 
@@ -28,6 +27,27 @@ class _FieldEvaluationCounter:
     def __call__(self, t: float, u: float) -> RealScalar:
         self.number_of_field_evaluations += 1
         return self._field(t, u)
+
+
+def _advance(
+    u_n: float,
+    h_n: float,
+    slope: float,
+    *,
+    step: int,
+    nonfinite_message: str = "the state is non-finite",
+) -> float:
+    """Evaluate ``u_n + h_n * slope`` without intermediate overflow."""
+
+    if not math.isfinite(slope):
+        raise RuntimeError(f"{nonfinite_message} at step {step}")
+    try:
+        value = math.fma(h_n, slope, u_n)
+    except OverflowError:
+        raise RuntimeError(f"{nonfinite_message} at step {step}") from None
+    if not math.isfinite(value):
+        raise RuntimeError(f"{nonfinite_message} at step {step}")
+    return value
 
 
 def _finite_real(value: object, *, name: str) -> float:

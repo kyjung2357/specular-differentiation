@@ -296,7 +296,7 @@
 }
 
 .md-typeset h1 {
-  color: #555;
+  color: var(--md-default-fg-color);
   font-weight: 500;
 }
 
@@ -322,7 +322,7 @@
 }
 
 .md-typeset .doc.doc-heading {
-  color: #24313d;
+  color: var(--md-default-fg-color);
   font-weight: 650;
   letter-spacing: 0;
   margin: 0 0 0.45rem;

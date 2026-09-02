@@ -54,6 +54,7 @@ hooks:
 nav:
   - Home: index.md
   - Quick start: quick-start.md
+  - Releases: https://github.com/kyjung2357/specular-differentiation/releases
   - Examples:
     - Scalar ODE examples: examples/ode/index.md
   - LaTeX Macro: started/latex-macro.md

@@ -112,6 +112,36 @@ def test_constant_equation_is_exact_and_result_has_minimal_shapes() -> None:
     assert result.number_of_field_evaluations == calls
 
 
+def test_ellipse_scheme_avoids_intermediate_overflow_in_finite_update(
+) -> None:
+    result = ellipse_scheme(
+        lambda t, u: 1e308,
+        0.0,
+        2.0,
+        -1e308,
+        n_steps=1,
+        sigma_n=1.0,
+    )
+
+    np.testing.assert_array_equal(result.u, [-1e308, 1e308])
+
+
+def test_coupled_ellipse_scheme_avoids_intermediate_overflow(
+) -> None:
+    result = ellipse_scheme(
+        lambda t, u: 1e308,
+        0.0,
+        2.0,
+        -1e308,
+        n_steps=1,
+        fourth_order=True,
+        derivatives_of_F=lambda point: np.array([0.0, 0.0]),
+    )
+
+    np.testing.assert_array_equal(result.u, [-1e308, 1e308])
+    np.testing.assert_array_equal(result.sigma, [1.0])
+
+
 @pytest.mark.parametrize(
     "mode",
     ["third_order", "fourth_order", "minimize_defect"],
@@ -777,10 +807,23 @@ def test_fourth_order_scale_selects_sigma_in_e5a_and_e5b(
         ("E4", (-4.0, 2.0, 0.0), (1.0, 1.0, -1.0)),
         ("E5c", (-4.0, 3.0, 0.0), (1.0, 1.0, -5.0)),
         ("E6a", (1.0, 0.0, 1.0), (1.0, 0.0, 0.0)),
-        ("E6b", (-4.0, 1.0, 0.0), (1.0, 1.0, -20.0)),
-        ("E6c1", (-4.0, 0.0, 0.0), (-4.0, 2.0, -3.0)),
-        ("E6c2", (1.0, 1.0, 10.0), (1.0, 1.0, 0.0)),
-        ("E6c3", (-4.0, 0.0, 0.0), (-4.0, 1.0, 1.0)),
+        ("E6b(i)", (-4.0, 0.0, 0.0), (-4.0, 2.0, -3.0)),
+        ("E6b(ii)", (0.0, 0.0, 3.0), (1.0, 1.0, 0.0)),
+        (
+            "E6c (interior)",
+            (-4.0, 1.0, 0.0),
+            (1.0, 1.0, -20.0),
+        ),
+        (
+            "E6c (zero boundary)",
+            (1.0, 1.0, 10.0),
+            (1.0, 1.0, 0.0),
+        ),
+        (
+            "E6c (infinite boundary)",
+            (-4.0, 0.0, 0.0),
+            (-4.0, 1.0, 1.0),
+        ),
     ],
 )
 def test_fourth_order_scale_uses_one_outside_e5a_and_e5b(
@@ -814,13 +857,29 @@ def test_fourth_order_scale_uses_one_outside_e5a_and_e5b(
         ),
         ("E5c", (-4.0, 3.0, 0.0), (1.0, 1.0, -5.0), math.sqrt(2.0)),
         ("E6a", (1.0, 0.0, 1.0), (1.0, 0.0, 0.0), 1.0),
-        ("E6b", (-4.0, 1.0, 0.0), (1.0, 1.0, -20.0), math.sqrt(14.0)),
-        ("E6c1", (-4.0, 0.0, 0.0), (-4.0, 2.0, -3.0), 0.0),
-        ("E6c2", (1.0, 1.0, 10.0), (1.0, 1.0, 0.0), 0.0),
-        ("E6c3", (-4.0, 0.0, 0.0), (-4.0, 1.0, 1.0), math.inf),
+        ("E6b(i)", (-4.0, 0.0, 0.0), (-4.0, 2.0, -3.0), 0.0),
+        ("E6b(ii)", (0.0, 0.0, 3.0), (1.0, 1.0, 0.0), 0.0),
+        (
+            "E6c (interior)",
+            (-4.0, 1.0, 0.0),
+            (1.0, 1.0, -20.0),
+            math.sqrt(14.0),
+        ),
+        (
+            "E6c (zero boundary)",
+            (1.0, 1.0, 10.0),
+            (1.0, 1.0, 0.0),
+            0.0,
+        ),
+        (
+            "E6c (infinite boundary)",
+            (-4.0, 0.0, 0.0),
+            (-4.0, 1.0, 1.0),
+            math.inf,
+        ),
     ],
 )
-def test_defect_minimizing_scale_restores_the_full_classification(
+def test_defect_minimizing_scale_follows_the_current_classification(
     case: str,
     left: tuple[float, float, float],
     right: tuple[float, float, float],
@@ -1095,7 +1154,8 @@ def test_third_order_reports_when_no_positive_cancelling_scale_exists(
         )
 
 
-def test_fourth_order_e6c3_matches_the_unit_scale_method() -> None:
+def test_fourth_order_e6c_infinite_boundary_matches_unit_scale_method(
+) -> None:
     def F(t: float, u: float) -> float:
         return u**0.25
 
@@ -1227,7 +1287,8 @@ def test_fourth_order_e4_matches_the_unit_scale_method() -> None:
     )
 
 
-def test_minimize_defect_e6c3_uses_crank_nicolson() -> None:
+def test_minimize_defect_e6c_infinite_boundary_uses_crank_nicolson(
+) -> None:
     def F(t: float, u: float) -> float:
         return u**0.25
 

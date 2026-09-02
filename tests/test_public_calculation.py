@@ -47,6 +47,58 @@ def test_scaled_mean_preserves_the_backend_C_cancellation() -> None:
 
 
 @pytest.mark.parametrize("backend", ["numpy", "numba", "jax"])
+@pytest.mark.parametrize(
+    "value, sigma",
+    [(1e-300, 1e300), (1e308, 1e-308)],
+)
+def test_scaled_mean_preserves_extreme_diagonal_identities(
+    backend: str,
+    value: float,
+    sigma: float,
+) -> None:
+    if backend not in specular.available_backends():
+        pytest.skip(f"{backend} is not installed")
+
+    specular.set_backend(backend)
+    if backend == "jax":
+        import jax
+
+        with jax.enable_x64(True), np.errstate(all="raise"):
+            result = specular.scaled_mean(value, value, sigma)
+    else:
+        with np.errstate(all="raise"):
+            result = specular.scaled_mean(value, value, sigma)
+
+    assert float(result) == value
+
+
+@pytest.mark.parametrize("backend", ["numpy", "numba", "jax"])
+def test_scaled_mean_preserves_extreme_identities_with_broadcasting(
+    backend: str,
+) -> None:
+    if backend not in specular.available_backends():
+        pytest.skip(f"{backend} is not installed")
+
+    alpha = np.array([[1e-300], [-1e-300]])
+    beta = np.array([[1e-300, -1e-300]])
+    expected = np.array(
+        [[1e-300, 0.0], [0.0, -1e-300]],
+    )
+    specular.set_backend(backend)
+
+    if backend == "jax":
+        import jax
+
+        with jax.enable_x64(True), np.errstate(all="raise"):
+            result = specular.scaled_mean(alpha, beta, 1e300)
+    else:
+        with np.errstate(all="raise"):
+            result = specular.scaled_mean(alpha, beta, 1e300)
+
+    np.testing.assert_array_equal(np.asarray(result), expected)
+
+
+@pytest.mark.parametrize("backend", ["numpy", "numba", "jax"])
 def test_scaled_mean_dispatches_to_each_available_backend(
     backend: str,
 ) -> None:
@@ -281,6 +333,8 @@ def test_jax_rejects_step_that_underflows_in_effective_dtype() -> None:
     if "jax" not in specular.available_backends():
         pytest.skip("jax is not installed")
 
+    import jax
+
     callback_calls = 0
 
     def callback(value):
@@ -289,8 +343,9 @@ def test_jax_rejects_step_that_underflows_in_effective_dtype() -> None:
         return value
 
     specular.set_backend("jax")
-    with pytest.raises(ValueError, match="finite and greater than zero"):
-        specular.derivative(callback, 0.0, h=1e-50)
+    with jax.enable_x64(False):
+        with pytest.raises(ValueError, match="finite and greater than zero"):
+            specular.derivative(callback, 0.0, h=1e-50)
 
     assert callback_calls == 0
 
@@ -313,8 +368,11 @@ def test_jax_automatic_step_is_accurate_in_default_float32() -> None:
     if "jax" not in specular.available_backends():
         pytest.skip("jax is not installed")
 
+    import jax
+
     specular.set_backend("jax")
-    result = specular.derivative(lambda value: value * value, 2.0)
+    with jax.enable_x64(False):
+        result = specular.derivative(lambda value: value * value, 2.0)
 
     assert float(result) == pytest.approx(4.0, abs=1e-3)
 

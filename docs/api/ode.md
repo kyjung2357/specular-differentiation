@@ -1,4 +1,4 @@
-# Scalar ODE methods
+# ODE
 
 The ODE API solves scalar initial-value problems in the notation of the specular ellipse method:
 
@@ -21,15 +21,17 @@ The [scalar ODE examples](../examples/ode/index.md) reproduce the six numerical 
 
 ## Unscaled specular Euler methods
 
-The functions `euler_scheme_1`, `euler_scheme_2`, and `euler_scheme_5` implement the unscaled specular Euler methods of Types 1, 2, and 5. Throughout this section,
+The functions `euler_scheme_1`, `euler_scheme_2`, and `euler_scheme_5` implement the unscaled specular Euler methods of Types 1, 2, and 5. Throughout this section, the mesh is uniform and
 
 \[
-h_n:=t_{n+1}-t_n,
+h:=\frac{T-t_0}{N},
+\qquad
+t_n:=t_0+nh,
 \qquad
 \mathcal C:=\mathcal C_1,
 \]
 
-where `t` is the represented mesh returned by the function and \(\mathcal C_1\) is the unscaled angular mean.
+where \(N\) is `n_steps` and \(\mathcal C_1\) is the unscaled angular mean.
 
 !!! note "Type numbers and convergence-order labels"
 
@@ -41,7 +43,7 @@ where `t` is the represented mesh returned by the function and \(\mathcal C_1\) 
 Type 1 is the explicit two-step recurrence
 
 \[
-u_{n+1}=u_n+h_n\mathcal C\!\left(
+u_{n+1}=u_n+h\mathcal C\!\left(
 F(t_n,u_n),F(t_{n-1},u_{n-1})
 \right),
 \qquad n=1,\ldots,N-1.
@@ -80,8 +82,8 @@ se1 = specular.euler_scheme_1(
 Type 2 is the explicit two-step recurrence
 
 \[
-u_{n+1}=u_n+h_n\mathcal C\!\left(
-F(t_n,u_n),\frac{u_n-u_{n-1}}{h_{n-1}}
+u_{n+1}=u_n+h\mathcal C\!\left(
+F(t_n,u_n),\frac{u_n-u_{n-1}}{h}
 \right),
 \qquad n=1,\ldots,N-1.
 \]
@@ -107,7 +109,7 @@ No higher-order theorem is implied by these functions or by the caller's choice 
 Type 5 is the implicit one-step recurrence
 
 \[
-u_{n+1}=u_n+h_n\mathcal C\!\left(
+u_{n+1}=u_n+h\mathcal C\!\left(
 F(t_{n+1},u_{n+1}),F(t_n,u_n)
 \right),
 \qquad n=0,\ldots,N-1.
@@ -138,8 +140,18 @@ same_method = specular.ellipse_scheme(
 
 ## Prescribed scale
 
-In the base method, pass `sigma_n` as either a positive real scalar or a callable.
-A scalar uses the same scale at every step.
+For a prescribed scale, the ellipse method is
+
+\[
+u_{n+1}
+=u_n+h\mathcal C_{\sigma_n}\!\left(
+F(t_{n+1},u_{n+1}),F(t_n,u_n)
+\right),
+\qquad n=0,\ldots,N-1.
+\]
+
+Pass `sigma_n` as either a positive real scalar or a callable. A scalar uses
+the same scale at every step.
 
 ```python
 import specular
@@ -164,17 +176,36 @@ print(result.t[-1], result.u[-1])
 A callable scale has the contract
 
 ```python
-sigma_n(n, t_n, u_n, h_n) -> positive float
+sigma_n(n, t_n, u_n, h) -> positive float
 ```
 
 It is evaluated once at the accepted left endpoint and frozen during that step's implicit solve.
-The index `n` permits prescribed sequences, and `h_n` is the represented interval `t[n + 1] - t[n]` actually used by the solver.
+The index `n` permits prescribed sequences. The fourth argument is denoted by
+`h` to match the uniform-mesh notation above. Numerically, the solver passes
+the represented interval `t[n + 1] - t[n]`, which equals
+\((T-t_0)/N\) in exact arithmetic.
 Consequently, the scale may depend explicitly on the mesh:
 
 ```python
-def sigma_n(n, t_n, u_n, h_n):
-    return h_n**0.5
+def sigma_n(n, t_n, u_n, h):
+    return h**0.5
 ```
+
+## Nonlinear solve controls
+
+The prescribed-scale method and `euler_scheme_5` solve their implicit update
+by fixed-point iteration, initialized with an Euler predictor. The automatic
+fourth-order and defect-minimization modes use a local coupled iteration when
+the scale depends on the trial right endpoint. These are local nonlinear
+solves: convergence is conditional and is not guaranteed for an arbitrary
+field or step size. In particular, this API is not intended to replace a
+general stiff ODE solver.
+
+`atol` and `rtol` control termination of the nonlinear iteration, and
+`max_iter` limits the number of iterations. A failed solve raises
+`RuntimeError`; reducing `h` by increasing `n_steps` is usually the first
+remedy. Increasing `max_iter` only helps when the iteration is converging too
+slowly.
 
 ## Automatic scale-selection modes
 
@@ -250,7 +281,8 @@ used to set the finite-difference step. Centered local-flow samples can evaluate
 `F` just outside `[t_0, T]`, so this mode requires `F` to be defined on a
 neighborhood of the time interval. Near a hard domain boundary, provide
 `derivatives_of_F` instead. For an exact, symbolic, or automatic-differentiation
-implementation, that callback uses the existing `VectorToVectorFunc` shape:
+implementation, pass a callable that maps a length-two NumPy array to another
+length-two array:
 
 ```python
 import numpy as np

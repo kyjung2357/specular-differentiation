@@ -55,9 +55,9 @@ def F(t: float, u: float) -> float:
 
 
 def mesh_scale(power: float) -> StepScale:
-    def sigma_n(n: int, t_n: float, u_n: float, h_n: float) -> float:
+    def sigma_n(n: int, t_n: float, u_n: float, h: float) -> float:
         del n, t_n, u_n
-        return h_n**power
+        return h**power
 
     return sigma_n
 

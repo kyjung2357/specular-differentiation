@@ -34,7 +34,11 @@ the defining rescaling
 
 so its floating-point range and return type follow the selected backend.
 Under JAX transformations, `alpha` and `beta` may be traced while `sigma`
-must remain static.
+must remain static. The exact diagonal and antidiagonal identities
+\(\mathcal C_\sigma(\alpha,\alpha)=\alpha\) and
+\(\mathcal C_\sigma(\alpha,-\alpha)=0\) are preserved even when the direct
+rescaling would overflow or underflow. Other extreme inputs remain limited by
+the selected backend dtype's representable range.
 
 ### Scaled angular mean
 
