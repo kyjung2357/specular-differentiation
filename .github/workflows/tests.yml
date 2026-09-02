@@ -20,9 +20,9 @@ jobs:
         backend: [numpy, numba, jax]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.14"
           cache: pip
@@ -33,7 +33,7 @@ jobs:
 
       - name: Install Numba test environment
         if: matrix.backend == 'numba'
-        run: python -m pip install -e ".[numba]" pytest
+        run: python -m pip install -e ".[numba]" pytest "scipy>=1.17"
 
       - name: Install JAX test environment
         if: matrix.backend == 'jax'
@@ -46,9 +46,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.14"
           cache: pip
