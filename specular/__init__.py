@@ -20,7 +20,6 @@ except _metadata.PackageNotFoundError:
 
 del _metadata
 
-
 if TYPE_CHECKING:
     from .ode import (
         ODEResult,

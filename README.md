@@ -82,7 +82,7 @@ pip install -e ".[docs]"
 
 ## [Backend support](https://kyjung2357.github.io/specular-differentiation/api/backend/)
 
-The package is organized around a backend system. 
+The package is organized around a backend system.
 NumPy is the default backend, while accelerated backends are optional and may require extra dependencies.
 
 ## Quick start
