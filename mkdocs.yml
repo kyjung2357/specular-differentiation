@@ -53,51 +53,22 @@ hooks:
 
 nav:
   - Home: index.md
-  - Getting Started:
-    - started/index.md
-    - User installation: started/installation.md
-    - Quick start: started/quick-start.md
-    - LaTeX Macro: started/latex-macro.md
-    - Mathematical background: started/mathematical-background.md
-    - Simple examples: started/simple-examples.md
-  - API Reference:
-    - api/index.md
-    - specular.calculation:
-      - Overview: api/calculation.md
-      - specular.calculation.A: api/calculation/A.md
-      - specular.calculation.derivative: api/calculation/derivative.md
-      - specular.calculation.directional_derivative: api/calculation/directional_derivative.md
-      - specular.calculation.partial_derivative: api/calculation/partial_derivative.md
-      - specular.calculation.gradient: api/calculation/gradient.md
-      - specular.calculation.jacobian: api/calculation/jacobian.md
-    - specular.backend:
-      - Overview: api/backend.md
-      - specular.backend.backend_info: api/backend/backend_info.md
-      - specular.backend.change_backend: api/backend/change_backend.md
-    - specular.ode:
-      - Overview: api/ode.md
-      - specular.ode.solver: api/ode/solver.md
-      - specular.ode.classical_solver: api/ode/classical-solver.md
-      - specular.ode.result: api/ode/result.md
-    - specular.optimization:
-      - Overview: api/optimization.md
-      - specular.optimization.StepSchedule: api/optimization/step-schedule.md
-      - specular.optimization.solver: api/optimization/solver.md
-      - specular.optimization.result: api/optimization/result.md
+  - Quick start: quick-start.md
   - Examples:
-    - examples/index.md
-    - Ordinary differential equation:
-      - examples/ode/index.md
-      - 2026 Jung: examples/ode-2026-jung.md
-    - Optimization:
-      - examples/optimization/index.md
-      - 2026 Jung: examples/optimization-2026-jung.md
+    - Scalar ODE examples: examples/ode/index.md
+  - LaTeX Macro: started/latex-macro.md
+  - API Reference:
+    - Calculation: api/calculation.md
+    - ODE: api/ode.md
+    - Backends: api/backend.md
 
 markdown_extensions:
   - admonition
   - pymdownx.details
   - pymdownx.highlight:
       pygments_lang_class: true
+  - pymdownx.snippets:
+      check_paths: true
   - pymdownx.superfences
   - md_in_html
   - pymdownx.arithmatex:

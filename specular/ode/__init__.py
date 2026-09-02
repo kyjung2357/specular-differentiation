@@ -1,25 +1,18 @@
-from .result import ODEResult
-from .classical_solver import (
-    classical_scheme,
-    explicit_Euler_scheme,
-    implicit_Euler_scheme,
-    Crank_Nicolson_scheme,
-)
+"""Scalar specular methods for ordinary differential equations."""
+
+from ._result import ODEResult
 from .solver import (
-    Euler_scheme,
-    trigonometric_scheme,
-    Heun_scheme,
     ellipse_scheme,
+    euler_scheme_1,
+    euler_scheme_2,
+    euler_scheme_5,
 )
 
+
 __all__ = [
-    "classical_scheme",
-    "explicit_Euler_scheme",
-    "implicit_Euler_scheme",
-    "Crank_Nicolson_scheme",
-    "Euler_scheme",
+    "ODEResult",
+    "euler_scheme_1",
+    "euler_scheme_2",
+    "euler_scheme_5",
     "ellipse_scheme",
-    "trigonometric_scheme",
-    "Heun_scheme",
-    "ODEResult"
 ]

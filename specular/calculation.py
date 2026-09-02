@@ -1,140 +1,110 @@
+"""Backend-neutral public calculation interface."""
+
+from __future__ import annotations
+
+import math
+from typing import Any
+
 import numpy as np
-import numpy.typing as npt
-from types import ModuleType
-from typing import Callable, List
 
-from . import backend
+from .backends._registry import _get_selected_backend
 
-ArrayLike = npt.ArrayLike
 
-_loaded_backends: dict[str, ModuleType] = {}
+def _positive_scalar(value: Any, *, name: str) -> float:
+    """Normalize a concrete, finite, positive real scalar."""
 
-def _get_backend_module() -> ModuleType:
-    """Return the implementation module for the current backend."""
-    current = backend._CURRENT_BACKEND
+    try:
+        array = np.asarray(value)
+    except (TypeError, ValueError) as exc:
+        raise TypeError(f"{name} must be a concrete real scalar") from exc
 
-    if current not in _loaded_backends:
-        if current == "cpu_numpy":
-            from . import _calculation_numpy as mod
-        elif current == "cpu_numba":
-            from . import _calculation_numba as mod
-        elif current in {"cpu_jax", "gpu_jax"}:
-            from . import _calculation_jax as mod
-        elif current in {"cpu_pytorch", "gpu_pytorch"}:
-            from . import _calculation_pytorch as mod
-        else:
-            raise ValueError(f"Unknown backend: {current}")
+    if array.ndim != 0 or array.dtype.kind not in "iuf":
+        raise TypeError(f"{name} must be a concrete real scalar")
 
-        _loaded_backends[current] = mod
+    result = float(array)
+    if not math.isfinite(result) or result <= 0.0:
+        raise ValueError(f"{name} must be finite and greater than zero")
+    return result
 
-    return _loaded_backends[current]
 
-def A(
-    alpha: "float | np.number | int | np.ndarray",
-    beta: "float | np.number | int | np.ndarray",
-    zero_tol: float = 1e-8,
-    quasi_Fermat: bool = False,
-    monotonicity: bool = False,
-) -> "float | np.ndarray | list[float] | list[np.ndarray]":
-    """Compute the specular function A(alpha, beta).
+def _positive_step(h: Any) -> float:
+    """Normalize a concrete, finite, positive real step size."""
 
-    Examples:
-        >>> import specular
-        >>> specular.A(1.0, 2.0)
-        1.3874258867227933
+    return _positive_scalar(h, name="h")
+
+
+def _divide_by_scalar(value: Any, scalar: float) -> Any:
+    """Divide a scalar or array-like input without coercing backend arrays."""
+
+    try:
+        return value / scalar
+    except TypeError:
+        return np.asarray(value) / scalar
+
+
+def scaled_mean(
+    alpha: Any,
+    beta: Any,
+    sigma: Any = 1.0,
+) -> Any:
+    r"""Evaluate the scaled angular mean elementwise.
+
+    This is
+    :math:`\mathcal C_\sigma(\alpha,\beta)
+    =\sigma\mathcal C(\alpha/\sigma,\beta/\sigma)` for a concrete,
+    finite, positive scalar ``sigma``. The selected backend evaluates
+    :math:`\mathcal C` and determines the result type and floating-point
+    range.
     """
-    return _get_backend_module().A(
-        alpha, beta, zero_tol, quasi_Fermat, monotonicity
+
+    scale = _positive_scalar(sigma, name="sigma")
+    backend = _get_selected_backend()
+    result = backend._C(
+        _divide_by_scalar(alpha, scale),
+        _divide_by_scalar(beta, scale),
     )
+    return scale * result
 
-def derivative(
-    f: "Callable[[int | float | np.number], int | float | np.number | list | np.ndarray]",
-    x: ArrayLike,
-    h: float = 1e-6,
-    zero_tol: float = 1e-8,
-    quasi_Fermat: bool = False,
-    monotonicity: bool = False
-) -> "float | np.ndarray | list[float] | list[np.ndarray]":
-    """Approximate the specular derivative of f at scalar x.
 
-    Examples:
-        >>> import specular
-        >>> f = lambda x: abs(x)
-        >>> specular.derivative(f, x=0.0)
-        0.0
+def derivative(f: Any, x: Any, h: Any = None) -> Any:
+    """Evaluate a specular derivative with the selected backend.
+
+    If ``h`` is omitted, it is selected from the backend dtype and the scale
+    of ``x``. An explicit ``h`` must be a concrete, finite, positive real
+    scalar and is validated before ``f`` is evaluated.
     """
-    if h <= 0:
-        raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
 
-    return _get_backend_module().derivative(
-        f, x, h, zero_tol, quasi_Fermat, monotonicity
-    )
+    validated_h = None if h is None else _positive_step(h)
+    backend = _get_selected_backend()
+    return backend.derivative(f, x, validated_h)
 
 
-def directional_derivative(
-    f: "Callable[[list | np.ndarray], int | float | np.number]",
-    x: ArrayLike,
-    v: ArrayLike,
-    h: float = 1e-6,
-    zero_tol: float = 1e-8
-) -> float:
-    """Approximate the specular directional derivative of f at x in direction v."""
-    if h <= 0:
-        raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
+def gradient(f: Any, x: Any, h: Any = None) -> Any:
+    """Evaluate a specular gradient with the selected backend.
 
-    return _get_backend_module().directional_derivative(f, x, v, h, zero_tol)
-
-
-def partial_derivative(
-    f: "Callable[[list | np.ndarray], int | float | np.number]",
-    x: ArrayLike,
-    i: "int | np.integer",
-    h: float = 1e-6,
-    zero_tol: float = 1e-8
-) -> float:
-    """Approximate the i-th specular partial derivative of f at x (1-indexed)."""
-    if h <= 0:
-        raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
-
-    return _get_backend_module().partial_derivative(f, x, i, h, zero_tol)
-
-
-def gradient(
-    f: "Callable[[list | np.ndarray], int | float | np.number]",
-    x: ArrayLike,
-    h: float = 1e-6,
-    zero_tol: float = 1e-8,
-    quasi_Fermat: bool = False,
-    monotonicity: bool = False
-) -> "np.ndarray | List[np.ndarray]":
-    """Approximate the specular gradient of f at x.
-
-    Examples:
-        >>> import specular
-        >>> import numpy as np
-        >>> f = lambda x: np.linalg.norm(x)
-        >>> specular.gradient(f, x=[1.4, -3.47, 4.57, 9.9])
-        array([ 0.12144298, -0.3010051 ,  0.39642458,  0.85877534])
+    If ``h`` is omitted, a separate step is selected for each coordinate from
+    the backend dtype and coordinate scale. An explicit ``h`` must be a
+    concrete, finite, positive real scalar and is validated before ``f`` is
+    evaluated.
     """
-    if h <= 0:
-        raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
 
-    return _get_backend_module().gradient(
-        f, x, h, zero_tol, quasi_Fermat, monotonicity
-    )
+    validated_h = None if h is None else _positive_step(h)
+    backend = _get_selected_backend()
+    return backend.gradient(f, x, validated_h)
 
-def jacobian(
-    f: "Callable[[list | np.ndarray], int | float | np.number | list | np.ndarray]",
-    x: ArrayLike,
-    h: float = 1e-6,
-    zero_tol: float = 1e-8,
-    quasi_Fermat: bool = False,
-    monotonicity: bool = False
-) -> "np.ndarray | List[np.ndarray]":
-    """Approximate the specular Jacobian of f at x, shape (m, n)."""
-    if h <= 0:
-        raise ValueError(f"Mesh size 'h' must be positive. Got {h}")
 
-    return _get_backend_module().jacobian(
-        f, x, h, zero_tol, quasi_Fermat, monotonicity
-    )
+def jacobian(f: Any, x: Any, h: Any = None) -> Any:
+    """Evaluate a specular Jacobian with the selected backend.
+
+    If ``h`` is omitted, a separate step is selected for each coordinate from
+    the backend dtype and coordinate scale. An explicit ``h`` must be a
+    concrete, finite, positive real scalar and is validated before ``f`` is
+    evaluated.
+    """
+
+    validated_h = None if h is None else _positive_step(h)
+    backend = _get_selected_backend()
+    return backend.jacobian(f, x, validated_h)
+
+
+__all__ = ["scaled_mean", "derivative", "gradient", "jacobian"]

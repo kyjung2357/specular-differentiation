@@ -1,94 +1,76 @@
-from importlib import import_module
-from typing import TYPE_CHECKING
+"""Specular differentiation."""
 
-from .backend import (
-    backend_info,
-    change_backend,
+from importlib import metadata as _metadata
+from typing import TYPE_CHECKING, Any
+
+from .backends import (
+    BackendName,
+    available_backends,
+    get_backend,
+    set_backend,
+    use_backend,
 )
+from .calculation import derivative, gradient, jacobian, scaled_mean
 
-from .calculation import (
-    A,
-    derivative,
-    directional_derivative,
-    partial_derivative,
-    gradient,
-    jacobian,
-)
 
-__version__ = "1.2.2"
-__license__ = "MIT"
-__author__ = "Kiyuob Jung"
-__email__ = "kyjung@msu.edu"
+try:
+    __version__ = _metadata.version("specular-differentiation")
+except _metadata.PackageNotFoundError:
+    __version__ = "0+unknown"
+
+del _metadata
 
 if TYPE_CHECKING:
-    from . import ode as ode
-    from . import optimization as optimization
     from .ode import (
-        classical_scheme,
-        Euler_scheme,
-        trigonometric_scheme,
-        Heun_scheme,
+        ODEResult,
         ellipse_scheme,
-    )
-    from .optimization import (
-        BFGS_method,
-        LineSearch,
-        StepSize,
-        StepSchedule,
-        gradient_method,
+        euler_scheme_1,
+        euler_scheme_2,
+        euler_scheme_5,
     )
 
-_LAZY_ATTRS = {
-    "ode": ("specular.ode", None),
-    "classical_scheme": ("specular.ode", "classical_scheme"),
-    "Euler_scheme": ("specular.ode", "Euler_scheme"),
-    "trigonometric_scheme": ("specular.ode", "trigonometric_scheme"),
-    "Heun_scheme": ("specular.ode", "Heun_scheme"),
-    "ellipse_scheme": ("specular.ode", "ellipse_scheme"),
-    "optimization": ("specular.optimization", None),
-    "BFGS_method": ("specular.optimization", "BFGS_method"),
-    "LineSearch": ("specular.optimization", "LineSearch"),
-    "StepSize": ("specular.optimization", "StepSize"),
-    "StepSchedule": ("specular.optimization", "StepSchedule"),
-    "gradient_method": ("specular.optimization", "gradient_method"),
-}
+
+_ODE_EXPORTS = frozenset(
+    {
+        "ODEResult",
+        "ellipse_scheme",
+        "euler_scheme_1",
+        "euler_scheme_2",
+        "euler_scheme_5",
+    }
+)
 
 
-def __getattr__(name):
-    if name not in _LAZY_ATTRS:
-        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+def __getattr__(name: str) -> Any:
+    """Load the ODE API only when a top-level ODE name is requested."""
+    if name in _ODE_EXPORTS:
+        from importlib import import_module
 
-    module_name, attr_name = _LAZY_ATTRS[name]
-    module = import_module(module_name)
-    value = module if attr_name is None else getattr(module, attr_name)
-    globals()[name] = value
-    return value
+        value = getattr(import_module(".ode", __name__), name)
+        globals()[name] = value
+        return value
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__() -> list[str]:
+    """Include lazily exported ODE names in interactive discovery."""
+    return sorted(set(globals()) | _ODE_EXPORTS)
 
 
 __all__ = [
-    "backend_info",
-    "change_backend",
-    "A",
+    "__version__",
+    "BackendName",
+    "available_backends",
+    "get_backend",
+    "set_backend",
+    "use_backend",
+    "scaled_mean",
     "derivative",
-    "directional_derivative",
-    "partial_derivative",
     "gradient",
     "jacobian",
-    "ode",
-    "classical_scheme",
-    "Euler_scheme",
-    "trigonometric_scheme",
-    "Heun_scheme",
+    "ODEResult",
     "ellipse_scheme",
-    "optimization",
-    "BFGS_method",
-    "LineSearch",
-    "StepSize",
-    "StepSchedule",
-    "gradient_method",
-    "__version__",
+    "euler_scheme_1",
+    "euler_scheme_2",
+    "euler_scheme_5",
 ]
-
-
-def __dir__():
-    return sorted(__all__)

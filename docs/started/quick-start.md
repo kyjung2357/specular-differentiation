@@ -1,14 +1,11 @@
-# 1.2. Quick start
+---
+hide:
+  - navigation
+  - toc
+---
 
-The following simple example calculates the specular derivative of the [ReLU function](https://en.wikipedia.org/wiki/Rectified_linear_unit) $f(x) = max(0, x)$ at the origin.
+<meta http-equiv="refresh" content="0; url=../../quick-start/">
 
-```python
-import specular
+# Page moved
 
-ReLU = lambda x: max(x, 0)
-specular.derivative(ReLU, x=0)
-```
-
-```text
-0.41421356237309515
-```
+[Continue to Quick start](../quick-start.md).

@@ -1,235 +1,321 @@
+# Scalar ODE methods
 
-# ODE
+The ODE API solves scalar initial-value problems in the notation of the specular ellipse method:
 
-Let the source function $F:[t_0, T] \times ℝ \to ℝ$ be given, and the initial data $u_0:ℝ \to ℝ$ be given. 
-Consider the initial value problem:
+\[
+u'(t)=F(t,u(t)), \qquad u(t_0)=u_0, \qquad t\in[t_0,T].
+\]
 
-$$
-u'(t) = F(t, u(t))
-$$ 
+The public entry points are `specular.euler_scheme_1`, `specular.euler_scheme_2`, `specular.euler_scheme_5`, and `specular.ellipse_scheme`. Importing `specular` does not eagerly load the ODE implementation.
+Vector-valued states are not currently supported.
 
-with the initial condition $u(t_0) = u_0(t_0)$.
+The same functions are also available from the public `specular.ode.solver` module.
 
-To solve the problem numerically, the subpackage [`specular.ode`](https://github.com/kyjung2357/specular-differentiation/tree/main/specular/ode) provides the following numerical schemes:
+The angular means used by these methods are evaluated by the currently selected calculation backend.
+The scalar result is converted back to a Python float for the ODE iteration; NumPy therefore remains the default and the reproducible float64 path.
 
-* the *specular Euler* scheme (Type 1 ~ 6)
-* the *specular trigonometric* scheme
-* the *specular Heun* scheme
-* the explicit Euler scheme
-* the implicit Euler scheme
-* the Crank-Nicolson scheme
+The result contains numerical data only.
+Plotting, table generation, event handling, and dense output are intentionally outside this API.
 
-### Specular Euler scheme
+The [scalar ODE examples](../examples/ode/index.md) reproduce the six numerical experiments discussed in the manuscript.
 
-All functions return an instance of the `ODEResult` class that encapsulates the numerical results.
+## Unscaled specular Euler methods
 
-```python
-import specular
+The functions `euler_scheme_1`, `euler_scheme_2`, and `euler_scheme_5` implement the unscaled specular Euler methods of Types 1, 2, and 5. Throughout this section,
 
-def F(t, u):
-    return -2*u 
+\[
+h_n:=t_{n+1}-t_n,
+\qquad
+\mathcal C:=\mathcal C_1,
+\]
 
-specular.Euler_scheme(of_Type='1', F=F, t_0=0.0, u_0=1.0, T=2.5, h=0.1)
-```
+where `t` is the represented mesh returned by the function and \(\mathcal C_1\) is the unscaled angular mean.
 
-```text
-Running the specular Euler scheme of Type 1: 100%|██████████| 24/24 [00:00<?, ?it/s]
-<specular.ode.result.ODEResult at 0x1765982d8d0>
-```
+!!! note "Type numbers and convergence-order labels"
 
-To access the numerical results, call `.history()`.
-It returns a tuple containing the time grid and the numerical solution.
+    Type 2 here means the two-step method implemented by `euler_scheme_2`. On the numerical-examples page, SE2, SE3, and SE4 instead denote second-, third-, and fourth-order configurations of `ellipse_scheme`.
+    In particular, ellipse SE2 is Type 5, not Type 2.
 
-```python
-import specular
+### Type 1
 
-def F(t, u):
-    return -2*u 
+Type 1 is the explicit two-step recurrence
 
-specular.Euler_scheme(of_Type=1, F=F, t_0=0.0, u_0=1.0, T=2.5, h=0.1).history()
-```
+\[
+u_{n+1}=u_n+h_n\mathcal C\!\left(
+F(t_n,u_n),F(t_{n-1},u_{n-1})
+\right),
+\qquad n=1,\ldots,N-1.
+\]
 
-```text
-Running the specular Euler scheme of Type 1: 100%|██████████| 24/24 [00:00<?, ?it/s]
-(array([0. , 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1. , 1.1, 1.2,
-        1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2. , 2.1, 2.2, 2.3, 2.4, 2.5]),
- array([1.        , 0.8       , 0.62169432, 0.48101574, 0.37172557,
-        0.2870388 , 0.22149069, 0.17081087, 0.13166787, 0.1014624 ,
-        0.07816953, 0.06021577, 0.04638162, 0.0357239 , 0.02751427,
-        0.02119088, 0.01632056, 0.0125695 , 0.00968054, 0.00745555,
-        0.00574195, 0.00442221, 0.00340579, 0.00262299, 0.00202011,
-        0.0015558 ]))
-```
-
-To visualize the numerical results, call `.visualization()`.
-
-```python
-import specular
-import numpy as np
-
-def F(t, u):
-   return -2*u 
-
-def exact_sol(t):
-    return np.exp(-2*t)
-
-def u_0(t_0):
-    return exact_sol(t_0)
-
-specular.Euler_scheme(of_Type='1', F=F, t_0=0.0, u_0=u_0, T=2.5, h=0.1).visualization(exact_sol=exact_sol, save_path="specular-Euler-scheme-of-Type-1")
-```
-
-```text
-Running the specular Euler scheme of Type 1: 100%|██████████| 24/24 [00:00<?, ?it/s]
-Figure saved: figures\specular-Euler-scheme-of-Type-1
-```
-
-![specular-Euler-scheme-of-Type-1](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-Euler-scheme-of-Type-1.png)
-
-To obtain the table of the numerical results, call `.table()`. 
-
-```python
-import specular
-import numpy as np
-
-def F(t, u):
-    return -2*u
-
-def exact_sol(t):
-    return np.exp(-2*t)
-    
-def u_0(t_0):
-    return exact_sol(t_0)
-
-specular.Euler_scheme(of_Type=4, F=F, t_0=0.0, u_0=u_0, T=2.5, h=0.1).table(exact_sol=exact_sol, save_path="specular-Euler-scheme-of-type-4")
-```
-
-```text
-Running the specular Euler scheme of Type 4: 100%|██████████| 25/25 [00:00<?, ?it/s]
-Table saved: tables\specular-Euler-scheme-of-type-4.csv
-```
-
-`.visualization()` and `.table()` are chainable.
-
-```python
-import specular
-import numpy as np
-
-def F(t, u):
-    return -2*u
-
-def exact_sol(t):
-    return np.exp(-2*t)
-    
-def u_0(t_0):
-    return exact_sol(t_0)
-
-specular.Euler_scheme(of_Type=4, F=F, t_0=0.0, u_0=u_0, T=2.5, h=0.1).visualization(exact_sol=exact_sol).table(exact_sol=exact_sol)
-```
-
-```text
-Running the specular Euler scheme of Type 4: 100%|██████████| 25/25 [00:00<?, ?it/s]
-```
-
-To compute the total error of the numerical results, call `.total_error()`.
-The exact solution is required.
-The norm can be `max`, `l1`, or `l2`.
-
-```python
-def F(t, u):
-    return -2*u 
-
-def exact_sol(t):
-    return np.exp(-2*t)
-
-def u_0(t_0):
-    return exact_sol(t_0)
-
-specular.Euler_scheme(of_Type=5, F=F, t_0=0.0, u_0=u_0, T=10.0, h=0.1).total_error(exact_sol=exact_sol, norm='max')
-```
-
-```text
-Running the specular Euler scheme of Type 5: 100%|██████████| 100/100 [00:00<00:00, 300882.64it/s]
-0.0011409613137273178
-```
-
-### Specular trigonometric scheme
+The value `u_1` at `t[1]` is supplied externally.
+The function neither constructs nor modifies that starting value:
 
 ```python
 import specular
 
+
 def F(t, u):
-    return -2*u 
+    return -u
 
-def exact_sol(t):
-    return np.exp(-2*t)
-
-def u_0(t_0):
-    return exact_sol(t_0)
 
 t_0 = 0.0
-h = 0.1
-u_1 = exact_sol(t_0 + h)
+T = 1.0
+n_steps = 100
+h = (T - t_0) / n_steps
+u_0 = 1.0
+u_1 = u_0 + h * F(t_0, u_0)  # starter chosen by the caller
 
-specular.trigonometric_scheme(F=F, t_0=t_0, u_0=u_0, u_1=u_1, T=2.5, h=h).visualization(exact_sol=exact_sol, save_path="specular-trigonometric")
+se1 = specular.euler_scheme_1(
+    F,
+    t_0,
+    T,
+    u_0,
+    u_1,
+    n_steps=n_steps,
+)
 ```
 
-```text
-Running specular trigonometric scheme: 100%|██████████| 24/24 [00:00<?, ?it/s]
-Figure saved: figures\specular-trigonometric
+### Type 2
+
+Type 2 is the explicit two-step recurrence
+
+\[
+u_{n+1}=u_n+h_n\mathcal C\!\left(
+F(t_n,u_n),\frac{u_n-u_{n-1}}{h_{n-1}}
+\right),
+\qquad n=1,\ldots,N-1.
+\]
+
+It has the same external `u_1` contract as SE1:
+
+```python
+se2 = specular.euler_scheme_2(
+    F,
+    t_0,
+    T,
+    u_0,
+    u_1,
+    n_steps=n_steps,
+)
 ```
 
-![specular-trigonometric-scheme](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-trigonometric.png)
+Types 1 and 2 are generically only first-order consistent.
+No higher-order theorem is implied by these functions or by the caller's choice of `u_1`.
 
-### Classical schemes
+### Type 5
 
-The three classical schemes are available: the explicit Euler, the implicit Euler, and the Crank-Nicolson schemes.
+Type 5 is the implicit one-step recurrence
+
+\[
+u_{n+1}=u_n+h_n\mathcal C\!\left(
+F(t_{n+1},u_{n+1}),F(t_n,u_n)
+\right),
+\qquad n=0,\ldots,N-1.
+\]
+
+It is exactly the ellipse method with the fixed scale \(\sigma_n=1\):
+
+```python
+se5 = specular.euler_scheme_5(
+    F,
+    t_0,
+    T,
+    u_0,
+    n_steps=n_steps,
+)
+
+same_method = specular.ellipse_scheme(
+    F,
+    t_0,
+    T,
+    u_0,
+    n_steps=n_steps,
+    sigma_n=1.0,
+)
+```
+
+`euler_scheme_5` accepts the same `atol`, `rtol`, and `max_iter` controls used by the base ellipse method's implicit solve.
+
+## Prescribed scale
+
+In the base method, pass `sigma_n` as either a positive real scalar or a callable.
+A scalar uses the same scale at every step.
 
 ```python
 import specular
-import numpy as np
-import matplotlib.pyplot as plt
+
 
 def F(t, u):
-    return -(t*u)/(1-t**2)
-def exact_sol(t):
-    return np.sqrt(1 - t**2)
-def u_0(t_0):
-    return exact_sol(t_0)
-t_0 = 0.0
-T = 0.9
-h = 0.05
+    return -u
 
-result_EE = specular.classical_scheme(F=F, t_0=t_0, u_0=u_0, T=T, h=h, form="explicit Euler").history()
-result_IE = specular.classical_scheme(F=F, t_0=t_0, u_0=u_0, T=T, h=h, form="implicit Euler").history()
-result_CN = specular.classical_scheme(F=F, t_0=t_0, u_0=u_0, T=T, h=h, form="Crank-Nicolson").history()
-exact_values = np.array([exact_sol(t) for t in result_EE[0]])
 
-plt.figure(figsize=(5.5, 2.5))
+result = specular.ellipse_scheme(
+    F,
+    0.0,
+    1.0,
+    1.0,
+    n_steps=100,
+    sigma_n=1.0,
+)
 
-plt.plot(result_EE[0], exact_values, color='black', label='Exact solution')
-plt.plot(result_EE[0], result_EE[1],  marker='x', linestyle='None', markerfacecolor='none', markeredgecolor='red', label='Explicit Euler') 
-plt.plot(result_IE[0], result_IE[1],  marker='x', linestyle='None', markerfacecolor='none', markeredgecolor='blue', label='Implicit Euler') 
-plt.plot(result_CN[0], result_CN[1],  marker='x', linestyle='None', markerfacecolor='none', markeredgecolor='purple', label='Crank-Nicolson')
-
-plt.xlabel(r"Time", fontsize=10)
-plt.ylabel(r"Solution", fontsize=10)
-plt.grid(True)
-plt.legend(loc='center left', bbox_to_anchor=(1.02, 0.5), borderaxespad=0., fontsize=10)
-plt.savefig('figures/classical-schemes.png', dpi=1000, bbox_inches='tight')
-plt.show()
+print(result.t[-1], result.u[-1])
 ```
 
-```text
-Running the explicit Euler scheme: 100%|██████████| 18/18 [00:00<?, ?it/s]
-Running the implicit Euler scheme: 100%|██████████| 18/18 [00:00<?, ?it/s]
-Running Crank-Nicolson scheme: 100%|██████████| 18/18 [00:00<00:00, 17988.44it/s]
+A callable scale has the contract
+
+```python
+sigma_n(n, t_n, u_n, h_n) -> positive float
 ```
 
-![classical-schemes](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/classical-schemes.png)
+It is evaluated once at the accepted left endpoint and frozen during that step's implicit solve.
+The index `n` permits prescribed sequences, and `h_n` is the represented interval `t[n + 1] - t[n]` actually used by the solver.
+Consequently, the scale may depend explicitly on the mesh:
 
-## API Reference
+```python
+def sigma_n(n, t_n, u_n, h_n):
+    return h_n**0.5
+```
 
-- [`specular.ode.solver`](ode/solver.md)
-- [`specular.ode.classical_solver`](ode/classical-solver.md)
-- [`specular.ode.result`](ode/result.md)
+## Automatic scale-selection modes
+
+Set exactly one of `third_order`, `fourth_order`, or `minimize_defect` to request numerical scale selection.
+Leave `sigma_n=None` in any of these modes:
+
+```python
+third_order_result = specular.ellipse_scheme(
+    F,
+    0.0,
+    1.0,
+    1.0,
+    n_steps=100,
+    third_order=True,
+)
+
+fourth_order_result = specular.ellipse_scheme(
+    F,
+    0.0,
+    1.0,
+    1.0,
+    n_steps=100,
+    fourth_order=True,
+)
+
+minimum_defect_result = specular.ellipse_scheme(
+    F,
+    0.0,
+    1.0,
+    1.0,
+    n_steps=100,
+    minimize_defect=True,
+)
+```
+
+The three flags request different modes.
+
+**`third_order=True`.** This mode numerically selects a positive
+`sigma_n` satisfying the left-endpoint defect-cancellation condition.
+
+**`fourth_order=True`.** This is the strict fourth-order mode. It couples
+the trial right endpoint and `sigma_n`. In cases E5a and E5b it uses the
+positive defect-balancing scale
+
+\[
+\Sigma(t,x;s,y)
+=
+\left(
+\frac{-B+\operatorname{sgn}(A)\sqrt D}{2A}
+\right)^{1/2},
+\]
+
+evaluated at the current point and the trial right endpoint. In every other
+classification case, this mode falls back to `sigma_n=1`. It does not use
+zero- or infinite-scale sentinels.
+
+**`minimize_defect=True`.** This mode applies the full E1--E6
+two-endpoint classification. Depending on the case, it may select a finite
+positive scale, the zero-scale limiting method recorded by `0.0`, or the
+infinite-scale Crank--Nicolson limit recorded by `inf`. This is a
+defect-minimization mode, not an order mode; it does not promise a maximal
+convergence order or fourth-order convergence.
+
+All three modes require derivatives of `F` along solution curves of the ODE:
+
+\[
+L_F F,\qquad L_F^2 F,
+\qquad L_F=\partial_t+F\partial_u.
+\]
+
+By default these are estimated numerically from `F`. `derivative_step` may be
+used to set the finite-difference step. Centered local-flow samples can evaluate
+`F` just outside `[t_0, T]`, so this mode requires `F` to be defined on a
+neighborhood of the time interval. Near a hard domain boundary, provide
+`derivatives_of_F` instead. For an exact, symbolic, or automatic-differentiation
+implementation, that callback uses the existing `VectorToVectorFunc` shape:
+
+```python
+import numpy as np
+
+
+def derivatives_of_F(point):
+    t, u = point
+    L_F_F = ...
+    L_F_2_F = ...
+    return np.array([L_F_F, L_F_2_F])
+```
+
+The input and output both have shape `(2,)`. The returned components are
+`L_F F` and `L_F^2 F`, in that order.
+`derivative_step` cannot be supplied together with `derivatives_of_F`, because
+the exact callback bypasses numerical differentiation.
+
+The flags `third_order`, `fourth_order`, and `minimize_defect` are
+mutually exclusive, so at most one may be `True`. Supplying `sigma_n`
+together with any of them is also an error: a prescribed scale and an
+automatically selected scale are different modes.
+
+!!! warning "Conditional order"
+
+    Third-order mode numerically enforces its cancellation condition, while strict fourth-order mode uses the two-endpoint scale above in E5a/E5b and the fixed-scale fallback `sigma_n=1` otherwise.
+    Neither order flag provides an unconditional convergence-order guarantee.
+    Third-order convergence still depends on the smoothness and boundedness of the selected branch and on sufficiently accurate field derivatives.
+    The fourth-order result is also conditional: the current convergence theorem assumes that all sufficiently close pairs in a tube satisfy the manuscript's uniform E5a-or-E5b condition, together with its stated smoothness, boundedness, and nondegeneracy hypotheses.
+    Steps that use the `sigma_n=1` fallback do not inherit that fourth-order guarantee.
+    The separate `minimize_defect` mode only minimizes the classified two-endpoint defect and carries no maximal- or fourth-order guarantee.
+    Finite-difference error can also produce an accuracy plateau as the mesh is refined.
+    Rapid variation, or variation that is small relative to a large additive offset in `F`, may require an explicit `derivative_step` or a `derivatives_of_F` callback.
+
+## Result
+
+`ODEResult.t` and `ODEResult.u` contain the initial value and every accepted step.
+`ODEResult.sigma` contains the scale associated with each represented interval and therefore has one fewer entry.
+For the Type 1, Type 2, and Type 5 Euler functions it is an array of ones, representing the convention \(\mathcal C=\mathcal C_1\).
+In the two-step methods this also includes the externally supplied first interval; it does not describe how `u_1` was produced.
+In automatic fourth-order mode, the array records the positive E5a/E5b scale or `1.0` when the selector uses its fallback.
+This mode does not place zero- or infinite-scale sentinels in `ODEResult.sigma`.
+In `minimize_defect` mode, `0.0` records the zero-scale limiting method and `inf` records the Crank--Nicolson infinite-scale limit.
+These are result sentinels, not valid `sigma` arguments for the public `scaled_mean()` function.
+
+`ODEResult.number_of_field_evaluations` records the total number of calls to the supplied field `F(t, u)` made by the solver.
+Calls made internally by a user-provided `derivatives_of_F` callback are outside this count.
+
+## API reference
+
+::: specular.ode.ODEResult
+    options:
+      show_root_heading: true
+
+::: specular.ode.euler_scheme_1
+    options:
+      show_root_heading: true
+
+::: specular.ode.euler_scheme_2
+    options:
+      show_root_heading: true
+
+::: specular.ode.euler_scheme_5
+    options:
+      show_root_heading: true
+
+::: specular.ode.ellipse_scheme
+    options:
+      show_root_heading: true

@@ -1,123 +1,111 @@
-# Backend
+# Backends
 
-Source code in [`specular.backend.py`](https://github.com/kyjung2357/specular-differentiation/blob/main/specular/backend.py)
-
-The package is organized around a backend system.
-The standard installation uses the NumPy implementation, while accelerated
-backends are optional and selected through [`specular.backend.change_backend`](backend/change_backend.md).
-
-## Backend selection
+NumPy is always the default backend. Numba and JAX are optional and are loaded
+only when they are selected or probed with `available_backends()`.
 
 ```python
 import specular
 
-specular.backend_info()
-specular.change_backend("cpu_jax")
-```
-
-Optional backend dependencies such as JAX, Numba, and PyTorch are not imported when `import specular` is executed. They are checked when the user explicitly selects the corresponding backend or calls `specular.backend_info()`.
-
-## Backend support
-
-| Backend | Calculation | ODE | Optimization |
-|:---:|:---:|:---:|:---:|
-| NumPy | supported | supported  | supported (recommended) |
-| Numba | supported | supported (recommended) | not supported |
-| JAX | supported | supported | experimental  |
-| PyTorch | experimental | experimental | not supported |
-
-TensorFlow is not supported for the Python 3.14 target.
-
-## Numba backend
-
-The Numba backend is loaded only after `specular.change_backend("cpu_numba")` and accelerates the NumPy-style finite-difference implementation when available.
-
-```python
-import specular
-
-specular.change_backend("cpu_numba")
-```
-
-## JAX backend
-
-To use the **JAX** backend, install the JAX extra and select the backend explicitly:
-
-```python
-import jax.numpy as jnp
-import specular
-
-specular.change_backend("cpu_jax")
-
-ReLU = lambda x: jnp.maximum(x, 0)
-specular.derivative(ReLU, 0.0)
+print(specular.get_backend())
+print(specular.available_backends())
 ```
 
 ```text
-Array(0.41421354, dtype=float32)
+numpy
+('numpy', 'numba', 'jax')
 ```
 
-To enable 64-bit precision (double precision), update the **JAX** configuration as follows:
+The available tuple depends on the optional packages installed in the current
+environment. Probing availability does not change the selected backend.
+
+## Persistent selection
+
+`set_backend()` selects `"numpy"`, `"numba"`, or `"jax"` in the current
+execution context.
+
+```python
+import specular
+
+specular.set_backend("numba")
+result = specular.derivative(lambda x: x * x, 2.0)
+```
+
+The setting is isolated between asynchronous contexts. A newly created OS
+thread starts from the NumPy default.
+
+## Temporary selection
+
+`use_backend()` restores the previous backend when its scope ends, including
+when an exception is raised.
+
+```python
+import specular
+
+with specular.use_backend("jax"):
+    result = specular.derivative(lambda x: x * x, 2.0)
+
+print(specular.get_backend())
+# numpy
+```
+
+The same object can be used as a decorator.
+
+```python
+@specular.use_backend("numba")
+def run():
+    return specular.gradient(lambda x: (x * x).sum(), [1.0, 2.0])
+```
+
+The decorator form supports ordinary synchronous and asynchronous functions.
+For a generator or async generator, put a `with use_backend(...)` block inside
+the generator body instead.
+
+## Backend behavior
+
+All three backends use the same centered function samples and the same
+specular increment kernel. They differ in execution and result representation:
+
+| Backend | Dependency | Result family | Callback requirement |
+| :--- | :--- | :--- | :--- |
+| NumPy | core | Python scalar or NumPy array | NumPy-compatible callable |
+| Numba | `numba` extra | Python scalar or NumPy array | Numba-compilable callable |
+| JAX | `jax` extra | JAX array | JAX-transformable callable |
+
+Numba compiles and caches ordinary Python callbacks. As with Numba's
+`nopython` mode, referenced global and closure values are captured when that
+callback is first compiled; pass changing data through the callback argument
+or use a new callback object.
+
+JAX normally uses 32-bit floating-point values unless its 64-bit mode is
+enabled before calculations. Double precision is recommended when numerical
+agreement with the NumPy and Numba float64 backends is required:
 
 ```python
 import jax
+
 jax.config.update("jax_enable_x64", True)
-
-import jax.numpy as jnp
-import specular
-
-specular.change_backend("cpu_jax")
-
-ReLU = lambda x: jnp.maximum(x, 0)
-specular.derivative(ReLU, 0.0)
 ```
 
-```text
-Array(0.41421356, dtype=float64)
-```
+Under `jax.jit`, `h` must be closed over by the compiled function or marked as
+a static argument; a dynamically traced step is rejected before the callback
+is traced. XLA may flush subnormal values to zero on some devices, so exact
+subnormal parity is not part of the cross-backend contract. In the normal
+range, compare results with tolerances appropriate to the selected dtype.
 
-The JAX backend is not a bitwise-equivalent implementation of the NumPy backend:
-it uses automatic differentiation at shifted points, while NumPy/Numba use
-one-sided finite differences. This distinction is intentional.
+## API reference
 
-See the [official homepage](https://docs.jax.dev/en/latest/index.html) of JAX.
+::: specular.backends.get_backend
+    options:
+      show_root_heading: true
 
-Requirement: objective functions should use `jax.numpy` instead of standard `numpy`.
+::: specular.backends.available_backends
+    options:
+      show_root_heading: true
 
-The difference between the NumPy backend and the JAX backend lies in how they compute the one-sided derivatives.
-The NumPy and Numba backends approximate them from function values using finite differences, whereas the JAX backend computes them by applying automatic differentiation at shifted points.
-Then, they use the function `A` to complete the calculation of specular differentiation.
+::: specular.backends.set_backend
+    options:
+      show_root_heading: true
 
-```python
-import jax.numpy as jnp
-import specular
-
-specular.change_backend("cpu_jax")
-
-ReLU = lambda x: jnp.maximum(x, 0)
-specular.derivative(ReLU, 0.0)
-```
-
-To enable 64-bit precision, update the JAX configuration before defining the functions that will be evaluated:
-
-```python
-import jax
-jax.config.update("jax_enable_x64", True)
-
-import jax.numpy as jnp
-import specular
-
-specular.change_backend("cpu_jax")
-
-ReLU = lambda x: jnp.maximum(x, 0)
-specular.derivative(ReLU, 0.0)
-```
-
-For a detailed comparison of the algorithms, see:
-
-* [`examples/optimization/jax/main.py`](https://github.com/kyjung2357/specular-differentiation/blob/main/examples/optimization/jax/main.py): A basic implementation using the JAX backend.
-* [`examples/optimization/2026-Jung/main_jax.py`](https://github.com/kyjung2357/specular-differentiation/blob/main/examples/optimization/2026-Jung/main_jax.py): The JAX version of the optimization experiment.
-
-## API Reference
-
-- [`specular.backend.backend_info`](backend/backend_info.md)
-- [`specular.backend.change_backend`](backend/change_backend.md)
+::: specular.backends.use_backend
+    options:
+      show_root_heading: true

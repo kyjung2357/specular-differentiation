@@ -1,8 +1,11 @@
-::: specular.calculation.jacobian
-    handler: python
-    options:
-      heading_level: 1
-      show_root_heading: true
-      show_root_toc_entry: false
-      show_root_full_path: true
-      show_source: true
+---
+hide:
+  - navigation
+  - toc
+---
+
+<meta http-equiv="refresh" content="0; url=../#specular.calculation.jacobian">
+
+# Page moved
+
+[Continue to `jacobian`](../calculation.md#specular.calculation.jacobian).

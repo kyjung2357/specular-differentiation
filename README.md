@@ -8,22 +8,30 @@
 [![CodeQL Advanced](https://github.com/kyjung2357/specular-differentiation/actions/workflows/codeql.yml/badge.svg)](https://github.com/kyjung2357/specular-differentiation/actions/workflows/codeql.yml)
 [![Docs](https://img.shields.io/github/deployments/kyjung2357/specular-differentiation/github-pages?label=docs&logo=github)](https://kyjung2357.github.io/specular-differentiation)
 
-The Python package `specular` implements *specular differentiation* which generalizes classical differentiation.
-This implementation strictly follows the definitions, notations, and results in [[1]](#references) and [[2]](#references).
-
-A specular derivative (the red line) can be understood as the average of the inclination angles of the right and left derivatives. 
-In contrast, a symmetric derivative (the purple line) is the average of the right and left derivatives.
-Their difference is illustrated as in the following figure.
-
-![specular-derivative-animation](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-derivative-animation.gif)
-
-## Table of Contents
-* [Introduction](#installation)
-* [Applications](#applications)
-* [Documentation](#documentation)
-* [LaTeX macros](#latex-macros)
-* [Citing specular-differentiation](#citing-specular-differentiation)
-* [References](#references)
+<div class="home-intro">
+  <div class="home-intro__copy">
+    <p>
+      The Python package <code>specular</code> implements
+      <em>specular differentiation</em>, which generalizes classical
+      differentiation. This implementation strictly follows the definitions,
+      notations, and results in <a href="#references">[1]</a>,
+      <a href="#references">[2]</a>, and
+      <a href="#references">[3]</a>.
+    </p>
+    <p>
+      A specular derivative (the red line) can be understood as the average of
+      the inclination angles of the right and left derivatives. In contrast, a
+      symmetric derivative (the purple line) is the average of the right and
+      left derivatives. Their difference is illustrated in the animation.
+    </p>
+  </div>
+  <div class="home-intro__visual">
+    <img
+      src="https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-derivative-animation.gif"
+      alt="Animation comparing specular and symmetric derivatives"
+    >
+  </div>
+</div>
 
 ## Installation
 
@@ -34,15 +42,10 @@ Their difference is illustrated as in the following figure.
 * **Python** >= 3.14
 * `numpy` >= 2.4
 
-Additional features are available through optional dependencies:
+Additional backends are available through optional dependencies:
 
-* `ode`: `matplotlib`, `pandas`, `tqdm`
-* `optimization`: `matplotlib`, `tqdm`
 * `numba`: `numba`
 * `jax`: `jax`, `jaxlib`
-* `torch`: `torch`
-
-### User installation
 
 **Standard Installation**
 
@@ -50,16 +53,19 @@ Additional features are available through optional dependencies:
 pip install specular-differentiation
 ```
 
-This installs the core specular differentiation API, including `A`, `derivative`, `directional_derivative`, `partial_derivative`, `gradient`, and `jacobian`.
+The package is distributed as `specular-differentiation` and imported in
+Python as `specular`.
+
+This installs `scaled_mean`, `derivative`, `gradient`, and `jacobian`, using
+NumPy by default, as well as the scalar ODE methods. Backend selection is
+available through `set_backend`, `get_backend`, `use_backend`, and
+`available_backends`.
 
 **Optional features**
 
 ```bash
-pip install "specular-differentiation[ode]"             # ODE solvers
-pip install "specular-differentiation[optimization]"    # optimization routines
 pip install "specular-differentiation[numba]"           # Numba backend
 pip install "specular-differentiation[jax]"             # JAX backend
-pip install "specular-differentiation[torch]"           # PyTorch backend
 ```
 
 **Developer installation**
@@ -68,19 +74,18 @@ pip install "specular-differentiation[torch]"           # PyTorch backend
 pip install -e ".[dev]"
 ```
 
-### [Backend support](https://kyjung2357.github.io/specular-differentiation/api/backend/)
+Documentation tools can be installed separately with:
+
+```bash
+pip install -e ".[docs]"
+```
+
+## [Backend support](https://kyjung2357.github.io/specular-differentiation/api/backend/)
 
 The package is organized around a backend system.
 NumPy is the default backend, while accelerated backends are optional and may require extra dependencies.
 
-| Backend | Calculation | ODE | Optimization |
-|:---:|:---:|:---:|:---:|
-| NumPy | supported | supported  | supported (recommended) |
-| Numba | supported | supported (recommended) | not supported |
-| JAX | supported | supported | experimental  |
-| PyTorch | experimental | experimental | not supported |
-
-### Quick start
+## Quick start
 
 The following simple example calculates the specular derivative of the [ReLU function](https://en.wikipedia.org/wiki/Rectified_linear_unit) $f(x) = max(0, x)$ at the origin.
 
@@ -92,94 +97,66 @@ print(specular.derivative(ReLU, x=0))
 ```
 
 ```text
-0.41421356237309515
+0.41421356237309503
 ```
 
-## Applications
+## Documentation
 
-Specular differentiation is defined in normed vector spaces, allowing for applications in higher-dimensional Euclidean spaces. 
-The `specular` package includes the following applications.
+- [Calculation API](https://kyjung2357.github.io/specular-differentiation/api/calculation/)
+- [Scalar ODE API](https://kyjung2357.github.io/specular-differentiation/api/ode/)
+- [Scalar ODE examples](https://kyjung2357.github.io/specular-differentiation/examples/ode/)
+- [Backend API](https://kyjung2357.github.io/specular-differentiation/api/backend/)
 
-### [Ordinary differential equation](https://kyjung2357.github.io/specular-differentiation/api/ode/)
+## LaTeX Macro
 
-* **Directory**: `examples/ode/`
-* **References**: [[1]](#references), [[3]](#references)
-
-In [[1]](#references), seven schemes are proposed for solving ODEs numerically:
-
-* the *specular Euler* scheme of Type 1~6
-* the *specular trigonometric* scheme
-* the *specular ellipse* scheme
-* the *specular Huen* scheme
-
-The following example shows that the specular Euler schemes of Type 5 and 6 yield more accurate numerical solutions than classical schemes: the explicit and implicit Euler schemes and the Crank-Nicolson scheme.
-
-![ODE-example-1](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/ODE-example-1.png)
-
-![ODE-example-2](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/ODE-example-2.png)
-
-### [Optimization](https://kyjung2357.github.io/specular-differentiation/api/optimization/)
-
-* **Directory**: `examples/optimization/`
-* **References**: [[3]](#references)
-
-In [[3]](#references), three methods are proposed for optimizing nonsmooth convex objective functions:
-
-* the *specular gradient (SPEG)* method
-* the *stochastic specular gradient (S-SPEG)* method
-* the *hybrid specular gradient (H-SPEG)* method
-
-The following example compares the three proposed methods with the classical methods: [gradient descent](https://en.wikipedia.org/wiki/Gradient_descent) (GD), [Adaptive Moment Estimation](https://arxiv.org/abs/1412.6980) (Adam), and [Broyden-Fletcher-Goldfarb-Shanno](https://en.wikipedia.org/wiki/Broyden%E2%80%93Fletcher%E2%80%93Goldfarb%E2%80%93Shanno_algorithm) (BFGS).
-
-![optimization-example](https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/optimization-example.png)
-
-## [Documentation](https://kyjung2357.github.io/specular-differentiation/)
-
-### [Getting Started](https://kyjung2357.github.io/specular-differentiation/started/)
-### [API Reference](https://kyjung2357.github.io/specular-differentiation/api/)
-### [Examples](https://kyjung2357.github.io/specular-differentiation/examples/)
-
-## [LaTeX Macro](https://kyjung2357.github.io/specular-differentiation/started/latex-macro/)
+<!-- latex-macro-start -->
 
 To use the specular differentiation symbol in your LaTeX document, add the following code to your preamble (before `\begin{document}`):
 
 ```latex
 % Required packages
 \usepackage{graphicx}
-\usepackage{bm}
 \usepackage{amssymb}
 
 % specular derivative symbol
-\newcommand\sd[1][.5]{\mathbin{\vcenter{\hbox{\scalebox{#1}{\,$\bm{\wedge}$}}}}}
+\newcommand{\sd}{\mathord{\prime\mkern-2.5mu\reflectbox{$\scriptstyle\prime$}}}
 
 % specular Gateaux derivative symbol
 \newcommand{\sGd}{\widehat{\mkern-2mu d}\mkern1mu}
 
 % specular gradient symbol
-\newcommand{\sg}{\mathord{\raisebox{-0.05ex}{\rule{0pt}{1.3ex}\smash{\scalebox{1.37}[1.22]{\ensuremath{\blacktriangledown}}}}\mkern-1.2mu}}
+\newcommand{\sg}{%
+  \mathchoice
+    {\mathord{\raisebox{-0.05ex}{\rule{0pt}{1.3ex}\smash{\scalebox{1.37}[1.22]{\ensuremath{\displaystyle\blacktriangledown}}}}\mkern-1.2mu}}
+    {\mathord{\raisebox{-0.05ex}{\rule{0pt}{1.3ex}\smash{\scalebox{1.37}[1.22]{\ensuremath{\textstyle\blacktriangledown}}}}\mkern-1.2mu}}
+    {\mathord{\raisebox{-0.03ex}{\rule{0pt}{1.0ex}\smash{\scalebox{1.29}[1.15]{\ensuremath{\scriptstyle\blacktriangledown}}}}\mkern-0.8mu}}
+    {\mathord{\raisebox{-0.02ex}{\rule{0pt}{0.8ex}\smash{\scalebox{1.18}[1.05]{\ensuremath{\scriptscriptstyle\blacktriangledown}}}}\mkern-0.5mu}}
+}
 ```
+
+<!-- latex-macro-end -->
 
 ## Citing specular-differentiation
 
 To cite this repository:
 
 ```bibtex
-@software{Jung_specular-differentiation_2026,
+@software{specular_diff,
   author = {Jung, Kiyuob},
-  doi = {10.5281/zenodo.18246734},
-  license = {MIT},
-  month = aug,
   title = {{specular-differentiation}},
+  doi = {10.5281/zenodo.18246734},
   url = {https://github.com/kyjung2357/specular-differentiation},
-  version = {1.2.2},
+  version = {1.3.0},
   year = {2026},
 }
 ```
 
 ## References
 
-[1] K. Jung. [*Nonlinear numerical schemes using specular differentiation for initial value problems of first-order ordinary differential equations*](https://arxiv.org/abs/2601.09900). arXiv preprint arXiv:2601.09900, 2026.
+[1] K. Jung. [*Specular differentiation in one dimension: a quasi-mean value theorem, regularity, and discontinuities*](https://arxiv.org/abs/2601.09900). arXiv preprint arXiv:2601.09900, 2026.
 
-[2] K. Jung. [*Specular differentiation in normed vector spaces: Quasi-Mean Value and Quasi-Fermat Theorems*](https://arxiv.org/abs/2601.10950). arXiv preprint arXiv:2601.10950, 2026. 
+[2] K. Jung. [*The specular ellipse method for scalar ordinary differential equations: exactness and accuracy up to fourth order*](https://arxiv.org/abs/2608.30280). arXiv preprint arXiv:2608.30280, 2026.
 
-[3] K. Jung. [*Specular gradient methods for nonsmooth convex optimization in Euclidean spaces: a subgradient selection strategy*](https://arxiv.org/abs/2605.25490). arXiv preprint 	arXiv:2605.25490, 2026.
+[3] K. Jung. [*Specular differentiation in normed vector spaces: Quasi-Mean Value and Quasi-Fermat Theorems*](https://arxiv.org/abs/2601.10950). arXiv preprint arXiv:2601.10950, 2026.
+
+[4] K. Jung. [*Specular gradient methods for nonsmooth convex optimization in Euclidean spaces: a subgradient selection strategy*](https://arxiv.org/abs/2605.25490). arXiv preprint arXiv:2605.25490, 2026.
