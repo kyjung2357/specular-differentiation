@@ -17,7 +17,7 @@ The scalar result is converted back to a Python float for the ODE iteration; Num
 The result contains numerical data only.
 Plotting, table generation, event handling, and dense output are intentionally outside this API.
 
-The [scalar ODE examples](../examples/ode/index.md) reproduce the six numerical experiments discussed in the manuscript.
+The [Scalar ODE](../examples/ode/scalar.md) page reproduces the six numerical experiments discussed in the manuscript.
 
 ## Unscaled specular Euler methods
 

@@ -1,3 +1,9 @@
 # Examples
 
-- [Scalar ODE examples](ode/index.md)
+## ODE
+
+- [Scalar ODE](ode/scalar.md)
+
+## Optimization
+
+- [One dimension](optimization/one-dimension.md)

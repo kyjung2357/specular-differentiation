@@ -8,6 +8,9 @@ theme:
   logo: figures/specular-differentiation-logo.png
   favicon: figures/specular-differentiation-logo.png
   custom_dir: docs/overrides
+  icon:
+    admonition:
+      paper: material/file-document-outline
   palette:
     - scheme: default
       primary: custom
@@ -63,7 +66,10 @@ nav:
     - Backends: api/backend.md
   - Examples:
     - Overview: examples/index.md
-    - Scalar ODE examples: examples/ode/index.md
+    - ODE:
+      - Scalar ODE: examples/ode/scalar.md
+    - Optimization:
+      - One dimension: examples/optimization/one-dimension.md
   - LaTeX Macro: started/latex-macro.md
   - Release: https://github.com/kyjung2357/specular-differentiation/releases/latest
 

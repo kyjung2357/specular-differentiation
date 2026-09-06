@@ -4,6 +4,11 @@
   --md-primary-fg-color--dark: #0079aa;
 }
 
+.md-typeset .paper > .admonition-title::before {
+  -webkit-mask-image: var(--md-admonition-icon--paper);
+  mask-image: var(--md-admonition-icon--paper);
+}
+
 .md-header {
   background-color: var(--md-primary-fg-color);
 }
