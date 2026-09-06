@@ -18,6 +18,36 @@ print("ReLU derivative at 0:", value)
 # --8<-- [end:derivative]
 
 
+# --8<-- [start:optimization]
+result = specular.specular_gradient(
+    abs,
+    initial_point=1.0,
+    step_size="square_summable_not_summable",
+    a=0.5,
+    b=1.0,
+    max_iter=200,
+)
+print(result.solution, result.func_val, result.stop_reason)
+# --8<-- [end:optimization]
+
+
+# --8<-- [start:ellipse]
+def F(t, u):
+    return -u
+
+
+result = specular.ellipse_scheme(
+    F,
+    0.0,
+    1.0,
+    1.0,
+    n_steps=100,
+    sigma_n=1.0,
+)
+print(result.t[-1], result.u[-1])
+# --8<-- [end:ellipse]
+
+
 # --8<-- [start:backend-status]
 available = specular.available_backends()
 print("current backend:", specular.get_backend())

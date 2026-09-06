@@ -1,5 +1,8 @@
 # LaTeX Macro
 
+- [Preamble](#preamble)
+- [Usage examples](#usage-examples)
+
 ## Preamble
 
 {%

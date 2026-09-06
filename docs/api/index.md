@@ -1,11 +1,6 @@
----
-hide:
-  - navigation
-  - toc
----
+# API Reference
 
-<meta http-equiv="refresh" content="0; url=calculation/">
-
-# Page moved
-
-[Continue to the Calculation API](calculation.md).
+- [Calculation](calculation.md)
+- [Optimization](optimization.md)
+- [ODE](ode.md)
+- [Backends](backend.md)

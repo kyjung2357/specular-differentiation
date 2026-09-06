@@ -53,7 +53,8 @@ The package is distributed as `specular-differentiation` and imported in
 Python as `specular`.
 
 This installs `scaled_mean`, `derivative`, `gradient`, and `jacobian`, using
-NumPy by default, as well as the scalar ODE methods. Backend selection is
+NumPy by default, as well as the scalar ODE methods and the SPEG optimizer.
+Backend selection is
 available through `set_backend`, `get_backend`, `use_backend`, and
 `available_backends`.
 
@@ -98,11 +99,11 @@ print(specular.derivative(ReLU, x=0))
 
 ## Documentation
 
-- [Calculation API](https://kyjung2357.github.io/specular-differentiation/api/calculation/)
-- [ODE API](https://kyjung2357.github.io/specular-differentiation/api/ode/)
-- [Scalar ODE examples](https://kyjung2357.github.io/specular-differentiation/examples/ode/)
-- [Backend API](https://kyjung2357.github.io/specular-differentiation/api/backend/)
-- [GitHub releases](https://github.com/kyjung2357/specular-differentiation/releases)
+- [Quick start](https://kyjung2357.github.io/specular-differentiation/quick-start/)
+- [API Reference](https://kyjung2357.github.io/specular-differentiation/api/)
+- [Examples](https://kyjung2357.github.io/specular-differentiation/examples/)
+- [LaTeX Macro](https://kyjung2357.github.io/specular-differentiation/started/latex-macro/)
+- [Release](https://github.com/kyjung2357/specular-differentiation/releases/latest)
 
 ## LaTeX Macro
 
@@ -143,7 +144,7 @@ To cite this repository:
   title = {{specular-differentiation}},
   doi = {10.5281/zenodo.18246734},
   url = {https://github.com/kyjung2357/specular-differentiation},
-  version = {1.3.0},
+  version = {1.3.1},
   year = {2026},
 }
 ```
@@ -157,3 +158,5 @@ To cite this repository:
 [3] K. Jung. [*Specular differentiation in normed vector spaces: Quasi-Mean Value and Quasi-Fermat Theorems*](https://arxiv.org/abs/2601.10950). arXiv preprint arXiv:2601.10950, 2026.
 
 [4] K. Jung. [*Specular gradient methods for nonsmooth convex optimization in Euclidean spaces: a subgradient selection strategy*](https://arxiv.org/abs/2605.25490). arXiv preprint arXiv:2605.25490, 2026.
+
+[5] K. Jung and J. Oh. [*Nonsmooth convex optimization using the specular gradient method with root-linear convergence*](https://arxiv.org/abs/2412.20747). arXiv preprint arXiv:2412.20747, 2024.

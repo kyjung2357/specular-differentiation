@@ -1,5 +1,11 @@
 # Quick start
 
+- [Import Specular Differentiation](#import-specular-differentiation)
+    - [Compute a specular derivative](#compute-a-specular-derivative)
+- [Optimization](#optimization)
+- [ODE](#ode)
+- [Backends](#backends)
+
 ## Import Specular Differentiation
 
 Import `specular` and check the installed package version.
@@ -16,6 +22,33 @@ The result is $\sqrt{2}-1$, approximately `0.41421356237309503`.
 ```python
 --8<-- "examples/quick_start.py:derivative"
 ```
+
+## Optimization
+
+SPEG combines the normalized negative specular gradient with a step size rule:
+
+```python
+--8<-- "examples/quick_start.py:optimization"
+```
+
+The optimization API separates direction rules, step size rules, and the
+iteration wrapper. It supports decreasing schedules, user-defined rules,
+Armijo and Wolfe searches, and bounded numerical line minimization. The
+[Optimization API](api/optimization.md) describes their options and the
+distinction between classical and specular line-search derivatives.
+
+## ODE
+
+The specular ellipse method solves scalar ordinary differential equations.
+For example, solve $u'(t)=-u(t)$ with $u(0)=1$ on $[0,1]$:
+
+```python
+--8<-- "examples/quick_start.py:ellipse"
+```
+
+The result contains the time points in `t` and the numerical solution in `u`.
+The [ODE API](api/ode.md#prescribed-scale) describes the specular ellipse
+method's scale parameter and options.
 
 ## Backends
 

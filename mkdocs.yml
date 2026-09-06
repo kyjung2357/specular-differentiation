@@ -49,19 +49,23 @@ plugins:
 
 hooks:
   - docs/hooks/code_copy_buttons.py
+  - docs/hooks/documentation_links.py
   
 
 nav:
   - Home: index.md
   - Quick start: quick-start.md
-  - Releases: https://github.com/kyjung2357/specular-differentiation/releases
-  - Examples:
-    - Scalar ODE examples: examples/ode/index.md
-  - LaTeX Macro: started/latex-macro.md
   - API Reference:
+    - Overview: api/index.md
     - Calculation: api/calculation.md
+    - Optimization: api/optimization.md
     - ODE: api/ode.md
     - Backends: api/backend.md
+  - Examples:
+    - Overview: examples/index.md
+    - Scalar ODE examples: examples/ode/index.md
+  - LaTeX Macro: started/latex-macro.md
+  - Release: https://github.com/kyjung2357/specular-differentiation/releases/latest
 
 markdown_extensions:
   - admonition

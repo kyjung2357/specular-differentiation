@@ -21,6 +21,7 @@ except _metadata.PackageNotFoundError:
 del _metadata
 
 if TYPE_CHECKING:
+    from .optimization import OptimizationResult, minimize, specular_gradient
     from .ode import (
         ODEResult,
         ellipse_scheme,
@@ -41,20 +42,24 @@ _ODE_EXPORTS = frozenset(
 )
 
 
+_OPTIMIZATION_EXPORTS = frozenset({"OptimizationResult", "minimize", "specular_gradient"})
+
+
 def __getattr__(name: str) -> Any:
-    """Load the ODE API only when a top-level ODE name is requested."""
-    if name in _ODE_EXPORTS:
+    """Load application APIs only when their top-level names are requested."""
+    if name in _ODE_EXPORTS or name in _OPTIMIZATION_EXPORTS:
         from importlib import import_module
 
-        value = getattr(import_module(".ode", __name__), name)
+        module = ".ode" if name in _ODE_EXPORTS else ".optimization"
+        value = getattr(import_module(module, __name__), name)
         globals()[name] = value
         return value
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def __dir__() -> list[str]:
-    """Include lazily exported ODE names in interactive discovery."""
-    return sorted(set(globals()) | _ODE_EXPORTS)
+    """Include lazily exported application names in interactive discovery."""
+    return sorted(set(globals()) | _ODE_EXPORTS | _OPTIMIZATION_EXPORTS)
 
 
 __all__ = [
@@ -68,6 +73,9 @@ __all__ = [
     "derivative",
     "gradient",
     "jacobian",
+    "OptimizationResult",
+    "minimize",
+    "specular_gradient",
     "ODEResult",
     "ellipse_scheme",
     "euler_scheme_1",
