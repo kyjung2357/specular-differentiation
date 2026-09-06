@@ -161,4 +161,6 @@ To cite this repository:
 
 [4] K. Jung. [*Specular gradient methods for nonsmooth convex optimization in Euclidean spaces: a subgradient selection strategy*](https://arxiv.org/abs/2605.25490). arXiv preprint arXiv:2605.25490, 2026.
 
+<!-- --8<-- [start:ref-speg-one-dimension] -->
 [5] K. Jung and J. Oh. [*Nonsmooth convex optimization using the specular gradient method with root-linear convergence*](https://arxiv.org/abs/2412.20747). arXiv preprint arXiv:2412.20747, 2024.
+<!-- --8<-- [end:ref-speg-one-dimension] -->

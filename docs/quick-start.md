@@ -11,7 +11,9 @@
 Import `specular` and check the installed package version.
 
 ```python
---8<-- "examples/quick_start.py:version"
+import specular
+
+print("specular version:", specular.__version__)
 ```
 
 ### Compute a specular derivative
@@ -20,7 +22,15 @@ Define the ReLU function and evaluate its specular derivative at the kink `x = 0
 The result is $\sqrt{2}-1$, approximately `0.41421356237309503`.
 
 ```python
---8<-- "examples/quick_start.py:derivative"
+import specular
+
+
+def relu(x):
+    return max(x, 0.0)
+
+
+value = specular.derivative(relu, x=0.0)
+print(value)
 ```
 
 ## Optimization
@@ -28,7 +38,17 @@ The result is $\sqrt{2}-1$, approximately `0.41421356237309503`.
 SPEG combines the normalized negative specular gradient with a step size rule:
 
 ```python
---8<-- "examples/quick_start.py:optimization"
+import specular
+
+result = specular.specular_gradient(
+    abs,
+    initial_point=1.0,
+    step_size="square_summable_not_summable",
+    a=0.5,
+    b=1.0,
+    max_iter=200,
+)
+print(result.solution, result.func_val, result.stop_reason)
 ```
 
 The optimization API separates direction rules, step size rules, and the
@@ -43,7 +63,22 @@ The specular ellipse method solves scalar ordinary differential equations.
 For example, solve $u'(t)=-u(t)$ with $u(0)=1$ on $[0,1]$:
 
 ```python
---8<-- "examples/quick_start.py:ellipse"
+import specular
+
+
+def F(t, u):
+    return -u
+
+
+result = specular.ellipse_scheme(
+    F,
+    0.0,
+    1.0,
+    1.0,
+    n_steps=100,
+    sigma_n=1.0,
+)
+print(result.t[-1], result.u[-1])
 ```
 
 The result contains the time points in `t` and the numerical solution in `u`.
@@ -52,40 +87,35 @@ method's scale parameter and options.
 
 ## Backends
 
-### Inspect the backends
-
 `get_backend()` returns the backend selected for the current execution
 context. `available_backends()` returns the installed backends that can be
 selected. NumPy is the default.
 
 ```python
---8<-- "examples/quick_start.py:backend-status"
+import specular
+
+print("current backend:", specular.get_backend())
+print("available backends:", specular.available_backends())
 ```
 
-### Install an optional backend
-
 NumPy is included in the standard installation. To run the optional Numba
-examples below, install the Numba extra:
+example below, install the Numba extra:
 
 ```bash
 pip install "specular-differentiation[numba]"
 ```
 
-### Select a backend persistently
-
-`set_backend()` changes the selected backend until it is changed again in the
-current execution context. A `try`/`finally` block makes the restoration
-explicit.
-
-```python
---8<-- "examples/quick_start.py:persistent-backend"
-```
-
-### Select a backend temporarily
-
 `use_backend()` limits the selection to a `with` block and restores the
-previous backend automatically when the block ends.
+previous backend automatically when the block ends. Using `relu` defined
+above:
 
 ```python
---8<-- "examples/quick_start.py:temporary-backend"
+with specular.use_backend("numba"):
+    print(specular.derivative(relu, x=0.0))
+
+print("restored backend:", specular.get_backend())
 ```
+
+To keep using a backend in the current context, call
+`specular.set_backend("numba")`. The [Backend API](api/backend.md) covers
+persistent selection, JAX support, and precision settings.

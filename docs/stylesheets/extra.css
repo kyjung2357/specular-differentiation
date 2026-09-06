@@ -9,6 +9,26 @@
   mask-image: var(--md-admonition-icon--paper);
 }
 
+/* CHTML equivalent of graphicx scaling in the specular gradient macro. */
+mjx-container[jax="CHTML"] mjx-math .specular-gradient-main,
+mjx-container[jax="CHTML"] mjx-math .specular-gradient-script,
+mjx-container[jax="CHTML"] mjx-math .specular-gradient-scriptscript {
+  display: inline-block;
+  transform-origin: left bottom;
+}
+
+mjx-container[jax="CHTML"] mjx-math .specular-gradient-main {
+  transform: translateY(0.05ex) scale(1.37, 1.22);
+}
+
+mjx-container[jax="CHTML"] mjx-math .specular-gradient-script {
+  transform: translateY(0.03ex) scale(1.29, 1.15);
+}
+
+mjx-container[jax="CHTML"] mjx-math .specular-gradient-scriptscript {
+  transform: translateY(0.02ex) scale(1.18, 1.05);
+}
+
 .md-header {
   background-color: var(--md-primary-fg-color);
 }

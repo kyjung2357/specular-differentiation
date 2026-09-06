@@ -20,3 +20,5 @@ env/
 # --- Local editor settings ---
 .vscode/
 examples/optimization/2026-Jung-Sommer
+examples/optimization/results/
+examples/optimization/figures/*.png
