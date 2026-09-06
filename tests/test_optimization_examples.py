@@ -354,6 +354,12 @@ def test_exported_histories_and_metadata_use_each_objective_budget(
     monkeypatch.setattr(example_runner, "max_iter", 5)
     monkeypatch.setattr(example_runner, "absolute_sum_max_iter", 2)
     monkeypatch.setattr(example_runner, "plot", lambda *args: None)
+    # Plotting is stubbed, so its version lookup must not require Matplotlib either.
+    package_version = example_runner.importlib.metadata.version
+    monkeypatch.setattr(
+        example_runner.importlib.metadata, "version",
+        lambda name: "plot-stub" if name == "matplotlib" else package_version(name),
+    )
     example_runner.main([
         "--example", "both", "--trials", "3", "--speg-only", "--backend", "numpy",
         "--output-dir", str(tmp_path),
