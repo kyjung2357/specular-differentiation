@@ -8,29 +8,25 @@
 [![CodeQL Advanced](https://github.com/kyjung2357/specular-differentiation/actions/workflows/codeql.yml/badge.svg)](https://github.com/kyjung2357/specular-differentiation/actions/workflows/codeql.yml)
 [![Docs](https://img.shields.io/github/deployments/kyjung2357/specular-differentiation/github-pages?label=docs&logo=github)](https://kyjung2357.github.io/specular-differentiation)
 
-<div class="home-intro">
-  <div class="home-intro__copy">
-    <p>
-      The Python package <code>specular</code> implements
-      <em>specular differentiation</em>, which generalizes classical
-      differentiation. This implementation strictly follows the definitions,
-      notations, and results in <a href="#references">[1]</a>,
-      <a href="#references">[2]</a>, and
-      <a href="#references">[3]</a>.
-    </p>
-    <p>
-      A specular derivative (the red line) can be understood as the average of
-      the inclination angles of the right and left derivatives. In contrast, a
-      symmetric derivative (the purple line) is the average of the right and
-      left derivatives. Their difference is illustrated in the animation.
-    </p>
-  </div>
-  <div class="home-intro__visual">
-    <img
-      src="https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-derivative-animation.gif"
-      alt="Animation comparing specular and symmetric derivatives"
-    >
-  </div>
+<p>
+  The Python package <code>specular</code> implements
+  <em>specular differentiation</em>, which generalizes classical
+  differentiation. This implementation strictly follows the definitions,
+  notations, and results in <a href="#references">[1]</a>,
+  <a href="#references">[2]</a>, and
+  <a href="#references">[3]</a>.
+</p>
+<p>
+  A specular derivative (the red line) can be understood as the average of
+  the inclination angles of the right and left derivatives. In contrast, a
+  symmetric derivative (the purple line) is the average of the right and
+  left derivatives. Their difference is illustrated in the animation.
+</p>
+<div class="home-animation">
+  <img
+    src="https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-derivative-animation.gif"
+    alt="Animation comparing specular and symmetric derivatives"
+  >
 </div>
 
 ## Installation

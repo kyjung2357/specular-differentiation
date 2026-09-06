@@ -77,22 +77,34 @@ def _flow_endpoint(
     t_half = t + half_delta
     t_end = t + delta
 
-    u_2 = u + half_delta * F_0
+    u_2 = _advance(u, half_delta, F_0, step=step)
     _finite_point(t_half, u_2, step=step)
     k_2 = _field_value(F, t_half, u_2, step=step)
 
-    u_3 = u + half_delta * k_2
+    u_3 = _advance(u, half_delta, k_2, step=step)
     _finite_point(t_half, u_3, step=step)
     k_3 = _field_value(F, t_half, u_3, step=step)
 
-    u_4 = u + delta * k_3
+    u_4 = _advance(u, delta, k_3, step=step)
     _finite_point(t_end, u_4, step=step)
     k_4 = _field_value(F, t_end, u_4, step=step)
 
-    weighted_slope = math.fsum(
-        (F_0 / 6.0, k_2 / 3.0, k_3 / 3.0, k_4 / 6.0)
+    weighted_slope = _dyadic_ratio_float(
+        _dyadic_sum(
+            _dyadic(F_0),
+            _dyadic_product(_dyadic(2.0), _dyadic(k_2)),
+            _dyadic_product(_dyadic(2.0), _dyadic(k_3)),
+            _dyadic(k_4),
+        ),
+        _dyadic(6.0),
     )
-    endpoint = u + delta * weighted_slope
+    # This is a convex mean. Keep a final rounding at the float64 boundary
+    # within the finite range of its samples.
+    weighted_slope = min(
+        max(weighted_slope, min(F_0, k_2, k_3, k_4)),
+        max(F_0, k_2, k_3, k_4),
+    )
+    endpoint = _advance(u, delta, weighted_slope, step=step)
     _finite_point(t_end, endpoint, step=step)
     return endpoint
 
@@ -695,16 +707,20 @@ def _fixed_scale_step(
     rtol: float,
     max_iter: int,
 ) -> float:
-    """Solve one implicit SE update with a fixed scale."""
+    """Solve a fixed-scale update, with a bounded local bracket fallback."""
 
-    v = _advance(
+    predictor = _advance(
         u_n,
         h_n,
         F_left,
         step=step,
         nonfinite_message="Euler predictor produced a non-finite value",
     )
-    for _ in range(max_iter):
+    samples: dict[float, tuple[float, float]] = {}
+
+    def evaluate(v: float) -> tuple[float, float]:
+        if v in samples:
+            return samples[v]
         F_right = _field_value(F, t_next, v, step=step)
         mean = float(scaled_mean(F_right, F_left, sigma))
         updated = _advance(
@@ -716,11 +732,89 @@ def _fixed_scale_step(
                 "fixed-point iteration produced a non-finite value"
             ),
         )
-        if math.isclose(updated, v, rel_tol=rtol, abs_tol=atol):
-            return updated
+        # An overflowed difference still supplies a valid bracket sign.
+        samples[v] = updated, v - updated
+        return samples[v]
+
+    def resolved(v: float, updated: float) -> bool:
+        return math.isclose(updated, v, rel_tol=rtol, abs_tol=atol)
+
+    v = predictor
+    for _ in range(max_iter):
+        updated, _ = evaluate(v)
+        if resolved(v, updated):
+            return v
+        if updated in samples:
+            break
         v = updated
+
+    def midpoint(left: float, right: float) -> float:
+        if left < 0.0 < right:
+            return 0.5 * left + 0.5 * right
+        return left + 0.5 * (right - left)
+
+    center = midpoint(min(u_n, predictor), max(u_n, predictor))
+
+    def find_bracket() -> tuple[float, float] | None:
+        ordered = sorted(samples)
+        for point in ordered:
+            if resolved(point, samples[point][0]):
+                return point, point
+        brackets = [
+            (left, right)
+            for left, right in zip(ordered, ordered[1:], strict=False)
+            if (samples[left][1] < 0.0) != (samples[right][1] < 0.0)
+        ]
+        return min(
+            brackets,
+            key=lambda pair: abs(midpoint(*pair) - center),
+            default=None,
+        )
+
+    evaluate(u_n)
+    bracket = find_bracket()
+    width = max(
+        abs(0.5 * predictor - 0.5 * u_n),
+        abs(h_n),
+        math.sqrt(np.finfo(np.float64).eps) * max(1.0, abs(u_n)),
+    )
+    for _ in range(min(6, max_iter)):
+        if bracket is not None:
+            break
+        for fraction in np.linspace(-1.0, 1.0, 9):
+            try:
+                candidate = math.fma(width, float(fraction), center)
+            except OverflowError:
+                continue
+            if math.isfinite(candidate):
+                updated, _ = evaluate(candidate)
+                if resolved(candidate, updated):
+                    return candidate
+        bracket = find_bracket()
+        width = min(2.0 * width, float(np.finfo(np.float64).max))
+
+    if bracket is not None:
+        lower, upper = bracket
+        if lower == upper:
+            return lower
+        for _ in range(max_iter):
+            point = midpoint(lower, upper)
+            updated, value = evaluate(point)
+            if resolved(point, updated):
+                return point
+            if point == lower or point == upper or math.isclose(
+                lower, upper, rel_tol=rtol, abs_tol=atol
+            ):
+                raise RuntimeError(
+                    "implicit root residual is not resolved "
+                    f"at step {step}"
+                )
+            if (value < 0.0) == (samples[lower][1] < 0.0):
+                lower = point
+            else:
+                upper = point
     raise RuntimeError(
-        "fixed-point iteration failed to converge "
+        "fixed-point iteration and local root fallback failed to converge "
         f"at step {step} after {max_iter} iterations"
     )
 

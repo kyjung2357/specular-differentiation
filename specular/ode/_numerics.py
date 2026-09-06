@@ -165,7 +165,8 @@ def _dyadic_ratio_float(
         _magnitude(numerator),
         _magnitude(denominator),
     )
-    return math.copysign(_magnitude_float(magnitude), numerator[0])
+    result = _magnitude_float(magnitude)
+    return -result if numerator[0] < 0 else result
 
 
 def _relative_dyadic_sum(*terms: _Dyadic) -> float:

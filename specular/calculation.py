@@ -7,7 +7,7 @@ from typing import Any
 
 import numpy as np
 
-from .backends._registry import _get_selected_backend, get_backend
+from .backends._registry import _get_selected_backend
 
 
 def _positive_scalar(value: Any, *, name: str) -> float:
@@ -33,15 +33,6 @@ def _positive_step(h: Any) -> float:
     return _positive_scalar(h, name="h")
 
 
-def _divide_by_scalar(value: Any, scalar: float) -> Any:
-    """Divide a scalar or array-like input without coercing backend arrays."""
-
-    try:
-        return value / scalar
-    except TypeError:
-        return np.asarray(value) / scalar
-
-
 def scaled_mean(
     alpha: Any,
     beta: Any,
@@ -52,9 +43,10 @@ def scaled_mean(
     This is
     :math:`\mathcal C_\sigma(\alpha,\beta)
     =\sigma\mathcal C(\alpha/\sigma,\beta/\sigma)` for a concrete,
-    finite, positive scalar ``sigma``. The selected backend evaluates
-    :math:`\mathcal C` and determines the result type and floating-point
-    range. The exact identities
+    finite, positive scalar ``sigma``. Inputs are promoted to the selected
+    backend's calculation dtype before arithmetic. Scale-safe formulas
+    recover representable results when direct rescaling would overflow or
+    underflow. The exact identities
     :math:`\mathcal C_\sigma(\alpha,\alpha)=\alpha` and
     :math:`\mathcal C_\sigma(\alpha,-\alpha)=0` are preserved even when
     forming ``alpha / sigma`` would underflow or overflow. Other results
@@ -62,50 +54,7 @@ def scaled_mean(
     """
 
     scale = _positive_scalar(sigma, name="sigma")
-    backend_name = get_backend()
-    backend = _get_selected_backend()
-    with np.errstate(
-        over="ignore",
-        under="ignore",
-        divide="ignore",
-        invalid="ignore",
-    ):
-        result = scale * backend._C(
-            _divide_by_scalar(alpha, scale),
-            _divide_by_scalar(beta, scale),
-        )
-
-    if backend_name == "jax":
-        import jax.numpy as jnp
-
-        result_array = jnp.asarray(result)
-        alpha_array, beta_array = jnp.broadcast_arrays(
-            jnp.asarray(alpha, dtype=result_array.dtype),
-            jnp.asarray(beta, dtype=result_array.dtype),
-        )
-        result = jnp.where(alpha_array == beta_array, alpha_array, result_array)
-        return jnp.where(
-            (alpha_array != beta_array) & (alpha_array == -beta_array),
-            jnp.zeros_like(result),
-            result,
-        )
-
-    result_array = np.asarray(result)
-    alpha_array, beta_array = np.broadcast_arrays(
-        np.asarray(alpha, dtype=result_array.dtype),
-        np.asarray(beta, dtype=result_array.dtype),
-    )
-    result_array = np.where(
-        alpha_array == beta_array,
-        alpha_array,
-        result_array,
-    )
-    result_array = np.where(
-        (alpha_array != beta_array) & (alpha_array == -beta_array),
-        np.zeros_like(result_array),
-        result_array,
-    )
-    return float(result_array) if result_array.ndim == 0 else result_array
+    return _get_selected_backend()._scaled_mean(alpha, beta, scale)
 
 
 def derivative(f: Any, x: Any, h: Any = None) -> Any:

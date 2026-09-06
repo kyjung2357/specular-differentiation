@@ -13,6 +13,7 @@ from numba import njit
 from numba.core.errors import NumbaError
 from numba.core.registry import CPUDispatcher
 
+from .._scaled_mean import scaled_mean_float64
 from ._types import (
     Matrix,
     Scalar,
@@ -32,6 +33,12 @@ __all__ = ["derivative", "gradient", "jacobian"]
 
 _ANGLE_LIMIT = float(np.nextafter(np.pi / 2.0, 0.0))
 _CALLBACK_CACHE_SIZE = 128
+
+
+def _scaled_mean(alpha: RealInput, beta: RealInput, sigma: float) -> RealResult:
+    """Evaluate a scaled mean using the compiled kernel and float64 recovery."""
+
+    return scaled_mean_float64(alpha, beta, sigma, _C)
 
 
 @njit(cache=True, error_model="numpy")
@@ -378,6 +385,41 @@ class _CompiledCallback(NamedTuple):
     coordinate_vector: CPUDispatcher
 
 
+@njit(cache=True, error_model="numpy")
+def _sample_derivative_scalar(
+    right: float,
+    center: float,
+    left: float,
+    step: float,
+) -> float:
+    """Apply the secant kernel without overflowing finite sample differences."""
+
+    a = right - center
+    b = center - left
+    if (
+        math.isfinite(right)
+        and math.isfinite(center)
+        and math.isfinite(left)
+        and (not math.isfinite(a) or not math.isfinite(b))
+    ):
+        # Scaling every sample and the step by the same power of two
+        # preserves the secant slopes and makes both differences finite.
+        a = 0.5 * right - 0.5 * center
+        b = 0.5 * center - 0.5 * left
+        step *= 0.5
+        if step == 0.0:
+            # An overflowing difference and a minimum-subnormal step force
+            # the rounded angular limit; no finite nonzero slope is possible.
+            if a == 0.0:
+                return math.copysign(1.0, b)
+            if b == 0.0:
+                return math.copysign(1.0, a)
+            if (a > 0.0) == (b > 0.0):
+                return math.copysign(math.inf, a)
+            return 0.0
+    return _A_scalar(a, b, step)
+
+
 def _build_compiled_callback(f: Callable[..., Any]) -> _CompiledCallback:
     """Build drivers that close over one callback instead of specializing globally."""
 
@@ -391,7 +433,7 @@ def _build_compiled_callback(f: Callable[..., Any]) -> _CompiledCallback:
     ) -> float:
         right = np.asarray(compiled_f(x + h)).item()
         left = np.asarray(compiled_f(x - h)).item()
-        return _A_scalar(right - center, center - left, h)
+        return _sample_derivative_scalar(right, center, left, h)
 
     @njit
     def line_vector(
@@ -406,9 +448,10 @@ def _build_compiled_callback(f: Callable[..., Any]) -> _CompiledCallback:
 
         result = np.empty(center.size, dtype=np.float64)
         for index in range(center.size):
-            result[index] = _A_scalar(
-                right[index] - center[index],
-                center[index] - left[index],
+            result[index] = _sample_derivative_scalar(
+                right[index],
+                center[index],
+                left[index],
                 h,
             )
         return result
@@ -427,9 +470,10 @@ def _build_compiled_callback(f: Callable[..., Any]) -> _CompiledCallback:
             x_left[coordinate] -= h[coordinate]
             right = np.asarray(compiled_f(x_right)).item()
             left = np.asarray(compiled_f(x_left)).item()
-            result[coordinate] = _A_scalar(
-                right - center,
-                center - left,
+            result[coordinate] = _sample_derivative_scalar(
+                right,
+                center,
+                left,
                 h[coordinate],
             )
         return result
@@ -452,9 +496,10 @@ def _build_compiled_callback(f: Callable[..., Any]) -> _CompiledCallback:
                 raise ValueError("f returned inconsistent shapes")
 
             for output in range(center.size):
-                result[output, coordinate] = _A_scalar(
-                    right[output] - center[output],
-                    center[output] - left[output],
+                result[output, coordinate] = _sample_derivative_scalar(
+                    right[output],
+                    center[output],
+                    left[output],
                     h[coordinate],
                 )
         return result

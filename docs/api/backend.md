@@ -60,7 +60,17 @@ def run():
 
 The decorator form supports ordinary synchronous and asynchronous functions.
 For a generator or async generator, put a `with use_backend(...)` block inside
-the generator body instead.
+the generator body and exit it before yielding. A generator suspends the
+context at `yield`, so yielding inside the block would also leave the caller
+using the temporary backend until the generator resumes or closes.
+
+```python
+def derivatives(points):
+    for point in points:
+        with specular.use_backend("numba"):
+            result = specular.derivative(lambda x: x * x, point)
+        yield result
+```
 
 ## Backend behavior
 
@@ -93,6 +103,27 @@ a static argument; a dynamically traced step is rejected before the callback
 is traced. XLA may flush subnormal values to zero on some devices, so exact
 subnormal parity is not part of the cross-backend contract. In the normal
 range, compare results with tolerances appropriate to the selected dtype.
+
+The JAX angular-mean kernels supply analytic differentiation rules for finite
+real inputs, including equal and opposite slopes. `jax.grad` and `jax.jvp`
+therefore differentiate the smooth mean through these cases. For example:
+
+```python
+with specular.use_backend("jax"):
+    slope = jax.grad(lambda alpha: specular.scaled_mean(alpha, 1.0))(1.0)
+    print(slope)  # 0.5
+```
+
+Differentiating a call to `derivative`, `gradient`, or `jacobian` differentiates
+the finite-difference approximation and its callback; it does not turn the
+approximation into an exact higher derivative of the original function.
+Automatic differentiation requires differentiable callbacks and representable
+intermediate derivatives. No derivative is promised for invalid inputs or
+extended-real infinity cases.
+
+Coordinate sampling uses bounded batches rather than a dense `n` by `n`
+identity matrix, which limits temporary storage for large gradients. A
+Jacobian still requires storage for its returned `m` by `n` matrix.
 
 ## API reference
 

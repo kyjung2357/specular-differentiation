@@ -7,6 +7,7 @@ from typing import overload
 import numpy as np
 import numpy.typing as npt
 
+from .._scaled_mean import scaled_mean_float64
 from ._types import (
     Matrix,
     Scalar,
@@ -23,6 +24,12 @@ type RealArray = npt.NDArray[np.float64]
 type RealResult = float | RealArray
 
 __all__ = ["derivative", "gradient", "jacobian"]
+
+
+def _scaled_mean(alpha: RealInput, beta: RealInput, sigma: float) -> RealResult:
+    """Evaluate a scaled mean after promoting inputs to float64."""
+
+    return scaled_mean_float64(alpha, beta, sigma, _C)
 
 
 def _broadcast_real(*values: RealInput) -> tuple[RealArray, ...]:
@@ -442,6 +449,57 @@ def _matching_output(value: object, shape: tuple[int, ...]) -> RealArray:
     return output
 
 
+def _sample_derivative(
+    right: RealArray,
+    center: RealArray,
+    left: RealArray,
+    step: RealInput,
+) -> RealResult:
+    """Apply the secant kernel without overflowing finite sample differences."""
+
+    right, center, left, steps = np.broadcast_arrays(right, center, left, step)
+    with np.errstate(over="ignore", invalid="ignore"):
+        a = np.asarray(right - center)
+        b = np.asarray(center - left)
+    overflow = (
+        np.isfinite(right)
+        & np.isfinite(center)
+        & np.isfinite(left)
+        & (~np.isfinite(a) | ~np.isfinite(b))
+    )
+    if not np.any(overflow):
+        return _A(a, b, steps)
+
+    # One exact binary rescaling is sufficient for differences of finite
+    # float64 samples. Apply it only to affected components.
+    scaled_steps = np.array(steps, dtype=np.float64, copy=True)
+    with np.errstate(under="ignore"):
+        a[overflow] = 0.5 * right[overflow] - 0.5 * center[overflow]
+        b[overflow] = 0.5 * center[overflow] - 0.5 * left[overflow]
+        scaled_steps[overflow] *= 0.5
+
+    vanished_step = overflow & (scaled_steps == 0.0)
+    scaled_steps[vanished_step] = 1.0
+    result = np.asarray(_A(a, b, scaled_steps))
+    if np.any(vanished_step):
+        # Here h was the smallest subnormal, while an overflowing difference
+        # forces every nonzero neighboring difference to have huge magnitude.
+        # The correctly rounded angular mean is consequently 0, +/-1 or +/-inf.
+        av = a[vanished_step]
+        bv = b[vanished_step]
+        nonzero = np.where(av != 0.0, av, bv)
+        result[vanished_step] = np.where(
+            (av == 0.0) | (bv == 0.0),
+            np.copysign(1.0, nonzero),
+            np.where(
+                np.signbit(av) == np.signbit(bv),
+                np.copysign(np.inf, av),
+                0.0,
+            ),
+        )
+    return _finish(result)
+
+
 def _line_derivative(
     f: ScalarToScalarFunc | ScalarToVectorFunc,
     x: Scalar,
@@ -457,7 +515,7 @@ def _line_derivative(
     f_value = _real_output(f(x_value))
     f_right = _matching_output(f(x_value + step), f_value.shape)
     f_left = _matching_output(f(x_value - step), f_value.shape)
-    return _A(f_right - f_value, f_value - f_left, step)
+    return _sample_derivative(f_right, f_value, f_left, step)
 
 
 def _coordinate_derivatives(
@@ -492,13 +550,12 @@ def _coordinate_derivatives(
         right_values[index] = _matching_output(f(x_right), f_value.shape)
         left_values[index] = _matching_output(f(x_left), f_value.shape)
 
-    increments_right = right_values - f_value
-    increments_left = f_value - left_values
     step_shape = (x_array.size,) + (1,) * f_value.ndim
     values = np.asarray(
-        _A(
-            increments_right,
-            increments_left,
+        _sample_derivative(
+            right_values,
+            f_value,
+            left_values,
             h_values.reshape(step_shape),
         ),
         dtype=np.float64,

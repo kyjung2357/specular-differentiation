@@ -31,6 +31,8 @@ class _CalculationBackend(Protocol):
 
     def _C(self, alpha: Any, beta: Any) -> Any: ...
 
+    def _scaled_mean(self, alpha: Any, beta: Any, sigma: float) -> Any: ...
+
     def derivative(self, f: Any, x: Any, h: Any = None) -> Any: ...
 
     def gradient(self, f: Any, x: Any, h: Any = None) -> Any: ...
@@ -54,6 +56,7 @@ _REQUIRED_MEMBERS: Final = (
     "_A",
     "_B",
     "_C",
+    "_scaled_mean",
     "derivative",
     "gradient",
     "jacobian",

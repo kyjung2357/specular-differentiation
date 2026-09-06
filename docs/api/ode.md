@@ -193,8 +193,13 @@ def sigma_n(n, t_n, u_n, h):
 
 ## Nonlinear solve controls
 
-The prescribed-scale method and `euler_scheme_5` solve their implicit update
-by fixed-point iteration, initialized with an Euler predictor. The automatic
+The prescribed-scale method, `euler_scheme_5`, and the frozen scale in
+third-order mode first try fixed-point iteration, initialized with an Euler
+predictor. If that iteration cycles or reaches its iteration limit, they
+search for a nearby sign-changing bracket and try bisection. A narrow bracket
+alone does not count as convergence: the returned point must satisfy the
+implicit update to the requested tolerance. A discontinuity with opposite
+residual signs can therefore still cause a failed solve. The automatic
 fourth-order and defect-minimization modes use a local coupled iteration when
 the scale depends on the trial right endpoint. These are local nonlinear
 solves: convergence is conditional and is not guaranteed for an arbitrary
@@ -202,10 +207,13 @@ field or step size. In particular, this API is not intended to replace a
 general stiff ODE solver.
 
 `atol` and `rtol` control termination of the nonlinear iteration, and
-`max_iter` limits the number of iterations. A failed solve raises
+`max_iter` limits each fixed-point or root-refinement phase; a bounded bracket
+search may make additional field evaluations. A failed solve raises
 `RuntimeError`; reducing `h` by increasing `n_steps` is usually the first
-remedy. Increasing `max_iter` only helps when the iteration is converging too
-slowly.
+remedy. Increasing `max_iter` can help a converging iteration or bisection,
+but does not guarantee that a local bracket or an admissible root exists.
+Exceptions raised by the supplied field are preserved, including during
+fallback sampling.
 
 ## Automatic scale-selection modes
 

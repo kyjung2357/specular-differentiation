@@ -11,7 +11,7 @@ types.
 | `gradient` | $\mathbb R^n\to\mathbb R$ | vector of shape `(n,)` |
 | `jacobian` | $\mathbb R^n\to\mathbb R^m$ | matrix of shape `(m, n)` |
 
-All functions use centered samples at `x` and `x +/- h`, with the center value
+The three differentiation functions use samples at `x` and `x +/- h`, with the center value
 evaluated once. If `h` is omitted, the backend chooses
 `eps(dtype)**(1/3) * max(1, abs(x))`; gradients and Jacobians use a separate
 step for each coordinate. An explicit `h` must be a concrete, finite, positive
@@ -20,11 +20,15 @@ positive but too small or too large to form distinct, finite samples at `x`
 are rejected as well when `x` is concrete. Under JAX transformations, a
 traced `x` cannot be inspected before execution, so an ineffective sample may
 instead appear as a non-finite result.
+An explicit step only slightly larger than the spacing between adjacent
+floating-point numbers can still have poor accuracy: its represented
+displacement may differ substantially from `h`. Prefer the automatic step
+unless a problem-specific step has been checked.
 
 ## Examples
 
 The scaled angular mean is evaluated elementwise by the selected backend.
-Its `sigma` argument is a concrete, finite, positive scalar. Evaluation uses
+Its `sigma` argument is a concrete, finite, positive scalar. It represents
 the defining rescaling
 
 \[
@@ -32,13 +36,17 @@ the defining rescaling
 =\sigma\mathcal C(\alpha/\sigma,\beta/\sigma),
 \]
 
-so its floating-point range and return type follow the selected backend.
+and its floating-point range and return type follow the selected backend.
+Inputs are promoted to the calculation dtype before arithmetic. Scale-safe
+formulas recover representable results when the intermediate quotients or
+unscaled mean would overflow or underflow.
 Under JAX transformations, `alpha` and `beta` may be traced while `sigma`
 must remain static. The exact diagonal and antidiagonal identities
 \(\mathcal C_\sigma(\alpha,\alpha)=\alpha\) and
 \(\mathcal C_\sigma(\alpha,-\alpha)=0\) are preserved even when the direct
-rescaling would overflow or underflow. Other extreme inputs remain limited by
-the selected backend dtype's representable range.
+rescaling would overflow or underflow. Final results remain limited by the
+selected backend dtype's representable range and, for JAX, device handling
+of subnormal numbers.
 
 ### Scaled angular mean
 

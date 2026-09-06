@@ -23,6 +23,7 @@ from specular.ode._ellipse import (
     _defect_minimizing_mean,
     _defect_minimizing_scale,
     _fourth_order_scale,
+    _flow_endpoint,
     _numeric_derivatives_of_F,
     _third_order_scale,
 )
@@ -140,6 +141,55 @@ def test_coupled_ellipse_scheme_avoids_intermediate_overflow(
 
     np.testing.assert_array_equal(result.u, [-1e308, 1e308])
     np.testing.assert_array_equal(result.sigma, [1.0])
+
+
+@pytest.mark.parametrize("mode", ["third_order", "fourth_order", "minimize_defect"])
+@pytest.mark.parametrize("sign", [-1.0, 1.0])
+def test_automatic_derivatives_support_maximum_finite_constant_fields(
+    mode: str, sign: float
+) -> None:
+    field_value = sign * float(np.finfo(np.float64).max)
+    result = ellipse_scheme(
+        lambda t, u: field_value,
+        0.0,
+        0.001,
+        0.0,
+        n_steps=1,
+        **{mode: True},
+    )
+
+    np.testing.assert_array_equal(result.u, [0.0, 0.001 * field_value])
+    np.testing.assert_array_equal(result.sigma, [1.0])
+
+
+def test_numeric_flow_avoids_intermediate_state_overflow() -> None:
+    endpoint = _flow_endpoint(
+        lambda t, u: 1e308,
+        0.0,
+        -1e308,
+        2.0,
+        1e308,
+        step=0,
+    )
+
+    assert endpoint == 1e308
+
+
+@pytest.mark.parametrize("tiny", [1e-300, 1e-310, np.nextafter(0.0, 1.0)])
+@pytest.mark.parametrize("sign", [-1.0, 1.0])
+def test_type_2_backward_slope_handles_widely_separated_state_magnitudes(
+    tiny: float, sign: float
+) -> None:
+    result = euler_scheme_2(
+        lambda t, u: sign,
+        0.0,
+        2.0,
+        sign * tiny,
+        sign,
+        n_steps=2,
+    )
+
+    np.testing.assert_array_equal(result.u, [sign * tiny, sign, 2.0 * sign])
 
 
 @pytest.mark.parametrize(
@@ -1842,10 +1892,67 @@ def test_callback_errors_are_not_silently_replaced() -> None:
         )
 
 
-def test_fixed_point_nonconvergence_reports_the_step() -> None:
+def test_fixed_scale_fallback_recovers_a_noncontractive_implicit_root() -> None:
+    result = ellipse_scheme(
+        lambda t, u: -2.0 * u,
+        0.0,
+        1.0,
+        1.0,
+        n_steps=1,
+        sigma_n=1.0,
+        atol=1e-13,
+        rtol=1e-13,
+    )
+
+    root = float(result.u[-1])
+    assert root == pytest.approx(0.15346730514576262, abs=1e-13)
+    residual = root - 1.0 - float(specular.scaled_mean(-2.0 * root, -2.0))
+    assert abs(residual) <= 1e-13
+
+
+def test_fixed_scale_fallback_rejects_a_discontinuous_sign_change_without_a_root(
+) -> None:
+    def field(t: float, u: float) -> float:
+        if t == 0.0:
+            return 0.0
+        return 1.0 if u <= 0.0 else -1.0
+
+    with pytest.raises(RuntimeError, match="implicit root residual is not resolved"):
+        ellipse_scheme(
+            field,
+            0.0,
+            1.0,
+            0.0,
+            n_steps=1,
+            sigma_n=1.0,
+        )
+
+
+def test_fixed_scale_fallback_preserves_field_exceptions() -> None:
+    class FieldError(Exception):
+        pass
+
+    def field(t: float, u: float) -> float:
+        if t == 1.0 and u == 1.0:
+            raise FieldError("fallback sample failed")
+        return -2.0 * u
+
+    with pytest.raises(FieldError, match="fallback sample failed"):
+        ellipse_scheme(
+            field,
+            0.0,
+            1.0,
+            1.0,
+            n_steps=1,
+            sigma_n=1.0,
+            max_iter=1,
+        )
+
+
+def test_fixed_point_and_fallback_nonconvergence_reports_the_step() -> None:
     with pytest.raises(
         RuntimeError,
-        match=r"fixed-point iteration failed to converge at step 0",
+        match=r"fixed-point iteration and local root fallback failed to converge at step 0",
     ):
         ellipse_scheme(
             lambda t, u: u,
@@ -1858,3 +1965,17 @@ def test_fixed_point_nonconvergence_reports_the_step() -> None:
             rtol=1e-15,
             max_iter=1,
         )
+def test_fixed_scale_scan_stops_at_a_resolved_root() -> None:
+    """An accepted root must not be followed by unnecessary domain probes."""
+
+    def field(t, u):
+        if t == 0.0:
+            return 0.0
+        if u > 0.5:
+            raise ValueError("outside the field domain")
+        return (14.0 * u + 3.0) / 3.0
+
+    result = ellipse_scheme(
+        field, 0.0, 1.0, 0.0, n_steps=1, sigma_n=1.0, max_iter=1,
+    )
+    assert result.u[-1] == pytest.approx(-0.5)
