@@ -27,17 +27,25 @@ jobs:
           python-version: "3.14"
           cache: pip
 
+      - uses: astral-sh/setup-uv@v9.0.0
+        with:
+          version: "0.11.13"
+
+      - name: Export locked test dependencies
+        # Share versions with local uv runs while keeping optional backends separate.
+        run: uv export --locked --all-extras --no-hashes --no-emit-project --output-file "$RUNNER_TEMP/test-constraints.txt"
+
       - name: Install NumPy test environment
         if: matrix.backend == 'numpy'
-        run: python -m pip install -e . pytest
+        run: python -m pip install -c "$RUNNER_TEMP/test-constraints.txt" -e . pytest
 
       - name: Install Numba test environment
         if: matrix.backend == 'numba'
-        run: python -m pip install -e ".[numba]" pytest "scipy>=1.17"
+        run: python -m pip install -c "$RUNNER_TEMP/test-constraints.txt" -e ".[numba]" pytest "scipy>=1.17"
 
       - name: Install JAX test environment
         if: matrix.backend == 'jax'
-        run: python -m pip install -e ".[jax]" pytest
+        run: python -m pip install -c "$RUNNER_TEMP/test-constraints.txt" -e ".[jax]" pytest
 
       - name: Run tests
         run: python -m pytest -W error -p no:cacheprovider

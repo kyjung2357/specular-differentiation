@@ -55,9 +55,9 @@ def test_large_penalty_is_available_as_an_explicit_setting():
     )
 
 
-@pytest.mark.parametrize("correlation,lambda1,lambda2", product(
+@pytest.mark.parametrize("correlation,lambda1,lambda2", list(product(
     [-2., 0., 2.], [0., .5, 2., 1000.], [0., .5, 2.]
-))
+)))
 def test_elastic_net_parameter_variants(correlation, lambda1, lambda2):
     problem = ElasticNet([1., 2., -1.], [correlation, correlation, 0.],
                          lambda1, lambda2)
