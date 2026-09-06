@@ -156,7 +156,7 @@ E(x)=\frac{1}{2m}\lVert Ax-\mathbf b\rVert^2
 The experiment uses \(m=100\) independent standard normal observations in
 \(A\), \(b_i=1\), \(\lambda_1=1\), and \(\lambda_2=\frac{1}{2}\).
 One fixed data set is shared by all methods and initial points. Its unique
-minimizer is \(x^\ast=0\), with \(E^\ast=\frac{1}{2}\).
+minimizer is \(x_E^\ast=0\), with \(E^\ast=\frac{1}{2}\).
 The 100 initial points are uniform on \([-4,4]\), and SPEG uses \(t_0=3\).
 Each run uses 1000 updates.
 
@@ -170,14 +170,14 @@ Each run uses 1000 updates.
 The second objective is
 
 \[
-f_A(x)=\sum_{i=0}^{99}\left(
+F(x)=\sum_{i=0}^{99}\left(
 \left|x-\frac{i}{100}\right|+\left|x+\frac{i}{100}\right|
 \right).
 \]
 
 It is convex and piecewise linear, with 199 nondifferentiable points, and is
-not strongly convex. Since \(f_A(x)\geq99+2|x|\) and \(f_A(0)=99\), its unique
-minimizer is \(x^\ast=0\) and its minimum is \(f_A^\ast=99\).
+not strongly convex. Since \(F(x)\geq99+2|x|\) and \(F(0)=99\), its unique
+minimizer is \(x_F^\ast=0\) and its minimum is \(F^\ast=99\).
 The 100 initial points are uniform on \([-1,1]\), and SPEG uses
 \(t_0=\frac{1}{2}\). Each run uses 50 updates, so the last iterate shown
 is \(x_{50}\).
@@ -205,7 +205,7 @@ The displayed run uses the following SPEG steps and selected baseline schedules:
 | Sum of absolute values | 50 | \(\frac{1}{2}\cdot2^{-k}\) | \(\frac{1}{200(k+1)}\) | \(\frac{3}{10(k+1)}\) |
 
 The default runner repeats the paper's learning-rate search for the current
-objective and update count. Each GD and Adam candidate is evaluated on 32
+objective and update count. Each GD and Adam candidate is evaluated on 100
 independent starts, using default seed `20260906` and schedules
 \(\alpha_0\cdot(k+1)^{-p}\) with \(p\in\{0,\frac{1}{2},1\}\).
 Among candidates with no nonfinite runs, selection minimizes the mean final
@@ -228,10 +228,14 @@ python examples/optimization/one_dimension.py --no-tune
 ```
 
 Each figure shows median errors and interquartile bands over the 100 runs.
-The left panel measures the **current iterate**, \(|x_k-x^\ast|\); the right
-measures the **best objective observed so far**,
-\(\min_{0\leq j\leq k}f(x_j)-f^\ast\). These differ because SPEG and the
-baseline methods can increase the objective at an individual update.
+The left panel measures the **current iterate**, \(|x_k-x_E^\ast|\) for Elastic
+Net and \(|x_k-x_F^\ast|\) for the absolute sum. The right panel measures the
+**best objective observed so far**, \(E_k^{\mathrm{best}}-E^\ast\) or
+\(F_k^{\mathrm{best}}-F^\ast\), where
+\(E_k^{\mathrm{best}}=\min_{0\leq j\leq k}E(x_j)\) and similarly for \(F\).
+These differ because SPEG and the baseline methods can increase the objective
+at an individual update. Figures and generated tables use the same objective
+and minimizer notation.
 
 The objective gaps use algebraically equivalent expressions that avoid
 subtracting nearly equal function values. Values below \(10^{-16}\) are
@@ -241,14 +245,21 @@ errors. The horizontal axis is linear near zero and logarithmic from update 1.
 The current default experiment, with Elastic Net \(\lambda_1=1\) and baselines
 retuned for each objective's update budget, gives these terminal median errors:
 
-| Objective | Method | Updates \(k\) | Current distance | Best objective gap |
-| --- | --- | ---: | ---: | ---: |
-| Elastic Net | SPEG | 1000 | \(1.87\times10^{-301}\) | \(1.50\times10^{-301}\) |
-| Elastic Net | GD | 1000 | \(1.29\times10^{-4}\) | \(5.48\times10^{-7}\) |
-| Elastic Net | Adam | 1000 | \(4.44\times10^{-5}\) | \(1.76\times10^{-7}\) |
-| Sum of absolute values | SPEG | 50 | \(4.44\times10^{-16}\) | \(4.44\times10^{-16}\) |
-| Sum of absolute values | GD | 50 | \(1.96\times10^{-4}\) | \(1.00\times10^{-7}\) |
-| Sum of absolute values | Adam | 50 | \(5.49\times10^{-3}\) | \(1.01\times10^{-3}\) |
+**Elastic Net:** median errors at \(k=1000\) over 100 initial points.
+
+| Method | Median \(\lvert x_k-x_E^\ast\rvert\) | Median \(E_k^{\mathrm{best}}-E^\ast\) |
+| --- | ---: | ---: |
+| SPEG | \(1.87\times10^{-301}\) | \(1.50\times10^{-301}\) |
+| GD | \(1.29\times10^{-4}\) | \(5.48\times10^{-7}\) |
+| Adam | \(4.44\times10^{-5}\) | \(1.76\times10^{-7}\) |
+
+**Sum of absolute values:** median errors at \(k=50\) over 100 initial points.
+
+| Method | Median \(\lvert x_k-x_F^\ast\rvert\) | Median \(F_k^{\mathrm{best}}-F^\ast\) |
+| --- | ---: | ---: |
+| SPEG | \(4.44\times10^{-16}\) | \(4.44\times10^{-16}\) |
+| GD | \(1.96\times10^{-4}\) | \(1.00\times10^{-7}\) |
+| Adam | \(5.49\times10^{-3}\) | \(1.01\times10^{-3}\) |
 
 The very small SPEG errors for Elastic Net arise in this example with an exact
 zero minimizer; they do not imply comparable accuracy for a general objective.
@@ -260,8 +271,8 @@ Running the script saves the full trajectories and initial points in
 `results/trajectories.npz`; the default trajectory arrays have shape
 `(100, 1001)` for Elastic Net and `(100, 51)` for the absolute sum. It also saves
 the Elastic Net data in `results/elastic_data.npz`,
-the unrounded summary in `results/summary.csv`, a LaTeX table in
-`results/summary.tex`, and the settings in
+the unrounded summary in `results/summary.csv`, separate LaTeX tables in
+`results/elastic_net_summary.tex` and `results/absolute_sum_summary.tex`, and the settings in
 `results/metadata.json` and `results/selected_parameters.csv`.
 With tuning enabled, `results/tuning.csv` also records all learning-rate candidates.
 Use `--output-dir PATH` to place these files and figures in another directory.
@@ -269,11 +280,12 @@ Use a separate output directory for each configuration you want to preserve;
 a successful rerun replaces its results and removes generated outputs for
 objectives or comparison stages omitted from that run.
 
-The LaTeX table rounds errors to three significant digits and includes an
-`Updates k` column to identify each objective's terminal index. It includes
-only the objectives and methods run, including SPEG-only runs. Load `booktabs`
-in your preamble, then include the table with a path relative to your main
-`.tex` file:
+Each LaTeX table rounds errors to three significant digits and contains the
+method and the two median errors for one objective. The objective and update
+count belong in its caption. Only tables for the objectives run are generated,
+and each contains only the methods run, including SPEG-only runs. Load
+`booktabs` in your preamble, then include the tables with paths relative to
+your main `.tex` file. The captions below use the default update budgets:
 
 ```latex
 % Preamble
@@ -282,6 +294,12 @@ in your preamble, then include the table with a path relative to your main
 % Document body
 \begin{table}[tbp]
   \centering
-  \input{examples/optimization/results/summary.tex}
+  \caption{Median errors for the Elastic Net at $k=1000$ over $100$ initial points.}
+  \input{examples/optimization/results/elastic_net_summary.tex}
+\end{table}
+\begin{table}[tbp]
+  \centering
+  \caption{Median errors for the sum of absolute values at $k=50$ over $100$ initial points.}
+  \input{examples/optimization/results/absolute_sum_summary.tex}
 \end{table}
 ```

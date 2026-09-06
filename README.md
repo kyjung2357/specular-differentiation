@@ -144,7 +144,7 @@ To cite this repository:
   title = {{specular-differentiation}},
   doi = {10.5281/zenodo.18246734},
   url = {https://github.com/kyjung2357/specular-differentiation},
-  version = {1.3.1},
+  version = {1.3.2},
   year = {2026},
 }
 ```

@@ -107,7 +107,7 @@ PyTorch on the CPU in double precision for every backend setting.
 
 GD is PyTorch SGD without momentum. Adam uses its standard betas and epsilon.
 By default, both methods select a learning rate for the configured objective
-and update count. The search uses 32 independent starts, the paper's candidate
+and update count. The search uses 100 independent starts, the paper's candidate
 grids, and schedules `alpha0 * (k + 1)**(-p)` with `p` equal to `0`, `0.5`, or
 `1`. Among candidates with no nonfinite runs, the smallest mean final objective
 gap determines the selection, with deterministic tie-breaking for equal or
@@ -139,7 +139,8 @@ python examples/optimization/one_dimension.py --no-tune
 - `figures/elastic_net.pdf` and `.png`: Elastic Net comparison.
 - `figures/absolute_sum.pdf` and `.png`: absolute-sum comparison.
 - `results/summary.csv`: raw median errors and each objective's update budget.
-- `results/summary.tex`: LaTeX table of the same errors, rounded to three significant digits.
+- `results/elastic_net_summary.tex`: Elastic Net LaTeX table, rounded to three significant digits.
+- `results/absolute_sum_summary.tex`: absolute-sum LaTeX table with the same rounding.
 - `results/trajectories.npz`: full numerical paths and starts; by default, each method has arrays of shape `(100, 1001)` for Elastic Net and `(100, 51)` for the absolute sum.
 - `results/elastic_data.npz`: the fixed Elastic Net design and response.
 - `results/metadata.json`: experiment settings and runtime information.
@@ -148,12 +149,15 @@ python examples/optimization/one_dimension.py --no-tune
 
 Each figure has current-iterate distance on the left and best objective gap
 on the right. Lines show medians; shaded bands show interquartile ranges.
+Figures and tables use `E` and `x_E^*` for Elastic Net, and `F` and `x_F^*`
+for the sum of absolute values.
 The plotting floor of `1e-16` does not change the saved raw results. Stable
 gap formulas avoid cancellation near the known minimum.
 
-The LaTeX table contains only the objectives and methods run, with a separate
-`Updates k` column so the two experiments' budgets are explicit.
-Load `booktabs` in the document preamble and include the generated table:
+Each objective has a separate LaTeX table containing the method and the two
+median errors. The objective and update count belong in its caption.
+Load `booktabs` in the document preamble and include the generated tables;
+the captions below use the default update budgets:
 
 ```latex
 % Preamble
@@ -162,12 +166,18 @@ Load `booktabs` in the document preamble and include the generated table:
 % Document body; adjust the path relative to your main .tex file.
 \begin{table}[tbp]
   \centering
-  \input{examples/optimization/results/summary.tex}
+  \caption{Median errors for the Elastic Net at $k=1000$ over $100$ initial points.}
+  \input{examples/optimization/results/elastic_net_summary.tex}
+\end{table}
+\begin{table}[tbp]
+  \centering
+  \caption{Median errors for the sum of absolute values at $k=50$ over $100$ initial points.}
+  \input{examples/optimization/results/absolute_sum_summary.tex}
 \end{table}
 ```
 
 Use a separate `--output-dir` for each configuration you want to keep. Each
-successful run replaces its results and removes figures and Elastic Net data
+successful run replaces its results and removes figures, tables, and Elastic Net data
 from objectives excluded from that run. Baseline parameter and tuning CSVs
 are omitted when those stages are skipped. Each output folder therefore
 contains the selected experiment's generated files.

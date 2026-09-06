@@ -58,6 +58,8 @@ class ElasticNet:
     caller cannot accidentally change a problem while an experiment runs.
     """
 
+    symbol = "E"
+
     a: np.ndarray
     b: np.ndarray
     lambda1: float
@@ -175,6 +177,7 @@ KNOTS.setflags(write=False)
 class AbsoluteSum:
     """F(x) = sum(|x-i/100| + |x+i/100| for i in range(100))."""
 
+    symbol = "F"
     minimizer = 0.0
     minimum = 99.0
 
@@ -314,6 +317,12 @@ def tune_baseline(problem, method, starts, updates, rates):
     return {key: chosen[key] for key in ("learning_rate", "decay_power")}, records
 
 
+def error_labels(symbol):
+    """Use the manuscript's objective and minimizer notation in figures and tables."""
+    return (rf"$|x_k-x_{{{symbol}}}^\ast|$",
+            rf"${symbol}_k^{{\mathrm{{best}}}}-{symbol}^\ast$")
+
+
 def plot(problem, paths, destination):
     """Match the typography and 5.125-inch width of the scalar ODE examples."""
     import matplotlib
@@ -331,13 +340,12 @@ def plot(problem, paths, destination):
         "lines.scale_dashes": False,
         "pdf.fonttype": 42,
         "ps.fonttype": 42,
-        "axes.titlesize": 8.5,
         "axes.labelsize": 8,
         "xtick.labelsize": 7.5,
         "ytick.labelsize": 7.5,
         "legend.fontsize": 7.5,
     })
-    figure, axes = plt.subplots(1, 2, figsize=(5.125, 2.6))
+    figure, axes = plt.subplots(1, 2, figsize=(5.125, 1.76))
     styles = {"SPEG": ("#ef3b2c", "-"),
               "GD": ("#238b45", "--"),
               "Adam": ("#08519c", "-.")}
@@ -354,11 +362,7 @@ def plot(problem, paths, destination):
                     linestyle=line_style, linewidth=1.1, label=method)
             ax.fill_between(indices, np.maximum(q25, PLOT_FLOOR),
                             np.maximum(q75, PLOT_FLOOR), color=color, alpha=0.12)
-    for ax, title, ylabel in zip(
-        axes, ("Current iterate", "Best observed objective"),
-        (r"$|x_k-x^\ast|$", r"$f_k^{\mathrm{best}}-f^\ast$"), strict=True,
-    ):
-        ax.set_title(title)
+    for ax, ylabel in zip(axes, error_labels(problem.symbol), strict=True):
         ax.set_ylabel(ylabel)
         ax.set_xlabel(r"Updates $k$")
         ax.set_xlim(0, updates)
@@ -382,13 +386,13 @@ def plot(problem, paths, destination):
         ax.grid(color="0.85", linewidth=0.4, which="major")
     handles, labels = axes[0].get_legend_handles_labels()
     legend = figure.legend(
-        handles, labels, loc="lower center", bbox_to_anchor=(0.5, 0.01),
-        ncol=len(paths), handlelength=1.7, handletextpad=0.6, borderpad=0.4,
+        handles, labels, loc="center right", bbox_to_anchor=(0.995, 0.6),
+        ncol=1, handlelength=1.7, handletextpad=0.6, borderpad=0.4,
         frameon=True, facecolor="white", framealpha=1.0,
     )
     legend.get_frame().set_edgecolor("0.75")
     legend.get_frame().set_linewidth(0.6)
-    figure.subplots_adjust(left=0.11, right=0.96, bottom=0.29, top=0.88, wspace=0.52)
+    figure.subplots_adjust(left=0.11, right=0.79, bottom=0.25, top=0.95, wspace=0.56)
     figure.savefig(destination.with_suffix(".pdf"), dpi=300)
     figure.savefig(destination.with_suffix(".png"), dpi=300)
     plt.close(figure)
@@ -405,35 +409,33 @@ def write_csv(path, rows):
 
 
 def write_summary_tex(path, rows):
-    """Write the manuscript's booktabs table using raw errors from this run."""
+    """Write a booktabs table for one objective; its caption supplies the budget."""
+    if not rows:
+        path.unlink(missing_ok=True)
+        return
+    if len({row["example"] for row in rows}) != 1:
+        raise ValueError("Each LaTeX table must contain exactly one objective.")
+
     def number(value):
         if value == 0:
             return "$0$"
         mantissa, exponent = f"{value:.2e}".split("e")
         return rf"${mantissa}\times10^{{{int(exponent)}}}$"
 
-    labels = {"elastic_net": "Elastic Net",
-              "absolute_sum": "Sum of absolute values"}
+    symbol = {"elastic_net": ElasticNet.symbol,
+              "absolute_sum": AbsoluteSum.symbol}[rows[0]["example"]]
+    distance_label, gap_label = error_labels(symbol)
     lines = [
-        r"\begin{tabular}{llrcc}",
+        r"\begin{tabular}{lcc}",
         r"\toprule",
-        r"Objective & Method & Updates $k$ & Median $|x_k-x^\ast|$ & "
-        r"Median $f_k^{\mathrm{best}}-f^\ast$ \\",
+        f"Method & Median {distance_label} & Median {gap_label}" + r" \\",
         r"\midrule",
     ]
-    previous = None
     for row in rows:
-        example = row["example"]
-        label = ""
-        if example != previous:
-            if previous is not None:
-                lines.append(r"\midrule")
-            label = labels[example]
         lines.append(
-            f"{label} & {row['method']} & {row['updates']} & "
+            f"{row['method']} & "
             f"{number(row['median_distance'])} & "
             f"{number(row['median_best_gap'])}" + r" \\")
-        previous = example
     lines.extend([r"\bottomrule", r"\end{tabular}"])
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -529,8 +531,8 @@ def main(argv=None):
         for method in (() if args.speg_only else ("GD", "Adam")):
             setting = {"learning_rate": REFERENCE_RATES[name][method], "decay_power": 1.0}
             if args.tune:
-                print(f"  Tuning {method} on 32 independent starts", flush=True)
-                training = np.random.default_rng(tuning_seed(args.seed)).uniform(-radius, radius, 32)
+                print(f"  Tuning {method} on 100 independent starts", flush=True)
+                training = np.random.default_rng(tuning_seed(args.seed)).uniform(-radius, radius, 100)
                 trajectories[f"{name}_tuning_starts"] = training
                 setting, rows = tune_baseline(problem, method, training, updates, rate_grid(name, problem))
                 candidates.extend({"example": name, **row} for row in rows)
@@ -550,7 +552,10 @@ def main(argv=None):
             print(f"  {method:4s}  distance={row['median_distance']:.8e}  best gap={row['median_best_gap']:.8e}", flush=True)
         plot(problem, paths, output / "figures" / name)
     write_csv(results / "summary.csv", summaries)
-    write_summary_tex(results / "summary.tex", summaries)
+    for name in ("elastic_net", "absolute_sum"):
+        write_summary_tex(results / f"{name}_summary.tex",
+                          [row for row in summaries if row["example"] == name])
+    (results / "summary.tex").unlink(missing_ok=True)
     write_csv(results / "selected_parameters.csv", parameters)
     write_csv(results / "tuning.csv", candidates)
     np.savez_compressed(results / "trajectories.npz", **trajectories)

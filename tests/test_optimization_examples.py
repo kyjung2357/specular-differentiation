@@ -313,8 +313,8 @@ def test_training_seed_stays_independent_when_test_seed_changes(example_runner):
     for test_seed in (0, 20260905, 20260906, 20260908):
         training_seed = example_runner.tuning_seed(test_seed)
         assert training_seed != test_seed
-        training = np.random.default_rng(training_seed).uniform(-1, 1, 32)
-        testing = np.random.default_rng(test_seed).uniform(-1, 1, 32)
+        training = np.random.default_rng(training_seed).uniform(-1, 1, 100)
+        testing = np.random.default_rng(test_seed).uniform(-1, 1, 100)
         assert not np.array_equal(training, testing)
 
 
@@ -327,32 +327,43 @@ def test_empty_csv_output_removes_stale_results(example_runner, tmp_path):
     example_runner.write_csv(target, [])  # An absent file is also valid.
 
 
-def test_latex_summary_uses_raw_errors_and_each_objective_budget(example_runner, tmp_path):
-    target = tmp_path / "summary.tex"
-    rows = [
-        {"example": "elastic_net", "method": "SPEG", "updates": 1000,
-         "median_distance": 1.234e-30, "median_best_gap": 0.},
-        {"example": "absolute_sum", "method": "SPEG", "updates": 50,
-         "median_distance": 2.345e-16, "median_best_gap": 4.69e-16},
-    ]
+@pytest.mark.parametrize("name,symbol", [("elastic_net", "E"), ("absolute_sum", "F")])
+def test_latex_summary_uses_raw_errors_and_objective_notation(
+        example_runner, tmp_path, name, symbol):
+    target = tmp_path / f"{name}_summary.tex"
+    rows = [{"example": name, "method": "SPEG", "updates": 50,
+             "median_distance": 1.234e-30, "median_best_gap": 0.}]
     example_runner.write_summary_tex(target, rows)
     table = target.read_text(encoding="utf-8")
-    assert r"\begin{tabular}{llrcc}" in table
-    assert "Updates $k$" in table
-    assert r"x_k" in table
-    assert r"f_k" in table
+    assert r"\begin{tabular}{lcc}" in table
+    assert rf"Median $|x_k-x_{{{symbol}}}^\ast|$" in table
+    assert rf"Median ${symbol}_k^{{\mathrm{{best}}}}-{symbol}^\ast$" in table
     assert r"1.23\times10^{-30}" in table
-    assert "Elastic Net & SPEG & 1000 &" in table
-    assert "Sum of absolute values & SPEG & 50 &" in table
-    assert r"2.35\times10^{-16}" in table
+    assert "SPEG &" in table
     assert "$0$" in table
+    assert all(line.count("&") == 2 for line in table.splitlines() if "&" in line)
     assert "GD" not in table and "Adam" not in table
 
 
-def test_exported_histories_and_metadata_use_each_objective_budget(
-        example_runner, monkeypatch, tmp_path):
-    monkeypatch.setattr(example_runner, "max_iter", 5)
-    monkeypatch.setattr(example_runner, "absolute_sum_max_iter", 2)
+def test_empty_latex_summary_removes_stale_table(example_runner, tmp_path):
+    target = tmp_path / "elastic_net_summary.tex"
+    target.write_text("stale table", encoding="utf-8")
+    example_runner.write_summary_tex(target, [])
+    assert not target.exists()
+    example_runner.write_summary_tex(target, [])
+
+
+def test_latex_summary_rejects_mixed_objectives(example_runner, tmp_path):
+    target = tmp_path / "summary.tex"
+    with pytest.raises(ValueError, match="exactly one objective"):
+        example_runner.write_summary_tex(target, [
+            {"example": "elastic_net"}, {"example": "absolute_sum"},
+        ])
+    assert not target.exists()
+
+
+@pytest.fixture
+def example_output_without_plotting(example_runner, monkeypatch):
     monkeypatch.setattr(example_runner, "plot", lambda *args: None)
     # Plotting is stubbed, so its version lookup must not require Matplotlib either.
     package_version = example_runner.importlib.metadata.version
@@ -360,11 +371,21 @@ def test_exported_histories_and_metadata_use_each_objective_budget(
         example_runner.importlib.metadata, "version",
         lambda name: "plot-stub" if name == "matplotlib" else package_version(name),
     )
+    return example_runner
+
+
+def test_exported_histories_and_metadata_use_each_objective_budget(
+        example_output_without_plotting, monkeypatch, tmp_path):
+    example_runner = example_output_without_plotting
+    monkeypatch.setattr(example_runner, "max_iter", 5)
+    monkeypatch.setattr(example_runner, "absolute_sum_max_iter", 2)
+    results = tmp_path / "results"
+    results.mkdir()
+    (results / "summary.tex").write_text("legacy combined table", encoding="utf-8")
     example_runner.main([
         "--example", "both", "--trials", "3", "--speg-only", "--backend", "numpy",
         "--output-dir", str(tmp_path),
     ])
-    results = tmp_path / "results"
     with np.load(results / "trajectories.npz") as trajectories:
         assert trajectories["elastic_net_SPEG"].shape == (3, 6)
         assert trajectories["absolute_sum_SPEG"].shape == (3, 3)
@@ -378,6 +399,82 @@ def test_exported_histories_and_metadata_use_each_objective_budget(
     metadata = json.loads((results / "metadata.json").read_text(encoding="utf-8"))
     assert metadata["problems"]["elastic_net"]["updates"] == 5
     assert metadata["problems"]["absolute_sum"]["updates"] == 2
+    assert not (results / "summary.tex").exists()
+    for name, symbol in (("elastic_net", "E"), ("absolute_sum", "F")):
+        table = (results / f"{name}_summary.tex").read_text(encoding="utf-8")
+        assert rf"x_{{{symbol}}}^\ast" in table
+        assert r"\begin{tabular}{lcc}" in table
+
+
+@pytest.mark.parametrize("selected,omitted", [
+    ("elastic_net", "absolute_sum"), ("absolute_sum", "elastic_net"),
+])
+def test_single_objective_export_removes_excluded_and_legacy_tables(
+        example_output_without_plotting, tmp_path, selected, omitted):
+    results = tmp_path / "results"
+    results.mkdir()
+    for name in ("summary.tex", "elastic_net_summary.tex", "absolute_sum_summary.tex"):
+        (results / name).write_text("stale table", encoding="utf-8")
+    example_output_without_plotting.main([
+        "--example", selected.replace("_", "-"), "--trials", "2", "--updates", "2",
+        "--speg-only", "--backend", "numpy", "--output-dir", str(tmp_path),
+    ])
+    assert (results / f"{selected}_summary.tex").exists()
+    assert not (results / f"{omitted}_summary.tex").exists()
+    assert not (results / "summary.tex").exists()
+
+
+@pytest.mark.parametrize("test_seed", [20260905, 20260906])
+def test_tuning_exports_one_hundred_independent_starts_for_both_baselines(
+        example_output_without_plotting, monkeypatch, tmp_path, test_seed):
+    example_runner = example_output_without_plotting
+    # Exercise the export orchestration without requiring the optional PyTorch install.
+    monkeypatch.setitem(sys.modules, "torch", SimpleNamespace(
+        set_num_threads=lambda value: None,
+        use_deterministic_algorithms=lambda value: None,
+        __version__="baseline-stub",
+    ))
+    tuned = []
+    evaluated = []
+
+    def tune(problem, method, starts, updates, rates):
+        tuned.append((problem.symbol, method, starts.copy()))
+        setting = {"learning_rate": 0.1, "decay_power": 1.0}
+        return setting, [{"method": method, "updates": updates, **setting}]
+
+    def baseline(problem, method, starts, updates, **setting):
+        evaluated.append((problem.symbol, method, starts.copy()))
+        return np.repeat(starts[:, None], updates + 1, axis=1)
+
+    monkeypatch.setattr(example_runner, "tune_baseline", tune)
+    monkeypatch.setattr(example_runner, "run_baseline", baseline)
+    example_runner.main([
+        "--example", "both", "--trials", "3", "--updates", "2", "--tune",
+        "--seed", str(test_seed), "--backend", "numpy", "--output-dir", str(tmp_path),
+    ])
+    assert [(symbol, method) for symbol, method, _ in tuned] == [
+        ("E", "GD"), ("E", "Adam"), ("F", "GD"), ("F", "Adam"),
+    ]
+    results = tmp_path / "results"
+    with np.load(results / "trajectories.npz") as trajectories:
+        for name, symbol, radius in (("elastic_net", "E", 4.), ("absolute_sum", "F", 1.)):
+            training = trajectories[f"{name}_tuning_starts"]
+            testing = trajectories[f"{name}_starts"]
+            assert training.shape == (100,)
+            assert testing.shape == (3,)
+            np.testing.assert_array_equal(training, np.random.default_rng(
+                example_runner.tuning_seed(test_seed)).uniform(-radius, radius, 100))
+            np.testing.assert_array_equal(testing, np.random.default_rng(
+                test_seed).uniform(-radius, radius, 3))
+            assert not np.array_equal(training[:len(testing)], testing)
+            for actual_symbol, _, starts in tuned:
+                if actual_symbol == symbol:
+                    np.testing.assert_array_equal(starts, training)
+            for actual_symbol, _, starts in evaluated:
+                if actual_symbol == symbol:
+                    np.testing.assert_array_equal(starts, testing)
+    metadata = json.loads((results / "metadata.json").read_text(encoding="utf-8"))
+    assert metadata["tuning_seed"] == example_runner.tuning_seed(test_seed)
 
 
 @pytest.mark.parametrize("method", ["GD", "Adam"])
