@@ -1,0 +1,2702 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://kyjung2357.github.io/specular-differentiation/api/optimization/">
+      
+      
+        <link rel="prev" href="../calculation/">
+      
+      
+        <link rel="next" href="../ode/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../figures/specular-differentiation-logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Optimization - Specular Differentiation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+  
+  
+    
+      
+      
+    
+  
+  
+  <style>:root{--md-admonition-icon--paper:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M6%202a2%202%200%200%200-2%202v16a2%202%200%200%200%202%202h12a2%202%200%200%200%202-2V8l-6-6zm0%202h7v5h5v11H6zm2%208v2h8v-2zm0%204v2h5v-2z%22/%3E%3C/svg%3E');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#optimization" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Specular Differentiation" class="md-header__button md-logo" aria-label="Specular Differentiation" data-md-component="logo">
+      
+  <img src="../../figures/specular-differentiation-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Specular Differentiation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Optimization
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/kyjung2357/specular-differentiation" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Specular Differentiation" class="md-nav__button md-logo" aria-label="Specular Differentiation" data-md-component="logo">
+      
+  <img src="../../figures/specular-differentiation-logo.png" alt="logo">
+
+    </a>
+    Specular Differentiation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/kyjung2357/specular-differentiation" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../calculation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calculation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimization
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ODE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backends
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../examples/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ODE
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ODE
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/ode/scalar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalar ODE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimization
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Optimization
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/optimization/one-dimension/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One dimension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../started/latex-macro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LaTeX Macro
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/kyjung2357/specular-differentiation/releases/latest" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="optimization">Optimization</h1>
+<p>The optimization API combines a direction rule and a step size rule in</p>
+<div class="arithmatex">\[
+x_{n+1}=x_n+\gamma_n d_n.
+\]</div>
+<p><code>direction.py</code> defines directions, <code>step_size.py</code> defines step sizes, and
+<code>solver.py</code> combines them. SPEG is the built-in direction:</p>
+<div class="arithmatex">\[
+d_n=-\frac{g_n}{\lVert g_n\rVert},
+\qquad g_n=\text{specular gradient of }f\text{ at }x_n.
+\]</div>
+<p>The solver checks the norm of the <strong>unnormalized</strong> gradient against <code>tol</code>
+before taking a step. A zero gradient therefore stops the iteration before
+normalization. The result records the reason for stopping; reaching a
+gradient tolerance does not certify a global minimum.</p>
+<h2 id="speg">SPEG</h2>
+<p><code>specular.specular_gradient</code> accepts a scalar initial point or a nonempty
+one-dimensional vector. The objective returns a real scalar. With scalar
+input it receives a scalar. The iteration evaluates vector objectives on
+NumPy arrays; differentiation samples use the selected backend's array types.</p>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
+
+<span class="n">scalar_result</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">specular_gradient</span><span class="p">(</span>
+    <span class="nb">abs</span><span class="p">,</span>
+    <span class="n">initial_point</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">step_size</span><span class="o">=</span><span class="s2">"square_summable_not_summable"</span><span class="p">,</span>
+    <span class="n">a</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">b</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">max_iter</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Scalar SPEG:"</span><span class="p">,</span> <span class="n">scalar_result</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="n">scalar_result</span><span class="o">.</span><span class="n">stop_reason</span><span class="p">)</span>
+</code></pre></div>
+<p>The following vector example uses a nonsmooth objective:</p>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sum_abs</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+
+<span class="n">vector_result</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">specular_gradient</span><span class="p">(</span>
+    <span class="n">sum_abs</span><span class="p">,</span>
+    <span class="n">initial_point</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">],</span>
+    <span class="n">step_size</span><span class="o">=</span><span class="s2">"square_summable_not_summable"</span><span class="p">,</span>
+    <span class="n">a</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">b</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Vector SPEG:"</span><span class="p">,</span> <span class="n">vector_result</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="n">vector_result</span><span class="o">.</span><span class="n">func_val</span><span class="p">)</span>
+</code></pre></div>
+<p>Both examples use a decreasing schedule. They illustrate numerical
+iteration for a fixed budget and do not assert convergence within that
+budget. Constant step sizes can oscillate near a minimizer.</p>
+<p>The default <code>h=None</code> uses the <a href="../calculation/">calculation API's automatic finite-difference
+step</a>. Set <code>h</code> to a positive scalar to choose it explicitly.
+The <code>gradient</code> argument can supply an exact or problem-specific
+unnormalized specular gradient instead of numerical differentiation. It
+must return a scalar or vector matching the initial point.</p>
+<h2 id="compose-rules">Compose rules</h2>
+<p>The factories return callables with the following interfaces:</p>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="n">direction</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+<span class="n">step_size</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+</code></pre></div>
+<p>The factories bind the objective, gradient callback, and rule options
+once. The solver evaluates the direction, obtains a positive step size,
+and accepts <code>x + gamma * d</code> if the update is valid.</p>
+<p>This smooth quadratic example supplies its analytical gradient to both
+SPEG and strong Wolfe search:</p>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">specular.optimization</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_direction</span><span class="p">,</span> <span class="n">make_step_size</span><span class="p">,</span> <span class="n">minimize</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">quadratic</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">quadratic_gradient</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">x</span>
+
+
+<span class="n">direction</span> <span class="o">=</span> <span class="n">make_direction</span><span class="p">(</span><span class="s2">"speg"</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="n">quadratic_gradient</span><span class="p">)</span>
+<span class="n">step</span> <span class="o">=</span> <span class="n">make_step_size</span><span class="p">(</span>
+    <span class="s2">"strong_Wolfe"</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="n">quadratic</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="n">quadratic_gradient</span>
+<span class="p">)</span>
+<span class="n">composed_result</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span>
+    <span class="n">quadratic</span><span class="p">,</span>
+    <span class="n">initial_point</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">],</span>
+    <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span>
+    <span class="n">step_size</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
+    <span class="n">gradient</span><span class="o">=</span><span class="n">quadratic_gradient</span><span class="p">,</span>
+    <span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Composed SPEG:"</span><span class="p">,</span> <span class="n">composed_result</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="n">composed_result</span><span class="o">.</span><span class="n">stop_reason</span><span class="p">)</span>
+</code></pre></div>
+<p>For the same built-in rules, <code>minimize</code> also accepts their names directly:</p>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="n">result</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span>
+    <span class="n">quadratic</span><span class="p">,</span>
+    <span class="n">initial_point</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">],</span>
+    <span class="n">direction</span><span class="o">=</span><span class="s2">"speg"</span><span class="p">,</span>
+    <span class="n">step_size</span><span class="o">=</span><span class="s2">"strong_Wolfe"</span><span class="p">,</span>
+    <span class="n">gradient</span><span class="o">=</span><span class="n">quadratic_gradient</span><span class="p">,</span>
+    <span class="n">line_search_gradient</span><span class="o">=</span><span class="n">quadratic_gradient</span><span class="p">,</span>
+    <span class="n">step_options</span><span class="o">=</span><span class="p">{</span><span class="s2">"c_1"</span><span class="p">:</span> <span class="mf">1e-4</span><span class="p">,</span> <span class="s2">"c_2"</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">},</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>Custom direction functions use <code>(n, x)</code>. Custom step functions passed
+directly to <code>minimize</code> use <code>(n, x, d)</code>. To adapt a schedule that depends
+only on <code>n</code>, pass it through <code>make_step_size</code>:</p>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">descent</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">x</span>
+
+
+<span class="n">schedule</span> <span class="o">=</span> <span class="n">make_step_size</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">custom_result</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span>
+    <span class="n">quadratic</span><span class="p">,</span>
+    <span class="n">initial_point</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">],</span>
+    <span class="n">direction</span><span class="o">=</span><span class="n">descent</span><span class="p">,</span>
+    <span class="n">step_size</span><span class="o">=</span><span class="n">schedule</span><span class="p">,</span>
+    <span class="n">gradient</span><span class="o">=</span><span class="n">quadratic_gradient</span><span class="p">,</span>
+    <span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">record_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Custom rules:"</span><span class="p">,</span> <span class="n">custom_result</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="n">custom_result</span><span class="o">.</span><span class="n">stop_reason</span><span class="p">)</span>
+</code></pre></div>
+<p>The named factories also accept optional cached <code>gradient_value</code>, and
+step size rules accept <code>f_value</code>. The solver can use these to avoid
+repeating evaluations. Custom functions do not need these extra keywords.</p>
+<h2 id="step-size-rules">Step size rules</h2>
+<p>Schedule indices begin at <code>n=1</code> for the first attempted update.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Rule</th>
+<th style="text-align: left;">Step size or acceptance test</th>
+<th style="text-align: left;">Options</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>constant</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(a\)</span></td>
+<td style="text-align: left;"><code>a=1</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>not_summable</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\frac{a}{\sqrt n}\)</span></td>
+<td style="text-align: left;"><code>a=1</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>square_summable_not_summable</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(\frac{a}{b+n}\)</span></td>
+<td style="text-align: left;"><code>a=1</code>, <code>b=1</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>geometric_series</code></td>
+<td style="text-align: left;"><span class="arithmatex">\(ar^n\)</span></td>
+<td style="text-align: left;"><code>a=1</code>, <code>r=0.5</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>user_defined</code></td>
+<td style="text-align: left;"><code>user_defined_rule(n)</code></td>
+<td style="text-align: left;"><code>user_defined_rule</code> callable</td>
+</tr>
+<tr>
+<td style="text-align: left;">Callable schedule</td>
+<td style="text-align: left;"><code>schedule(n)</code></td>
+<td style="text-align: left;">Bind with <code>make_step_size(schedule)</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Positive number</td>
+<td style="text-align: left;">Constant step</td>
+<td style="text-align: left;">Bind with <code>make_step_size(0.1)</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>armijo</code></td>
+<td style="text-align: left;">Sufficient decrease</td>
+<td style="text-align: left;"><code>c_1=1e-4</code>, <code>rho=0.5</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Wolfe</code></td>
+<td style="text-align: left;">Sufficient decrease and curvature</td>
+<td style="text-align: left;"><code>c_1=1e-4</code>, <code>c_2=0.9</code>, <code>rho=0.5</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>strong_Wolfe</code></td>
+<td style="text-align: left;">Sufficient decrease and strong curvature</td>
+<td style="text-align: left;"><code>c_1=1e-4</code>, <code>c_2=0.9</code>, <code>rho=0.5</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>exact</code></td>
+<td style="text-align: left;">Bounded numerical line minimization</td>
+<td style="text-align: left;"><code>tol=1e-8</code></td>
+</tr>
+</tbody>
+</table>
+<p>Line searches also accept <code>t_0=1</code>, <code>max_alpha=1e8</code>, <code>max_iter=100</code>, and
+<code>h=None</code>. Rule names are case-insensitive. The legacy <code>c_3</code> option is an
+alias for the strong Wolfe curvature constant.</p>
+<p>Pass rule options with <code>step_options</code> in <code>minimize</code>, or as keyword
+arguments to <code>make_step_size</code>. The SPEG convenience function also accepts
+them directly, as in <code>specular_gradient(f, x0, a=0.1)</code>. Unknown options are
+rejected rather than silently ignored. The solver's <code>max_iter</code>
+sets the number of optimization updates; <code>step_options={"max_iter": ...}</code>
+sets a line search's own budget. For <code>exact</code>, that budget counts objective
+evaluations, including the initial value when it is not cached.</p>
+<p><code>exact</code> is a historical rule name. Its implementation numerically searches
+<code>[0, max_alpha]</code>; it does not promise an exact or global minimizer for an
+arbitrary line objective. Choose <code>max_alpha</code> for the scale of the problem.
+These rules require no additional dependency.</p>
+<h3 id="classical-and-specular-search-derivatives">Classical and specular search derivatives</h3>
+<p>Ordinary <code>armijo</code>, <code>Wolfe</code>, and <code>strong_Wolfe</code> use a classical gradient
+estimated by centered differences by default. This is separate from the
+specular gradient that generates the SPEG direction. Set
+<code>line_search_gradient</code> in the solver to supply an analytical classical
+gradient.</p>
+<p>The <code>specular_armijo</code>, <code>specular_Wolfe</code>, and <code>specular_strong_Wolfe</code>
+variants use the specular gradient in their slope tests by default.
+An explicit <code>line_search_gradient</code> overrides that choice. When constructing
+a step rule directly, use <code>make_step_size(..., gradient=...)</code> for the
+gradient used by its tests.</p>
+<p>Armijo and Wolfe searches require a negative initial slope computed from
+their raw gradient and the search direction. Bounded <code>exact</code> minimization
+uses objective values only. Its <code>specular_exact</code> alias performs the same
+derivative-free search.</p>
+<p>The search derivative is always <strong>unnormalized</strong>. The normalized SPEG
+direction alone cannot supply the derivative information for the tests.
+Replacing classical derivatives with specular derivatives, or applying
+classical tests at nonsmooth points, does not automatically inherit the
+classical convergence guarantees. A search can fail if it cannot find an
+acceptable step within its bounds and budget.</p>
+<h2 id="results-and-execution">Results and execution</h2>
+<p><code>OptimizationResult</code> exposes:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Attribute</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>solution</code></td>
+<td style="text-align: left;">Last accepted point</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>func_val</code></td>
+<td style="text-align: left;">Objective value at that point</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>iteration</code></td>
+<td style="text-align: left;">Number of accepted updates</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>runtime</code></td>
+<td style="text-align: left;">Elapsed solver time in seconds</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>success</code></td>
+<td style="text-align: left;">Whether the convergence criterion was met</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>stop_reason</code></td>
+<td style="text-align: left;">Why the iteration stopped</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>history</code></td>
+<td style="text-align: left;">NumPy arrays under <code>variables</code>, <code>values</code>, and <code>step_sizes</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>method</code></td>
+<td style="text-align: left;">Direction name, or <code>custom</code> for a callable direction</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>variables</code> and <code>values</code> histories include the initial point and accepted
+iterates, with length <code>iteration + 1</code>. <code>variables</code> has shape
+<code>(iteration + 1,)</code> for scalar states or <code>(iteration + 1, dimension)</code> for
+vectors. <code>step_sizes</code> has one entry per accepted update, so its length is
+<code>iteration</code>. Failed searches
+do not append an iterate or change the last accepted solution. Use
+<code>record_history=False</code> to leave the history arrays empty and avoid storing
+the trajectory. The final point and objective remain available in the result.</p>
+<p><code>last_record()</code> returns <code>(solution, func_val, runtime)</code>. <code>get_history()</code>
+returns <code>(history["variables"], history["values"], runtime)</code>.</p>
+<p>Stopping reasons distinguish a gradient below tolerance, an exhausted
+iteration budget, a failed line search, a zero direction despite a larger
+gradient, an update lost to floating-point precision, and non-finite
+proposed points or objective values. Invalid arguments and callback shape
+errors raise exceptions.</p>
+<h3 id="backend-selection">Backend selection</h3>
+<p>The optimizer runs an eager Python loop with NumPy state. Its default
+specular differentiation uses the currently selected calculation backend,
+then converts values back to NumPy for iteration. Selecting Numba or JAX
+does not compile the whole optimizer or make it a JAX-transformable solver.</p>
+<p>Use <code>set_backend</code> or <code>use_backend</code> just as for the calculation and ODE APIs.
+For example, after installing the optional Numba backend:</p>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="k">with</span> <span class="n">specular</span><span class="o">.</span><span class="n">use_backend</span><span class="p">(</span><span class="s2">"numba"</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">specular_gradient</span><span class="p">(</span>
+        <span class="n">sum_abs</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">],</span> <span class="n">step_size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">20</span>
+    <span class="p">)</span>
+</code></pre></div>
+<p>The objective must be compatible with the selected backend. In particular,
+JAX differentiation needs a JAX-compatible objective, such as one written
+with <code>jax.numpy</code>. Ordinary centered line-search differences run in NumPy;
+specular line searches use the selected calculation backend. Explicit
+gradient callbacks perform their own computation. See
+<a href="../backend/">backend support</a> for installation and dtype details.</p>
+<h2 id="api-reference">API reference</h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="specular.optimization.solver.specular_gradient" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">specular_gradient</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="nf">specular_gradient</span><span class="p">(</span><span class="n">objective_function</span><span class="p">,</span> <span class="n">initial_point</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="s1">'constant'</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">line_search_gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">record_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">step_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">step_parameters</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Run SPEG, the normalized negative specular-gradient method.</p>
+<p>Named step parameters can be supplied directly, e.g. <code>a=0.1</code>, or in
+<code>step_options</code>. Duplicate parameters are rejected. All iteration and
+termination behavior is provided by :func:<code>minimize</code>.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular/optimization/solver.py</code></summary>
+              <div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">specular_gradient</span><span class="p">(</span>
+    <span class="n">objective_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">initial_point</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">step_size</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">=</span> <span class="s2">"constant"</span><span class="p">,</span>
+    <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gradient</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">line_search_gradient</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">record_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">step_options</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">step_parameters</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizationResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Run SPEG, the normalized negative specular-gradient method.</span>
+
+<span class="sd">    Named step parameters can be supplied directly, e.g. ``a=0.1``, or in</span>
+<span class="sd">    ``step_options``. Duplicate parameters are rejected. All iteration and</span>
+<span class="sd">    termination behavior is provided by :func:`minimize`.</span>
+<span class="sd">    """</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">step_options</span><span class="p">)</span> <span class="k">if</span> <span class="n">step_options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
+    <span class="n">overlap</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">step_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">overlap</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"duplicate step parameters: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">overlap</span><span class="p">))</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">step_parameters</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">minimize</span><span class="p">(</span>
+        <span class="n">objective_function</span><span class="p">,</span>
+        <span class="n">initial_point</span><span class="p">,</span>
+        <span class="n">direction</span><span class="o">=</span><span class="s2">"speg"</span><span class="p">,</span>
+        <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span>
+        <span class="n">gradient</span><span class="o">=</span><span class="n">gradient</span><span class="p">,</span>
+        <span class="n">line_search_gradient</span><span class="o">=</span><span class="n">line_search_gradient</span><span class="p">,</span>
+        <span class="n">h</span><span class="o">=</span><span class="n">h</span><span class="p">,</span>
+        <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span>
+        <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span>
+        <span class="n">record_history</span><span class="o">=</span><span class="n">record_history</span><span class="p">,</span>
+        <span class="n">step_options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="specular.optimization.solver.minimize" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">minimize</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="nf">minimize</span><span class="p">(</span><span class="n">objective_function</span><span class="p">,</span> <span class="n">initial_point</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">'speg'</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="s1">'constant'</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">line_search_gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span> <span class="n">record_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">step_options</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Iterate <code>x_next = x + step_size(n, x, d) * d</code> with <code>d=direction(n,x)</code>.</p>
+<p><code>direction</code> selects SPEG or a callable accepting <code>(n, x)</code>. A callable
+<code>step_size</code> accepts <code>(n, x, d)</code>; wrap a schedule accepting only <code>n</code>
+with :func:<code>make_step_size</code>. Iteration indices start at one.</p>
+<p><code>gradient</code> supplies the raw specular gradient for SPEG and termination.
+When omitted, the selected calculation backend approximates it with mesh
+<code>h</code> (automatic by default). Scalar and nonempty 1D real states are
+supported; the optimizer itself is an eager NumPy/Python loop.</p>
+<p>Ordinary line searches use ordinary centered differences by default.
+The <code>specular_</code> rules use the same specular gradient as the direction.
+<code>line_search_gradient</code> overrides either choice. The classical Wolfe
+theory does not automatically apply to a specular substitution.</p>
+<p>A failed search or invalid proposed update leaves the last accepted point
+intact. Invalid arguments and callback shape errors raise exceptions.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular/optimization/solver.py</code></summary>
+              <div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">minimize</span><span class="p">(</span>
+    <span class="n">objective_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">initial_point</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">=</span> <span class="s2">"speg"</span><span class="p">,</span>
+    <span class="n">step_size</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">=</span> <span class="s2">"constant"</span><span class="p">,</span>
+    <span class="n">gradient</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">line_search_gradient</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+    <span class="n">record_history</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">step_options</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizationResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Iterate ``x_next = x + step_size(n, x, d) * d`` with ``d=direction(n,x)``.</span>
+
+<span class="sd">    ``direction`` selects SPEG or a callable accepting ``(n, x)``. A callable</span>
+<span class="sd">    ``step_size`` accepts ``(n, x, d)``; wrap a schedule accepting only ``n``</span>
+<span class="sd">    with :func:`make_step_size`. Iteration indices start at one.</span>
+
+<span class="sd">    ``gradient`` supplies the raw specular gradient for SPEG and termination.</span>
+<span class="sd">    When omitted, the selected calculation backend approximates it with mesh</span>
+<span class="sd">    ``h`` (automatic by default). Scalar and nonempty 1D real states are</span>
+<span class="sd">    supported; the optimizer itself is an eager NumPy/Python loop.</span>
+
+<span class="sd">    Ordinary line searches use ordinary centered differences by default.</span>
+<span class="sd">    The ``specular_`` rules use the same specular gradient as the direction.</span>
+<span class="sd">    ``line_search_gradient`` overrides either choice. The classical Wolfe</span>
+<span class="sd">    theory does not automatically apply to a specular substitution.</span>
+
+<span class="sd">    A failed search or invalid proposed update leaves the last accepted point</span>
+<span class="sd">    intact. Invalid arguments and callback shape errors raise exceptions.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">objective_function</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"objective_function must be callable"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">gradient</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"gradient must be callable"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">line_search_gradient</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">line_search_gradient</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"line_search_gradient must be callable"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_iter</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_iter</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"max_iter must be a nonnegative integer"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">max_iter</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"max_iter must be a nonnegative integer"</span><span class="p">)</span>
+    <span class="n">tol</span> <span class="o">=</span> <span class="n">_scalar</span><span class="p">(</span><span class="n">tol</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"tol"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tol</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"tol must be nonnegative"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">h</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">_scalar</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"h"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">h</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"h must be positive"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record_history</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"record_history must be a bool"</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">_as_point</span><span class="p">(</span><span class="n">initial_point</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"initial_point"</span><span class="p">)</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">step_options</span><span class="p">)</span> <span class="k">if</span> <span class="n">step_options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">value_at</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+        <span class="c1"># Callbacks receive their own point so they cannot mutate accepted data.</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">objective_function</span><span class="p">(</span><span class="n">_as_point</span><span class="p">(</span><span class="n">point</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">_scalar</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"objective value"</span><span class="p">,</span> <span class="n">finite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">gradient_at</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+        <span class="n">point</span> <span class="o">=</span> <span class="n">_as_point</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">gradient</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">derivative</span><span class="p">(</span><span class="n">objective_function</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">h</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Pass the original callable to preserve JAX tracing / Numba compilation.</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">specular_gradient_value</span><span class="p">(</span><span class="n">objective_function</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">h</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_as_point</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"gradient"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">!=</span> <span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"gradient shape must match initial_point"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="n">direction_fn</span> <span class="o">=</span> <span class="n">make_direction</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="n">gradient_at</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">h</span><span class="p">)</span>
+    <span class="n">builtin_direction</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">step_size</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">options</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"step_options belong to a named or numeric step_size"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">line_search_gradient</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"configure the gradient on the callable step_size itself"</span><span class="p">)</span>
+        <span class="n">step_fn</span> <span class="o">=</span> <span class="n">step_size</span>
+        <span class="n">builtin_step</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Never pass SPEG's raw gradient to an ordinary Wolfe rule implicitly.</span>
+        <span class="n">search_gradient</span> <span class="o">=</span> <span class="n">line_search_gradient</span>
+        <span class="n">is_specular_search</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">step_size</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">step_size</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"specular_"</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">search_gradient</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">is_specular_search</span><span class="p">:</span>
+            <span class="n">search_gradient</span> <span class="o">=</span> <span class="n">gradient_at</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="n">options</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"f"</span><span class="p">,</span> <span class="s2">"gradient"</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"use objective_function and line_search_gradient explicitly"</span><span class="p">)</span>
+        <span class="n">step_fn</span> <span class="o">=</span> <span class="n">make_step_size</span><span class="p">(</span><span class="n">step_size</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="n">value_at</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="n">search_gradient</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+        <span class="n">builtin_step</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+    <span class="n">fx</span> <span class="o">=</span> <span class="n">value_at</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">fx</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"objective value at initial_point must be finite"</span><span class="p">)</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()]</span> <span class="k">if</span> <span class="n">record_history</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">fx</span><span class="p">]</span> <span class="k">if</span> <span class="n">record_history</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="n">steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">reason</span> <span class="o">=</span> <span class="s2">"max_iter reached"</span>
+
+    <span class="c1"># The endpoint check also recognizes convergence on the last allowed update.</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_iter</span> <span class="o">+</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">max_iter</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">gradient_at</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_norm</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">:</span>
+            <span class="n">success</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"gradient norm below tolerance"</span>
+            <span class="k">break</span>
+        <span class="k">if</span> <span class="n">iteration</span> <span class="o">==</span> <span class="n">max_iter</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">if</span> <span class="n">builtin_direction</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">direction_fn</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">gradient_value</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">direction_fn</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_norm</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">reason</span> <span class="o">=</span> <span class="s2">"zero direction with gradient above tolerance"</span>
+            <span class="k">break</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">builtin_step</span><span class="p">:</span>
+                <span class="n">gamma</span> <span class="o">=</span> <span class="n">step_fn</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">f_value</span><span class="o">=</span><span class="n">fx</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">gamma</span> <span class="o">=</span> <span class="n">step_fn</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">_as_point</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">_as_point</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+            <span class="n">gamma</span> <span class="o">=</span> <span class="n">_scalar</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"step size"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">gamma</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"step size must be positive"</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">LineSearchError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">reason</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"line search failed: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span>
+            <span class="k">break</span>
+        <span class="n">trial</span> <span class="o">=</span> <span class="n">_advance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">gamma</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">trial</span><span class="p">)):</span>
+            <span class="n">reason</span> <span class="o">=</span> <span class="s2">"non-finite proposed point"</span>
+            <span class="k">break</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+            <span class="n">reason</span> <span class="o">=</span> <span class="s2">"step does not change the point at working precision"</span>
+            <span class="k">break</span>
+        <span class="n">trial</span> <span class="o">=</span> <span class="n">_as_point</span><span class="p">(</span><span class="n">trial</span><span class="p">)</span>
+        <span class="n">trial_value</span> <span class="o">=</span> <span class="n">value_at</span><span class="p">(</span><span class="n">trial</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">trial_value</span><span class="p">):</span>
+            <span class="n">reason</span> <span class="o">=</span> <span class="s2">"non-finite objective at proposed point"</span>
+            <span class="k">break</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">fx</span> <span class="o">=</span> <span class="n">trial</span><span class="p">,</span> <span class="n">trial_value</span>
+        <span class="n">iteration</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">record_history</span><span class="p">:</span>
+            <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fx</span><span class="p">)</span>
+            <span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gamma</span><span class="p">)</span>
+
+    <span class="n">history</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"variables"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">shape</span><span class="p">),</span>
+        <span class="s2">"values"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
+        <span class="s2">"step_sizes"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">OptimizationResult</span><span class="p">(</span>
+        <span class="n">solution</span><span class="o">=</span><span class="n">_as_point</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+        <span class="n">func_val</span><span class="o">=</span><span class="n">fx</span><span class="p">,</span>
+        <span class="n">iteration</span><span class="o">=</span><span class="n">iteration</span><span class="p">,</span>
+        <span class="n">runtime</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span>
+        <span class="n">history</span><span class="o">=</span><span class="n">history</span><span class="p">,</span>
+        <span class="n">stop_reason</span><span class="o">=</span><span class="n">reason</span><span class="p">,</span>
+        <span class="n">success</span><span class="o">=</span><span class="n">success</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="n">direction</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="s2">"custom"</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="specular.optimization.direction.make_direction" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_direction</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="nf">make_direction</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">'speg'</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Create <code>direction(n, x, *, gradient_value=None)</code>.</p>
+<p><code>"speg"</code> (also <code>"specular_gradient"</code>) returns the negative unit
+specular gradient, or zero when the gradient is exactly zero. Supply a
+raw <code>gradient(x)</code> callback or an objective <code>f</code> for numerical specular
+differentiation using the currently selected backend. <code>h=None</code> keeps
+that backend's automatic differentiation interval.</p>
+<p>A callable <code>method(n, x)</code> supplies a custom direction without additional
+normalization. Iterations are numbered from one. All returned directions
+must be finite and match the scalar or vector shape of <code>x</code> exactly.
+Callbacks receive a private copy of vector points.</p>
+<p><code>gradient_value</code> optionally reuses a previously evaluated raw gradient
+for SPEG. Custom methods do not use this cache.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular/optimization/direction.py</code></summary>
+              <div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">make_direction</span><span class="p">(</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Point</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"speg"</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Point</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gradient</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Point</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">h</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Direction</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Create ``direction(n, x, *, gradient_value=None)``.</span>
+
+<span class="sd">    ``"speg"`` (also ``"specular_gradient"``) returns the negative unit</span>
+<span class="sd">    specular gradient, or zero when the gradient is exactly zero. Supply a</span>
+<span class="sd">    raw ``gradient(x)`` callback or an objective ``f`` for numerical specular</span>
+<span class="sd">    differentiation using the currently selected backend. ``h=None`` keeps</span>
+<span class="sd">    that backend's automatic differentiation interval.</span>
+
+<span class="sd">    A callable ``method(n, x)`` supplies a custom direction without additional</span>
+<span class="sd">    normalization. Iterations are numbered from one. All returned directions</span>
+<span class="sd">    must be finite and match the scalar or vector shape of ``x`` exactly.</span>
+<span class="sd">    Callbacks receive a private copy of vector points.</span>
+
+<span class="sd">    ``gradient_value`` optionally reuses a previously evaluated raw gradient</span>
+<span class="sd">    for SPEG. Custom methods do not use this cache.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"method must be a direction name or a callable"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"speg"</span><span class="p">,</span> <span class="s2">"specular_gradient"</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"unknown direction method: </span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"f must be callable"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">gradient</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"gradient must be callable"</span><span class="p">)</span>
+    <span class="n">validated_h</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">calculation</span><span class="o">.</span><span class="n">_positive_step</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">f</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"SPEG requires f or a raw gradient callback"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">direction</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">gradient_value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Point</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"n must be an integer"</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">iteration</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"n must be an integer"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+        <span class="k">if</span> <span class="n">iteration</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"n must be at least one"</span><span class="p">)</span>
+        <span class="n">point</span> <span class="o">=</span> <span class="n">_as_point</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_as_point</span><span class="p">(</span><span class="n">method</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">point</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">"direction"</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">gradient_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">raw</span> <span class="o">=</span> <span class="n">gradient_value</span>
+            <span class="k">elif</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">raw</span> <span class="o">=</span> <span class="n">gradient</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
+                <span class="n">raw</span> <span class="o">=</span> <span class="n">calculation</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">validated_h</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">raw</span> <span class="o">=</span> <span class="n">calculation</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">validated_h</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_as_point</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"gradient"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="n">shape</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s2">"direction"</span> <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">method</span><span class="p">)</span> <span class="k">else</span> <span class="s2">"gradient"</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must have exactly the same shape as x"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">method</span><span class="p">)</span> <span class="k">else</span> <span class="n">_negative_unit</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">direction</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="specular.optimization.step_size.make_step_size" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_step_size</span>
+
+
+</h3>
+<div class="language-python doc-signature highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="nf">make_step_size</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="s1">'constant'</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Build <code>step(n, x=None, d=None, *, gradient_value=None, f_value=None)</code>.</p>
+<p>Schedules accept a positive number, a callable of <code>n</code>, or the names
+<code>constant</code>, <code>not_summable</code>, <code>square_summable_not_summable</code>,
+<code>geometric_series</code>, and <code>user_defined</code>. Their formulas are respectively
+<code>a</code>, <code>a/sqrt(n)</code>, <code>a/(b+n)</code>, and <code>a*r**n</code>; <code>n &gt;= 1</code>.</p>
+<p>Line searches are <code>armijo</code>, <code>wolfe</code>, <code>strong_wolfe</code>, and <code>exact</code>
+(case-insensitive). They require <code>f</code>; Armijo/Wolfe additionally require
+a descent direction. A supplied
+<code>gradient</code> callback always takes precedence. Without one, ordinary
+centered differences are used, or specular differences for names prefixed
+with <code>specular_</code>. Cached values must match that raw gradient and objective.</p>
+<p>Common line-search options are <code>t_0=1</code>, <code>max_alpha=1e8</code>,
+<code>max_iter=100</code>, and <code>h=None</code>. Armijo/Wolfe use <code>c_1=1e-4</code> and
+<code>rho=0.5</code>; Wolfe also uses <code>c_2=0.9</code> (<code>c_3</code> is a legacy alias for
+strong Wolfe). <code>exact</code> uses golden-section minimization on
+<code>[0, max_alpha]</code> with <code>tol=1e-8</code> and at most <code>max_iter</code> objective
+evaluations, including the initial value when uncached. It is derivative
+free; <code>specular_exact</code> is an identical alias. The name describes
+numerical bounded minimization, not a global or symbolic guarantee.</p>
+<p>Failed searches raise :class:<code>LineSearchError</code>; no unchecked fallback step
+is returned. Specular slopes do not imply classical smooth Wolfe guarantees.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular/optimization/step_size.py</code></summary>
+              <div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">make_step_size</span><span class="p">(</span>
+    <span class="n">rule</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">=</span> <span class="s2">"constant"</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gradient</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">options</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Build ``step(n, x=None, d=None, *, gradient_value=None, f_value=None)``.</span>
+
+<span class="sd">    Schedules accept a positive number, a callable of ``n``, or the names</span>
+<span class="sd">    ``constant``, ``not_summable``, ``square_summable_not_summable``,</span>
+<span class="sd">    ``geometric_series``, and ``user_defined``. Their formulas are respectively</span>
+<span class="sd">    ``a``, ``a/sqrt(n)``, ``a/(b+n)``, and ``a*r**n``; ``n &gt;= 1``.</span>
+
+<span class="sd">    Line searches are ``armijo``, ``wolfe``, ``strong_wolfe``, and ``exact``</span>
+<span class="sd">    (case-insensitive). They require ``f``; Armijo/Wolfe additionally require</span>
+<span class="sd">    a descent direction. A supplied</span>
+<span class="sd">    ``gradient`` callback always takes precedence. Without one, ordinary</span>
+<span class="sd">    centered differences are used, or specular differences for names prefixed</span>
+<span class="sd">    with ``specular_``. Cached values must match that raw gradient and objective.</span>
+
+<span class="sd">    Common line-search options are ``t_0=1``, ``max_alpha=1e8``,</span>
+<span class="sd">    ``max_iter=100``, and ``h=None``. Armijo/Wolfe use ``c_1=1e-4`` and</span>
+<span class="sd">    ``rho=0.5``; Wolfe also uses ``c_2=0.9`` (``c_3`` is a legacy alias for</span>
+<span class="sd">    strong Wolfe). ``exact`` uses golden-section minimization on</span>
+<span class="sd">    ``[0, max_alpha]`` with ``tol=1e-8`` and at most ``max_iter`` objective</span>
+<span class="sd">    evaluations, including the initial value when uncached. It is derivative</span>
+<span class="sd">    free; ``specular_exact`` is an identical alias. The name describes</span>
+<span class="sd">    numerical bounded minimization, not a global or symbolic guarantee.</span>
+
+<span class="sd">    Failed searches raise :class:`LineSearchError`; no unchecked fallback step</span>
+<span class="sd">    is returned. Specular slopes do not imply classical smooth Wolfe guarantees.</span>
+<span class="sd">    """</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">schedules</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"constant"</span><span class="p">,</span> <span class="s2">"not_summable"</span><span class="p">,</span> <span class="s2">"square_summable_not_summable"</span><span class="p">,</span>
+        <span class="s2">"geometric_series"</span><span class="p">,</span> <span class="s2">"user_defined"</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">schedules</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">rule</span><span class="p">):</span>
+            <span class="n">_unknown</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+            <span class="n">schedule</span> <span class="o">=</span> <span class="n">rule</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_unknown</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_positive</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="s2">"step size"</span><span class="p">)</span>
+            <span class="n">schedule</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">value</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">"user_defined"</span><span class="p">:</span>
+            <span class="n">_unknown</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="p">{</span><span class="s2">"user_defined_rule"</span><span class="p">})</span>
+            <span class="n">schedule</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"user_defined_rule"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">schedule</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"user_defined_rule must be callable"</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">allowed</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"a"</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">"square_summable_not_summable"</span><span class="p">:</span>
+                <span class="n">allowed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">"b"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">"geometric_series"</span><span class="p">:</span>
+                <span class="n">allowed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">"r"</span><span class="p">)</span>
+            <span class="n">_unknown</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">allowed</span><span class="p">)</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">_positive</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"a"</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="s2">"a"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">"constant"</span><span class="p">:</span>
+                <span class="n">schedule</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">a</span>
+            <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">"not_summable"</span><span class="p">:</span>
+                <span class="n">schedule</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">a</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">"square_summable_not_summable"</span><span class="p">:</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">_positive</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"b"</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="s2">"b"</span><span class="p">,</span> <span class="n">zero</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">schedule</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">a</span> <span class="o">/</span> <span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">_positive</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"r"</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="s2">"r"</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">r</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"r must be strictly between zero and one"</span><span class="p">)</span>
+                <span class="n">schedule</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">a</span> <span class="o">*</span> <span class="n">r</span><span class="o">**</span><span class="n">n</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">scheduled</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">gradient_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">f_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">_positive</span><span class="p">(</span><span class="n">schedule</span><span class="p">(</span><span class="n">_integer</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="s2">"n"</span><span class="p">)),</span> <span class="s2">"scheduled step"</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">scheduled</span>
+
+    <span class="n">specular</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"specular_"</span><span class="p">)</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">"specular_"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">base</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"armijo"</span><span class="p">,</span> <span class="s2">"wolfe"</span><span class="p">,</span> <span class="s2">"strong_wolfe"</span><span class="p">,</span> <span class="s2">"exact"</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown step-size rule: </span><span class="si">{</span><span class="n">rule</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Line searches require a callable f"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">gradient</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"gradient must be callable"</span><span class="p">)</span>
+
+    <span class="n">allowed</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"t_0"</span><span class="p">,</span> <span class="s2">"max_alpha"</span><span class="p">,</span> <span class="s2">"max_iter"</span><span class="p">,</span> <span class="s2">"h"</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s2">"exact"</span><span class="p">:</span>
+        <span class="n">allowed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">"tol"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">allowed</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"c_1"</span><span class="p">,</span> <span class="s2">"rho"</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">!=</span> <span class="s2">"armijo"</span><span class="p">:</span>
+            <span class="n">allowed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">"c_2"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s2">"strong_wolfe"</span><span class="p">:</span>
+            <span class="n">allowed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">"c_3"</span><span class="p">)</span>
+    <span class="n">_unknown</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">allowed</span><span class="p">)</span>
+    <span class="n">initial</span> <span class="o">=</span> <span class="n">_positive</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"t_0"</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="s2">"t_0"</span><span class="p">)</span>
+    <span class="n">bound</span> <span class="o">=</span> <span class="n">_positive</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"max_alpha"</span><span class="p">,</span> <span class="mf">1e8</span><span class="p">),</span> <span class="s2">"max_alpha"</span><span class="p">)</span>
+    <span class="n">budget</span> <span class="o">=</span> <span class="n">_integer</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"max_iter"</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="s2">"max_iter"</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"h"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">h</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">_positive</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="s2">"h"</span><span class="p">)</span>
+    <span class="n">c1</span> <span class="o">=</span> <span class="n">_positive</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"c_1"</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">),</span> <span class="s2">"c_1"</span><span class="p">)</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="n">_positive</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"rho"</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="s2">"rho"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">c1</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">rho</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"c_1 and rho must be strictly between zero and one"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"c_2"</span> <span class="ow">in</span> <span class="n">options</span> <span class="ow">and</span> <span class="s2">"c_3"</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Use only one of c_2 and its legacy alias c_3"</span><span class="p">)</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">_positive</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"c_2"</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"c_3"</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)),</span> <span class="s2">"c_2"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">base</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"wolfe"</span><span class="p">,</span> <span class="s2">"strong_wolfe"</span><span class="p">}</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">c1</span> <span class="o">&lt;</span> <span class="n">c2</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Wolfe parameters must satisfy 0 &lt; c_1 &lt; c_2 &lt; 1"</span><span class="p">)</span>
+    <span class="n">tolerance</span> <span class="o">=</span> <span class="n">_positive</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tol"</span><span class="p">,</span> <span class="mf">1e-8</span><span class="p">),</span> <span class="s2">"tol"</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">gradient</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">specular</span><span class="p">:</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">raw_gradient</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+                <span class="n">calc</span> <span class="o">=</span> <span class="n">_specular_derivative</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">point</span><span class="p">)</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">_specular_gradient</span>
+                <span class="k">return</span> <span class="n">calc</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">h</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">raw_gradient</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">_centered_gradient</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">raw_gradient</span> <span class="o">=</span> <span class="n">gradient</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">gradient_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">f_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">_integer</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="s2">"n"</span><span class="p">)</span>
+        <span class="n">point</span><span class="p">,</span> <span class="n">direction</span> <span class="o">=</span> <span class="n">_point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">"x"</span><span class="p">),</span> <span class="n">_point</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">"d"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">point</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">direction</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"x and d must have the same shape"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">direction</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">LineSearchError</span><span class="p">(</span><span class="s2">"Line search requires a nonzero descent direction"</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">slope</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="n">cached</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">raw_gradient</span><span class="p">(</span><span class="n">_argument</span><span class="p">(</span><span class="n">at</span><span class="p">))</span> <span class="k">if</span> <span class="n">cached</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cached</span>
+            <span class="k">except</span> <span class="ne">ArithmeticError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">point</span><span class="o">.</span><span class="n">shape</span> <span class="ow">or</span> <span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">"iuf"</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Raw gradient must be real and have the same shape as x"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">array</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+            <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">over</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+                <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">)</span> <span class="o">*</span> <span class="n">direction</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">)))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">phi0</span> <span class="o">=</span> <span class="n">_scalar</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">_argument</span><span class="p">(</span><span class="n">point</span><span class="p">))</span> <span class="k">if</span> <span class="n">f_value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">f_value</span><span class="p">,</span> <span class="s2">"objective value"</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ArithmeticError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">LineSearchError</span><span class="p">(</span><span class="s2">"Initial objective value must be finite"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">phi0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">LineSearchError</span><span class="p">(</span><span class="s2">"Initial objective value must be finite"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">!=</span> <span class="s2">"exact"</span><span class="p">:</span>
+            <span class="n">slope0</span> <span class="o">=</span> <span class="n">slope</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">gradient_value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">slope0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">LineSearchError</span><span class="p">(</span><span class="s2">"Initial slope must be finite"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">slope0</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">LineSearchError</span><span class="p">(</span><span class="s2">"Line search requires a descent direction (negative raw slope)"</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">trial</span><span class="p">(</span><span class="n">alpha</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">at</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+                    <span class="n">math</span><span class="o">.</span><span class="n">fma</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">di</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">xi</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">xi</span><span class="p">,</span> <span class="n">di</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">direction</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+                <span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OverflowError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">at</span><span class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">at</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">_scalar</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">_argument</span><span class="p">(</span><span class="n">at</span><span class="p">)),</span> <span class="s2">"objective value"</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ArithmeticError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">at</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+            <span class="k">return</span> <span class="n">at</span><span class="p">,</span> <span class="n">value</span> <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">else</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">armijo</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+            <span class="n">threshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">(</span><span class="n">phi0</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">longdouble</span><span class="p">(</span><span class="n">c1</span><span class="p">)</span> <span class="o">*</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">slope0</span>
+            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="ow">and</span> <span class="n">phi</span> <span class="o">&lt;=</span> <span class="n">threshold</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">curvature</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s2">"strong_wolfe"</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="n">c2</span> <span class="o">*</span> <span class="n">slope0</span>
+            <span class="k">return</span> <span class="n">value</span> <span class="o">&gt;=</span> <span class="n">c2</span> <span class="o">*</span> <span class="n">slope0</span>
+
+        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s2">"exact"</span><span class="p">:</span>
+            <span class="n">evaluations</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">f_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">1</span>
+            <span class="n">best_alpha</span><span class="p">,</span> <span class="n">best_value</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">phi0</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="n">alpha</span><span class="p">):</span>
+                <span class="k">nonlocal</span> <span class="n">evaluations</span><span class="p">,</span> <span class="n">best_alpha</span><span class="p">,</span> <span class="n">best_value</span>
+                <span class="k">if</span> <span class="n">evaluations</span> <span class="o">&gt;=</span> <span class="n">budget</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">LineSearchError</span><span class="p">(</span><span class="s2">"Bounded minimization evaluation budget exhausted"</span><span class="p">)</span>
+                <span class="n">evaluations</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">trial</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">value</span> <span class="o">&lt;</span> <span class="n">best_value</span> <span class="ow">or</span> <span class="p">(</span><span class="n">value</span> <span class="o">==</span> <span class="n">best_value</span> <span class="ow">and</span> <span class="n">best_alpha</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)):</span>
+                    <span class="n">best_alpha</span><span class="p">,</span> <span class="n">best_value</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">value</span>
+                <span class="k">return</span> <span class="n">value</span>
+
+            <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">bound</span>
+            <span class="n">evaluate</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">initial</span> <span class="o">&lt;</span> <span class="n">bound</span><span class="p">:</span>
+                <span class="n">evaluate</span><span class="p">(</span><span class="n">initial</span><span class="p">)</span>
+            <span class="n">ratio</span> <span class="o">=</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">5.0</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+            <span class="n">c</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">right</span> <span class="o">-</span> <span class="n">ratio</span> <span class="o">*</span> <span class="p">(</span><span class="n">right</span> <span class="o">-</span> <span class="n">left</span><span class="p">),</span> <span class="n">left</span> <span class="o">+</span> <span class="n">ratio</span> <span class="o">*</span> <span class="p">(</span><span class="n">right</span> <span class="o">-</span> <span class="n">left</span><span class="p">)</span>
+            <span class="n">fc</span><span class="p">,</span> <span class="n">fe</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">while</span> <span class="n">right</span> <span class="o">-</span> <span class="n">left</span> <span class="o">&gt;</span> <span class="n">tolerance</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">left</span> <span class="o">+</span> <span class="p">(</span><span class="n">right</span> <span class="o">-</span> <span class="n">left</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)):</span>
+                <span class="n">previous</span> <span class="o">=</span> <span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">fc</span> <span class="o">&lt;=</span> <span class="n">fe</span><span class="p">:</span>
+                    <span class="n">right</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">fe</span> <span class="o">=</span> <span class="n">e</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">fc</span>
+                    <span class="n">c</span> <span class="o">=</span> <span class="n">right</span> <span class="o">-</span> <span class="n">ratio</span> <span class="o">*</span> <span class="p">(</span><span class="n">right</span> <span class="o">-</span> <span class="n">left</span><span class="p">)</span>
+                    <span class="n">fc</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">left</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">fc</span> <span class="o">=</span> <span class="n">c</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">fe</span>
+                    <span class="n">e</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="n">ratio</span> <span class="o">*</span> <span class="p">(</span><span class="n">right</span> <span class="o">-</span> <span class="n">left</span><span class="p">)</span>
+                    <span class="n">fe</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span> <span class="o">==</span> <span class="n">previous</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">LineSearchError</span><span class="p">(</span><span class="s2">"Bounded minimization stagnated at floating-point precision"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">best_alpha</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">LineSearchError</span><span class="p">(</span><span class="s2">"Bounded minimization found no positive improving step"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">best_alpha</span>
+
+        <span class="n">alpha</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">initial</span><span class="p">,</span> <span class="n">bound</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s2">"armijo"</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">budget</span><span class="p">):</span>
+                <span class="n">at</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">trial</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">LineSearchError</span><span class="p">(</span><span class="s2">"Armijo step stagnated at floating-point precision"</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">armijo</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">alpha</span>
+                <span class="n">next_alpha</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">rho</span>
+                <span class="k">if</span> <span class="n">next_alpha</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">next_alpha</span> <span class="o">==</span> <span class="n">alpha</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="n">next_alpha</span>
+            <span class="k">raise</span> <span class="n">LineSearchError</span><span class="p">(</span><span class="s2">"Armijo search could not accept a step"</span><span class="p">)</span>
+
+        <span class="n">previous_alpha</span><span class="p">,</span> <span class="n">previous_phi</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">phi0</span>
+        <span class="n">low</span> <span class="o">=</span> <span class="n">high</span> <span class="o">=</span> <span class="n">low_phi</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">budget</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">low</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="n">low</span> <span class="o">+</span> <span class="p">(</span><span class="n">high</span> <span class="o">-</span> <span class="n">low</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+                <span class="k">if</span> <span class="n">alpha</span> <span class="o">==</span> <span class="n">low</span> <span class="ow">or</span> <span class="n">alpha</span> <span class="o">==</span> <span class="n">high</span> <span class="ow">or</span> <span class="n">alpha</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">LineSearchError</span><span class="p">(</span><span class="s2">"Wolfe bracket stagnated at floating-point precision"</span><span class="p">)</span>
+            <span class="n">at</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">trial</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+                <span class="n">next_alpha</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">alpha</span> <span class="o">/</span> <span class="n">rho</span><span class="p">,</span> <span class="n">bound</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">low</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">next_alpha</span> <span class="o">&lt;=</span> <span class="n">alpha</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">LineSearchError</span><span class="p">(</span><span class="s2">"Wolfe step stagnated at floating-point precision"</span><span class="p">)</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="n">next_alpha</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">armijo</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">low</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">phi</span> <span class="o">&gt;=</span> <span class="n">low_phi</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">low</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">low</span><span class="p">,</span> <span class="n">low_phi</span> <span class="o">=</span> <span class="n">previous_alpha</span><span class="p">,</span> <span class="n">previous_phi</span>
+                <span class="n">high</span> <span class="o">=</span> <span class="n">alpha</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">low</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">iteration</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">phi</span> <span class="o">&gt;=</span> <span class="n">previous_phi</span><span class="p">:</span>
+                <span class="n">low</span><span class="p">,</span> <span class="n">low_phi</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="n">previous_alpha</span><span class="p">,</span> <span class="n">previous_phi</span><span class="p">,</span> <span class="n">alpha</span>
+                <span class="k">continue</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">slope</span><span class="p">(</span><span class="n">at</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">curvature</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">alpha</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">low</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">low</span><span class="p">,</span> <span class="n">low_phi</span> <span class="o">=</span> <span class="n">previous_alpha</span><span class="p">,</span> <span class="n">previous_phi</span>
+                <span class="n">high</span> <span class="o">=</span> <span class="n">alpha</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">low</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">high</span> <span class="o">&gt;=</span> <span class="n">low</span><span class="p">):</span>
+                    <span class="n">high</span> <span class="o">=</span> <span class="n">low</span>
+                <span class="n">low</span><span class="p">,</span> <span class="n">low_phi</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">phi</span>
+            <span class="k">elif</span> <span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">low</span><span class="p">,</span> <span class="n">low_phi</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">previous_alpha</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">previous_alpha</span><span class="p">,</span> <span class="n">previous_phi</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">phi</span>
+                <span class="n">next_alpha</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">alpha</span> <span class="o">/</span> <span class="n">rho</span><span class="p">,</span> <span class="n">bound</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">next_alpha</span> <span class="o">&lt;=</span> <span class="n">alpha</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">LineSearchError</span><span class="p">(</span><span class="s2">"Wolfe search reached max_alpha without acceptable curvature"</span><span class="p">)</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="n">next_alpha</span>
+        <span class="k">raise</span> <span class="n">LineSearchError</span><span class="p">(</span><span class="s2">"Wolfe search exhausted its iteration budget"</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">search</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="specular.optimization.solver.OptimizationResult" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">OptimizationResult</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Last accepted point and numerical termination information.</p>
+<p><code>iteration</code> counts accepted updates. History contains <code>variables</code> and
+<code>values</code> including the initial point, and one <code>step_sizes</code> entry per
+update. All three arrays are empty when history recording is disabled.
+<code>success</code> means the computed gradient norm met <code>tol</code>; it does not
+certify a global minimizer.</p>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>specular/optimization/solver.py</code></summary>
+                <div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptimizationResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Last accepted point and numerical termination information.</span>
+
+<span class="sd">    ``iteration`` counts accepted updates. History contains ``variables`` and</span>
+<span class="sd">    ``values`` including the initial point, and one ``step_sizes`` entry per</span>
+<span class="sd">    update. All three arrays are empty when history recording is disabled.</span>
+<span class="sd">    ``success`` means the computed gradient norm met ``tol``; it does not</span>
+<span class="sd">    certify a global minimizer.</span>
+<span class="sd">    """</span>
+
+    <span class="n">solution</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">func_val</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">runtime</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">history</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+    <span class="n">stop_reason</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">success</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"speg"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">last_record</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Return the last accepted point, objective value, and elapsed seconds."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">func_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_history</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Return recorded points, objective values, and elapsed seconds."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s2">"variables"</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s2">"values"</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="specular.optimization.solver.OptimizationResult.last_record" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">last_record</span>
+
+
+</h4>
+<div class="language-python doc-signature highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="nf">last_record</span><span class="p">()</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Return the last accepted point, objective value, and elapsed seconds.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular/optimization/solver.py</code></summary>
+              <div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">last_record</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Return the last accepted point, objective value, and elapsed seconds."""</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">func_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="specular.optimization.solver.OptimizationResult.get_history" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_history</span>
+
+
+</h4>
+<div class="language-python doc-signature highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="nf">get_history</span><span class="p">()</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Return recorded points, objective values, and elapsed seconds.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>specular/optimization/solver.py</code></summary>
+              <div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_history</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Return recorded points, objective values, and elapsed seconds."""</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s2">"variables"</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s2">"values"</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../calculation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Calculation">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Calculation
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../ode/" class="md-footer__link md-footer__link--next" aria-label="Next: ODE">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                ODE
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.footer"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/header-home-link.js"></script>
+      
+        <script src="../../javascripts/code-copy-buttons.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
