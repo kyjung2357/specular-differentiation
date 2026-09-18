@@ -52,6 +52,7 @@ plugins:
       rewrite_relative_urls: true
 
 hooks:
+  - docs/hooks/asset_versions.py
   - docs/hooks/code_copy_buttons.py
   - docs/hooks/documentation_links.py
   - docs/hooks/api_reference.py

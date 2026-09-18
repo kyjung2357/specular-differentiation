@@ -16,15 +16,16 @@
 The specular derivative is defined by averaging the angles associated with
 the forward and backward difference quotients:
 
-$$
-f^{\mathord{\prime\mkern-2.5mu{\scriptstyle\backprime}}}(x)
-:=
-\tan\left(
-  \frac{\arctan\bigl(f'_+(x)\bigr)+\arctan\bigl(f'_-(x)\bigr)}{2}
-\right),
-$$
+<p align="center">
+  <img
+    class="specular-definition"
+    src="docs/figures/specular-derivative-definition.svg"
+    width="480"
+    alt="The specular derivative of f at x is the tangent of the average of arctan of the right derivative and arctan of the left derivative."
+  >
+</p>
 
-where $f'_+(x)$ and $f'_-(x)$ are the right and left derivatives of $f$
+where $f_{+}'(x)$ and $f_{-}'(x)$ are the right and left derivatives of $f$
 at $x$, respectively.
 In contrast, the symmetric derivative takes the arithmetic mean of these
 derivatives. The animation below compares the two: the dashed blue and green
