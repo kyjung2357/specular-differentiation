@@ -1,0 +1,669 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://kyjung2357.github.io/specular-differentiation/api/optimization/LineSearchError/">
+      
+      
+        <link rel="prev" href="../OptimizationResult/">
+      
+      
+        <link rel="next" href="../../ode/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../figures/specular-differentiation-logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>specular.optimization.LineSearchError - Specular Differentiation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+  
+  
+    
+      
+      
+    
+  
+  
+  <style>:root{--md-admonition-icon--paper:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M6%202a2%202%200%200%200-2%202v16a2%202%200%200%200%202%202h12a2%202%200%200%200%202-2V8l-6-6zm0%202h7v5h5v11H6zm2%208v2h8v-2zm0%204v2h5v-2z%22/%3E%3C/svg%3E');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css?v=50c5b1ce8ad6d17e">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#specular.optimization.LineSearchError" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <div class="md-header__inner md-grid">
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <a class="specular-header__brand" href="../../..">
+      <img class="specular-header__logo" src="../../../figures/specular-differentiation-logo.png" alt="" width="28" height="28">
+      <span>Specular Differentiation</span>
+    </a>
+    <nav class="specular-header__nav" aria-label="Main navigation">
+      <a href="../../../user-guide/">User Guide</a>
+      <a href="../../" aria-current="location">API Reference</a>
+      <a href="../../../examples/">Examples</a>
+      <a href="https://github.com/kyjung2357/specular-differentiation/releases/latest">Release</a>
+    </nav>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/kyjung2357/specular-differentiation" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </div>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+  
+    
+    
+    <div class="md-sidebar md-sidebar--primary" data-md-type="navigation" >
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+    
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+  
+
+  
+
+<nav class="md-nav md-nav--primary specular-sidebar" aria-label="API Reference" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Specular Differentiation" class="md-nav__button md-logo" aria-label="Specular Differentiation" data-md-component="logo">
+      
+  <img src="../../../figures/specular-differentiation-logo.png" alt="logo">
+
+    </a>
+    Specular Differentiation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/kyjung2357/specular-differentiation" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  
+    
+    <a href="../../" class="specular-sidebar__title">API Reference</a>
+    
+  <ul class="md-nav__list specular-sidebar__list">
+    
+      <li class="md-nav__item">
+        
+          
+          <details class="specular-sidebar__branch">
+            <summary class="md-nav__link specular-sidebar__group">specular.calculation</summary>
+            
+              <ul class="md-nav__list specular-sidebar__list">
+                <li class="md-nav__item">
+                  <a href="../../calculation/" class="md-nav__link">Overview</a>
+                  
+                </li>
+              </ul>
+              
+  <ul class="md-nav__list specular-sidebar__list">
+    
+      <li class="md-nav__item">
+        
+          <a href="../../calculation/scaled_mean/" class="md-nav__link">scaled_mean</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../../calculation/derivative/" class="md-nav__link">derivative</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../../calculation/gradient/" class="md-nav__link">gradient</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../../calculation/jacobian/" class="md-nav__link">jacobian</a>
+          
+        
+      </li>
+    
+  </ul>
+
+            
+          </details>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          
+          <details class="specular-sidebar__branch" open>
+            <summary class="md-nav__link specular-sidebar__group md-nav__link--active">specular.optimization</summary>
+            
+              <ul class="md-nav__list specular-sidebar__list">
+                <li class="md-nav__item">
+                  <a href="../" class="md-nav__link">Overview</a>
+                  
+                </li>
+              </ul>
+              
+  <ul class="md-nav__list specular-sidebar__list">
+    
+      <li class="md-nav__item">
+        
+          <a href="../specular_gradient/" class="md-nav__link">specular_gradient</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../minimize/" class="md-nav__link">minimize</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../make_direction/" class="md-nav__link">make_direction</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../make_step_size/" class="md-nav__link">make_step_size</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../OptimizationResult/" class="md-nav__link">OptimizationResult</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="./" class="md-nav__link md-nav__link--active" aria-current="page">LineSearchError</a>
+          
+  
+  
+  
+  
+  <ul class="md-nav__list specular-sidebar__list specular-sidebar__toc" data-md-component="toc" data-md-scrollfix>
+    
+      <li class="md-nav__item">
+        <a href="#notes" class="md-nav__link">Notes</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#examples" class="md-nav__link">Examples</a>
+        
+      </li>
+    
+  </ul>
+
+
+        
+      </li>
+    
+  </ul>
+
+            
+          </details>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          
+          <details class="specular-sidebar__branch">
+            <summary class="md-nav__link specular-sidebar__group">specular.ode</summary>
+            
+              <ul class="md-nav__list specular-sidebar__list">
+                <li class="md-nav__item">
+                  <a href="../../ode/" class="md-nav__link">Overview</a>
+                  
+                </li>
+              </ul>
+              
+  <ul class="md-nav__list specular-sidebar__list">
+    
+      <li class="md-nav__item">
+        
+          <a href="../../ode/ellipse_scheme/" class="md-nav__link">ellipse_scheme</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../../ode/euler_scheme_1/" class="md-nav__link">euler_scheme_1</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../../ode/euler_scheme_2/" class="md-nav__link">euler_scheme_2</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../../ode/euler_scheme_5/" class="md-nav__link">euler_scheme_5</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../../ode/ODEResult/" class="md-nav__link">ODEResult</a>
+          
+        
+      </li>
+    
+  </ul>
+
+            
+          </details>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          
+          <details class="specular-sidebar__branch">
+            <summary class="md-nav__link specular-sidebar__group">specular.backends</summary>
+            
+              <ul class="md-nav__list specular-sidebar__list">
+                <li class="md-nav__item">
+                  <a href="../../backends/" class="md-nav__link">Overview</a>
+                  
+                </li>
+              </ul>
+              
+  <ul class="md-nav__list specular-sidebar__list">
+    
+      <li class="md-nav__item">
+        
+          <a href="../../backends/get_backend/" class="md-nav__link">get_backend</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../../backends/available_backends/" class="md-nav__link">available_backends</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../../backends/set_backend/" class="md-nav__link">set_backend</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../../backends/use_backend/" class="md-nav__link">use_backend</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../../backends/BackendName/" class="md-nav__link">BackendName</a>
+          
+        
+      </li>
+    
+  </ul>
+
+            
+          </details>
+        
+      </li>
+    
+  </ul>
+
+  
+</nav>
+        </div>
+      </div>
+    </div>
+  
+
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h1 id="specular.optimization.LineSearchError" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">specular.optimization.LineSearchError</span>
+
+
+</h1>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="RuntimeError">RuntimeError</span></code></p>
+
+
+
+
+
+
+
+
+
+
+
+              
+
+    </div>
+
+</div><p>Exception raised when a line search cannot accept a finite, positive step.
+It is a subclass of <code>RuntimeError</code>.</p>
+<h2 id="notes">Notes</h2>
+<p>Searches created with <a href="../make_step_size/"><code>make_step_size</code></a> raise this
+exception for failures such as a non-descent initial slope, an exhausted
+budget, a search bound reached without acceptable curvature, or stagnation
+at floating-point precision. A failed search does not return an unchecked
+fallback step.</p>
+<p><a href="../minimize/"><code>minimize</code></a> and <a href="../specular_gradient/"><code>specular_gradient</code></a>
+catch this exception from a step rule and return an
+<a href="../OptimizationResult/"><code>OptimizationResult</code></a> with <code>success=False</code> and a
+<code>stop_reason</code> beginning with <code>"line search failed:"</code>. The last accepted
+point remains intact. Invalid arguments or callback shape errors use their
+own exceptions and are not treated as a failed line search.</p>
+<h2 id="examples">Examples</h2>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">specular.optimization</span><span class="w"> </span><span class="kn">import</span> <span class="n">LineSearchError</span><span class="p">,</span> <span class="n">make_step_size</span>
+
+<span class="n">search</span> <span class="o">=</span> <span class="n">make_step_size</span><span class="p">(</span>
+    <span class="s2">&quot;armijo&quot;</span><span class="p">,</span>
+    <span class="n">f</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span><span class="p">,</span>
+    <span class="n">gradient</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">x</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">search</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">LineSearchError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+<span class="c1"># Line search requires a descent direction (negative raw slope)</span>
+</code></pre></div>
+<details class="mkdocstrings-source">
+                <summary>Source code in <code>specular/optimization/step_size.py</code></summary>
+                <div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LineSearchError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A line search could not accept a finite, positive step.&quot;&quot;&quot;</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.indexes"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../javascripts/code-copy-buttons.js?v=8d644f3158ff07cc"></script>
+      
+        <script src="../../../javascripts/api-navigation.js?v=c0c830a44b163c1d"></script>
+      
+        <script src="../../../javascripts/sidebar-navigation.js?v=da397216655eba4b"></script>
+      
+        <script src="../../../javascripts/mathjax.js?v=be24057abd4080f3"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

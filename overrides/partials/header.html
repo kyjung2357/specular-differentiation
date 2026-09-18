@@ -1,0 +1,47 @@
+{# Keep the site name fixed while retaining Material's header controls. #}
+{% set class = "md-header md-header--shadow" %}
+{% set current = page.file.src_uri if page else "" %}
+<header class="{{ class }}" data-md-component="header">
+  <div class="md-header__inner md-grid">
+    <label class="md-header__button md-icon" for="__drawer">
+      {% set icon = config.theme.icon.menu or "material/menu" %}
+      {% include ".icons/" ~ icon ~ ".svg" %}
+    </label>
+    <a class="specular-header__brand" href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}">
+      <img class="specular-header__logo" src="{{ config.theme.logo | url }}" alt="" width="28" height="28">
+      <span>Specular Differentiation</span>
+    </a>
+    <nav class="specular-header__nav" aria-label="Main navigation">
+      <a href="{{ 'user-guide/' | url }}"{% if current == 'user-guide/index.md' %} aria-current="page"{% elif current.startswith('user-guide/') %} aria-current="location"{% endif %}>User Guide</a>
+      <a href="{{ 'api/' | url }}"{% if current == 'api/index.md' %} aria-current="page"{% elif current.startswith('api/') %} aria-current="location"{% endif %}>API Reference</a>
+      <a href="{{ 'examples/' | url }}"{% if current == 'examples/index.md' %} aria-current="page"{% elif current.startswith('examples/') %} aria-current="location"{% endif %}>Examples</a>
+      <a href="{{ config.repo_url }}/releases/latest">Release</a>
+    </nav>
+    {% if config.theme.palette %}
+      {% if not config.theme.palette is mapping %}
+        {% include "partials/palette.html" %}
+      {% endif %}
+    {% endif %}
+    {% if not config.theme.palette is mapping %}
+      {% include "partials/javascripts/palette.html" %}
+    {% endif %}
+    {% if config.extra.alternate %}
+      {% include "partials/alternate.html" %}
+    {% endif %}
+    {% if "material/search" in config.plugins %}
+      {% set search = config.plugins["material/search"] | attr("config") %}
+      {% if search.enabled %}
+        <label class="md-header__button md-icon" for="__search">
+          {% set icon = config.theme.icon.search or "material/magnify" %}
+          {% include ".icons/" ~ icon ~ ".svg" %}
+        </label>
+        {% include "partials/search.html" %}
+      {% endif %}
+    {% endif %}
+    {% if config.repo_url %}
+      <div class="md-header__source">
+        {% include "partials/source.html" %}
+      </div>
+    {% endif %}
+  </div>
+</header>

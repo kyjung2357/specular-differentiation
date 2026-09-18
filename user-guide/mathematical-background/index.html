@@ -1,0 +1,798 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://kyjung2357.github.io/specular-differentiation/user-guide/mathematical-background/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../latex-macro/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../figures/specular-differentiation-logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Mathematical Background - Specular Differentiation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+  
+  
+    
+      
+      
+    
+  
+  
+  <style>:root{--md-admonition-icon--paper:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M6%202a2%202%200%200%200-2%202v16a2%202%200%200%200%202%202h12a2%202%200%200%200%202-2V8l-6-6zm0%202h7v5h5v11H6zm2%208v2h8v-2zm0%204v2h5v-2z%22/%3E%3C/svg%3E');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css?v=50c5b1ce8ad6d17e">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mathematical-background" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <div class="md-header__inner md-grid">
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <a class="specular-header__brand" href="../..">
+      <img class="specular-header__logo" src="../../figures/specular-differentiation-logo.png" alt="" width="28" height="28">
+      <span>Specular Differentiation</span>
+    </a>
+    <nav class="specular-header__nav" aria-label="Main navigation">
+      <a href="../" aria-current="location">User Guide</a>
+      <a href="../../api/">API Reference</a>
+      <a href="../../examples/">Examples</a>
+      <a href="https://github.com/kyjung2357/specular-differentiation/releases/latest">Release</a>
+    </nav>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/kyjung2357/specular-differentiation" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </div>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+  
+    
+    
+    <div class="md-sidebar md-sidebar--primary" data-md-type="navigation" >
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+  
+
+  
+    
+    
+  
+
+  
+
+<nav class="md-nav md-nav--primary specular-sidebar" aria-label="User Guide" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Specular Differentiation" class="md-nav__button md-logo" aria-label="Specular Differentiation" data-md-component="logo">
+      
+  <img src="../../figures/specular-differentiation-logo.png" alt="logo">
+
+    </a>
+    Specular Differentiation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/kyjung2357/specular-differentiation" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  
+    
+    <a href="../" class="specular-sidebar__title">User Guide</a>
+    
+  <ul class="md-nav__list specular-sidebar__list">
+    
+      <li class="md-nav__item">
+        
+          <a href="./" class="md-nav__link md-nav__link--active" aria-current="page">Mathematical Background</a>
+          
+  
+  
+  
+  
+  <ul class="md-nav__list specular-sidebar__list specular-sidebar__toc" data-md-component="toc" data-md-scrollfix>
+    
+      <li class="md-nav__item">
+        <a href="#one-dimension" class="md-nav__link">One dimension</a>
+        
+  <ul class="md-nav__list specular-sidebar__list">
+    
+      <li class="md-nav__item">
+        <a href="#angular-averaging" class="md-nav__link">Angular averaging</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#the-regular-case-and-its-geometry" class="md-nav__link">The regular case and its geometry</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#infinite-slopes-and-oscillation" class="md-nav__link">Infinite slopes and oscillation</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#classical-and-symmetric-differentiation" class="md-nav__link">Classical and symmetric differentiation</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#the-quasi-mean-value-theorem" class="md-nav__link">The Quasi-Mean Value Theorem</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#continuity-and-classical-regularity" class="md-nav__link">Continuity and classical regularity</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#integration" class="md-nav__link">Integration</a>
+        
+      </li>
+    
+  </ul>
+
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#higher-dimension" class="md-nav__link">Higher dimension</a>
+        
+  <ul class="md-nav__list specular-sidebar__list">
+    
+      <li class="md-nav__item">
+        <a href="#specular-directional-derivatives" class="md-nav__link">Specular directional derivatives</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#gateaux-and-frechet-differentiability" class="md-nav__link">Gâteaux and Fréchet differentiability</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#quasi-mean-value-and-quasi-fermat-theorems" class="md-nav__link">Quasi-Mean Value and Quasi-Fermat theorems</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#gradients-and-convex-functions" class="md-nav__link">Gradients and convex functions</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#relation-to-the-package" class="md-nav__link">Relation to the package</a>
+        
+      </li>
+    
+  </ul>
+
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#references" class="md-nav__link">References</a>
+        
+      </li>
+    
+  </ul>
+
+
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../latex-macro/" class="md-nav__link">LaTeX Macro</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../installation/" class="md-nav__link">Installation</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../backends/" class="md-nav__link">Backends</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../calculation/" class="md-nav__link">Calculation</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../ode/" class="md-nav__link">ODE</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../optimization/" class="md-nav__link">Optimization</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+</nav>
+        </div>
+      </div>
+    </div>
+  
+
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="mathematical-background">Mathematical Background</h1>
+<h2 id="one-dimension">One dimension</h2>
+<div class="admonition info paper">
+<p class="admonition-title">Paper</p>
+<p>[1] K. Jung. <a href="https://arxiv.org/abs/2601.09900"><em>Specular differentiation in one dimension: a quasi-mean value theorem, regularity, and discontinuities</em></a>. arXiv preprint arXiv:2601.09900, 2026.</p>
+<p>[2] K. Jung and J. Oh. <a href="https://arxiv.org/abs/2210.06062v3"><em>Regular specular differentiation in Euclidean spaces</em></a>. arXiv preprint arXiv:2210.06062v3, 2022.</p>
+</div>
+<h3 id="angular-averaging">Angular averaging</h3>
+<p>Specular differentiation uses the geometry of one-sided secant lines. Instead of averaging their slopes, it averages the angles they make with the horizontal axis and converts the resulting angle back into a slope. This construction extends classical differentiation to corners, certain vertical tangents, and some discontinuities.</p>
+<p>Let <span class="arithmatex">\(f:I\to\mathbb{R}\)</span>, where <span class="arithmatex">\(I\)</span> is an open interval, and let <span class="arithmatex">\(x\in I\)</span>. For sufficiently small <span class="arithmatex">\(h&gt;0\)</span>, define the forward and backward difference quotients by</p>
+<div class="arithmatex">\[
+q_h^+f(x)=\frac{f(x+h)-f(x)}{h},
+\qquad
+q_h^-f(x)=\frac{f(x)-f(x-h)}{h}.
+\]</div>
+<p>The angular mean of two finite slopes is</p>
+<div class="arithmatex">\[
+\mathcal B(\alpha,\beta)
+=\tan\left(\frac{\arctan\alpha+\arctan\beta}{2}\right).
+\]</div>
+<p>An equivalent algebraic expression is</p>
+<div class="arithmatex">\[
+\mathcal C(\alpha,\beta)
+=\frac{
+\displaystyle\frac{\alpha}{\sqrt{1+\alpha^2}}
++\displaystyle\frac{\beta}{\sqrt{1+\beta^2}}
+}{
+\displaystyle\frac{1}{\sqrt{1+\alpha^2}}
++\displaystyle\frac{1}{\sqrt{1+\beta^2}}
+}.
+\]</div>
+<p>The <strong>specular derivative</strong> is defined by</p>
+<div class="arithmatex">\[
+f^{\sd}(x)
+:=\lim_{h\searrow0}\mathcal C\bigl(q_h^+f(x),q_h^-f(x)\bigr),
+\]</div>
+<p>provided this limit exists as a finite real number. The limit is taken after combining the quotients. The two quotients do not need to converge separately.</p>
+<p>Write <span class="arithmatex">\(\partial^+f(x)=f'_+(x)\)</span> and <span class="arithmatex">\(\partial^-f(x)=f'_-(x)\)</span> for the right and left derivatives, respectively. When both are finite, the definition gives</p>
+<div class="arithmatex">\[
+f^{\sd}(x)
+=\mathcal C\bigl(\partial^+f(x),\partial^-f(x)\bigr)
+=\tan\left(
+\frac{\arctan\bigl(\partial^+f(x)\bigr)
++\arctan\bigl(\partial^-f(x)\bigr)}{2}
+\right).
+\]</div>
+<p>The identities <span class="arithmatex">\(\mathcal C(\alpha,\alpha)=\alpha\)</span> and <span class="arithmatex">\(\mathcal C(\alpha,-\alpha)=0\)</span> explain two basic features: the specular derivative agrees with the classical derivative wherever the latter exists, and opposite slopes give a horizontal specular tangent. Moreover, <span class="arithmatex">\(\mathcal C(\alpha,\beta)\)</span> lies between its two arguments.</p>
+<h3 id="the-regular-case-and-its-geometry">The regular case and its geometry</h3>
+<p>The regular theory of Jung and Oh calls <span class="arithmatex">\(f\)</span> <strong>regularly specularly differentiable</strong> at <span class="arithmatex">\(x\)</span> when both one-sided derivatives are finite. This condition implies continuity at <span class="arithmatex">\(x\)</span>. The general difference-quotient definition above agrees with the regular derivative at every such point.</p>
+<p>The two one-sided tangent rays form the <strong>phototangent</strong>:</p>
+<div class="arithmatex">\[
+\operatorname{pht}f(y)=
+\begin{cases}
+f(x)+f'_+(x)(y-x), &amp; y\geq x,\\
+f(x)+f'_-(x)(y-x), &amp; y&lt;x.
+\end{cases}
+\]</div>
+<p>A circle centered at <span class="arithmatex">\((x,f(x))\)</span> intersects these rays at two points. The chord joining them has a slope independent of the circle's radius. Its parallel translate through <span class="arithmatex">\((x,f(x))\)</span> is the <strong>specular tangent line</strong>. This line acts as a mirror: the incident and reflected rays make equal angles with it.</p>
+<h3 id="infinite-slopes-and-oscillation">Infinite slopes and oscillation</h3>
+<p>The angular formula extends <span class="arithmatex">\(\mathcal B\)</span> and <span class="arithmatex">\(\mathcal C\)</span> to infinite one-sided slopes using <span class="arithmatex">\(\arctan(\pm\infty)=\pm\frac{\pi}{2}\)</span>. For example,</p>
+<div class="arithmatex">\[
+\mathcal C(+\infty,\beta)=\beta+\sqrt{1+\beta^2},
+\qquad \beta\in\mathbb R.
+\]</div>
+<p>If a finite specular derivative exists and either one-sided derivative exists in the extended real line, then the other one-sided derivative exists as well, and their angular mean equals the specular derivative. Two derivatives both equal to <span class="arithmatex">\(+\infty\)</span>, or both equal to <span class="arithmatex">\(-\infty\)</span>, cannot produce a finite specular derivative.</p>
+<h3 id="classical-and-symmetric-differentiation">Classical and symmetric differentiation</h3>
+<p>The symmetric derivative averages the same difference quotients arithmetically:</p>
+<div class="arithmatex">\[
+f^\ast(x)
+=\lim_{h\searrow0}\frac{q_h^+f(x)+q_h^-f(x)}{2}
+=\lim_{h\searrow0}\frac{f(x+h)-f(x-h)}{2h}.
+\]</div>
+<p>When both one-sided derivatives are finite, this is their arithmetic mean. At a corner, that mean generally differs from the angular mean. For the function <span class="arithmatex">\(f(x)=\max\{x,0\}\)</span>,</p>
+<div class="arithmatex">\[
+\partial^+f(0)=1,\qquad \partial^-f(0)=0,
+\qquad f^{\sd}(0)=\sqrt2-1,
+\qquad f^\ast(0)=\frac12.
+\]</div>
+<p>For <span class="arithmatex">\(f(x)=|x|\)</span>, both generalized derivatives are zero at the origin, although the classical derivative does not exist there.</p>
+<p>A vertical tangent can also have a finite angular average. Consider</p>
+<div class="arithmatex">\[
+f(x)=
+\begin{cases}
+\sqrt{x},&amp;x\geq0,\\
+-x,&amp;x&lt;0.
+\end{cases}
+\]</div>
+<p>Here <span class="arithmatex">\(\partial^+f(0)=+\infty\)</span> and <span class="arithmatex">\(\partial^-f(0)=-1\)</span>, so <span class="arithmatex">\(f^{\sd}(0)=\sqrt2-1\)</span>. The symmetric derivative does not exist as a finite number. More generally, neither specular nor symmetric differentiability implies the other: angular cancellation and arithmetic cancellation can behave differently when the quotients oscillate.</p>
+<p>The base-point value also matters. It cancels from the symmetric quotient, but generally remains relevant to the angular mean. For example, the step function with <span class="arithmatex">\(f(x)=0\)</span> for <span class="arithmatex">\(x\leq0\)</span> and <span class="arithmatex">\(f(x)=1\)</span> for <span class="arithmatex">\(x&gt;0\)</span> has <span class="arithmatex">\(f^{\sd}(0)=1\)</span>. Changing only <span class="arithmatex">\(f(0)\)</span> to <span class="arithmatex">\(\frac12\)</span> makes both quotients tend to <span class="arithmatex">\(+\infty\)</span>, so no finite specular derivative remains at zero. Thus the definition applies directly at discontinuities and can depend on the assigned value of the function there.</p>
+<p>Specular differentiation is nonlinear. The usual linearity and chain rules cannot be assumed, even though its value agrees with the classical derivative at every classically differentiable point.</p>
+<p>Even multiplication by a constant need not commute with the derivative. For <span class="arithmatex">\(r(x)=\max\{x,0\}\)</span>,</p>
+<div class="arithmatex">\[
+(2r)^{\sd}(0)=\frac{\sqrt5-1}{2}
+\ne 2(\sqrt2-1)=2r^{\sd}(0).
+\]</div>
+<h3 id="the-quasi-mean-value-theorem">The Quasi-Mean Value Theorem</h3>
+<p>Suppose <span class="arithmatex">\(a&lt;b\)</span>, and let <span class="arithmatex">\(f:[a,b]\to\mathbb R\)</span> be continuous on <span class="arithmatex">\([a,b]\)</span> and specularly differentiable on <span class="arithmatex">\((a,b)\)</span>. Then there exist <span class="arithmatex">\(c_1,c_2\in(a,b)\)</span> such that</p>
+<div class="arithmatex">\[
+f^{\sd}(c_1)
+\leq\frac{f(b)-f(a)}{b-a}
+\leq f^{\sd}(c_2).
+\]</div>
+<p>This theorem retains the order information of the classical Mean Value Theorem: values of the specular derivative bound every secant slope. It does not require the secant slope to equal the specular derivative at one point.</p>
+<p>Under the same continuity and specular differentiability assumptions, <span class="arithmatex">\(f\)</span> is nondecreasing exactly when <span class="arithmatex">\(f^{\sd}\geq0\)</span> throughout the interior, and nonincreasing exactly when <span class="arithmatex">\(f^{\sd}\leq0\)</span>. In particular, <span class="arithmatex">\(f^{\sd}\equiv0\)</span> on <span class="arithmatex">\((a,b)\)</span> if and only if <span class="arithmatex">\(f\)</span> is constant on <span class="arithmatex">\([a,b]\)</span>.</p>
+<p>For convex functions, the derivative also has a direct interpretation in convex analysis. Every real-valued convex function on an open interval is continuous and specularly differentiable, and</p>
+<div class="arithmatex">\[
+\partial^-f(x)\leq f^{\sd}(x)\leq\partial^+f(x).
+\]</div>
+<p>Consequently, <span class="arithmatex">\(f^{\sd}(x)\)</span> belongs to the convex subdifferential <span class="arithmatex">\(\partial f(x)\)</span> and satisfies</p>
+<div class="arithmatex">\[
+f(y)\geq f(x)+f^{\sd}(x)(y-x)
+\qquad\text{for all }x,y\in I.
+\]</div>
+<p>This gives a particular subgradient selected by angular averaging.</p>
+<h3 id="continuity-and-classical-regularity">Continuity and classical regularity</h3>
+<p>Specular differentiability alone does not imply continuity or even Lebesgue measurability. Without either assumption, however, an everywhere specularly differentiable function has at most countably many discontinuities at which its specular derivative is nonzero. The restriction to nonzero derivatives is essential: there are nowhere-continuous, nonmeasurable functions with identically zero specular derivative.</p>
+<p>For a <strong>continuous</strong> function <span class="arithmatex">\(f\)</span> that is specularly differentiable throughout an open interval <span class="arithmatex">\(I\)</span>, stronger conclusions hold:</p>
+<ul>
+<li><span class="arithmatex">\(f^{\sd}\)</span> is a pointwise limit of continuous functions, hence is of Baire class <span class="arithmatex">\(1\)</span>. Its continuity points form a dense <span class="arithmatex">\(G_\delta\)</span> subset of <span class="arithmatex">\(I\)</span>.</li>
+<li>At every continuity point of <span class="arithmatex">\(f^{\sd}\)</span>, the classical derivative exists and <span class="arithmatex">\(f'=f^{\sd}\)</span>.</li>
+<li>If <span class="arithmatex">\(|f^{\sd}|\leq M\)</span> throughout <span class="arithmatex">\(I\)</span>, then <span class="arithmatex">\(|f(y)-f(x)|\leq M|y-x|\)</span> for all <span class="arithmatex">\(x,y\in I\)</span>. Thus <span class="arithmatex">\(f\)</span> is Lipschitz continuous and <span class="arithmatex">\(f'=f^{\sd}\)</span> almost everywhere.</li>
+<li>If <span class="arithmatex">\(f^{\sd}\)</span> is continuous throughout <span class="arithmatex">\(I\)</span>, then <span class="arithmatex">\(f\in C^1(I)\)</span> and <span class="arithmatex">\(f'=f^{\sd}\)</span> everywhere.</li>
+</ul>
+<p>These results make continuity a substantive hypothesis, rather than an automatic consequence of the generalized derivative.</p>
+<p>The second-order derivative is defined by <span class="arithmatex">\(f^{\sd\sd}=(f^{\sd})^{\sd}\)</span>. Let <span class="arithmatex">\(S^1(I)\)</span> consist of continuous specularly differentiable functions, and let <span class="arithmatex">\(S^2(I)\)</span> consist of those <span class="arithmatex">\(f\in S^1(I)\)</span> for which <span class="arithmatex">\(f^{\sd}\in S^1(I)\)</span>. Then</p>
+<div class="arithmatex">\[
+C^2(I)\subsetneq S^2(I)\subsetneq C^1(I)
+\subsetneq S^1(I)\subsetneq C^0(I).
+\]</div>
+<p>The definition of <span class="arithmatex">\(S^2\)</span> requires continuity of both <span class="arithmatex">\(f\)</span> and <span class="arithmatex">\(f^{\sd}\)</span>. Merely taking the specular derivative twice does not ensure classical differentiability, even for continuous functions.</p>
+<p>For a simple example in <span class="arithmatex">\(S^2\)</span> but outside <span class="arithmatex">\(C^2\)</span>, take <span class="arithmatex">\(f(x)=\frac12x|x|\)</span>. Then <span class="arithmatex">\(f^{\sd}(x)=|x|\)</span> and <span class="arithmatex">\(f^{\sd\sd}(x)=\operatorname{sgn}(x)\)</span>, with <span class="arithmatex">\(\operatorname{sgn}(0)=0\)</span>. The second specular derivative exists at the origin, where the classical second derivative does not.</p>
+<p>The regular theory gives a complementary result: if both <span class="arithmatex">\(f\)</span> and <span class="arithmatex">\(f^{\sd}\)</span> are <strong>regularly</strong> specularly differentiable throughout <span class="arithmatex">\(I\)</span>, then <span class="arithmatex">\(f\in C^1(I)\)</span> and <span class="arithmatex">\(f'=f^{\sd}\)</span>. In this case, the regular differentiability of <span class="arithmatex">\(f^{\sd}\)</span> supplies the continuity required above.</p>
+<h3 id="integration">Integration</h3>
+<p>The regular theory also relates differentiation to integration. Here piecewise continuity means continuity except at finitely many interior points, with finite one-sided limits at each of those points and one-sided continuity at the endpoints. For such a function <span class="arithmatex">\(g:[a,b]\to\mathbb{R}\)</span>, define</p>
+<div class="arithmatex">\[
+F(x)=\int_a^x g(t)\,dt.
+\]</div>
+<p>At every interior point, its regular specular derivative is the angular mean of the one-sided limits of <span class="arithmatex">\(g\)</span>:</p>
+<div class="arithmatex">\[
+F^{\sd}(x)=\tan\left(
+\frac{\arctan g(x+)+\arctan g(x-)}{2}
+\right).
+\]</div>
+<p>This recovers <span class="arithmatex">\(g(x)\)</span> at every continuity point. At a jump, the assigned value <span class="arithmatex">\(g(x)\)</span> must equal this angular mean for the same identity to hold.</p>
+<p>Conversely, if <span class="arithmatex">\(F\)</span> is regularly specularly differentiable on <span class="arithmatex">\([a,b]\)</span> and <span class="arithmatex">\(F^{\sd}\)</span> is Riemann integrable, then</p>
+<div class="arithmatex">\[
+\int_a^b F^{\sd}(x)\,dx=F(b)-F(a).
+\]</div>
+<p>Here regular differentiability on the closed interval includes finite inward one-sided derivatives at the endpoints, which define <span class="arithmatex">\(F^{\sd}(a)\)</span> and <span class="arithmatex">\(F^{\sd}(b)\)</span>.</p>
+<h2 id="higher-dimension">Higher dimension</h2>
+<div class="admonition info paper">
+<p class="admonition-title">Paper</p>
+<p>[3] K. Jung. <a href="https://arxiv.org/abs/2601.10950"><em>Specular differentiation in normed vector spaces: Quasi-Mean Value and Quasi-Fermat Theorems</em></a>. arXiv preprint arXiv:2601.10950, 2026.</p>
+</div>
+<p>The normed-space theory extends specular differentiation from a scalar variable to directions in a vector space. It distinguishes three levels: a derivative along one direction, a continuous linear operator representing all directional derivatives, and a uniform approximation as the increment approaches zero from arbitrary directions. The discussion below focuses on real-valued functions; the paper also defines specular differentiation for maps between normed vector spaces.</p>
+<h3 id="specular-directional-derivatives">Specular directional derivatives</h3>
+<p>Let <span class="arithmatex">\(X\)</span> be a real normed vector space, let <span class="arithmatex">\(\Omega\subset X\)</span> be open, and let <span class="arithmatex">\(f:\Omega\to\mathbb R\)</span>. The norm measures the length of a direction and is part of the definition. The corresponding product norm on the graph space is</p>
+<div class="arithmatex">\[
+\|(v,y)\|_{X\times\mathbb R}
+=\sqrt{\|v\|^2+|y|^2}.
+\]</div>
+<p>For <span class="arithmatex">\(x\in\Omega\)</span>, a nonzero direction <span class="arithmatex">\(v\in X\)</span>, and sufficiently small <span class="arithmatex">\(h&gt;0\)</span>, define the slopes per unit distance by</p>
+<div class="arithmatex">\[
+q_{h,v}^{+}(x)=\frac{f(x+hv)-f(x)}{h\|v\|},
+\qquad
+q_{h,v}^{-}(x)=\frac{f(x)-f(x-hv)}{h\|v\|}.
+\]</div>
+<p>Using the angular mean <span class="arithmatex">\(\mathcal C\)</span> from the one-dimensional definition, the <strong>specular directional derivative</strong> is</p>
+<div class="arithmatex">\[
+\partial_v^{\sd}f(x)
+=\|v\|\lim_{h\downarrow0}
+\mathcal C\left(q_{h,v}^{+}(x),q_{h,v}^{-}(x)\right).
+\]</div>
+<p>This definition requires the displayed limit to exist as a finite real number. The derivative in the zero direction is defined to be zero. If the classical directional derivative exists, the specular directional derivative agrees with it. As in one dimension, the angular-mean limit can exist even when the individual slopes do not converge.</p>
+<p>When the one-sided directional derivatives</p>
+<div class="arithmatex">\[
+\partial_v^+f(x)=\lim_{h\downarrow0}\frac{f(x+hv)-f(x)}{h},
+\qquad
+\partial_v^-f(x)=\lim_{h\downarrow0}\frac{f(x)-f(x-hv)}{h}
+\]</div>
+<p>are finite, the formula becomes</p>
+<div class="arithmatex">\[
+\partial_v^{\sd}f(x)
+=\|v\|\tan\left[
+\frac{1}{2}\arctan\left(\frac{\partial_v^+f(x)}{\|v\|}\right)
++\frac{1}{2}\arctan\left(\frac{\partial_v^-f(x)}{\|v\|}\right)
+\right].
+\]</div>
+<p>The factors <span class="arithmatex">\(\|v\|\)</span> are essential. For the normalized line restriction</p>
+<div class="arithmatex">\[
+F_v(t)=\frac{f(x+tv)}{\|v\|},
+\]</div>
+<p>the exact relation is</p>
+<div class="arithmatex">\[
+\partial_v^{\sd}f(x)=\|v\|F_v^{\sd}(0).
+\]</div>
+<p>For a unit direction, this is simply the specular derivative of <span class="arithmatex">\(t\mapsto f(x+tv)\)</span>. For a general direction, omitting the normalization changes the angular mean. This relation follows directly from the definition and does not require a general chain rule.</p>
+<h3 id="gateaux-and-frechet-differentiability">Gâteaux and Fréchet differentiability</h3>
+<p>Directional derivatives describe one line at a time. To obtain a differential, they must fit together into a continuous linear map. Write <span class="arithmatex">\(X^*\)</span> for the space of continuous linear functionals on <span class="arithmatex">\(X\)</span>.</p>
+<p>The function <span class="arithmatex">\(f\)</span> is <strong>specularly Gâteaux differentiable</strong> at <span class="arithmatex">\(x\)</span> if every specular directional derivative exists and there is an <span class="arithmatex">\(\ell\in X^*\)</span> such that</p>
+<div class="arithmatex">\[
+\partial_v^{\sd}f(x)=\ell(v)
+\qquad\text{for every }v\in X.
+\]</div>
+<p>This operator is unique and is denoted by <span class="arithmatex">\(\sGd f(x)\)</span>. The existence of directional derivatives alone does not establish their linearity, and specular Gâteaux differentiability alone does not imply continuity of <span class="arithmatex">\(f\)</span>.</p>
+<p>The stronger <strong>specular Fréchet differentiability</strong> condition requires an <span class="arithmatex">\(\ell\in X^*\)</span> satisfying</p>
+<div class="arithmatex">\[
+\lim_{\substack{\|w\|\to0\\w\ne0}}
+\left|
+\mathcal C\left(
+\frac{f(x+w)-f(x)}{\|w\|},
+\frac{f(x)-f(x-w)}{\|w\|}
+\right)
+-\frac{\ell(w)}{\|w\|}
+\right|=0.
+\]</div>
+<p>Here the limit covers all small increments <span class="arithmatex">\(w\)</span>, rather than holding a direction fixed first. The resulting operator is also unique and is written <span class="arithmatex">\(\widehat Df(x)\)</span>. It satisfies</p>
+<div class="arithmatex">\[
+\widehat Df(x)(v)=\sGd f(x)(v)=\partial_v^{\sd}f(x).
+\]</div>
+<p>Classical Fréchet differentiability implies specular Fréchet differentiability with the same differential; classical Gâteaux differentiability likewise implies specular Gâteaux differentiability with the same operator. Specular Fréchet differentiability implies specular Gâteaux differentiability.</p>
+<p>For a basic nonsmooth example, consider <span class="arithmatex">\(f(x)=\|x\|\)</span> on any nonzero real normed space. At the origin, the two normalized slopes in the Fréchet definition are <span class="arithmatex">\(1\)</span> and <span class="arithmatex">\(-1\)</span>. Since <span class="arithmatex">\(\mathcal C(1,-1)=0\)</span>, the condition holds with</p>
+<div class="arithmatex">\[
+\widehat Df(0)=0.
+\]</div>
+<p>Thus the norm has a specular Fréchet differential at the origin even though it has no classical Fréchet differential there.</p>
+<h3 id="quasi-mean-value-and-quasi-fermat-theorems">Quasi-Mean Value and Quasi-Fermat theorems</h3>
+<p>The <strong>Quasi-Mean Value Theorem</strong> bounds a finite change in the function using specular derivatives along the connecting segment. Assume that <span class="arithmatex">\(\Omega\)</span> is open and convex, that <span class="arithmatex">\(f\)</span> is continuous and specularly Gâteaux differentiable throughout <span class="arithmatex">\(\Omega\)</span>, and that both one-sided directional derivatives exist as extended real numbers at every point in every direction. They must not both equal <span class="arithmatex">\(+\infty\)</span> or both equal <span class="arithmatex">\(-\infty\)</span>.</p>
+<p>For distinct <span class="arithmatex">\(a,b\in\Omega\)</span>, put <span class="arithmatex">\(w=b-a\)</span> and define the line restriction <span class="arithmatex">\(F(t)=f(a+tw)\)</span> for <span class="arithmatex">\(t\in[0,1]\)</span>. Then</p>
+<div class="arithmatex">\[
+\inf_{0&lt;t&lt;1}F^{\sd}(t)
+\le f(b)-f(a)
+\le\sup_{0&lt;t&lt;1}F^{\sd}(t),
+\]</div>
+<p>where the directional form of the line derivative is</p>
+<div class="arithmatex">\[
+F^{\sd}(t)
+=\frac{\partial_w^{\sd}\bigl(\|w\|f\bigr)(a+tw)}{\|w\|}.
+\]</div>
+<p>The derivative acts on the scaled function <span class="arithmatex">\(\|w\|f\)</span>. The two bounds replace the single equality in the classical Mean Value Theorem; they need not be attained at the same point.</p>
+<p>The <strong>Quasi-Fermat Theorem</strong> gives a necessary condition at an extremum. If <span class="arithmatex">\(\Omega\)</span> is open, <span class="arithmatex">\(f\)</span> is specularly Gâteaux differentiable in <span class="arithmatex">\(\Omega\)</span>, and <span class="arithmatex">\(x^*\in\Omega\)</span> is a local minimizer or maximizer, then</p>
+<div class="arithmatex">\[
+\left|\partial_v^{\sd}f(x^*)\right|\le\|v\|
+\qquad\text{for every }v\in X.
+\]</div>
+<p>Equivalently, the operator norm of <span class="arithmatex">\(\sGd f(x^*)\)</span> is at most <span class="arithmatex">\(1\)</span>. The derivative can be nonzero at an extremum: already in one dimension, <span class="arithmatex">\(f(t)=t-2|t|\)</span> has a maximum at <span class="arithmatex">\(0\)</span> but</p>
+<div class="arithmatex">\[
+f^{\sd}(0)=\sqrt5-2\ne0.
+\]</div>
+<h3 id="gradients-and-convex-functions">Gradients and convex functions</h3>
+<p>In a real Hilbert space <span class="arithmatex">\(H\)</span>, a specular Fréchet differential has a unique representing vector, the <strong>specular gradient</strong> <span class="arithmatex">\(\sg f(x)\)</span>, satisfying</p>
+<div class="arithmatex">\[
+\widehat Df(x)(v)=\langle\sg f(x),v\rangle_H
+\qquad\text{for every }v\in H.
+\]</div>
+<p>In Euclidean space, its components are the specular partial derivatives:</p>
+<div class="arithmatex">\[
+\sg f(x)
+=\left(\partial_{e_1}^{\sd}f(x),\ldots,
+\partial_{e_n}^{\sd}f(x)\right),
+\]</div>
+<p>where <span class="arithmatex">\(e_1,\ldots,e_n\)</span> are the standard basis vectors. This identification assumes the specular Fréchet differential exists. A vector assembled from coordinate derivatives alone need not represent every directional derivative.</p>
+<p>For example, <span class="arithmatex">\(f(x_1,x_2)=\max\{x_1,x_2\}\)</span> has</p>
+<div class="arithmatex">\[
+\partial_{e_1}^{\sd}f(0)=\partial_{e_2}^{\sd}f(0)=\sqrt2-1,
+\qquad
+\partial_{(1,1)}^{\sd}f(0)=1.
+\]</div>
+<p>The diagonal value differs from <span class="arithmatex">\(2(\sqrt2-1)\)</span>, so these directional derivatives cannot come from a single linear operator. This function has specular coordinate derivatives at the origin, but no specular Gâteaux or Fréchet differential there.</p>
+<p>For a function that may take the value <span class="arithmatex">\(+\infty\)</span>, its effective domain is <span class="arithmatex">\(\operatorname{dom}f=\{x:f(x)&lt;+\infty\}\)</span>. Such a function is <strong>proper</strong> if this domain is nonempty. At a point where <span class="arithmatex">\(f(x)\)</span> is finite, the <strong>Fréchet subdifferential</strong> <span class="arithmatex">\(\widehat\partial f(x)\)</span> consists of the functionals <span class="arithmatex">\(\ell\in X^*\)</span> satisfying</p>
+<div class="arithmatex">\[
+\liminf_{\substack{w\to0\\w\ne0}}
+\frac{f(x+w)-f(x)-\ell(w)}{\|w\|}\geq0.
+\]</div>
+<p>Now suppose <span class="arithmatex">\(f:X\to\mathbb R\cup\{+\infty\}\)</span> is proper, convex, and lower semicontinuous. If it is specularly Fréchet differentiable at an interior point <span class="arithmatex">\(x\)</span> of its effective domain, then</p>
+<div class="arithmatex">\[
+\widehat Df(x)\in\widehat\partial f(x).
+\]</div>
+<p>On a reflexive Banach space, the differential also belongs to the convex subdifferential <span class="arithmatex">\(\partial f(x)\)</span>. In particular, in <span class="arithmatex">\(\mathbb R^n\)</span> the specular gradient then satisfies the supporting-hyperplane inequality</p>
+<div class="arithmatex">\[
+f(y)\ge f(x)+\langle\sg f(x),y-x\rangle
+\qquad\text{for every }y\in\mathbb R^n.
+\]</div>
+<p>This connects specular differentiation with convex optimization while retaining the differentiability assumptions needed for a single gradient to represent all directions.</p>
+<h3 id="relation-to-the-package">Relation to the package</h3>
+<p>The package evaluates finite-difference approximations to these quantities. For scalar-valued functions, <code>specular.derivative</code> combines the two sampled quotients through <span class="arithmatex">\(\mathcal C\)</span>, while <code>specular.gradient</code> assembles the corresponding coordinate values. <code>specular.jacobian</code> applies this coordinate construction to each scalar output component. These computations do not by themselves establish the existence of a Gâteaux or Fréchet differential.</p>
+<p>The function <code>specular.scaled_mean</code> also exposes the rescaled angular mean</p>
+<div class="arithmatex">\[
+\mathcal C_\sigma(\alpha,\beta)
+=\sigma\mathcal C\left(\frac{\alpha}{\sigma},\frac{\beta}{\sigma}\right),
+\qquad \sigma&gt;0.
+\]</div>
+<p>The unscaled mean corresponds to <span class="arithmatex">\(\sigma=1\)</span>. See <a href="../calculation/">Calculation</a> for numerical evaluation and <a href="../optimization/">Optimization</a> for the SPEG iteration.</p>
+<h2 id="references">References</h2>
+<p><strong>One dimension</strong></p>
+<p>[1] K. Jung. <a href="https://arxiv.org/abs/2601.09900"><em>Specular differentiation in one dimension: a quasi-mean value theorem, regularity, and discontinuities</em></a>. arXiv preprint arXiv:2601.09900, 2026.</p>
+<p>[2] K. Jung and J. Oh. <a href="https://arxiv.org/abs/2210.06062v3"><em>Regular specular differentiation in Euclidean spaces</em></a>. arXiv preprint arXiv:2210.06062v3, 2022.</p>
+<p><strong>Higher dimensions</strong></p>
+<p>[3] K. Jung. <a href="https://arxiv.org/abs/2601.10950"><em>Specular differentiation in normed vector spaces: Quasi-Mean Value and Quasi-Fermat Theorems</em></a>. arXiv preprint arXiv:2601.10950, 2026.</p>
+<p><strong>Applications</strong></p>
+<p>[4] K. Jung. <a href="https://arxiv.org/abs/2608.30280"><em>The specular ellipse method for scalar ordinary differential equations: exactness and accuracy up to fourth order</em></a>. arXiv preprint arXiv:2608.30280, 2026.</p>
+<p>[5] K. Jung and J. Oh. <a href="https://arxiv.org/abs/2412.20747"><em>Nonsmooth convex optimization using the specular gradient method with root-linear convergence</em></a>. arXiv preprint arXiv:2412.20747, 2024.</p>
+<p>[6] K. Jung. <a href="https://arxiv.org/abs/2605.25490"><em>Specular gradient methods for nonsmooth convex optimization in Euclidean spaces: a subgradient selection strategy</em></a>. arXiv preprint arXiv:2605.25490, 2026.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/code-copy-buttons.js?v=8d644f3158ff07cc"></script>
+      
+        <script src="../../javascripts/api-navigation.js?v=c0c830a44b163c1d"></script>
+      
+        <script src="../../javascripts/sidebar-navigation.js?v=da397216655eba4b"></script>
+      
+        <script src="../../javascripts/mathjax.js?v=be24057abd4080f3"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

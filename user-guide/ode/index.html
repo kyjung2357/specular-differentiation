@@ -1,0 +1,730 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://kyjung2357.github.io/specular-differentiation/user-guide/ode/">
+      
+      
+        <link rel="prev" href="../calculation/">
+      
+      
+        <link rel="next" href="../optimization/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../figures/specular-differentiation-logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>ODE - Specular Differentiation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+  
+  
+    
+      
+      
+    
+  
+  
+  <style>:root{--md-admonition-icon--paper:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M6%202a2%202%200%200%200-2%202v16a2%202%200%200%200%202%202h12a2%202%200%200%200%202-2V8l-6-6zm0%202h7v5h5v11H6zm2%208v2h8v-2zm0%204v2h5v-2z%22/%3E%3C/svg%3E');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css?v=50c5b1ce8ad6d17e">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#scalar-ode-methods" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <div class="md-header__inner md-grid">
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <a class="specular-header__brand" href="../..">
+      <img class="specular-header__logo" src="../../figures/specular-differentiation-logo.png" alt="" width="28" height="28">
+      <span>Specular Differentiation</span>
+    </a>
+    <nav class="specular-header__nav" aria-label="Main navigation">
+      <a href="../" aria-current="location">User Guide</a>
+      <a href="../../api/">API Reference</a>
+      <a href="../../examples/">Examples</a>
+      <a href="https://github.com/kyjung2357/specular-differentiation/releases/latest">Release</a>
+    </nav>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/kyjung2357/specular-differentiation" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </div>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+  
+    
+    
+    <div class="md-sidebar md-sidebar--primary" data-md-type="navigation" >
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+
+
+
+
+
+
+
+
+  
+
+  
+    
+    
+      
+    
+  
+
+  
+    
+    
+  
+
+  
+    
+    
+  
+
+  
+
+<nav class="md-nav md-nav--primary specular-sidebar" aria-label="User Guide" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Specular Differentiation" class="md-nav__button md-logo" aria-label="Specular Differentiation" data-md-component="logo">
+      
+  <img src="../../figures/specular-differentiation-logo.png" alt="logo">
+
+    </a>
+    Specular Differentiation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/kyjung2357/specular-differentiation" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  
+    
+    <a href="../" class="specular-sidebar__title">User Guide</a>
+    
+  <ul class="md-nav__list specular-sidebar__list">
+    
+      <li class="md-nav__item">
+        
+          <a href="../mathematical-background/" class="md-nav__link">Mathematical Background</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../latex-macro/" class="md-nav__link">LaTeX Macro</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../installation/" class="md-nav__link">Installation</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../backends/" class="md-nav__link">Backends</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../calculation/" class="md-nav__link">Calculation</a>
+          
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="./" class="md-nav__link md-nav__link--active" aria-current="page">ODE</a>
+          
+  
+  
+  
+  
+  <ul class="md-nav__list specular-sidebar__list specular-sidebar__toc" data-md-component="toc" data-md-scrollfix>
+    
+      <li class="md-nav__item">
+        <a href="#unscaled-specular-euler-methods" class="md-nav__link">Unscaled specular Euler methods</a>
+        
+  <ul class="md-nav__list specular-sidebar__list">
+    
+      <li class="md-nav__item">
+        <a href="#type-1" class="md-nav__link">Type 1</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#type-2" class="md-nav__link">Type 2</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#type-5" class="md-nav__link">Type 5</a>
+        
+      </li>
+    
+  </ul>
+
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#prescribed-scale" class="md-nav__link">Prescribed scale</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#nonlinear-solve-controls" class="md-nav__link">Nonlinear solve controls</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#automatic-scale-selection-modes" class="md-nav__link">Automatic scale-selection modes</a>
+        
+      </li>
+    
+      <li class="md-nav__item">
+        <a href="#result" class="md-nav__link">Result</a>
+        
+      </li>
+    
+  </ul>
+
+
+        
+      </li>
+    
+      <li class="md-nav__item">
+        
+          <a href="../optimization/" class="md-nav__link">Optimization</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+</nav>
+        </div>
+      </div>
+    </div>
+  
+
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="scalar-ode-methods">Scalar ODE methods</h1>
+<p>The ODE API solves scalar initial-value problems in the notation of the specular ellipse method:</p>
+<div class="arithmatex">\[
+u'(t)=F(t,u(t)), \qquad u(t_0)=u_0, \qquad t\in[t_0,T].
+\]</div>
+<p>The public entry points are <code>specular.euler_scheme_1</code>, <code>specular.euler_scheme_2</code>, <code>specular.euler_scheme_5</code>, and <code>specular.ellipse_scheme</code>. Importing <code>specular</code> does not eagerly load the ODE implementation.
+Vector-valued states are not currently supported.</p>
+<p>The same functions are also available from the public <code>specular.ode.solver</code> module.</p>
+<p>The angular means used by these methods are evaluated by the currently selected calculation backend.
+The scalar result is converted back to a Python float for the ODE iteration; NumPy therefore remains the default and the reproducible float64 path.</p>
+<p>The result contains numerical data only.
+Plotting, table generation, event handling, and dense output are intentionally outside this API.</p>
+<p>The <a href="../../examples/ode/scalar/">Scalar ODE</a> page reproduces the six numerical experiments discussed in the manuscript.</p>
+<h2 id="unscaled-specular-euler-methods">Unscaled specular Euler methods</h2>
+<p>The functions <code>euler_scheme_1</code>, <code>euler_scheme_2</code>, and <code>euler_scheme_5</code> implement the unscaled specular Euler methods of Types 1, 2, and 5. Throughout this section, the mesh is uniform and</p>
+<div class="arithmatex">\[
+h:=\frac{T-t_0}{N},
+\qquad
+t_n:=t_0+nh,
+\qquad
+\mathcal C:=\mathcal C_1,
+\]</div>
+<p>where <span class="arithmatex">\(N\)</span> is <code>n_steps</code> and <span class="arithmatex">\(\mathcal C_1\)</span> is the unscaled angular mean.</p>
+<div class="admonition note">
+<p class="admonition-title">Type numbers and convergence-order labels</p>
+<p>Type 2 here means the two-step method implemented by <code>euler_scheme_2</code>. On the numerical-examples page, SE2, SE3, and SE4 instead denote second-, third-, and fourth-order configurations of <code>ellipse_scheme</code>.
+In particular, ellipse SE2 is Type 5, not Type 2.</p>
+</div>
+<h3 id="type-1">Type 1</h3>
+<p>Type 1 is the explicit two-step recurrence</p>
+<div class="arithmatex">\[
+u_{n+1}=u_n+h\mathcal C\!\left(
+F(t_n,u_n),F(t_{n-1},u_{n-1})
+\right),
+\qquad n=1,\ldots,N-1.
+\]</div>
+<p>The value <code>u_1</code> at <code>t[1]</code> is supplied externally.
+The function neither constructs nor modifies that starting value:</p>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">F</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">u</span>
+
+
+<span class="n">t_0</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">n_steps</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="n">t_0</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_steps</span>
+<span class="n">u_0</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">u_1</span> <span class="o">=</span> <span class="n">u_0</span> <span class="o">+</span> <span class="n">h</span> <span class="o">*</span> <span class="n">F</span><span class="p">(</span><span class="n">t_0</span><span class="p">,</span> <span class="n">u_0</span><span class="p">)</span>  <span class="c1"># starter chosen by the caller</span>
+
+<span class="n">se1</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">euler_scheme_1</span><span class="p">(</span>
+    <span class="n">F</span><span class="p">,</span>
+    <span class="n">t_0</span><span class="p">,</span>
+    <span class="n">T</span><span class="p">,</span>
+    <span class="n">u_0</span><span class="p">,</span>
+    <span class="n">u_1</span><span class="p">,</span>
+    <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="type-2">Type 2</h3>
+<p>Type 2 is the explicit two-step recurrence</p>
+<div class="arithmatex">\[
+u_{n+1}=u_n+h\mathcal C\!\left(
+F(t_n,u_n),\frac{u_n-u_{n-1}}{h}
+\right),
+\qquad n=1,\ldots,N-1.
+\]</div>
+<p>It has the same external <code>u_1</code> contract as SE1:</p>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="n">se2</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">euler_scheme_2</span><span class="p">(</span>
+    <span class="n">F</span><span class="p">,</span>
+    <span class="n">t_0</span><span class="p">,</span>
+    <span class="n">T</span><span class="p">,</span>
+    <span class="n">u_0</span><span class="p">,</span>
+    <span class="n">u_1</span><span class="p">,</span>
+    <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>Types 1 and 2 are generically only first-order consistent.
+No higher-order theorem is implied by these functions or by the caller's choice of <code>u_1</code>.</p>
+<h3 id="type-5">Type 5</h3>
+<p>Type 5 is the implicit one-step recurrence</p>
+<div class="arithmatex">\[
+u_{n+1}=u_n+h\mathcal C\!\left(
+F(t_{n+1},u_{n+1}),F(t_n,u_n)
+\right),
+\qquad n=0,\ldots,N-1.
+\]</div>
+<p>It is exactly the ellipse method with the fixed scale <span class="arithmatex">\(\sigma_n=1\)</span>:</p>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="n">se5</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">euler_scheme_5</span><span class="p">(</span>
+    <span class="n">F</span><span class="p">,</span>
+    <span class="n">t_0</span><span class="p">,</span>
+    <span class="n">T</span><span class="p">,</span>
+    <span class="n">u_0</span><span class="p">,</span>
+    <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">same_method</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">ellipse_scheme</span><span class="p">(</span>
+    <span class="n">F</span><span class="p">,</span>
+    <span class="n">t_0</span><span class="p">,</span>
+    <span class="n">T</span><span class="p">,</span>
+    <span class="n">u_0</span><span class="p">,</span>
+    <span class="n">n_steps</span><span class="o">=</span><span class="n">n_steps</span><span class="p">,</span>
+    <span class="n">sigma_n</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+<p><code>euler_scheme_5</code> accepts the same <code>atol</code>, <code>rtol</code>, and <code>max_iter</code> controls used by the base ellipse method's implicit solve.</p>
+<h2 id="prescribed-scale">Prescribed scale</h2>
+<p>For a prescribed scale, the ellipse method is</p>
+<div class="arithmatex">\[
+u_{n+1}
+=u_n+h\mathcal C_{\sigma_n}\!\left(
+F(t_{n+1},u_{n+1}),F(t_n,u_n)
+\right),
+\qquad n=0,\ldots,N-1.
+\]</div>
+<p>Pass <code>sigma_n</code> as either a positive real scalar or a callable. A scalar uses
+the same scale at every step.</p>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">specular</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">F</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">u</span>
+
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">ellipse_scheme</span><span class="p">(</span>
+    <span class="n">F</span><span class="p">,</span>
+    <span class="mf">0.0</span><span class="p">,</span>
+    <span class="mf">1.0</span><span class="p">,</span>
+    <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">n_steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">sigma_n</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">result</span><span class="o">.</span><span class="n">u</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</code></pre></div>
+<p>A callable scale has the contract</p>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="n">sigma_n</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">t_n</span><span class="p">,</span> <span class="n">u_n</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">positive</span> <span class="nb">float</span>
+</code></pre></div>
+<p>It is evaluated once at the accepted left endpoint and frozen during that step's implicit solve.
+The index <code>n</code> permits prescribed sequences. The fourth argument is denoted by
+<code>h</code> to match the uniform-mesh notation above. Numerically, the solver passes
+the represented interval <code>t[n + 1] - t[n]</code>, which equals
+<span class="arithmatex">\((T-t_0)/N\)</span> in exact arithmetic.
+Consequently, the scale may depend explicitly on the mesh:</p>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sigma_n</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">t_n</span><span class="p">,</span> <span class="n">u_n</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">h</span><span class="o">**</span><span class="mf">0.5</span>
+</code></pre></div>
+<h2 id="nonlinear-solve-controls">Nonlinear solve controls</h2>
+<p>The prescribed-scale method, <code>euler_scheme_5</code>, and the frozen scale in
+third-order mode first try fixed-point iteration, initialized with an Euler
+predictor. If that iteration cycles or reaches its iteration limit, they
+search for a nearby sign-changing bracket and try bisection. A narrow bracket
+alone does not count as convergence: the returned point must satisfy the
+implicit update to the requested tolerance. A discontinuity with opposite
+residual signs can therefore still cause a failed solve. The automatic
+fourth-order and defect-minimization modes use a local coupled iteration when
+the scale depends on the trial right endpoint. These are local nonlinear
+solves: convergence is conditional and is not guaranteed for an arbitrary
+field or step size. In particular, this API is not intended to replace a
+general stiff ODE solver.</p>
+<p><code>atol</code> and <code>rtol</code> control termination of the nonlinear iteration, and
+<code>max_iter</code> limits each fixed-point or root-refinement phase; a bounded bracket
+search may make additional field evaluations. A failed solve raises
+<code>RuntimeError</code>; reducing <code>h</code> by increasing <code>n_steps</code> is usually the first
+remedy. Increasing <code>max_iter</code> can help a converging iteration or bisection,
+but does not guarantee that a local bracket or an admissible root exists.
+Exceptions raised by the supplied field are preserved, including during
+fallback sampling.</p>
+<h2 id="automatic-scale-selection-modes">Automatic scale-selection modes</h2>
+<p>Set exactly one of <code>third_order</code>, <code>fourth_order</code>, or <code>minimize_defect</code> to request numerical scale selection.
+Leave <code>sigma_n=None</code> in any of these modes:</p>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="n">third_order_result</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">ellipse_scheme</span><span class="p">(</span>
+    <span class="n">F</span><span class="p">,</span>
+    <span class="mf">0.0</span><span class="p">,</span>
+    <span class="mf">1.0</span><span class="p">,</span>
+    <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">n_steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">third_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">fourth_order_result</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">ellipse_scheme</span><span class="p">(</span>
+    <span class="n">F</span><span class="p">,</span>
+    <span class="mf">0.0</span><span class="p">,</span>
+    <span class="mf">1.0</span><span class="p">,</span>
+    <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">n_steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">fourth_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">minimum_defect_result</span> <span class="o">=</span> <span class="n">specular</span><span class="o">.</span><span class="n">ellipse_scheme</span><span class="p">(</span>
+    <span class="n">F</span><span class="p">,</span>
+    <span class="mf">0.0</span><span class="p">,</span>
+    <span class="mf">1.0</span><span class="p">,</span>
+    <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">n_steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">minimize_defect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>The three flags request different modes.</p>
+<p><strong><code>third_order=True</code>.</strong> This mode numerically selects a positive
+<code>sigma_n</code> satisfying the left-endpoint defect-cancellation condition.</p>
+<p><strong><code>fourth_order=True</code>.</strong> This is the strict fourth-order mode. It couples
+the trial right endpoint and <code>sigma_n</code>. In cases E5a and E5b it uses the
+positive defect-balancing scale</p>
+<div class="arithmatex">\[
+\Sigma(t,x;s,y)
+=
+\left(
+\frac{-B+\operatorname{sgn}(A)\sqrt D}{2A}
+\right)^{1/2},
+\]</div>
+<p>evaluated at the current point and the trial right endpoint. In every other
+classification case, this mode falls back to <code>sigma_n=1</code>. It does not use
+zero- or infinite-scale sentinels.</p>
+<p><strong><code>minimize_defect=True</code>.</strong> This mode applies the full E1--E6
+two-endpoint classification. Depending on the case, it may select a finite
+positive scale, the zero-scale limiting method recorded by <code>0.0</code>, or the
+infinite-scale Crank--Nicolson limit recorded by <code>inf</code>. This is a
+defect-minimization mode, not an order mode; it does not promise a maximal
+convergence order or fourth-order convergence.</p>
+<p>All three modes require derivatives of <code>F</code> along solution curves of the ODE:</p>
+<div class="arithmatex">\[
+L_F F,\qquad L_F^2 F,
+\qquad L_F=\partial_t+F\partial_u.
+\]</div>
+<p>By default these are estimated numerically from <code>F</code>. <code>derivative_step</code> may be
+used to set the finite-difference step. Centered local-flow samples can evaluate
+<code>F</code> just outside <code>[t_0, T]</code>, so this mode requires <code>F</code> to be defined on a
+neighborhood of the time interval. Near a hard domain boundary, provide
+<code>derivatives_of_F</code> instead. For an exact, symbolic, or automatic-differentiation
+implementation, pass a callable that maps a length-two NumPy array to another
+length-two array:</p>
+<div class="language-python highlight"><button class="code-copy-button" type="button" aria-label="Copy code">Copy</button><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">derivatives_of_F</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+    <span class="n">t</span><span class="p">,</span> <span class="n">u</span> <span class="o">=</span> <span class="n">point</span>
+    <span class="n">L_F_F</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="n">L_F_2_F</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">L_F_F</span><span class="p">,</span> <span class="n">L_F_2_F</span><span class="p">])</span>
+</code></pre></div>
+<p>The input and output both have shape <code>(2,)</code>. The returned components are
+<code>L_F F</code> and <code>L_F^2 F</code>, in that order.
+<code>derivative_step</code> cannot be supplied together with <code>derivatives_of_F</code>, because
+the exact callback bypasses numerical differentiation.</p>
+<p>The flags <code>third_order</code>, <code>fourth_order</code>, and <code>minimize_defect</code> are
+mutually exclusive, so at most one may be <code>True</code>. Supplying <code>sigma_n</code>
+together with any of them is also an error: a prescribed scale and an
+automatically selected scale are different modes.</p>
+<div class="admonition warning">
+<p class="admonition-title">Conditional order</p>
+<p>Third-order mode numerically enforces its cancellation condition, while strict fourth-order mode uses the two-endpoint scale above in E5a/E5b and the fixed-scale fallback <code>sigma_n=1</code> otherwise.
+Neither order flag provides an unconditional convergence-order guarantee.
+Third-order convergence still depends on the smoothness and boundedness of the selected branch and on sufficiently accurate field derivatives.
+The fourth-order result is also conditional: the current convergence theorem assumes that all sufficiently close pairs in a tube satisfy the manuscript's uniform E5a-or-E5b condition, together with its stated smoothness, boundedness, and nondegeneracy hypotheses.
+Steps that use the <code>sigma_n=1</code> fallback do not inherit that fourth-order guarantee.
+The separate <code>minimize_defect</code> mode only minimizes the classified two-endpoint defect and carries no maximal- or fourth-order guarantee.
+Finite-difference error can also produce an accuracy plateau as the mesh is refined.
+Rapid variation, or variation that is small relative to a large additive offset in <code>F</code>, may require an explicit <code>derivative_step</code> or a <code>derivatives_of_F</code> callback.</p>
+</div>
+<h2 id="result">Result</h2>
+<p><code>ODEResult.t</code> and <code>ODEResult.u</code> contain the initial value and every accepted step.
+<code>ODEResult.sigma</code> contains the scale associated with each represented interval and therefore has one fewer entry.
+For the Type 1, Type 2, and Type 5 Euler functions it is an array of ones, representing the convention <span class="arithmatex">\(\mathcal C=\mathcal C_1\)</span>.
+In the two-step methods this also includes the externally supplied first interval; it does not describe how <code>u_1</code> was produced.
+In automatic fourth-order mode, the array records the positive E5a/E5b scale or <code>1.0</code> when the selector uses its fallback.
+This mode does not place zero- or infinite-scale sentinels in <code>ODEResult.sigma</code>.
+In <code>minimize_defect</code> mode, <code>0.0</code> records the zero-scale limiting method and <code>inf</code> records the Crank--Nicolson infinite-scale limit.
+These are result sentinels, not valid <code>sigma</code> arguments for the public <code>scaled_mean()</code> function.</p>
+<p><code>ODEResult.number_of_field_evaluations</code> records the total number of calls to the supplied field <code>F(t, u)</code> made by the solver.
+Calls made internally by a user-provided <code>derivatives_of_F</code> callback are outside this count.</p>
+<p>See the <a href="../../api/ode/">specular.ode API reference</a> for function signatures, parameters, and return values.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/code-copy-buttons.js?v=8d644f3158ff07cc"></script>
+      
+        <script src="../../javascripts/api-navigation.js?v=c0c830a44b163c1d"></script>
+      
+        <script src="../../javascripts/sidebar-navigation.js?v=da397216655eba4b"></script>
+      
+        <script src="../../javascripts/mathjax.js?v=be24057abd4080f3"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
