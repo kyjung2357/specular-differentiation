@@ -84,7 +84,7 @@ dependency installed. It selects the calculation kernel for
 The script enables JAX's 64-bit mode when selected. GD and Adam always use
 PyTorch on the CPU in double precision. From the repository root, install an
 optional backend with `pip install -e ".[numba]"` or `pip install -e ".[jax]"`.
-See the [Backend API](../../api/backend.md) for package-wide backend usage.
+See the [backend guide](../../user-guide/backends.md) for package-wide backend usage.
 
 ## SPEG with geometric step lengths
 
@@ -129,7 +129,7 @@ final point for the remaining indices. Long runs also retain the last point
 once the geometric step reaches the float64 range limit.
 The actual update count and stop reason
 are saved for each run.
-See the [Optimization API](../../api/optimization.md) for the general stopping
+See the [optimization guide](../../user-guide/optimization.md) for the general stopping
 and step-size options.
 
 The paper's R-linear convergence theorem assumes a finite convex function on

@@ -9,19 +9,29 @@
 [![Docs](https://img.shields.io/github/deployments/kyjung2357/specular-differentiation/github-pages?label=docs&logo=github)](https://kyjung2357.github.io/specular-differentiation)
 
 <p>
-  The Python package <code>specular</code> implements
-  <em>specular differentiation</em>, which generalizes classical
-  differentiation. This implementation strictly follows the definitions,
-  notations, and results in <a href="#references">[1]</a>,
-  <a href="#references">[2]</a>, and
-  <a href="#references">[3]</a>.
+  The Python package <code>specular</code> implements <em>specular differentiation</em>, which generalizes classical differentiation.
+  See <a href="#references">References</a> for more details.
 </p>
-<p>
-  A specular derivative (the red line) can be understood as the average of
-  the inclination angles of the right and left derivatives. In contrast, a
-  symmetric derivative (the purple line) is the average of the right and
-  left derivatives. Their difference is illustrated in the animation.
-</p>
+
+The specular derivative is defined by averaging the angles associated with
+the forward and backward difference quotients:
+
+$$
+\def\sd{\mathord{\prime\mkern-2.5mu{\scriptstyle\backprime}}}
+f^{\sd}(x)
+:=
+\tan\left(
+  \frac{\arctan\bigl(f'_+(x)\bigr)+\arctan\bigl(f'_-(x)\bigr)}{2}
+\right),
+$$
+
+where $f'_+(x)$ and $f'_-(x)$ are the right and left derivatives of $f$
+at $x$, respectively.
+In contrast, the symmetric derivative takes the arithmetic mean of these
+derivatives. The animation below compares the two: the dashed blue and green
+lines have slopes equal to the specular and symmetric derivatives,
+respectively.
+
 <div class="home-animation">
   <img
     src="https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-derivative-animation.gif"
@@ -31,7 +41,7 @@
 
 ## Installation
 
-### Requirements
+**Requirements**
 
 `specular-differentiation` requires:
 
@@ -71,16 +81,13 @@ pip install "specular-differentiation[jax]"             # JAX backend
 pip install -e ".[dev]"
 ```
 
-Documentation tools can be installed separately with:
-
-```bash
-pip install -e ".[docs]"
-```
-
 ## [Backend support](https://kyjung2357.github.io/specular-differentiation/api/backend/)
 
-The package is organized around a backend system.
-NumPy is the default backend, while accelerated backends are optional and may require extra dependencies.
+| Backend | Availability | Minimum version |
+| :--- | :--- | :--- |
+| NumPy | Default | `numpy >= 2.4` |
+| Numba | Optional | `numba >= 0.65` |
+| JAX | Optional | `jax >= 0.10`, `jaxlib >= 0.10` |
 
 ## Quick start
 
@@ -99,10 +106,9 @@ print(specular.derivative(ReLU, x=0))
 
 ## Documentation
 
-- [Quick start](https://kyjung2357.github.io/specular-differentiation/quick-start/)
+- [User Guide](https://kyjung2357.github.io/specular-differentiation/user-guide/)
 - [API Reference](https://kyjung2357.github.io/specular-differentiation/api/)
 - [Examples](https://kyjung2357.github.io/specular-differentiation/examples/)
-- [LaTeX Macro](https://kyjung2357.github.io/specular-differentiation/started/latex-macro/)
 - [Release](https://github.com/kyjung2357/specular-differentiation/releases/latest)
 
 ## LaTeX Macro
@@ -134,6 +140,9 @@ To use the specular differentiation symbol in your LaTeX document, add the follo
 
 <!-- latex-macro-end -->
 
+For usage examples and Markdown notation, see
+[LaTeX Macro in the User Guide](https://kyjung2357.github.io/specular-differentiation/user-guide/latex-macro/).
+
 ## Citing specular-differentiation
 
 To cite this repository:
@@ -151,16 +160,36 @@ To cite this repository:
 
 ## References
 
+<!-- references-start -->
+
+**One dimension**
+
+<!-- --8<-- [start:ref-specular-one-dimension] -->
 [1] K. Jung. [*Specular differentiation in one dimension: a quasi-mean value theorem, regularity, and discontinuities*](https://arxiv.org/abs/2601.09900). arXiv preprint arXiv:2601.09900, 2026.
+<!-- --8<-- [end:ref-specular-one-dimension] -->
+
+<!-- --8<-- [start:ref-regular-specular-euclidean] -->
+[2] K. Jung and J. Oh. [*Regular specular differentiation in Euclidean spaces*](https://arxiv.org/abs/2210.06062v3). arXiv preprint arXiv:2210.06062v3, 2022.
+<!-- --8<-- [end:ref-regular-specular-euclidean] -->
+
+**Higher dimensions**
+
+<!-- --8<-- [start:ref-specular-normed-spaces] -->
+[3] K. Jung. [*Specular differentiation in normed vector spaces: Quasi-Mean Value and Quasi-Fermat Theorems*](https://arxiv.org/abs/2601.10950). arXiv preprint arXiv:2601.10950, 2026.
+<!-- --8<-- [end:ref-specular-normed-spaces] -->
+
+**Applications**
 
 <!-- --8<-- [start:ref-ellipse-ode] -->
-[2] K. Jung. [*The specular ellipse method for scalar ordinary differential equations: exactness and accuracy up to fourth order*](https://arxiv.org/abs/2608.30280). arXiv preprint arXiv:2608.30280, 2026.
+[4] K. Jung. [*The specular ellipse method for scalar ordinary differential equations: exactness and accuracy up to fourth order*](https://arxiv.org/abs/2608.30280). arXiv preprint arXiv:2608.30280, 2026.
 <!-- --8<-- [end:ref-ellipse-ode] -->
-
-[3] K. Jung. [*Specular differentiation in normed vector spaces: Quasi-Mean Value and Quasi-Fermat Theorems*](https://arxiv.org/abs/2601.10950). arXiv preprint arXiv:2601.10950, 2026.
-
-[4] K. Jung. [*Specular gradient methods for nonsmooth convex optimization in Euclidean spaces: a subgradient selection strategy*](https://arxiv.org/abs/2605.25490). arXiv preprint arXiv:2605.25490, 2026.
 
 <!-- --8<-- [start:ref-speg-one-dimension] -->
 [5] K. Jung and J. Oh. [*Nonsmooth convex optimization using the specular gradient method with root-linear convergence*](https://arxiv.org/abs/2412.20747). arXiv preprint arXiv:2412.20747, 2024.
 <!-- --8<-- [end:ref-speg-one-dimension] -->
+
+<!-- --8<-- [start:ref-specular-gradient-convex] -->
+[6] K. Jung. [*Specular gradient methods for nonsmooth convex optimization in Euclidean spaces: a subgradient selection strategy*](https://arxiv.org/abs/2605.25490). arXiv preprint arXiv:2605.25490, 2026.
+<!-- --8<-- [end:ref-specular-gradient-convex] -->
+
+<!-- references-end -->

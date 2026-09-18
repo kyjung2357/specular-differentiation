@@ -65,15 +65,13 @@
   const sourceBaseUrl =
     "https://github.com/kyjung2357/specular-differentiation/blob/main/";
 
-  const sourcePathMap = [
-    { page: "/api/calculation/", source: "specular/calculation.py" },
-    { page: "/api/backend/", source: "specular/backends/_registry.py" },
-  ];
-
   function sourceUrlForCurrentPage() {
-    const path = window.location.pathname.replace(/\/+$/, "/");
-    const match = sourcePathMap.find((item) => path.includes(item.page));
-    return match ? sourceBaseUrl + match.source : "";
+    const source = document.querySelector("details.mkdocstrings-source summary code");
+    if (!source) {
+      return "";
+    }
+    const path = source.textContent.trim().replace(/\\/g, "/");
+    return path.startsWith("specular/") ? sourceBaseUrl + path : "";
   }
 
   function setupFullSourceLinks() {

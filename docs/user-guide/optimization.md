@@ -68,7 +68,7 @@ iteration for a fixed budget and do not assert convergence within that
 budget. Constant step sizes can oscillate near a minimizer.
 
 The default `h=None` uses the [calculation API's automatic finite-difference
-step](calculation.md). Set `h` to a positive scalar to choose it explicitly.
+step](../api/calculation/index.md). Set `h` to a positive scalar to choose it explicitly.
 The `gradient` argument can supply an exact or problem-specific
 unnormalized specular gradient instead of numerical differentiation. It
 must return a scalar or vector matching the initial point.
@@ -274,26 +274,9 @@ JAX differentiation needs a JAX-compatible objective, such as one written
 with `jax.numpy`. Ordinary centered line-search differences run in NumPy;
 specular line searches use the selected calculation backend. Explicit
 gradient callbacks perform their own computation. See
-[backend support](backend.md) for installation and dtype details.
+[backend support](../api/backends/index.md) for installation and dtype details.
 
 ## API reference
 
-::: specular.optimization.solver.specular_gradient
-    options:
-      show_root_heading: true
+See [specular.optimization](../api/optimization/index.md) for individual function and result references.
 
-::: specular.optimization.solver.minimize
-    options:
-      show_root_heading: true
-
-::: specular.optimization.direction.make_direction
-    options:
-      show_root_heading: true
-
-::: specular.optimization.step_size.make_step_size
-    options:
-      show_root_heading: true
-
-::: specular.optimization.solver.OptimizationResult
-    options:
-      show_root_heading: true

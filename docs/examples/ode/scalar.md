@@ -18,7 +18,7 @@ uses the full E1--E6 two-endpoint classification and may return a finite scale,
 the `0.0` zero-scale sentinel, or the `inf` Crank--Nicolson sentinel.
 It minimizes the classified defect but does not assert a maximal or
 fourth-order convergence rate. See the
-[automatic scale-selection modes](../../api/ode.md#automatic-scale-selection-modes)
+[automatic scale-selection modes](../../user-guide/ode.md#automatic-scale-selection-modes)
 for the API and validation rules.
 
 Install the development dependencies, then run any script from the repository root:
@@ -29,7 +29,7 @@ python examples/ode/ellipse_exactness.py
 ```
 
 The order statements below are numerical observations for the stated problems.
-The [ODE API warning](../../api/ode.md#automatic-scale-selection-modes) summarizes the hypotheses required by the convergence results.
+The [ODE guide](../../user-guide/ode.md#automatic-scale-selection-modes) summarizes the hypotheses required by the convergence results.
 
 ## Exact tracing
 

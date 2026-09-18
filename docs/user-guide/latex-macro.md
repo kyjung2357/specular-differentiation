@@ -1,10 +1,5 @@
 # LaTeX Macro
 
-- [LaTeX Macro](#latex-macro)
-  - [Preamble](#preamble)
-  - [Usage examples](#usage-examples)
-  - [Markdown usage](#markdown-usage)
-
 ## Preamble
 
 {%

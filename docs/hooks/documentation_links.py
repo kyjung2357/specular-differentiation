@@ -7,10 +7,10 @@ from mkdocs.utils import get_relative_url
 # mkdocs serve replaces config.site_url with the local preview address.
 _PUBLISHED_URL = "https://kyjung2357.github.io/specular-differentiation/"
 _PAGES = {
-    "quick-start/": "quick-start.md",
+    "user-guide/": "user-guide/index.md",
     "api/": "api/index.md",
     "examples/": "examples/index.md",
-    "started/latex-macro/": "started/latex-macro.md",
+    "user-guide/latex-macro/": "user-guide/latex-macro.md",
 }
 
 

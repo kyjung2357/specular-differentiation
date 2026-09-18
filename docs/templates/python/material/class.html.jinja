@@ -1,0 +1,12 @@
+{% extends "_base/class.html.jinja" %}
+
+{# Show a result dataclass constructor while retaining its complete source. #}
+{% block signature scoped %}
+  {% if config.merge_init_into_class %}
+    {{ super() }}
+  {% elif config.separate_signature and "__init__" in all_members %}
+    {% filter format_signature(all_members["__init__"], config.line_length, crossrefs=config.signature_crossrefs) %}
+      {{ class.name }}
+    {% endfilter %}
+  {% endif %}
+{% endblock signature %}

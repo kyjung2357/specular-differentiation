@@ -1,4 +1,4 @@
-# ODE
+# Scalar ODE methods
 
 The ODE API solves scalar initial-value problems in the notation of the specular ellipse method:
 
@@ -338,24 +338,4 @@ These are result sentinels, not valid `sigma` arguments for the public `scaled_m
 `ODEResult.number_of_field_evaluations` records the total number of calls to the supplied field `F(t, u)` made by the solver.
 Calls made internally by a user-provided `derivatives_of_F` callback are outside this count.
 
-## API reference
-
-::: specular.ode.ODEResult
-    options:
-      show_root_heading: true
-
-::: specular.ode.euler_scheme_1
-    options:
-      show_root_heading: true
-
-::: specular.ode.euler_scheme_2
-    options:
-      show_root_heading: true
-
-::: specular.ode.euler_scheme_5
-    options:
-      show_root_heading: true
-
-::: specular.ode.ellipse_scheme
-    options:
-      show_root_heading: true
+See the [specular.ode API reference](../api/ode/index.md) for function signatures, parameters, and return values.

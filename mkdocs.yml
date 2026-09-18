@@ -26,13 +26,13 @@ theme:
         name: Switch to light mode
   features:
     - navigation.indexes
-    - navigation.footer
 
 plugins:
   - search
   - callouts
   - mkdocstrings:
       default_handler: python
+      custom_templates: docs/templates
       handlers:
         python:
           paths: [.]
@@ -41,6 +41,7 @@ plugins:
             line_length: 88
             members_order: source
             separate_signature: true
+            show_labels: false
             show_source: true
             show_root_heading: false
             show_root_toc_entry: false
@@ -53,24 +54,56 @@ plugins:
 hooks:
   - docs/hooks/code_copy_buttons.py
   - docs/hooks/documentation_links.py
+  - docs/hooks/api_reference.py
   
 
 nav:
   - Home: index.md
-  - Quick start: quick-start.md
+  - User Guide:
+    - User Guide: user-guide/index.md
+    - Mathematical Background: user-guide/mathematical-background.md
+    - LaTeX Macro: user-guide/latex-macro.md
+    - Installation: user-guide/installation.md
+    - Backends: user-guide/backends.md
+    - Calculation: user-guide/calculation.md
+    - ODE: user-guide/ode.md
+    - Optimization: user-guide/optimization.md
   - API Reference:
-    - Overview: api/index.md
-    - Calculation: api/calculation.md
-    - Optimization: api/optimization.md
-    - ODE: api/ode.md
-    - Backends: api/backend.md
+    - API Reference: api/index.md
+    - specular.calculation:
+      - specular.calculation: api/calculation/index.md
+      - scaled_mean: api/calculation/scaled_mean.md
+      - derivative: api/calculation/derivative.md
+      - gradient: api/calculation/gradient.md
+      - jacobian: api/calculation/jacobian.md
+    - specular.optimization:
+      - specular.optimization: api/optimization/index.md
+      - specular_gradient: api/optimization/specular_gradient.md
+      - minimize: api/optimization/minimize.md
+      - make_direction: api/optimization/make_direction.md
+      - make_step_size: api/optimization/make_step_size.md
+      - OptimizationResult: api/optimization/OptimizationResult.md
+      - LineSearchError: api/optimization/LineSearchError.md
+    - specular.ode:
+      - specular.ode: api/ode/index.md
+      - ellipse_scheme: api/ode/ellipse_scheme.md
+      - euler_scheme_1: api/ode/euler_scheme_1.md
+      - euler_scheme_2: api/ode/euler_scheme_2.md
+      - euler_scheme_5: api/ode/euler_scheme_5.md
+      - ODEResult: api/ode/ODEResult.md
+    - specular.backends:
+      - specular.backends: api/backends/index.md
+      - get_backend: api/backends/get_backend.md
+      - available_backends: api/backends/available_backends.md
+      - set_backend: api/backends/set_backend.md
+      - use_backend: api/backends/use_backend.md
+      - BackendName: api/backends/BackendName.md
   - Examples:
     - Overview: examples/index.md
     - ODE:
       - Scalar ODE: examples/ode/scalar.md
     - Optimization:
       - One dimension: examples/optimization/one-dimension.md
-  - LaTeX Macro: started/latex-macro.md
   - Release: https://github.com/kyjung2357/specular-differentiation/releases/latest
 
 markdown_extensions:
@@ -86,8 +119,9 @@ markdown_extensions:
       generic: true
 
 extra_javascript:
-  - javascripts/header-home-link.js
   - javascripts/code-copy-buttons.js
+  - javascripts/api-navigation.js
+  - javascripts/sidebar-navigation.js
   - javascripts/mathjax.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
