@@ -17,8 +17,7 @@ The specular derivative is defined by averaging the angles associated with
 the forward and backward difference quotients:
 
 $$
-\def\sd{\mathord{\prime\mkern-2.5mu{\scriptstyle\backprime}}}
-f^{\sd}(x)
+f^{\mathord{\prime\mkern-2.5mu{\scriptstyle\backprime}}}(x)
 :=
 \tan\left(
   \frac{\arctan\bigl(f'_+(x)\bigr)+\arctan\bigl(f'_-(x)\bigr)}{2}
