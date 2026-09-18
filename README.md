@@ -81,7 +81,7 @@ pip install "specular-differentiation[jax]"             # JAX backend
 pip install -e ".[dev]"
 ```
 
-## [Backend support](https://kyjung2357.github.io/specular-differentiation/api/backend/)
+## Backend support
 
 | Backend | Availability | Minimum version |
 | :--- | :--- | :--- |
@@ -91,7 +91,7 @@ pip install -e ".[dev]"
 
 ## Quick start
 
-The following simple example calculates the specular derivative of the [ReLU function](https://en.wikipedia.org/wiki/Rectified_linear_unit) $f(x) = max(0, x)$ at the origin.
+The following simple example calculates the specular derivative of the ReLU function $f(x) = max(0, x)$ at the origin.
 
 ```python
 import specular
