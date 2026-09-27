@@ -3,7 +3,7 @@
 `one_dimension.py` implements the scalar Elastic Net and sum-of-absolute-values
 experiments from K. Jung and J. Oh, *Nonsmooth convex optimization using the
 specular gradient method with root-linear convergence*,
-[arXiv:2412.20747](https://arxiv.org/abs/2412.20747).
+[arXiv:2412.20747v3](https://arxiv.org/abs/2412.20747v3).
 The objectives, methods, settings, plotting, and exports are in this one file.
 The Elastic Net default is `lambda_1 = 1.0`.
 

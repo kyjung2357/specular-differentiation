@@ -130,7 +130,7 @@ mjx-container[jax="CHTML"] mjx-math .specular-gradient-scriptscript {
 
 .specular-header__nav a:hover,
 .specular-header__nav a[aria-current] {
-  border-bottom-color: currentColor;
+  border-bottom-color: var(--md-primary-fg-color);
   opacity: 1;
 }
 

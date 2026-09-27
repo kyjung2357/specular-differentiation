@@ -19,7 +19,7 @@ the forward and backward difference quotients:
 <p align="center">
   <img
     class="specular-definition"
-    src="docs/figures/specular-derivative-definition.svg"
+    src="https://raw.githubusercontent.com/kyjung2357/specular-differentiation/main/docs/figures/specular-derivative-definition.svg"
     width="480"
     alt="The specular derivative of f at x is the tangent of the average of arctan of the right derivative and arctan of the left derivative."
   >
@@ -104,7 +104,7 @@ print(specular.derivative(ReLU, x=0))
 0.41421356237309503
 ```
 
-## Documentation
+## [Documentation](https://kyjung2357.github.io/specular-differentiation/)
 
 - [User Guide](https://kyjung2357.github.io/specular-differentiation/user-guide/)
 - [API Reference](https://kyjung2357.github.io/specular-differentiation/api/)
@@ -119,6 +119,8 @@ To use the specular differentiation symbol in your LaTeX document, add the follo
 
 ```latex
 % Required packages
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{amssymb}
 
@@ -126,7 +128,14 @@ To use the specular differentiation symbol in your LaTeX document, add the follo
 \newcommand{\sd}{\mathord{\prime\mkern-2.5mu\reflectbox{$\scriptstyle\prime$}}}
 
 % specular Gateaux derivative symbol
-\newcommand{\sGd}{\widehat{\mkern-2mu d}\mkern1mu}
+\newcommand{\sGd}{%
+    \mathord{\text{\normalfont\UseTextSymbol{T1}{\dj}}}%
+}
+
+% specular Frechet derivative symbol
+\newcommand{\sFd}{%
+    \mathord{\text{\normalfont\UseTextSymbol{T1}{\DJ}}}%
+}
 
 % specular gradient symbol
 \newcommand{\sg}{%
@@ -153,7 +162,7 @@ To cite this repository:
   title = {{specular-differentiation}},
   doi = {10.5281/zenodo.18246734},
   url = {https://github.com/kyjung2357/specular-differentiation},
-  version = {1.3.2},
+  version = {1.3.3},
   year = {2026},
 }
 ```
@@ -165,7 +174,7 @@ To cite this repository:
 **One dimension**
 
 <!-- --8<-- [start:ref-specular-one-dimension] -->
-[1] K. Jung. [*Specular differentiation in one dimension: a quasi-mean value theorem, regularity, and discontinuities*](https://arxiv.org/abs/2601.09900). arXiv preprint arXiv:2601.09900, 2026.
+[1] K. Jung. [*Specular differentiation in one dimension: a quasi-mean value theorem, regularity, and discontinuities*](https://arxiv.org/abs/2601.09900v5). arXiv preprint arXiv:2601.09900v5, 2026.
 <!-- --8<-- [end:ref-specular-one-dimension] -->
 
 <!-- --8<-- [start:ref-regular-specular-euclidean] -->
@@ -175,7 +184,7 @@ To cite this repository:
 **Higher dimensions**
 
 <!-- --8<-- [start:ref-specular-normed-spaces] -->
-[3] K. Jung. [*Specular differentiation in normed vector spaces: Quasi-Mean Value and Quasi-Fermat Theorems*](https://arxiv.org/abs/2601.10950). arXiv preprint arXiv:2601.10950, 2026.
+[3] K. Jung. [*Specular differentiation in normed vector spaces: Quasi-Mean Value and Quasi-Fermat Theorems*](https://arxiv.org/abs/2601.10950v4). arXiv preprint arXiv:2601.10950v4, 2026.
 <!-- --8<-- [end:ref-specular-normed-spaces] -->
 
 **Applications**
@@ -185,7 +194,7 @@ To cite this repository:
 <!-- --8<-- [end:ref-ellipse-ode] -->
 
 <!-- --8<-- [start:ref-speg-one-dimension] -->
-[5] K. Jung and J. Oh. [*Nonsmooth convex optimization using the specular gradient method with root-linear convergence*](https://arxiv.org/abs/2412.20747). arXiv preprint arXiv:2412.20747, 2024.
+[5] K. Jung and J. Oh. [*Nonsmooth convex optimization using the specular gradient method with root-linear convergence*](https://arxiv.org/abs/2412.20747v3). arXiv preprint arXiv:2412.20747v3, 2024.
 <!-- --8<-- [end:ref-speg-one-dimension] -->
 
 <!-- --8<-- [start:ref-specular-gradient-convex] -->

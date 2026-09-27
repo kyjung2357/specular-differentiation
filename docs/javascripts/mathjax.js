@@ -15,7 +15,9 @@ window.MathJax = {
     // https://docs.mathjax.org/en/v3.2/input/tex/extensions/html.html
     macros: {
       sd: "\\mathord{\\prime\\mkern-2.5mu{\\scriptstyle\\backprime}}",
-      sGd: "\\widehat{\\mkern-2mu d}\\mkern1mu",
+      // Unicode equivalents of the upright T1 text symbols \dj and \DJ.
+      sGd: "\\mathord{\\text{đ}}",
+      sFd: "\\mathord{\\text{Đ}}",
       sg: "\\mathchoice"
         + "{\\mathord{\\rule{0pt}{1.3ex}\\smash{\\class{specular-gradient-main}{\\blacktriangledown}}\\hspace{0.26714em}\\mkern-1.2mu}}"
         + "{\\mathord{\\rule{0pt}{1.3ex}\\smash{\\class{specular-gradient-main}{\\blacktriangledown}}\\hspace{0.26714em}\\mkern-1.2mu}}"

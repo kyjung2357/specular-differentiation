@@ -8,6 +8,17 @@
     end="<!-- latex-macro-end -->"
 %}
 
+The packages above support the following commands:
+
+| Package | Purpose |
+| --- | --- |
+| `fontenc` with `T1` | Provides the `đ` and `Đ` text symbols used by `\sGd` and `\sFd`. |
+| `amsmath` | Provides `\text` for `\sGd` and `\sFd`. |
+| `graphicx` | Reflects the prime in `\sd` and scales the triangle in `\sg`. |
+| `amssymb` | Provides `\blacktriangledown` for `\sg`. |
+
+If you only use `\sGd` and `\sFd`, you only need `fontenc` with `T1` and `amsmath` from this list. Do not load a package again if your document already loads it.
+
 ## Usage examples
 
 Use the symbols in your document after `\begin{document}`.
@@ -22,33 +33,22 @@ $\partial^{\sd}_v f(x)$
 % A specular Gateaux derivative
 $\sGd f(x)$
 
+% A specular Frechet derivative
+$\sFd f(x)$
+
 % A specular gradient
 $\sg f(x)$
 ```
 
 ## Markdown usage
 
-The documentation defines `\sd`, `\sGd`, and `\sg` globally, so the same commands work inside Markdown math without adding a preamble to each page.
+The documentation defines `\sd`, `\sGd`, `\sFd`, and `\sg` globally, so the same commands work inside Markdown math without adding a preamble to each page. The Gâteaux and Fréchet symbols are the upright letters `đ` and `Đ`, respectively.
 
 | Markdown source | Rendered symbol |
 | --- | --- |
 | `\(f^{\sd}(x)\)` | \(f^{\sd}(x)\) |
 | `\(\partial^{\sd}_v f(x)\)` | \(\partial^{\sd}_v f(x)\) |
 | `\(\sGd f(x)\)` | \(\sGd f(x)\) |
+| `\(\sFd f(x)\)` | \(\sFd f(x)\) |
 | `\(\sg f(x)\)` | \(\sg f(x)\) |
 | `\(\frac{\sg f(x)}{\|\sg f(x)\|}\)` | \(\frac{\sg f(x)}{\|\sg f(x)\|}\) |
-
-For a display equation, write:
-
-```tex
-\[
-x_{k+1}=x_k-t_k\frac{f^{\sd}(x_k)}{|f^{\sd}(x_k)|}.
-\]
-```
-
-\[
-x_{k+1}=x_k-t_k\frac{f^{\sd}(x_k)}{|f^{\sd}(x_k)|}.
-\]
-
-The shared browser definitions are in `docs/javascripts/mathjax.js`, with the symbol styling in `docs/stylesheets/extra.css`.
-The LaTeX preamble above is for `.tex` documents; these browser definitions are loaded on every documentation page.
