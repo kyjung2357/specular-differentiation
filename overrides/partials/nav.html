@@ -1,0 +1,78 @@
+{# The homepage uses its outline; documentation sections share one page tree. #}
+
+{% macro headings(entries, root = false) %}
+  <ul class="md-nav__list specular-sidebar__list{% if root %} specular-sidebar__toc{% endif %}"{% if root %} data-md-component="toc" data-md-scrollfix{% endif %}>
+    {% for entry in entries %}
+      <li class="md-nav__item">
+        <a href="{{ entry.url }}" class="md-nav__link">{{ entry.title | striptags }}</a>
+        {% if entry.children %}{{ headings(entry.children) }}{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% endmacro %}
+
+{% macro page_headings() %}
+  {% set entries = page.toc %}
+  {% set first = entries | first %}
+  {% if first and first.level == 1 %}{% set entries = first.children %}{% endif %}
+  {% if entries %}{{ headings(entries, true) }}{% endif %}
+{% endmacro %}
+
+{% macro section_items(entries) %}
+  <ul class="md-nav__list specular-sidebar__list">
+    {% for entry in entries %}
+      <li class="md-nav__item">
+        {% if entry.children %}
+          {% set index = entry.children | first %}
+          <details class="specular-sidebar__branch"{% if entry.active %} open{% endif %}>
+            <summary class="md-nav__link specular-sidebar__group{% if entry.active %} md-nav__link--active{% endif %}">{{ entry.title }}</summary>
+            {% if index.is_index %}
+              <ul class="md-nav__list specular-sidebar__list">
+                <li class="md-nav__item">
+                  <a href="{{ index.url | url }}" class="md-nav__link{% if index == page %} md-nav__link--active{% endif %}"{% if index == page %} aria-current="page"{% endif %}>Overview</a>
+                  {% if index == page %}{{ page_headings() }}{% endif %}
+                </li>
+              </ul>
+              {{ section_items(entry.children[1:]) }}
+            {% else %}
+            {{ section_items(entry.children) }}
+            {% endif %}
+          </details>
+        {% else %}
+          <a href="{{ entry.url | url }}" class="md-nav__link{% if entry == page %} md-nav__link--active{% endif %}"{% if entry == page %} aria-current="page"{% endif %}>{{ entry.title }}</a>
+          {% if entry == page %}{{ page_headings() }}{% endif %}
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% endmacro %}
+
+{% set scope = namespace(section = none) %}
+{% for entry in nav.items %}
+  {% if entry.children %}
+    {% set index = entry.children | first %}
+    {% if entry.active or (page and index.is_index and page.file.src_uri.startswith(index.file.src_uri.rsplit('/', 1)[0] ~ '/')) %}
+      {% set scope.section = entry %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+<nav class="md-nav md-nav--primary specular-sidebar" aria-label="{{ scope.section.title if scope.section else lang.t('toc') }}" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}" title="{{ config.site_name | e }}" class="md-nav__button md-logo" aria-label="{{ config.site_name }}" data-md-component="logo">
+      {% include "partials/logo.html" %}
+    </a>
+    {{ config.site_name }}
+  </label>
+  {% if config.repo_url %}
+    <div class="md-nav__source">
+      {% include "partials/source.html" %}
+    </div>
+  {% endif %}
+  {% if scope.section %}
+    {% set index = scope.section.children | first %}
+    <a href="{{ index.url | url }}" class="specular-sidebar__title"{% if index == page %} aria-current="page"{% endif %}>{{ scope.section.title }}</a>
+    {{ section_items(scope.section.children[1:]) }}
+  {% else %}
+    {{ page_headings() }}
+  {% endif %}
+</nav>
